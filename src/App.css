@@ -1,0 +1,86 @@
+.left-container {
+  background-color: var(--bg-secondary);
+  min-width: 70px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: space-between;
+  padding: 13px 0px 21px 0px;
+}
+.middle-container {
+  background-color: var(--bg-primary);
+  width: 100%;
+}
+.main-container {
+  height: 100vh;
+  display: flex;
+}
+
+.connection-container {
+  width: 346px;
+  height: 390px;
+  border: 1px solid var(--bg-secondary-light);
+  background-color: var(--bg-secondary-light);
+  border-radius: 10px;
+}
+
+.middle-container-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  background-color: var(--bg-primary-dark);
+  height: 51px;
+  align-self: flex-start;
+  color: var(--text-secondary-dark);
+  border-bottom: 1px solid var(--bg-secondary-light);
+}
+
+.middle-container-top ::placeholder {
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 400;
+}
+.middle-container-center {
+  height: calc(100vh - 51px);
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-round {
+  width: 35px;
+  height: 35px;
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid black;
+  border-radius: 20px;
+  margin: 0px 12px;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+
+
+.upload-colony-image {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  background: var(--bg-secondary-dark);
+  border: 2px dashed var(--bg-primary-light);
+  border-radius: 100px;
+  text-align: center;
+  color: var(--bg-primary-light);
+  overflow: hidden;
+}
+.upload-colony-cover {
+  width: 200px;
+  height: 100px;
+  cursor: pointer;
+  background: var(--bg-secondary-dark);
+  border: 2px dashed var(--text-secondary-dark);
+  border-radius: 3px;
+  text-align: center;
+  color: var(--text-secondary-dark);
+  overflow: hidden;
+}

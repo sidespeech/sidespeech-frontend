@@ -1,0 +1,23 @@
+.modal-footer {
+  display: flex;
+  justify-content: center;
+}
+.modal-content {
+  width: 600px;
+  padding: 16px 17px 24px 27px;
+  background: var(--bg-secondary-light);
+  border-radius: 10px;
+  color: var(--text-secondary-light);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  text-align: center;
+  font-weight: 700;
+  font-size: 30px;
+}
+.modal-body {
+  max-height: 506px;
+  overflow: auto;
+}
