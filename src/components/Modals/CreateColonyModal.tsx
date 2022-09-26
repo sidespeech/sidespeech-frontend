@@ -86,7 +86,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
         <>
           <div className="f-column">
             <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
-              Colony name
+              SideSpeech server name
             </label>
             <InputText
               glass={false}
@@ -103,7 +103,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
             style={{ maxWidth: 400 }}
           >
             <div className="f-column justify-center align-center">
-              <div className="size-14 fw-400 mb-3">Upload colony image</div>
+              <div className="size-14 fw-400 mb-3">Upload SideSpeech image</div>
               <input
                 accept=".png,.jpg,.jpeg,.webp"
                 style={{ display: "none" }}
@@ -137,7 +137,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
             </div>
             <div className="f-column justify-center align-center">
               <div className="size-14 fw-400 mb-3">
-                Upload colony cover image
+                Upload SideSpeech cover image
               </div>
               <input
                 accept=".png,.jpg,.jpeg,.webp"
@@ -209,7 +209,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
           Create
         </Button>
       }
-      title={<span>Create a new colony</span>}
+      title={<span>Create a new SideSpeech server</span>}
     />
   );
 }

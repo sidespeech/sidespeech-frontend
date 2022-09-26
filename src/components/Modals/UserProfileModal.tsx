@@ -84,12 +84,6 @@ export default function UserProfileModal({
 
   const handleSaveNfts = async () => {
     try {
-      const user = await moralisService.updateMoralisUser({
-        profilePicture: profilePicture,
-        nfts: savedNfts,
-      });
-      dispatch(updateUser(user));
-      toast.success("Changes saved");
     } catch (error) {
       toast.error("error saving publics nfts, retry later.", { toastId: 11 });
     }
@@ -100,11 +94,8 @@ export default function UserProfileModal({
     setProfilePicture(url);
   };
 
-  const handleSaveUsername = async () => {
-    await moralisService.saveUsername(username, colony, profile);
-  };
+  const handleSaveUsername = async () => {};
   const handleJoinColony = async () => {
-    await moralisService.JoinColony(colony, username);
     dispatch(addColony(colony));
     toast.success("Successfuly join the Colony " + colony.name, { toastId: 6 });
     showModal(false);

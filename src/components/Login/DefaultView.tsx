@@ -50,7 +50,7 @@ export default function DefaultView() {
           <div className="middle-container-center relative">
             <div className="f-column align-center" style={{ zIndex: 20 }}>
               <div className="fw-700 size-40 text-white">
-                Welcome to SpeechServer
+                Welcome to SideSpeech
               </div>
               <div className="text-secondary fw-400 size-20">
                 {reduceWalletAddress(userData.account || "")}
