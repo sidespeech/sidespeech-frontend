@@ -9,7 +9,7 @@ import check from "../../assets/check.svg";
 import InputText from "../ui-components/InputText";
 import { format } from "date-fns";
 import UserLine from "../ui-components/UserLine";
-import moralisService from "../../service/moralis.service";
+
 import {
   setSelectedChannel,
   updateChannel,
@@ -31,14 +31,6 @@ export default function ChannelSettingsModal({
 
   const handleActivateChannel = async (value: any) => {
     try {
-      const channel = await moralisService.updateChannel(
-        selectedChannel.id,
-        value
-      );
-      if (channel) dispatch(updateChannel(channel));
-      toast.success("Visibility of the channel has been changed", {
-        toastId: 8,
-      });
     } catch (error) {
       toast.error("Error when updating visibility of the channel", {
         toastId: 9,

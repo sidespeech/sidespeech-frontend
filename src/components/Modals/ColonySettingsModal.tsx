@@ -9,7 +9,7 @@ import check from "../../assets/check.svg";
 import InputText from "../ui-components/InputText";
 import { format } from "date-fns";
 import UserLine from "../ui-components/UserLine";
-import moralisService from "../../service/moralis.service";
+
 import {
   setSelectedChannel,
   updateChannel,
@@ -25,7 +25,6 @@ export default function ColonySettingsModal({
   showModal: any;
   currentColony: Colony;
 }) {
-
   const dispatch = useDispatch();
 
   const handleActivateChannel = async (value: any) => {
@@ -105,7 +104,9 @@ export default function ColonySettingsModal({
               <span className="flex-1">STATUS</span>
             </div>
             <div className="w-100 pl-4 pb-2 pt-3">
-              {_.orderBy(currentColony.members,(m) => m.get('role').get('name')).map((m) => {
+              {_.orderBy(currentColony.members, (m) =>
+                m.get("role").get("name")
+              ).map((m) => {
                 return <UserLine key={m.id} user={m} colony={currentColony} />;
               })}
             </div>

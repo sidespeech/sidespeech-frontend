@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../../redux/store/app.store";
-import liveQueriesService from "../../service/live-queries.service";
+
 import CreateColonyModal from "../Modals/CreateColonyModal";
 import "./UserColonies.css";
 
@@ -19,14 +19,9 @@ export default function UserColonies() {
 
   useEffect(() => {
     if (userData && userData.colonies.length > 0 && !isSubscribe) {
-      liveQueriesService.subscribeChannels(userData.colonies);
-      setIsSubscribe(true);
     }
 
-    return () => {
-      liveQueriesService.unSubscribeChannels();
-      setIsSubscribe(false);
-    };
+    return () => {};
   }, [userData]);
 
   return (

@@ -1,39 +1,38 @@
 :root {
   --bg-primary: #242635;
-  --bg-secondary: #1B1D30;
+  --bg-secondary: #1b1d30;
 
-  --bg-secondary-dark: #181A2A;
-  --bg-secondary-light: #2F3247;
+  --bg-secondary-dark: #181a2a;
+  --bg-secondary-light: #2f3247;
 
-  --bg-primary-light: #717F99;
+  --bg-primary-light: #717f99;
   --bg-primary-dark: #262838;
 
-  --button-primary: #705CE9;
+  --button-primary: #705ce9;
 
-  --placeholer: #3F4256;
+  --placeholer: #3f4256;
 
   --text-primary: #ffffff;
-  --text-primary-light: #C1C7CF; 
+  --text-primary-light: #c1c7cf;
 
-  --text-secondary: #B4C1D2;
-  --text-secondary-dark: #717F99;
-  --text-secondary-light: #F5F5F5;
+  --text-secondary: #b4c1d2;
+  --text-secondary-dark: #717f99;
+  --text-secondary-light: #f5f5f5;
 
-  --text-red: #DC4964;
-  --text-green: #40CE8A;
-  --text-blue: #3DB4E7;
+  --text-red: #dc4964;
+  --text-green: #40ce8a;
+  --text-blue: #3db4e7;
 }
 
 body {
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: "Nunito Sans", sans-serif;
   font-size: 16px;
   font-weight: 500;
   height: 100vh;
   width: 100vw;
 }
 .open-sans {
-  font-family: 'Open Sans', sans-serif;
-
+  font-family: "Open Sans", sans-serif;
 }
 
 .text-secondary {
@@ -424,13 +423,13 @@ body {
 /*//////////////////////////// POLL OVERRIDE //////////////////////////////////*/
 /*/////////////////////////////////////////////////////////////////////////////*/
 
-.poll-override  h1{
+.poll-override h1 {
   margin: 0.5rem 0rem 0.5rem 0rem;
   font-size: 12px;
   font-weight: 400;
   text-align: left;
 }
-.poll-override  p {
+.poll-override p {
   margin: 0px;
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -443,13 +442,12 @@ body {
   align-items: flex-start !important;
 }
 .poll-override > article > div:hover {
-  background-color: #705CE9 !important;
-
+  background-color: #705ce9 !important;
 }
-.poll-override > article  div {
+.poll-override > article div {
   border-radius: 1rem;
 }
-.poll-override > article  div::after {
+.poll-override > article div::after {
   border-radius: 1rem;
 }
 .poll-override span {

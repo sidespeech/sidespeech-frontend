@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
-import { useMoralis } from "react-moralis";
+
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FadeLoader } from "react-spinners";
@@ -9,7 +9,7 @@ import styled from "styled-components";
 import { Colony } from "../../models/Colony";
 import { addColony, updateUser } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
-import moralisService from "../../service/moralis.service";
+
 import { SeparatorHorizontal } from "../Login/DefaultView";
 import Button from "../ui-components/Button";
 import CustomCheckbox from "../ui-components/CustomCheckbox";
@@ -82,75 +82,6 @@ export default function UserProfileModal({
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { Moralis } = useMoralis();
-
-  useEffect(() => {
-    if (userTokens) {
-      const values = Object.values(userTokens?.ERC721);
-      console.log(userTokens.ERC721);
-    }
-  }, [userTokens]);
-
-  useEffect(() => {
-    if (user && user.attributes.savedNfts) {
-      setSavedNfts(user.attributes.savedNfts);
-      console.log(savedNfts);
-    }
-    if (user && user.attributes.profilePicture) {
-      setProfilePicture(user.attributes.profilePicture);
-    }
-    async function getProfile(colony: Colony) {
-      const profile = await moralisService.getProfile(colony);
-      if (profile) setProfile(profile);
-    }
-    if (colony) getProfile(colony);
-  }, [user, colony]);
-
-  useEffect(() => {
-    async function getUrls() {
-      if (userTokens && selectedCollection) {
-        setLoading(true);
-        const tmp: any[] = [];
-        await Promise.all(
-          userTokens.ERC721[selectedCollection].map(async (nft) => {
-            try {
-              const asset = await Moralis.Plugins.opensea.getAsset({
-                network: "mainnet",
-                tokenAddress: nft.token_address,
-                tokenId: nft.token_id,
-              });
-              console.log(asset);
-              tmp.push({
-                address: nft.token_address,
-                id: nft.token_id,
-                url: asset.imageUrl || asset.assetContract.imageUrl,
-                collection: asset.assetContract.name,
-              });
-            } catch (error) {
-              console.log(JSON.stringify(error));
-              tmp.push(
-                "https://decizia.com/blog/wp-content/uploads/2017/06/default-placeholder.png"
-              );
-            }
-          })
-        );
-        setUrls([...tmp]);
-        setLoading(false);
-      }
-    }
-    getUrls();
-  }, [selectedCollection, userTokens]);
-
-  function fixURL2(url: string) {
-    if (url.startsWith("ipfs")) {
-      return (
-        "https://ipfs.moralis.io:2053/ipfs/" + url.split("ipfs://").slice(-1)[0]
-      );
-    } else if (url.startsWith("https://")) {
-      return url;
-    }
-  }
-
   const handleSaveNfts = async () => {
     try {
       const user = await moralisService.updateMoralisUser({
@@ -160,7 +91,7 @@ export default function UserProfileModal({
       dispatch(updateUser(user));
       toast.success("Changes saved");
     } catch (error) {
-      toast.error("error saving publics nfts, retry later.",{toastId: 11})
+      toast.error("error saving publics nfts, retry later.", { toastId: 11 });
     }
   };
 

@@ -5,9 +5,9 @@ import { RootState } from "../../../redux/store/app.store";
 import UserBadge from "../../ui-components/UserBadge";
 import { LeafPoll, Result } from "react-leaf-polls";
 import "./Polls.css";
-import moralisService from "../../../service/moralis.service";
+
 import { toast } from "react-toastify";
-import Web3 from "web3";
+
 import _ from "lodash";
 import { format } from "date-fns";
 
@@ -23,8 +23,6 @@ export default function Polls() {
 
   const handleVote = async (a: any, pollId: string) => {
     try {
-      await moralisService.sendUserVote(pollId, a.id);
-      toast.success("Vote success", { toastId: 9 });
     } catch (error) {
       toast.error("Error when voting", { toastId: 9 });
     }
@@ -57,7 +55,7 @@ export default function Polls() {
                 className="size-11 fw-500 open-sans"
                 style={{ color: "#7F8CA4" }}
               >
-                {format(poll.createdAt,"yyyy-mm-dd hh:mm")}
+                {format(poll.createdAt, "yyyy-mm-dd hh:mm")}
               </div>
             </div>
             {/* <div>{poll.question}</div> */}

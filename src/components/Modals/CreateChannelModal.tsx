@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentColony } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
-import moralisService from "../../service/moralis.service";
+
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
@@ -11,19 +11,13 @@ export default function CreateChannelModal({ showModal }: { showModal: any }) {
   const { currentColony } = useSelector((state: RootState) => state.appDatas);
   const [name, setName] = useState<string>("");
   const dispatch = useDispatch();
-  
+
   const handleName = (event: any) => {
     setName(event.target.value);
   };
 
   const createChannel = async () => {
     if (currentColony) {
-      const colony = await moralisService.createTextualChannel(
-        name,
-        currentColony
-      );
-      console.log(colony);
-      dispatch(setCurrentColony(colony));
     }
   };
 

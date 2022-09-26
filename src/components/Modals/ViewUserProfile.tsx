@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { getRoleColor } from "../../helpers/utilities";
 import { Colony } from "../../models/Colony";
 import { RootState } from "../../redux/store/app.store";
-import moralisService from "../../service/moralis.service";
+
 import Button from "../ui-components/Button";
 import CustomSelect from "../ui-components/CustomSelect";
 import InputText from "../ui-components/InputText";

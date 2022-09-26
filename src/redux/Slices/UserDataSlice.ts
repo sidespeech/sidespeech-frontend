@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import moralisService from "../../service/moralis.service";
+
 import { UserTokensData } from "../../models/UserTokensData";
 import { Colony } from "../../models/Colony";
 
@@ -20,16 +20,9 @@ const initialState: UserData = {
   colonies: [],
 };
 
-
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
-  async (address: string) => {
-    const nfts = await moralisService.getNftsOwnedByAddress("0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74");
-    nfts.ERC20Tokens = await moralisService.getUserTokens(address);
-    const colonies = await moralisService.getUserColonies(address);
-    console.log(colonies);
-    return { nfts, colonies };
-  }
+  async (address: string) => {}
 );
 
 export const userDataSlice = createSlice({
@@ -49,21 +42,17 @@ export const userDataSlice = createSlice({
       state.user = action.payload;
     },
     addColony: (state: UserData, action: PayloadAction<any>) => {
-      state.colonies = [...state.colonies,action.payload];
-    }
+      state.colonies = [...state.colonies, action.payload];
+    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
-    builder.addCase(fetchUserDatas.fulfilled, (state, action) => {
-      const { nfts, colonies } = action.payload;
-      // Add user to the state array
-      state.userTokens = nfts;
-      state.colonies = colonies;
-    });
+    builder.addCase(fetchUserDatas.fulfilled, (state, action) => {});
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { connect, disconnect,updateUser,addColony } = userDataSlice.actions;
+export const { connect, disconnect, updateUser, addColony } =
+  userDataSlice.actions;
 
 export default userDataSlice.reducer;

@@ -4,8 +4,6 @@ import CustomSelect from "./CustomSelect";
 import check from "../../assets/check.svg";
 import { Colony } from "../../models/Colony";
 import { first } from "lodash";
-import Moralis from "moralis";
-import moralisService from "../../service/moralis.service";
 
 export default function UserLine({
   colony,
@@ -19,21 +17,11 @@ export default function UserLine({
     useState<boolean>(false);
   const [newRole, setNewRole] = useState("");
 
-  useEffect(() => {
-    console.log(user);
-    setIsCreator(colony.isCreator(user.get("user")?.get("ethAddress")));
-    setConnectedUserIsCreator(
-      colony.isCreator(Moralis.User.current()?.attributes.ethAddress)
-    );
-  }, []);
-
   const handleRoleChange = (event: any) => {
     setNewRole(event.target.value);
   };
 
-  const handleSaveRole = async () => {
-    await moralisService.changeUserRole(newRole, user);
-  };
+  const handleSaveRole = async () => {};
 
   return (
     <div className="flex align-center my-2">

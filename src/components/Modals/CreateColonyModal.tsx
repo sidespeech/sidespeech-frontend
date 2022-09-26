@@ -1,10 +1,9 @@
-import Moralis from "moralis/types";
 import React, { useState } from "react";
-import { useMoralis } from "react-moralis";
+
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { addColony } from "../../redux/Slices/UserDataSlice";
-import moralisService from "../../service/moralis.service";
+
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
@@ -26,7 +25,6 @@ const initialState = {
 };
 
 export default function CreateColonyModal({ showModal }: { showModal: any }) {
-  const { Moralis } = useMoralis();
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState<InitialState>(initialState);
@@ -67,16 +65,14 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
 
   const saveColony = async () => {
     // Save file input to IPFS
-    let imageUrl: Moralis.File | null = null;
-    let coverUrl: Moralis.File | null = null; 
+
     try {
       if (formData.colonyImage)
-        imageUrl = await moralisService.saveFile(formData.colonyImage);
-      if (formData.colonyCover)
-        coverUrl = await moralisService.saveFile(formData.colonyCover);
-      const colony = await moralisService.createColony(formData, imageUrl, coverUrl);
-      dispatch(addColony(colony));
-      toast.success(formData.colonyName + " has been created.", { toastId: 4 });
+        if (formData.colonyCover)
+          //dispatch(addColony(colony));
+          toast.success(formData.colonyName + " has been created.", {
+            toastId: 4,
+          });
     } catch (error) {
       console.log(error);
       toast.error("Error creating colony.", { toastId: 3 });

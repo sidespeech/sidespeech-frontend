@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Colony } from "../../models/Colony";
-import moralisService from "../../service/moralis.service";
+
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
@@ -9,9 +9,9 @@ import { FadeLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/app.store";
-import Web3 from "web3";
+
 import { weiToDecimals } from "../../helpers/utilities";
-import { useMoralis } from "react-moralis";
+
 import { addColony } from "../../redux/Slices/UserDataSlice";
 import { setCurrentColony } from "../../redux/Slices/AppDatasSlice";
 
@@ -51,7 +51,7 @@ export default function SelectColonyModal({
   showModal,
   setShowProfileModal,
 }: {
-  setSelectedColony:any,
+  setSelectedColony: any;
   showModal: any;
   setShowProfileModal: any;
 }) {
@@ -61,14 +61,10 @@ export default function SelectColonyModal({
   const { userTokens } = useSelector((state: RootState) => state.user);
   const { currentColony } = useSelector((state: RootState) => state.appDatas);
 
-  const { Moralis } = useMoralis();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    async function getColos() {
-      const res = await moralisService.getColonies();
-      setColonies(res);
-    }
+    async function getColos() {}
     getColos();
   }, []);
 
@@ -81,9 +77,7 @@ export default function SelectColonyModal({
       toast.error("No token required", { toastId: 100 });
       return;
     }
-    const res = Number.parseFloat(
-      Moralis.Units.FromWei(token.balance, token.decimals)
-    );
+
     if (res < c.tokenRequired) {
       toast.error("You do not have anaf token to join this Colony", {
         toastId: 100,
@@ -93,11 +87,11 @@ export default function SelectColonyModal({
     try {
       setSelectedColony(c);
       setShowProfileModal(true);
-      showModal(false)
+      showModal(false);
     } catch (error) {
       console.log(error);
       toast.error("Error when joining the Colony.", { toastId: 5 });
-    } 
+    }
   };
 
   const handleSearchColony = (event: any) => {};

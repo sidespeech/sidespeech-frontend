@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { MoralisProvider } from "react-moralis";
+
 import { Provider } from "react-redux";
 import { store } from "./redux/store/app.store";
 import { ToastContainer } from "react-toastify";
@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./override.css";
 import "./index.css";
 import { APP_ID, SERVER_URL } from "./constants/constants";
+import "semantic-ui-css/semantic.min.css";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -33,19 +34,14 @@ ReactDOM.render(
       }}
     />
     <React.StrictMode>
-      <MoralisProvider
-        serverUrl={SERVER_URL}
-        appId={APP_ID}
-      >
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<App />}>
-              <Route path=":id" element={<CurrentColony />} />
-              <Route index  element={<DefaultView />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </MoralisProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route path=":id" element={<CurrentColony />} />
+            <Route index element={<DefaultView />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </React.StrictMode>
   </Provider>,
   document.getElementById("root")

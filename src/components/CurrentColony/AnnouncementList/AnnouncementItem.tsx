@@ -9,7 +9,7 @@ import check from "../../../assets/check.svg";
 import UserBadge from "../../ui-components/UserBadge";
 import "./AnnouncementItem.css";
 import InputText from "../../ui-components/InputText";
-import moralisService from "../../../service/moralis.service";
+
 import { toast } from "react-toastify";
 import _ from "lodash";
 import { format } from "date-fns";
@@ -39,8 +39,6 @@ export default function AnnouncementItem({
   };
   const sendComment = async () => {
     try {
-      await moralisService.sendComment(announcement.id, comment);
-      setComment("");
     } catch (error) {
       toast.error("error sending comment", { toastId: 7 });
     }

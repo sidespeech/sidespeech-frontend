@@ -12,6 +12,7 @@ import "./DefaultView.css";
 import { reduceWalletAddress } from "../../helpers/utilities";
 import UserProfileModal from "../Modals/UserProfileModal";
 import { Colony } from "../../models/Colony";
+import { useNavigate } from "react-router";
 
 interface ISeparatorHorizontal {
   borderColor?: string;
@@ -34,6 +35,8 @@ export default function DefaultView() {
   const [selectedColony, setSelectedColony] = useState<Colony | null>(null);
   const userData = useSelector((state: RootState) => state.user);
 
+  const navigate = useNavigate();
+
   const showProfile = () => {
     setShowProfileModal(true);
   };
@@ -41,10 +44,14 @@ export default function DefaultView() {
   return (
     <>
       {userData.user ? (
+        <Login />
+      ) : (
         <>
           <div className="middle-container-center relative">
             <div className="f-column align-center" style={{ zIndex: 20 }}>
-              <div className="fw-700 size-40 text-white">Welcome to Colony</div>
+              <div className="fw-700 size-40 text-white">
+                Welcome to SpeechServer
+              </div>
               <div className="text-secondary fw-400 size-20">
                 {reduceWalletAddress(userData.account || "")}
               </div>
@@ -52,13 +59,14 @@ export default function DefaultView() {
               <span className="fw-400 size-22 text-secondary">
                 What do you want to do?
               </span>
+
               <Button
                 classes="fw-700 size-22 button-margin"
                 width={367}
                 height={66}
                 onClick={() => setShowColonyModal(true)}
               >
-                Create a new Colony
+                Create a Speech server
               </Button>
               <Button
                 classes="fw-700 size-22"
@@ -66,7 +74,7 @@ export default function DefaultView() {
                 height={66}
                 onClick={() => setShowSelecteColonyModal(true)}
               >
-                Find an existing Colony
+                Find an existing Speech server
               </Button>
             </div>
             <img
@@ -77,8 +85,6 @@ export default function DefaultView() {
             />
           </div>
         </>
-      ) : (
-        <Login />
       )}
 
       {showColonyModal && <CreateColonyModal showModal={setShowColonyModal} />}

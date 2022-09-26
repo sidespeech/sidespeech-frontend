@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { updateChannel } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
-import moralisService from "../../service/moralis.service";
+
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
@@ -48,12 +48,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
   const handleSavePoll = async () => {
     try {
       if (selectedChannel) {
-        const newChannel = await moralisService.proposePoll(
-          question,
-          values,
-          false,
-          selectedChannel
-        );
+        
         toast.success("Poll has been created.", { toastId: 8 });
         dispatch(updateChannel(newChannel));
       }

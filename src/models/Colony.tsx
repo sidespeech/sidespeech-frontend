@@ -1,5 +1,3 @@
-import Web3 from "web3";
-import Moralis from "moralis";
 export class Colony {
   public CreatorAddress: string;
   public members: any[] = [];
@@ -32,16 +30,13 @@ export class Colony {
   }
 
   isCreator(address: string) {
-    if(!address) return false;
+    if (!address) return false;
     return this.CreatorAddress.toLowerCase() === address.toLowerCase();
   }
   async getMembers() {
-    console.log(this.id)
-    this.members = await Moralis.Cloud.run(
-      "getColoniesMembers",
-      {id :this.id}
-    );
-    console.log(this.members)
+    console.log(this.id);
+
+    console.log(this.members);
   }
 }
 
@@ -81,7 +76,7 @@ export class Channel {
     await Promise.all(
       as.map(async (a: any) => {
         const newPoll = new Poll(a);
-        await newPoll.getVotes(a.attributes.votes)
+        await newPoll.getVotes(a.attributes.votes);
         this.polls.push(newPoll);
       })
     );
@@ -122,14 +117,13 @@ export class Vote {
   public createdAt: Date;
   public updatedAt: Date;
 
-  constructor(_data: any){
+  constructor(_data: any) {
     this.createdAt = _data.attributes.createdAt;
     this.updatedAt = _data.attributes.updatedAt;
     this.user = _data.attributes.user;
     this.poll = _data.attributes.poll;
     this.selectedAnswer = _data.attributes.selectedAnswer;
   }
-
 }
 export class Announcement {
   public content: string;
@@ -170,5 +164,3 @@ export class Comment {
     this.content = _data.attributes.content;
   }
 }
-
-

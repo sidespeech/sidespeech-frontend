@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import InputText from "./InputText";
 import { disconnect } from "../../redux/Slices/UserDataSlice";
-import { useMoralis } from "react-moralis";
+
 import { useDispatch, useSelector } from "react-redux";
 import UserProfileModal from "../Modals/UserProfileModal";
 import { RootState } from "../../redux/store/app.store";
