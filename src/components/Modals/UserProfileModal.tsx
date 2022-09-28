@@ -16,6 +16,8 @@ import CustomCheckbox from "../ui-components/CustomCheckbox";
 import CustomSelect from "../ui-components/CustomSelect";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
+import CreateColonyModal from "../Modals/CreateColonyModal";
+import SelectColonyModal from "../Modals/SelectColonyModal";
 
 export interface InitialState {
   colonyImage: File | null;
@@ -71,6 +73,9 @@ export default function UserProfileModal({
 }) {
   const [formData, setFormData] = useState<InitialState>(initialState);
   const [showColonyModal, setShowColonyModal] = useState<boolean>(false);
+  const [showSelecteColonyModal, setShowSelecteColonyModal] =
+    useState<boolean>(false);
+  const [selectedColony, setSelectedColony] = useState<Colony | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { userTokens, user } = useSelector((state: RootState) => state.user);
   const [selectedCollection, setSelectedCollection] = useState("");
@@ -125,8 +130,9 @@ export default function UserProfileModal({
               <div className="mb-1">Pseudo</div>
               <InputText
                 bgColor="var(--bg-secondary-dark)"
+                maxLength={30}
                 glass={false}
-                placeholder={""}
+                placeholder={"Enter your username"}
                 defaultValue={profile?.get("username") || ""}
                 onChange={(event: any) => setUsername(event.target.value)}
               />
@@ -142,7 +148,7 @@ export default function UserProfileModal({
               <InputText
                 bgColor="var(--bg-secondary-dark)"
                 glass={false}
-                placeholder={""}
+                placeholder={"Paste your NFT or Token address"}
                 defaultValue={profile?.get("username") || ""}
                 onChange={(event: any) => setUsername(event.target.value)}
               />
@@ -220,6 +226,16 @@ export default function UserProfileModal({
             margin="9px 0px 18px 0px"
             borderColor="var(--bg-primary)"
           /> */}
+          {showColonyModal && (
+            <CreateColonyModal showModal={setShowColonyModal} />
+          )}
+          {showSelecteColonyModal && (
+            <SelectColonyModal
+              setSelectedColony={setSelectedColony}
+              setShowProfileModal={showProfile}
+              showModal={setShowSelecteColonyModal}
+            />
+          )}
           {!join && (
             <div
               className="w-100 f-column align-start"

@@ -87,7 +87,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
         <>
           <div className="f-column">
             <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
-              SideSpeech server name
+              Side server name
             </label>
             <InputText
               id="sidespeech"
@@ -98,7 +98,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               height={40}
               onChange={setColonyName}
               iconRightPos={{ top: 6, right: 16 }}
-              placeholder={"Enter the SideSpeech server name"}
+              placeholder={"Enter your Side server name"}
             />
           </div>
           <div
@@ -202,7 +202,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               height={40}
               onChange={setColonyWebsite}
               iconRightPos={{ top: 6, right: 16 }}
-              placeholder={"Website link"}
+              placeholder={"Enter your Website link"}
             />
           </div>
         </>
@@ -212,7 +212,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
           Create
         </Button>
       }
-      title={<span>Create a new SideSpeech server</span>}
+      title={<span>Create a new Side server</span>}
     />
   );
 }

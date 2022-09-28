@@ -66,7 +66,7 @@ export default function DefaultView() {
                 height={66}
                 onClick={() => navigate("/UserProfileModal")}
               >
-                Create a Speech server
+                Create a Side server
               </Button>
               <Button
                 classes="fw-700 size-22"
@@ -74,7 +74,7 @@ export default function DefaultView() {
                 height={66}
                 onClick={() => setShowSelecteColonyModal(true)}
               >
-                Find an existing Speech server
+                Find an existing Side server
               </Button>
             </div>
             <img
