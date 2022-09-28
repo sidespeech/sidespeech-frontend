@@ -70,6 +70,7 @@ export default function UserProfileModal({
   join?: boolean;
 }) {
   const [formData, setFormData] = useState<InitialState>(initialState);
+  const [showColonyModal, setShowColonyModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { userTokens, user } = useSelector((state: RootState) => state.user);
   const [selectedCollection, setSelectedCollection] = useState("");
@@ -130,64 +131,24 @@ export default function UserProfileModal({
                 onChange={(event: any) => setUsername(event.target.value)}
               />
             </div>
-
-            {join ? (
-              <Button
-                width={150}
-                height={35}
-                classes="mx-auto mt-3"
-                onClick={handleJoinColony}
-              >
-                Join
-              </Button>
-            ) : (
-              <Button
-                width={150}
-                height={35}
-                classes="mx-auto mt-3"
-                onClick={handleSaveUsername}
-              >
-                Save
-              </Button>
-            )}
           </div>
-          {!join && (
-            <div className="flex align-center justify-between">
-              <div className="f-column justify-center align-center mt-2 flex-1">
-                <div className="size-14 fw-400 mb-3">Upload colony image</div>
-                <input
-                  accept=".png,.jpg,.jpeg,.webp"
-                  style={{ display: "none" }}
-                  id="input-colony-picture"
-                  type={"file"}
-                  onChange={undefined}
-                />
-                <label
-                  htmlFor={"input-colony-picture"}
-                  className="upload-colony-image f-column align-center justify-center"
-                >
-                  {profilePicture?.url ? (
-                    <img
-                      style={{
-                        height: "inherit",
-                        width: "inherit",
-                        objectFit: "cover",
-                      }}
-                      src={profilePicture.url}
-                      alt="file"
-                    />
-                  ) : (
-                    <>
-                      <i className="fa-solid fa-camera size-30 mb-1 mt-2"></i>
-                      <span>
-                        <i className="fa-solid fa-plus size-20"></i>
-                      </span>
-                    </>
-                  )}
-                </label>
-              </div>
+
+          <div
+            className="w-100 flex justify-start align-end"
+            style={{ maxWidth: 475, gap: 10 }}
+          >
+            <div className="w-100 f-column">
+              <div className="mb-1">NFT or Token address</div>
+              <InputText
+                bgColor="var(--bg-secondary-dark)"
+                glass={false}
+                placeholder={""}
+                defaultValue={profile?.get("username") || ""}
+                onChange={(event: any) => setUsername(event.target.value)}
+              />
             </div>
-          )}
+          </div>
+
           {userTokens && (
             <div className="w-100" style={{ maxWidth: 475, gap: 10 }}>
               <div className="fw-700 size-14 text-secondary-dark">
@@ -285,7 +246,11 @@ export default function UserProfileModal({
       }
       footer={
         <div className="mt-3">
-          <Button width={149} height={43} onClick={handleSaveNfts}>
+          <Button
+            width={149}
+            height={43}
+            onClick={() => setShowColonyModal(true)}
+          >
             Save changes
           </Button>
         </div>

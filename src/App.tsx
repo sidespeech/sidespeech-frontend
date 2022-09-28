@@ -19,6 +19,7 @@ import signalrService from "./service/signalr.service";
 import logoSmall from "./assets/logo.svg";
 import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
+import ViewUserProfile from "./components/Modals/ViewUserProfile";
 import Randoms from "./components/Login/Randoms";
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
             path="/CreateSideSpeechProfile"
             element={<CreateSideSpeechProfile />}
           />
+          <Route path="/UserProfileModal" element={<UserProfileModal />} />
           <Route path="/Randoms" element={<Randoms />} />
         </Routes>
       </div>

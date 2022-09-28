@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { Input } from "semantic-ui-react";
 import { addColony } from "../../redux/Slices/UserDataSlice";
 
 import Button from "../ui-components/Button";
@@ -89,13 +90,15 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               SideSpeech server name
             </label>
             <InputText
+              id="sidespeech"
+              maxLength={40}
               glass={false}
               width={"400px"}
               padding={"0px 40px 0px 20px"}
               height={40}
               onChange={setColonyName}
               iconRightPos={{ top: 6, right: 16 }}
-              placeholder={""}
+              placeholder={"Enter the SideSpeech server name"}
             />
           </div>
           <div
@@ -189,7 +192,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
             />
           </div>
           <div className="f-column">
-            <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
+            <label htmlFor="website" className="size-14 fw-400 mb-1 text-left">
               Website link
             </label>
             <InputText
@@ -199,7 +202,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               height={40}
               onChange={setColonyWebsite}
               iconRightPos={{ top: 6, right: 16 }}
-              placeholder={""}
+              placeholder={"Website link"}
             />
           </div>
         </>

@@ -64,7 +64,7 @@ export default function DefaultView() {
                 classes="fw-700 size-22 button-margin"
                 width={367}
                 height={66}
-                onClick={() => setShowColonyModal(true)}
+                onClick={() => navigate("/UserProfileModal")}
               >
                 Create a Speech server
               </Button>
