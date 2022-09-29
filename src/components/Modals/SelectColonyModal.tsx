@@ -171,7 +171,7 @@ export default function SelectColonyModal({
         </>
       }
       footer={undefined}
-      title={<span>Find an existing colony</span>}
+      title={<span>Find an existing side server</span>}
     />
   );
 }

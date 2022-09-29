@@ -21,6 +21,7 @@ import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import ViewUserProfile from "./components/Modals/ViewUserProfile";
 import Randoms from "./components/Login/Randoms";
+import CurrentColony from "./components/CurrentColony/CurrentColony";
 
 function App() {
   const userData = useSelector((state: RootState) => state.user);
@@ -40,6 +41,7 @@ function App() {
             path="/CreateSideSpeechProfile"
             element={<CreateSideSpeechProfile />}
           />
+          <Route path="/CurrentColony" element={<CurrentColony />} />
           <Route path="/UserProfileModal" element={<UserProfileModal />} />
           <Route path="/Randoms" element={<Randoms />} />
         </Routes>

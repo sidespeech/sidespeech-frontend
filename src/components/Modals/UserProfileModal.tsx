@@ -83,6 +83,7 @@ export default function UserProfileModal({
   const [savedNfts, setSavedNfts] = useState<any[]>([]);
   const [profilePicture, setProfilePicture] = useState<any>(null);
   const [username, setUsername] = useState<string>("");
+
   const [profile, setProfile] = useState<any>(null);
 
   const dispatch = useDispatch();
@@ -129,6 +130,7 @@ export default function UserProfileModal({
             <div className="w-100 f-column">
               <div className="mb-1">Pseudo</div>
               <InputText
+                id="username"
                 bgColor="var(--bg-secondary-dark)"
                 maxLength={30}
                 glass={false}
@@ -146,6 +148,7 @@ export default function UserProfileModal({
             <div className="w-100 f-column">
               <div className="mb-1">NFT or Token address</div>
               <InputText
+                id="address"
                 bgColor="var(--bg-secondary-dark)"
                 glass={false}
                 placeholder={"Paste your NFT or Token address"}
@@ -266,6 +269,7 @@ export default function UserProfileModal({
             width={149}
             height={43}
             onClick={() => setShowColonyModal(true)}
+            //disabled={username.length === 0}
           >
             Save changes
           </Button>

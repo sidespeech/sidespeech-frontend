@@ -8,6 +8,7 @@ import { addColony } from "../../redux/Slices/UserDataSlice";
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
+import { useNavigate } from "react-router";
 
 export interface InitialState {
   colonyImage: File | null;
@@ -63,7 +64,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
     }
     setFormData({ ...formData, colonyImage: file });
   };
-
+  const navigate = useNavigate();
   const saveColony = async () => {
     // Save file input to IPFS
 
@@ -90,7 +91,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               Side server name
             </label>
             <InputText
-              id="sidespeech"
+              id="servername"
               maxLength={40}
               glass={false}
               width={"400px"}
@@ -179,6 +180,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               NFT or Token address
             </label>
             <InputText
+              id="address"
               glass={false}
               width={"400px"}
               padding={"0px 40px 0px 20px"}
@@ -196,6 +198,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               Website link
             </label>
             <InputText
+              id="website"
               glass={false}
               width={"400px"}
               padding={"0px 40px 0px 20px"}
@@ -208,7 +211,11 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
         </>
       }
       footer={
-        <Button width={159} height={46} onClick={saveColony}>
+        <Button
+          width={159}
+          height={46}
+          onClick={() => navigate("/CurrentColony")}
+        >
           Create
         </Button>
       }
