@@ -75,8 +75,6 @@ export function WalletConnectArea() {
   async function walletConnect(): Promise<void> {
     await provider.enable();
 
-    const message = hexlify(toUtf8Bytes(messageToSign))
-
     // provider.connector.signPersonalMessage.
 
     provider.on("accountsChanged", (chainId: number) => {
