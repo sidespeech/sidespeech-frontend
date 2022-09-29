@@ -35,6 +35,8 @@ export default function DefaultView() {
   const [selectedColony, setSelectedColony] = useState<Colony | null>(null);
   const userData = useSelector((state: RootState) => state.user);
 
+  console.log(userData);
+
   const navigate = useNavigate();
 
   const showProfile = () => {
@@ -43,7 +45,7 @@ export default function DefaultView() {
 
   return (
     <>
-      {userData.user ? (
+      {userData.user === null ? (
         <Login />
       ) : (
         <>
