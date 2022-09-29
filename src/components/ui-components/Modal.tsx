@@ -30,7 +30,7 @@ export default function Modal({
   footer,
   title,
   showModal,
-  backicon = true,
+  backicon = false,
   height,
 }: {
   header?: any;
