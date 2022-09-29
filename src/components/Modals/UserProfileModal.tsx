@@ -104,7 +104,7 @@ export default function UserProfileModal({
   const handleJoinColony = async () => {
     dispatch(addColony(colony));
     toast.success("Successfuly join the Colony " + colony.name, { toastId: 6 });
-    showModal(false);
+    showModal(true);
     navigate(colony.id);
   };
 
