@@ -77,7 +77,7 @@ export default function CurrentColony() {
         #Announcement
         <InputText
           ref={ref}
-          size={14}
+          size={15}
           weight={600}
           glass={false}
           message
