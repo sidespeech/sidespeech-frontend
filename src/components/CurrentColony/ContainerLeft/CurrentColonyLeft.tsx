@@ -72,7 +72,7 @@ export default function CurrentColonyLeft() {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isMod, setIsMod] = useState<boolean>(false);
-  const [displayUserProfile, setDisplayUserProfile] = useState<boolean>(false)
+  const [displayUserProfile, setDisplayUserProfile] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 
@@ -122,10 +122,10 @@ export default function CurrentColonyLeft() {
     if (isAdmin) setDisplayColonySettings(true);
   };
 
-  const handleSelectedUser = (a:any) => {
+  const handleSelectedUser = (a: any) => {
     setSelectedUser(a);
     setDisplayUserProfile(true);
-  }
+  };
 
   return (
     <ContainerLeft>
@@ -216,7 +216,10 @@ export default function CurrentColonyLeft() {
         <div className="f-column align-start ml-2 pt-1">
           {members["Administrator"].map((a: any) => {
             return (
-              <div onClick={() => handleSelectedUser(a)} className="w-100 flex justify-between align-center">
+              <div
+                onClick={() => handleSelectedUser(a)}
+                className="w-100 flex justify-between align-center"
+              >
                 <UserBadge
                   weight={400}
                   fontSize={11}
@@ -239,7 +242,10 @@ export default function CurrentColonyLeft() {
           ).map((a: any) => {
             if (!a) return;
             return (
-              <div onClick={() => handleSelectedUser(a)} className="w-100 flex justify-between align-center">
+              <div
+                onClick={() => handleSelectedUser(a)}
+                className="w-100 flex justify-between align-center"
+              >
                 <UserBadge
                   weight={400}
                   fontSize={11}
@@ -255,7 +261,10 @@ export default function CurrentColonyLeft() {
         <div className="f-column align-start ml-2 pt-1">
           {members["User"].map((a: any) => {
             return (
-              <div onClick={() => handleSelectedUser(a)} className="w-100 flex justify-between align-center">
+              <div
+                onClick={() => handleSelectedUser(a)}
+                className="w-100 flex justify-between align-center"
+              >
                 <UserBadge
                   weight={400}
                   fontSize={11}
@@ -273,7 +282,11 @@ export default function CurrentColonyLeft() {
         />
       )}
       {currentColony && selectedUser && displayUserProfile && (
-        <ViewUserProfile profile={selectedUser} colony={currentColony} showModal={setDisplayUserProfile} />
+        <ViewUserProfile
+          profile={selectedUser}
+          colony={currentColony}
+          showModal={setDisplayUserProfile}
+        />
       )}
       {displayNewChannelModal && (
         <CreateChannelModal showModal={setDisplayNewChannelModal} />

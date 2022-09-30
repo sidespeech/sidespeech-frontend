@@ -12,7 +12,9 @@ export default function AnnouncementList() {
 
   useEffect(() => {
     if (selectedChannel && selectedChannel.announcements) {
-      setAnnouncements([..._.orderBy(selectedChannel.announcements, "createdAt")]);
+      setAnnouncements([
+        ..._.orderBy(selectedChannel.announcements, "createdAt"),
+      ]);
     }
   }, [selectedChannel]);
 
