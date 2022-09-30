@@ -35,6 +35,8 @@ export default function DefaultView() {
   const [selectedColony, setSelectedColony] = useState<Colony | null>(null);
   const userData = useSelector((state: RootState) => state.user);
 
+  console.log(userData);
+
   const navigate = useNavigate();
 
   const showProfile = () => {
@@ -64,9 +66,9 @@ export default function DefaultView() {
                 classes="fw-700 size-22 button-margin"
                 width={367}
                 height={66}
-                onClick={() => setShowColonyModal(true)}
+                onClick={() => navigate("/UserProfileModal")}
               >
-                Create a Speech server
+                Create a Side server
               </Button>
               <Button
                 classes="fw-700 size-22"
@@ -74,7 +76,7 @@ export default function DefaultView() {
                 height={66}
                 onClick={() => setShowSelecteColonyModal(true)}
               >
-                Find an existing Speech server
+                Find an existing Side server
               </Button>
             </div>
             <img

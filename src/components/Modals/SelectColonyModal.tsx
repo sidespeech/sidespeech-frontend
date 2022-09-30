@@ -87,7 +87,7 @@ export default function SelectColonyModal({
     try {
       setSelectedColony(c);
       setShowProfileModal(true);
-      showModal(false);
+      showModal(true);
     } catch (error) {
       console.log(error);
       toast.error("Error when joining the Colony.", { toastId: 5 });
@@ -171,7 +171,7 @@ export default function SelectColonyModal({
         </>
       }
       footer={undefined}
-      title={<span>Find an existing colony</span>}
+      title={<span>Find an existing side server</span>}
     />
   );
 }

@@ -4,6 +4,9 @@ import sendicon from "../../assets/send-icon.svg";
 
 interface InputTextPropsType {
   maxWidth?: number;
+  disabled?: any;
+  id?: any;
+  maxLength?: number;
   iconSize?: number;
   width?: number | string;
   height?: number;
@@ -24,11 +27,14 @@ interface InputTextPropsType {
   message?: boolean;
   onClick?: any;
   onKeyUp?: any;
-  defaultValue?:string;
+  defaultValue?: string;
 }
 
 interface InputProps {
+  id?: any;
   maxWidth?: number;
+  disabled?: any;
+  maxLength?: number;
   width?: number | string;
   height?: number | string;
   bgColor?: string;
@@ -70,14 +76,20 @@ const Input = styled.input<InputProps>`
   }
 `;
 
-const InputText = forwardRef((props: InputTextPropsType,ref:any) => {
+const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
   return (
-    <div className="relative" style={{width: props.width? props.width : "100%"}}>
+    <div
+      className="relative"
+      style={{ width: props.width ? props.width : "100%" }}
+    >
       <Input
-      ref={ref}
+        id={props.id}
+        ref={ref}
         width={props.width}
+        maxLength={props.maxLength}
         height={props.height}
         radius={props.radius}
+        disabled={props.disabled}
         size={props.size}
         weight={props.weight}
         color={props.color}
@@ -93,19 +105,26 @@ const InputText = forwardRef((props: InputTextPropsType,ref:any) => {
         defaultValue={props.defaultValue}
       />
       {props.glass && (
-        <span className="absolute" style={{...props.iconRightPos,color: props.color}}>
+        <span
+          className="absolute"
+          style={{ ...props.iconRightPos, color: props.color }}
+        >
           <i
             className="fa-solid fa-magnifying-glass"
-            style={{ fontSize: props.iconSize}}
+            style={{ fontSize: props.iconSize }}
           ></i>
         </span>
       )}
       {props.message && (
-        <span className="absolute pointer" onClick={props.onClick} style={props.iconRightPos}>
+        <span
+          className="absolute pointer"
+          onClick={props.onClick}
+          style={props.iconRightPos}
+        >
           <img src={sendicon} alt="send-icon" />
         </span>
       )}
     </div>
   );
-})
+});
 export default InputText;

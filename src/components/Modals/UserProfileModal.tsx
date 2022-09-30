@@ -16,6 +16,8 @@ import CustomCheckbox from "../ui-components/CustomCheckbox";
 import CustomSelect from "../ui-components/CustomSelect";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
+import CreateColonyModal from "../Modals/CreateColonyModal";
+import SelectColonyModal from "../Modals/SelectColonyModal";
 
 export interface InitialState {
   colonyImage: File | null;
@@ -70,6 +72,10 @@ export default function UserProfileModal({
   join?: boolean;
 }) {
   const [formData, setFormData] = useState<InitialState>(initialState);
+  const [showColonyModal, setShowColonyModal] = useState<boolean>(false);
+  const [showSelecteColonyModal, setShowSelecteColonyModal] =
+    useState<boolean>(false);
+  const [selectedColony, setSelectedColony] = useState<Colony | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { userTokens, user } = useSelector((state: RootState) => state.user);
   const [selectedCollection, setSelectedCollection] = useState("");
@@ -77,6 +83,7 @@ export default function UserProfileModal({
   const [savedNfts, setSavedNfts] = useState<any[]>([]);
   const [profilePicture, setProfilePicture] = useState<any>(null);
   const [username, setUsername] = useState<string>("");
+
   const [profile, setProfile] = useState<any>(null);
 
   const dispatch = useDispatch();
@@ -98,7 +105,7 @@ export default function UserProfileModal({
   const handleJoinColony = async () => {
     dispatch(addColony(colony));
     toast.success("Successfuly join the Colony " + colony.name, { toastId: 6 });
-    showModal(false);
+    showModal(true);
     navigate(colony.id);
   };
 
@@ -123,71 +130,34 @@ export default function UserProfileModal({
             <div className="w-100 f-column">
               <div className="mb-1">Pseudo</div>
               <InputText
+                id="username"
                 bgColor="var(--bg-secondary-dark)"
+                maxLength={30}
                 glass={false}
-                placeholder={""}
+                placeholder={"Enter your username"}
                 defaultValue={profile?.get("username") || ""}
                 onChange={(event: any) => setUsername(event.target.value)}
               />
             </div>
-
-            {join ? (
-              <Button
-                width={150}
-                height={35}
-                classes="mx-auto mt-3"
-                onClick={handleJoinColony}
-              >
-                Join
-              </Button>
-            ) : (
-              <Button
-                width={150}
-                height={35}
-                classes="mx-auto mt-3"
-                onClick={handleSaveUsername}
-              >
-                Save
-              </Button>
-            )}
           </div>
-          {!join && (
-            <div className="flex align-center justify-between">
-              <div className="f-column justify-center align-center mt-2 flex-1">
-                <div className="size-14 fw-400 mb-3">Upload colony image</div>
-                <input
-                  accept=".png,.jpg,.jpeg,.webp"
-                  style={{ display: "none" }}
-                  id="input-colony-picture"
-                  type={"file"}
-                  onChange={undefined}
-                />
-                <label
-                  htmlFor={"input-colony-picture"}
-                  className="upload-colony-image f-column align-center justify-center"
-                >
-                  {profilePicture?.url ? (
-                    <img
-                      style={{
-                        height: "inherit",
-                        width: "inherit",
-                        objectFit: "cover",
-                      }}
-                      src={profilePicture.url}
-                      alt="file"
-                    />
-                  ) : (
-                    <>
-                      <i className="fa-solid fa-camera size-30 mb-1 mt-2"></i>
-                      <span>
-                        <i className="fa-solid fa-plus size-20"></i>
-                      </span>
-                    </>
-                  )}
-                </label>
-              </div>
+
+          <div
+            className="w-100 flex justify-start align-end"
+            style={{ maxWidth: 475, gap: 10 }}
+          >
+            <div className="w-100 f-column">
+              <div className="mb-1">NFT or Token address</div>
+              <InputText
+                id="address"
+                bgColor="var(--bg-secondary-dark)"
+                glass={false}
+                placeholder={"Paste your NFT or Token address"}
+                defaultValue={profile?.get("username") || ""}
+                onChange={(event: any) => setUsername(event.target.value)}
+              />
             </div>
-          )}
+          </div>
+
           {userTokens && (
             <div className="w-100" style={{ maxWidth: 475, gap: 10 }}>
               <div className="fw-700 size-14 text-secondary-dark">
@@ -259,6 +229,16 @@ export default function UserProfileModal({
             margin="9px 0px 18px 0px"
             borderColor="var(--bg-primary)"
           /> */}
+          {showColonyModal && (
+            <CreateColonyModal showModal={setShowColonyModal} />
+          )}
+          {showSelecteColonyModal && (
+            <SelectColonyModal
+              setSelectedColony={setSelectedColony}
+              setShowProfileModal={showProfile}
+              showModal={setShowSelecteColonyModal}
+            />
+          )}
           {!join && (
             <div
               className="w-100 f-column align-start"
@@ -285,7 +265,12 @@ export default function UserProfileModal({
       }
       footer={
         <div className="mt-3">
-          <Button width={149} height={43} onClick={handleSaveNfts}>
+          <Button
+            width={149}
+            height={43}
+            onClick={() => setShowColonyModal(true)}
+            //disabled={username.length === 0}
+          >
             Save changes
           </Button>
         </div>

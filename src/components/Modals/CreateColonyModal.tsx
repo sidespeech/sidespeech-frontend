@@ -2,11 +2,13 @@ import React, { useState } from "react";
 
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { Input } from "semantic-ui-react";
 import { addColony } from "../../redux/Slices/UserDataSlice";
 
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
+import { useNavigate } from "react-router";
 
 export interface InitialState {
   colonyImage: File | null;
@@ -62,7 +64,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
     }
     setFormData({ ...formData, colonyImage: file });
   };
-
+  const navigate = useNavigate();
   const saveColony = async () => {
     // Save file input to IPFS
 
@@ -86,16 +88,18 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
         <>
           <div className="f-column">
             <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
-              SideSpeech server name
+              Side server name
             </label>
             <InputText
+              id="servername"
+              maxLength={40}
               glass={false}
               width={"400px"}
               padding={"0px 40px 0px 20px"}
               height={40}
               onChange={setColonyName}
               iconRightPos={{ top: 6, right: 16 }}
-              placeholder={""}
+              placeholder={"Enter your Side server name"}
             />
           </div>
           <div
@@ -176,6 +180,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               NFT or Token address
             </label>
             <InputText
+              id="address"
               glass={false}
               width={"400px"}
               padding={"0px 40px 0px 20px"}
@@ -189,27 +194,32 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
             />
           </div>
           <div className="f-column">
-            <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
+            <label htmlFor="website" className="size-14 fw-400 mb-1 text-left">
               Website link
             </label>
             <InputText
+              id="website"
               glass={false}
               width={"400px"}
               padding={"0px 40px 0px 20px"}
               height={40}
               onChange={setColonyWebsite}
               iconRightPos={{ top: 6, right: 16 }}
-              placeholder={""}
+              placeholder={"Enter your Website link"}
             />
           </div>
         </>
       }
       footer={
-        <Button width={159} height={46} onClick={saveColony}>
+        <Button
+          width={159}
+          height={46}
+          onClick={() => navigate("/CurrentColony")}
+        >
           Create
         </Button>
       }
-      title={<span>Create a new SideSpeech server</span>}
+      title={<span>Create a new Side server</span>}
     />
   );
 }

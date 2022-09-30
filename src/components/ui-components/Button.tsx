@@ -4,6 +4,7 @@ import styled from "styled-components";
 interface ButtonProps {
   width?: number;
   height?: number;
+  disabled?: any;
 }
 
 const CustomButton = styled.div<ButtonProps>`
@@ -23,16 +24,24 @@ export default function Button({
   onClick,
   width,
   height,
-  classes
+  classes,
+  disabled,
 }: {
   children: any;
   onClick: any;
   width?: number;
   height?: number;
   classes?: string;
+  disabled?: any;
 }) {
   return (
-    <CustomButton className={classes} width={width} height={height} onClick={onClick}>
+    <CustomButton
+      className={classes}
+      width={width}
+      height={height}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {children}
     </CustomButton>
   );

@@ -18,8 +18,10 @@ import UserColonies from "./components/UserColonies/UserColonies";
 import logoSmall from "./assets/logo.svg";
 import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
+import ViewUserProfile from "./components/Modals/ViewUserProfile";
 import Randoms from "./components/Login/Randoms";
 import io from "socket.io-client";
+import CurrentColony from "./components/CurrentColony/CurrentColony";
 
 const socket = io("http://localhost:3000/");
 function App() {
@@ -106,6 +108,8 @@ function App() {
             path="/CreateSideSpeechProfile"
             element={<CreateSideSpeechProfile />}
           />
+          <Route path="/CurrentColony" element={<CurrentColony />} />
+          <Route path="/UserProfileModal" element={<UserProfileModal />} />
           <Route path="/Randoms" element={<Randoms />} />
         </Routes>
       </div>
