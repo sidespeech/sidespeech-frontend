@@ -17,11 +17,6 @@ import UserColonies from "./components/UserColonies/UserColonies";
 
 import signalrService from "./service/signalr.service";
 import logoSmall from "./assets/logo.svg";
-import UserProfileModal from "./components/Modals/UserProfileModal";
-import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
-import ViewUserProfile from "./components/Modals/ViewUserProfile";
-import Randoms from "./components/Login/Randoms";
-import CurrentColony from "./components/CurrentColony/CurrentColony";
 
 function App() {
   const userData = useSelector((state: RootState) => state.user);
@@ -36,15 +31,6 @@ function App() {
       </div>
       <div className="middle-container f-column align-center justify-center">
         <Outlet></Outlet>
-        <Routes>
-          <Route
-            path="/CreateSideSpeechProfile"
-            element={<CreateSideSpeechProfile />}
-          />
-          <Route path="/CurrentColony" element={<CurrentColony />} />
-          <Route path="/UserProfileModal" element={<UserProfileModal />} />
-          <Route path="/Randoms" element={<Randoms />} />
-        </Routes>
       </div>
     </div>
   );
