@@ -15,7 +15,10 @@ import "./override.css";
 import "./index.css";
 import { APP_ID, SERVER_URL } from "./constants/constants";
 import "semantic-ui-css/semantic.min.css";
-
+import UserProfileModal from "./components/Modals/UserProfileModal";
+import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
+import ViewUserProfile from "./components/Modals/ViewUserProfile";
+console.log(process.env.REACT_APP_BASE_URL)
 ReactDOM.render(
   <Provider store={store}>
     <ToastContainer
@@ -39,6 +42,13 @@ ReactDOM.render(
           <Route path="/" element={<App />}>
             <Route path=":id" element={<CurrentColony />} />
             <Route index element={<DefaultView />} />
+            <Route
+              path="/CreateSideSpeechProfile"
+              element={<CreateSideSpeechProfile />}
+            />
+            <Route path="/ViewUserProfile" element={<ViewUserProfile />} />
+
+            <Route path="/UserProfileModal" element={<UserProfileModal />} />
           </Route>
         </Routes>
       </BrowserRouter>

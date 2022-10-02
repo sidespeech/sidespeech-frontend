@@ -103,15 +103,6 @@ function App() {
       </div>
       <div className="middle-container f-column align-center justify-center">
         <Outlet></Outlet>
-        <Routes>
-          <Route
-            path="/CreateSideSpeechProfile"
-            element={<CreateSideSpeechProfile />}
-          />
-          <Route path="/CurrentColony" element={<CurrentColony />} />
-          <Route path="/UserProfileModal" element={<UserProfileModal />} />
-          <Route path="/Randoms" element={<Randoms />} />
-        </Routes>
       </div>
     </div>
   );
