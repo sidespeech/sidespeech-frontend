@@ -45,7 +45,7 @@ export default function DefaultView() {
 
   return (
     <>
-      {userData.user ? (
+      {userData.account === null ? (
         <Login />
       ) : (
         <>

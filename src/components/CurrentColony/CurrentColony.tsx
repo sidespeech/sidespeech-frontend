@@ -24,14 +24,13 @@ import Polls from "./Polls/Polls";
 import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
 import InputText from "../ui-components/InputText";
-import { off, on } from "../../helpers/CustomEvent";
 import { Channel } from "../../models/Colony";
 import _ from "lodash";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import AnnouncementItem from "./AnnouncementList/AnnouncementItem";
-import { getProfileById } from "../../services/api.service";
 import websocketService from "../../services/websocket.service";
 import { setRooms } from "../../redux/Slices/ChatSlice";
+import { apiService } from "../../services/api.service";
 
 export default function CurrentColony() {
   const { id } = useParams();
@@ -74,7 +73,7 @@ export default function CurrentColony() {
 
   useEffect(() => {
     async function _getProfileById() {
-      const profile = await getProfileById(
+      const profile = await apiService.getProfileById(
         "c4af3388-42f8-11ed-b878-0242ac120002"
       );
       websocketService.login(profile);
@@ -88,7 +87,7 @@ export default function CurrentColony() {
   };
 
   const logUser = async (id: string) => {
-    const profile = await getProfileById(id);
+    const profile = await apiService.getProfileById(id);
     dispatch(setRooms(profile.rooms));
     websocketService.login(profile);
   };
