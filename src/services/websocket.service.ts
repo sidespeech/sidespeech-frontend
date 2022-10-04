@@ -1,6 +1,7 @@
 import { trigger } from "../helpers/CustomEvent";
 import { BASE_URL } from "../constants/constants";
 import { io, Socket } from "socket.io-client";
+import { EventType } from "../constants/EventType";
 
 let instance: WebSocketService;
 class WebSocketService {
@@ -12,7 +13,7 @@ class WebSocketService {
   }
   connectToWebScoket() {
     if (this.socket !== null || !BASE_URL) return;
-    this.socket = io(BASE_URL);
+    this.socket = io(BASE_URL + "/");
     this.socket.on("connect", () => {
       console.log("connected");
     });
@@ -22,14 +23,22 @@ class WebSocketService {
     });
 
     this.socket.on("message", async (data) => {
-      console.log(data);
+      trigger(EventType.RECEIVE_MESSAGE, data);
     });
   }
 
-  sendMessage(message: string, room: string) {
+  login(profile: any) {
+    this.socket?.emit("login", {
+      user: { id: profile.id, username: profile.username },
+      rooms: profile.rooms.map((r: any) => r.id),
+    });
+  }
+
+  sendMessage(message: string, roomId: string, sender: string) {
     this.socket?.emit("sendMessage", {
       message: message,
-      room: message,
+      roomId: roomId,
+      sender: sender,
     });
   }
 

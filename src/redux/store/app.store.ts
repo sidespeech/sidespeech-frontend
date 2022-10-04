@@ -2,16 +2,17 @@ import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import userDataReducer from "../Slices/UserDataSlice";
 import redirectReducer from "../Slices/RedirectSlice";
 import appDatasReducer from "../Slices/AppDatasSlice";
-
+import chatDatasSlice from "../Slices/ChatSlice";
 
 const customizedMiddleware = getDefaultMiddleware({
-  serializableCheck: false
-})
+  serializableCheck: false,
+});
 export const store = configureStore({
   reducer: {
     user: userDataReducer,
     redirect: redirectReducer,
-    appDatas: appDatasReducer
+    appDatas: appDatasReducer,
+    chatDatas: chatDatasSlice,
   },
   middleware: customizedMiddleware,
 });

@@ -12,6 +12,7 @@ import ColonySettingsModal from "../../Modals/ColonySettingsModal";
 import CreateChannelModal from "../../Modals/CreateChannelModal";
 import ViewUserProfile from "../../Modals/ViewUserProfile";
 import UserBadge from "../../ui-components/UserBadge";
+import PrivateMessages from "./PrivateMessages/PrivateMessages";
 
 const CoverImg = styled.img`
   height: 130px;
@@ -36,18 +37,7 @@ const SeparationLine = styled.hr`
   margin: 0px;
 `;
 
-const Dot = styled.div`
-  width: 15px;
-  height: 15px;
-  color: white;
-  background-color: var(--text-red);
-  weight: 700;
-  font-size: 7px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+
 
 const initialMembers = {
   Administrator: [],
@@ -57,7 +47,7 @@ const initialMembers = {
   Moderator3: [],
 };
 
-export default function CurrentColonyLeft() {
+export default function CurrentColonyLeft({ rooms, setSelectedRoom,selectedRoom }: any) {
   const { currentColony, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
@@ -124,7 +114,11 @@ export default function CurrentColonyLeft() {
 
   const handleSelectedUser = (a: any) => {
     setSelectedUser(a);
-    setDisplayUserProfile(true);
+    // setDisplayUserProfile(true);
+  };
+
+  const handleSelectedRoom = (room: any) => {
+    setSelectedRoom(room);
   };
 
   return (
@@ -149,17 +143,7 @@ export default function CurrentColonyLeft() {
           </span>
           <i className="fa-solid fa-plus "></i>
         </div>
-        <div className="ml-2 mt-1">
-          <div className="w-100 flex justify-between align-center">
-            <UserBadge
-              connect
-              weight={400}
-              fontSize={11}
-              address="0x7965Dffef589465"
-            />
-            <Dot>1</Dot>
-          </div>
-        </div>
+        <div className="ml-2 mt-1">{<PrivateMessages selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} />}</div>
       </div>
       <div
         className="w-100 flex align-center justify-between px-2 ml-2"
@@ -265,11 +249,7 @@ export default function CurrentColonyLeft() {
                 onClick={() => handleSelectedUser(a)}
                 className="w-100 flex justify-between align-center"
               >
-                <UserBadge
-                  weight={400}
-                  fontSize={11}
-                  username={a.get("username")}
-                />
+                <UserBadge weight={400} fontSize={11} username={a.username} />
               </div>
             );
           })}

@@ -46,7 +46,7 @@ export function getRoleColor(role: string) {
     case "Administrator":
       return "text-red";
     default:
-      return "text-blue"
+      return "text-blue";
   }
 }
 export function getRoleColorForStyle(role: string) {
@@ -58,7 +58,7 @@ export function getRoleColorForStyle(role: string) {
     case "Admin":
       return "var(--text-red)";
     default:
-      return "var(--text-blue)"
+      return "var(--text-blue)";
   }
 }
 
@@ -113,3 +113,7 @@ export const durationToStringMax1h = (
     } sec ago`;
   }
 };
+
+export function timestampToLocalString(timestamp: string) {
+  return new Date(Number.parseInt(timestamp)).toLocaleTimeString();
+}

@@ -29,6 +29,9 @@ import { Channel } from "../../models/Colony";
 import _ from "lodash";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import AnnouncementItem from "./AnnouncementList/AnnouncementItem";
+import { getProfileById } from "../../services/api.service";
+import websocketService from "../../services/websocket.service";
+import { setRooms } from "../../redux/Slices/ChatSlice";
 
 export default function CurrentColony() {
   const { id } = useParams();
@@ -36,6 +39,7 @@ export default function CurrentColony() {
     (state: RootState) => state.appDatas
   );
   const { user } = useSelector((state: RootState) => state.user);
+  const { rooms } = useSelector((state: RootState) => state.chatDatas);
 
   const [displayEditChannelModal, setDisplayEditChannelModal] =
     useState<boolean>(false);
@@ -43,18 +47,14 @@ export default function CurrentColony() {
   const [announcementText, setAnnouncementText] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
-  const [selectedUser, setSelectedUser] = useState<any>({
-    id: "uuid",
-    username: "nicolas",
-    image:
-      "https://lh3.googleusercontent.com/5qD2n6mHEO5ZO0DMOTtjstZUUL93tdW4dzut7txviPA8DxcwrhCSwj-tIsXKTMm9qVCd03q4k-W_87p8ktgl6Nqu97zSFeGkWiqBPg=s250",
-  });
+  const [selectedUser, setSelectedUser] = useState<any>();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
+  const [selectedRoom, setselectedRoom] = useState<any>(null);
 
   useEffect(() => {
     if (selectedChannel && selectedChannel.announcements) {
@@ -72,17 +72,47 @@ export default function CurrentColony() {
     updateScroll();
   }, [announcements]);
 
+  useEffect(() => {
+    async function _getProfileById() {
+      const profile = await getProfileById(
+        "c4af3388-42f8-11ed-b878-0242ac120002"
+      );
+      websocketService.login(profile);
+    }
+    // _getProfileById();
+    return () => {};
+  }, []);
+
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
   };
 
+  const logUser = async (id: string) => {
+    const profile = await getProfileById(id);
+    dispatch(setRooms(profile.rooms));
+    websocketService.login(profile);
+  };
+
   return (
     <div className="flex align-start w-100">
-      <CurrentColonyLeft />
+      <button onClick={() => logUser("c4af3388-42f8-11ed-b878-0242ac120002")}>
+        Nicolas
+      </button>
+      <button onClick={() => logUser("c4af35fe-42f8-11ed-b878-0242ac120002")}>
+        Jean
+      </button>
+      <button onClick={() => logUser("c4af3982-42f8-11ed-b878-0242ac120002")}>
+        Xi
+      </button>
+      <CurrentColonyLeft
+        rooms={rooms}
+        setSelectedRoom={(room: any) => setselectedRoom(room)}
+        selectedRoom={selectedRoom}
+      />
 
       <div className="f-column w-100">
-        {!selectedUser ? (
-          <ChatComponent user={selectedUser} />
+        {selectedRoom ? (
+          <ChatComponent room={selectedRoom} />
         ) : (
           <>
             <MiddleContainerHeader />
