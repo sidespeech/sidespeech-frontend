@@ -47,7 +47,7 @@ const initialMembers = {
   Moderator3: [],
 };
 
-export default function CurrentColonyLeft({ rooms, setSelectedRoom,selectedRoom }: any) {
+export default function CurrentColonyLeft() {
   const { currentColony, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
@@ -117,10 +117,6 @@ export default function CurrentColonyLeft({ rooms, setSelectedRoom,selectedRoom 
     // setDisplayUserProfile(true);
   };
 
-  const handleSelectedRoom = (room: any) => {
-    setSelectedRoom(room);
-  };
-
   return (
     <ContainerLeft>
       <div className="w-100 flex align-center justify-between px-2">
@@ -143,7 +139,7 @@ export default function CurrentColonyLeft({ rooms, setSelectedRoom,selectedRoom 
           </span>
           <i className="fa-solid fa-plus "></i>
         </div>
-        <div className="ml-2 mt-1">{<PrivateMessages selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} />}</div>
+        <div className="ml-2 mt-1">{<PrivateMessages />}</div>
       </div>
       <div
         className="w-100 flex align-center justify-between px-2 ml-2"

@@ -7,7 +7,11 @@ import {
   unSubscribeToEvent,
 } from "../../../../helpers/CustomEvent";
 import { Room } from "../../../../models/Room";
-import { addMessageToRoom } from "../../../../redux/Slices/ChatSlice";
+import {
+  addMessageToRoom,
+  setSelectedRoom,
+  updateSelectedRoomMessages,
+} from "../../../../redux/Slices/ChatSlice";
 import { RootState } from "../../../../redux/store/app.store";
 import UserBadge from "../../../ui-components/UserBadge";
 
@@ -25,16 +29,15 @@ const Dot = styled.div`
   padding: 0px 1px 2px 0px;
 `;
 
-export default function PrivateMessages({
-  setSelectedRoom,
-  selectedRoom,
-}: any) {
+export default function PrivateMessages() {
   const dispatch = useDispatch();
-  const { rooms } = useSelector((state: RootState) => state.chatDatas);
+  const { rooms, selectedRoom } = useSelector(
+    (state: RootState) => state.chatDatas
+  );
   const [dots, setDots] = useState<any>({});
 
   const handleSelectedRoom = (room: any) => {
-    setSelectedRoom(room);
+    dispatch(setSelectedRoom(room));
   };
   const handleReceiveMessage = (m: any) => {
     const { detail } = m;
@@ -44,6 +47,8 @@ export default function PrivateMessages({
       dispatch(
         addMessageToRoom({ roomId: detail.room.id, newMessage: detail })
       );
+    } else {
+      dispatch(updateSelectedRoomMessages(detail));
     }
   };
 

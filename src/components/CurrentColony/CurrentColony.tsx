@@ -29,7 +29,7 @@ import _ from "lodash";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import AnnouncementItem from "./AnnouncementList/AnnouncementItem";
 import websocketService from "../../services/websocket.service";
-import { setRooms } from "../../redux/Slices/ChatSlice";
+import { setRooms, setSelectedRoom } from "../../redux/Slices/ChatSlice";
 import { apiService } from "../../services/api.service";
 
 export default function CurrentColony() {
@@ -38,7 +38,9 @@ export default function CurrentColony() {
     (state: RootState) => state.appDatas
   );
   const { user } = useSelector((state: RootState) => state.user);
-  const { rooms } = useSelector((state: RootState) => state.chatDatas);
+  const { rooms, selectedRoom } = useSelector(
+    (state: RootState) => state.chatDatas
+  );
 
   const [displayEditChannelModal, setDisplayEditChannelModal] =
     useState<boolean>(false);
@@ -53,7 +55,6 @@ export default function CurrentColony() {
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
-  const [selectedRoom, setselectedRoom] = useState<any>(null);
 
   useEffect(() => {
     if (selectedChannel && selectedChannel.announcements) {
@@ -103,11 +104,7 @@ export default function CurrentColony() {
       <button onClick={() => logUser("c4af3982-42f8-11ed-b878-0242ac120002")}>
         Xi
       </button>
-      <CurrentColonyLeft
-        rooms={rooms}
-        setSelectedRoom={(room: any) => setselectedRoom(room)}
-        selectedRoom={selectedRoom}
-      />
+      <CurrentColonyLeft />
 
       <div className="f-column w-100">
         {selectedRoom ? (

@@ -1,14 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Colony, Channel } from "../../models/Colony";
-import { Room } from "../../models/Room";
+import { Message, Room } from "../../models/Room";
 
 export interface ChatDatas {
   rooms: Room[];
+  selectedRoom: Room | null;
 }
 
 const initialState: ChatDatas = {
   rooms: [],
+  selectedRoom: null,
 };
 
 export const chatDatasSlice = createSlice({
@@ -23,10 +25,19 @@ export const chatDatasSlice = createSlice({
       const room = state.rooms.find((r) => r.id === roomId);
       if (room) room.messages = [...room.messages, newMessage];
     },
+    setSelectedRoom: (state: ChatDatas, action: PayloadAction<Room>) => {
+      const room = action.payload;
+      state.selectedRoom = room;
+    },
+    updateSelectedRoomMessages: (state: ChatDatas, action: PayloadAction<Message>) => {
+      if(state.selectedRoom){
+        state.selectedRoom.messages = [...state.selectedRoom.messages,action.payload]
+      }
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setRooms, addMessageToRoom } = chatDatasSlice.actions;
+export const { setRooms, addMessageToRoom, setSelectedRoom, updateSelectedRoomMessages } = chatDatasSlice.actions;
 
 export default chatDatasSlice.reducer;

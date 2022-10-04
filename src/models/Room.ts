@@ -1,7 +1,7 @@
 export class Room {
   id: string;
   name: string;
-  messages: Message[];
+  messages: Message[] = [];
   constructor(_data: any) {
     this.id = _data.id;
     this.name = _data.name;

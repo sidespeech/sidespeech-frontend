@@ -3,8 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { EventType } from "../../../constants/EventType";
 import { timestampToLocalString } from "../../../helpers/utilities";
-import { Room } from "../../../models/Room";
-import { addMessageToRoom } from "../../../redux/Slices/ChatSlice";
+import { Message, Room } from "../../../models/Room";
+import {
+  addMessageToRoom,
+  updateSelectedRoomMessages,
+} from "../../../redux/Slices/ChatSlice";
 import { userDataSlice } from "../../../redux/Slices/UserDataSlice";
 import websocketService from "../../../services/websocket.service";
 import InputText from "../../ui-components/InputText";
@@ -20,10 +23,13 @@ export default function ChatComponent(props: IChatComponentProps) {
   const handleSendMessage = (value: string) => {
     websocketService.sendMessage(value, props.room.id, "nicolas");
     dispatch(
-      addMessageToRoom({
-        roomId: props.room.id,
-        newMessage: { content: value, timestamp: Date.now().toString() },
-      })
+      updateSelectedRoomMessages(
+        new Message({
+          content: value,
+          timestamp: Date.now().toString(),
+          sender: "me",
+        })
+      )
     );
     if (ref.current) ref.current.value = "";
   };
