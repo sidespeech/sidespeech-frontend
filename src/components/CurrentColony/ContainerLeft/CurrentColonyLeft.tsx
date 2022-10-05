@@ -171,16 +171,40 @@ export default function CurrentColonyLeft() {
         </span>
       </div>
       <SeparationLine />
+
       <div className="w-100 flex align-center justify-between px-2 mt-3 text-secondary-dark">
         <span className="fw-400 size-11 flex align-center">
           <i className="fa-solid fa-circle-chevron-right mr-2"></i>
           Channels
         </span>
+
         <i
           className="fa-solid fa-plus pointer"
           onClick={handleDisplayNewChannel}
         ></i>
       </div>
+
+      <div className="w-100 flex align-center justify-between px-2 mt-1 pointer selected-channel">
+        <span className="fw-600 size-12 flex align-center px-1 py-1">
+          <i className="fa-solid fa-hashtag mr-2"></i>Announcement
+        </span>
+      </div>
+      <div className="w-100 flex align-center justify-between px-2 mt-1 pointer false">
+        <span className="fw-600 size-12 flex align-center px-1 py-1">
+          <i className="fa-solid fa-hashtag mr-2"></i>Textual channel
+        </span>
+      </div>
+      <div className="w-100 flex align-center justify-between px-2 mt-1 pointer false">
+        <span className="fw-600 size-12 flex align-center px-1 py-1">
+          <i className="fa-solid fa-lock mr-2"></i>DAO
+        </span>
+      </div>
+      <div className="w-100 flex align-center justify-between px-2 mt-1 pointer false">
+        <span className="fw-600 size-12 flex align-center px-1 py-1">
+          <i className="fa-solid fa-lock mr-2"></i>DAO proposal
+        </span>
+      </div>
+
       <div className="mt-2">
         {channels.map((c, index) => {
           return (
@@ -275,6 +299,7 @@ export default function CurrentColonyLeft() {
           })}
         </div>
       </div>
+
       {currentColony && displayColonySettings && (
         <ColonySettingsModal
           showModal={setDisplayColonySettings}
