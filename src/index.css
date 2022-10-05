@@ -374,6 +374,14 @@ body {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
 }
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.px-3 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
 
 .fw-400 {
   font-weight: 400;
@@ -417,6 +425,9 @@ body {
 }
 .absolute {
   position: absolute;
+}
+.overflow-auto {
+  overflow: auto;
 }
 
 /*/////////////////////////////////////////////////////////////////////////////*/

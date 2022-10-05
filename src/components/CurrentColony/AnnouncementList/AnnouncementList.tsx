@@ -31,7 +31,7 @@ export default function AnnouncementList() {
   };
 
   return (
-    <div id="announcement-list" className="w-100" style={{ overflow: "auto" }}>
+    <div id="announcement-list" className="w-100 overflow-auto">
       {announcements.map((a: Announcement) => {
         return (
           <AnnouncementItem

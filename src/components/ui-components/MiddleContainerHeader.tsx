@@ -5,8 +5,9 @@ import { disconnect } from "../../redux/Slices/UserDataSlice";
 import { useDispatch, useSelector } from "react-redux";
 import UserProfileModal from "../Modals/UserProfileModal";
 import { RootState } from "../../redux/store/app.store";
+import { Room } from "../../models/Room";
 
-export default function MiddleContainerHeader() {
+export default function MiddleContainerHeader({ room }:{room: Room | null}) {
   const [displayProfile, setDisplayProfile] = useState<boolean>(false);
 
   const { currentColony } = useSelector((state: RootState) => state.appDatas);
@@ -14,6 +15,10 @@ export default function MiddleContainerHeader() {
 
   return (
     <div className="middle-container-top">
+      {
+        room &&
+        <div className="size-20 mr-auto ml-3">{room.name}</div>
+      }
       <InputText
         width={"335px"}
         padding={"0px 40px 0px 20px"}
