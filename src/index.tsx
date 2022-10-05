@@ -18,7 +18,7 @@ import "semantic-ui-css/semantic.min.css";
 import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import ViewUserProfile from "./components/Modals/ViewUserProfile";
-console.log(process.env.REACT_APP_BASE_URL)
+console.log(process.env.REACT_APP_BASE_URL);
 ReactDOM.render(
   <Provider store={store}>
     <ToastContainer
