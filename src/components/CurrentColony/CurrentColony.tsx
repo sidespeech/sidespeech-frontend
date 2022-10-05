@@ -24,13 +24,11 @@ import Polls from "./Polls/Polls";
 import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
 import InputText from "../ui-components/InputText";
+import { off, on } from "../../helpers/CustomEvent";
 import { Channel } from "../../models/Colony";
 import _ from "lodash";
-import ChatComponent from "./ChatComponent/ChatComponent";
 import AnnouncementItem from "./AnnouncementList/AnnouncementItem";
-import websocketService from "../../services/websocket.service";
-import { setRooms, setSelectedRoom } from "../../redux/Slices/ChatSlice";
-import { apiService } from "../../services/api.service";
+import ChatComponent from "./ChatComponent/ChatComponent";
 
 export default function CurrentColony() {
   const { id } = useParams();
@@ -38,17 +36,13 @@ export default function CurrentColony() {
     (state: RootState) => state.appDatas
   );
   const { user } = useSelector((state: RootState) => state.user);
-  const { rooms, selectedRoom } = useSelector(
-    (state: RootState) => state.chatDatas
-  );
+  const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
 
   const [displayEditChannelModal, setDisplayEditChannelModal] =
     useState<boolean>(false);
   const [createPollModal, setCreatePollModal] = useState<boolean>(false);
   const [announcementText, setAnnouncementText] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-
-  const [selectedUser, setSelectedUser] = useState<any>();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -72,38 +66,12 @@ export default function CurrentColony() {
     updateScroll();
   }, [announcements]);
 
-  useEffect(() => {
-    async function _getProfileById() {
-      const profile = await apiService.getProfileById(
-        "c4af3388-42f8-11ed-b878-0242ac120002"
-      );
-      websocketService.login(profile);
-    }
-    // _getProfileById();
-    return () => {};
-  }, []);
-
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
   };
 
-  const logUser = async (id: string) => {
-    const profile = await apiService.getProfileById(id);
-    dispatch(setRooms(profile.rooms));
-    websocketService.login(profile);
-  };
-
   return (
     <div className="flex align-start w-100">
-      <button onClick={() => logUser("c4af3388-42f8-11ed-b878-0242ac120002")}>
-        Nicolas
-      </button>
-      <button onClick={() => logUser("c4af35fe-42f8-11ed-b878-0242ac120002")}>
-        Jean
-      </button>
-      <button onClick={() => logUser("c4af3982-42f8-11ed-b878-0242ac120002")}>
-        Xi
-      </button>
       <CurrentColonyLeft />
 
       <div className="f-column w-100">
@@ -117,12 +85,13 @@ export default function CurrentColony() {
                 <>
                   <div className="channel-header size-14 fw-700 mb-2">
                     <span>
-                      <i className="fa-solid fa-hashtag mr-2"></i>{" "}
+                      <i className="fa-solid fa-hashtag mr-2"></i>
+                      {"Announcement"}
                       {selectedChannel?.name}
                     </span>
                     <i
                       className="fa-solid fa-ellipsis pointer"
-                      onClick={handleDisplayEditChannelModal}
+                      onClick={undefined}
                     ></i>
                   </div>
                   {selectedChannel.type === "announcement" ||
@@ -133,31 +102,18 @@ export default function CurrentColony() {
                         className="w-100"
                         style={{ padding: "11px", marginTop: "auto" }}
                       >
-                        {(currentColony?.isCreator(
-                          Moralis.User.current()?.attributes.ethAddress
-                        ) ||
-                          selectedChannel.type === "textual") && (
-                          <InputText
-                            ref={ref}
-                            size={14}
-                            weight={600}
-                            glass={false}
-                            message
-                            iconRightPos={{ top: 19, right: 18 }}
-                            height={55}
-                            radius="10px"
-                            placeholder={""}
-                            onChange={(e: any) => {
-                              setAnnouncementText(e.target.value);
-                            }}
-                            onKeyUp={(event: any) => {
-                              if (event.key === "Enter") sendAnnouncement();
-                            }}
-                            onClick={(e: any) => {
-                              sendAnnouncement();
-                            }}
-                          />
-                        )}
+                        <InputText
+                          ref={ref}
+                          size={14}
+                          weight={600}
+                          glass={false}
+                          message
+                          iconRightPos={{ top: 19, right: 18 }}
+                          height={55}
+                          radius="10px"
+                          placeholder={""}
+                          onClick={console.log(15)}
+                        />
                       </div>
                     </>
                   ) : (

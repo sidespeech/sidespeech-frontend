@@ -38,8 +38,6 @@ export default function Login() {
 
   function ConnectWalletArea() {
 
-    const [user, setUser] = useState<boolean>(false);
-
     // This is the all of the providers that are needed...
     const providerOptions = {
       walletconnect: {
@@ -76,19 +74,35 @@ export default function Login() {
         // If there are any accounts connected then send them to the API.
         if (accounts) {
           
+          // Dispatch the account that is connected to the redux slice.
+          dispatch(connect(accounts[0]));
+
+          // Set a local storage of the account 
+          localStorage.setItem("userAccount", accounts[0]);
+
+          // Send the wallet to the api service.
           apiService.walletConnection(accounts);
+
         }
+        
+
+        // Listen for the accounts being changed and disconnect them.
+        provider.on("accountsChanged", handleDisconnect);
         
         // Listen for accounts being disconnected - this only seems to work for WalletConnect.
         provider.on("disconnect", handleDisconnect);
+
   
     };
   
     
     // Method for handling the disconnection.
     const handleDisconnect = async () => {
-  
-      alert('Disconnected');
+      
+      // Clear all the local storage.
+      localStorage.clear();
+
+      console.log('Disconnected wallet.');
   
     };
   

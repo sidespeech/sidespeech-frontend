@@ -6,19 +6,15 @@ class apiService {
     
     
     // Method that will manage sending the wallet connection.
-    static walletConnection(accounts : any) {
-        
-        console.log(accounts)
-        
-        superagent
-        .post('/user')
-        .send({ address: accounts[0], }) // sends a JSON post body
-        .set('accept', 'json')
-        .end((err, res) => {
-            // Calling the end function will send the request
-            
-        });
-        
+    static async walletConnection(accounts : any): Promise<any>  {
+
+        const createUser = await superagent
+            .post(`${BASE_URL}/user`)
+            .send({ Accounts: accounts[0], PublicNfts: "TBD" })
+            .set('accept', 'json')
+            .end((err, res) => {
+                //console.log(res);
+            });
     }
     
     static async getProfileById(id: string): Promise<any> {
