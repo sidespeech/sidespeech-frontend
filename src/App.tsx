@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./App.css";
 import { useSelector } from "react-redux";
@@ -15,11 +15,28 @@ import {
 } from "react-router-dom";
 import UserColonies from "./components/UserColonies/UserColonies";
 
-import signalrService from "./service/signalr.service";
 import logoSmall from "./assets/logo.svg";
+import UserProfileModal from "./components/Modals/UserProfileModal";
+import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
+import ViewUserProfile from "./components/Modals/ViewUserProfile";
+import Randoms from "./components/Login/Randoms";
+import io from "socket.io-client";
+import CurrentColony from "./components/CurrentColony/CurrentColony";
+import websocketService from "./services/websocket.service";
 
+const socket = io("http://localhost:3000/");
 function App() {
   const userData = useSelector((state: RootState) => state.user);
+  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
+  const [lastPong, setLastPong] = useState<string | null>(null);
+
+  useEffect(() => {
+    websocketService.connectToWebScoket();
+
+    return () => {
+      websocketService.deconnectWebsocket();
+    };
+  }, []);
 
   return (
     <div className="main-container relative">

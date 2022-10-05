@@ -21,7 +21,7 @@ interface InputTextPropsType {
   weight?: number;
   placeholderWeight?: number;
   placeholderSize?: number;
-  onChange: any;
+  onChange?: any;
   iconRightPos?: { top: number; right: number };
   glass?: boolean;
   message?: boolean;
