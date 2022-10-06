@@ -31,6 +31,13 @@ class apiService {
       });
   }
 
+  // Get all the announcements
+  static async getAnnouncements(): Promise<any> {
+    const res = await superagent.get(`${BASE_URL}/announcement`);
+    return res.body;
+  }
+
+
   // This method will send the comment to the API
   static async sendComment(comment: any, creatorAddress: any): Promise<any> {
     const sendComment = await superagent
@@ -40,6 +47,12 @@ class apiService {
       .end((err, res) => {
         console.log(res);
       });
+  }
+  
+  // Grab all the comments.
+  static async getComents(): Promise<any> {
+    const res = await superagent.get(`${BASE_URL}/comments`);
+    return res.body;
   }
 
 }

@@ -15,6 +15,7 @@ import _ from "lodash";
 import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
+import { apiService } from "../../../services/api.service";
 
 export default function AnnouncementItem({
   announcement,
@@ -37,11 +38,14 @@ export default function AnnouncementItem({
   const setCommentText = (content: string) => {
     setComment(content);
   };
-  const sendComment = async () => {
-    try {
-    } catch (error) {
-      toast.error("error sending comment", { toastId: 7 });
-    }
+
+  // This will handle sending an comment to the api.
+  const handleComment = (value: string) => {
+    
+    // This will need to be made dynamic.
+    const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
+
+    apiService.sendComment(value, creatorAddress);
   };
 
   return (
@@ -111,14 +115,14 @@ export default function AnnouncementItem({
               height={45}
               radius="10px"
               placeholder={""}
-              onChange={(e: any) => {
-                setCommentText(e.target.value);
+              onChange={(event: any) => {
+                setCommentText(event.target.value);
               }}
               onKeyUp={(event: any) => {
-                if (event.key === "Enter") sendComment();
+                if (event.key === "Enter") handleComment(comment);
               }}
               onClick={(e: any) => {
-                sendComment();
+                handleComment(comment);
               }}
             />
           </div>
