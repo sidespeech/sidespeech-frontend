@@ -7,18 +7,15 @@ import UserProfileModal from "../Modals/UserProfileModal";
 import { RootState } from "../../redux/store/app.store";
 import { Room } from "../../models/Room";
 
-export default function MiddleContainerHeader({ room }:{room: Room | null}) {
+export default function MiddleContainerHeader({ room }: { room: Room | null }) {
   const [displayProfile, setDisplayProfile] = useState<boolean>(false);
 
-  const { currentColony } = useSelector((state: RootState) => state.appDatas);
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const { user } = useSelector((state: RootState) => state.user);
 
   return (
     <div className="middle-container-top">
-      {
-        room &&
-        <div className="size-20 mr-auto ml-3">{room.name}</div>
-      }
+      {room && <div className="size-20 mr-auto ml-3">{room.name}</div>}
       <InputText
         width={"335px"}
         padding={"0px 40px 0px 20px"}
@@ -31,13 +28,13 @@ export default function MiddleContainerHeader({ room }:{room: Room | null}) {
         onClick={() => setDisplayProfile(true)}
         className="profile-round pointer"
         alt="profile"
-        src={user?.get("profilePicture")?.url}
+        src={
+          user?.profiles.find((a) => a.side?.id === currentSide?.id)
+            ?.profilePicture
+        }
       />
-      {displayProfile && currentColony && (
-        <UserProfileModal
-          colony={currentColony}
-          showModal={setDisplayProfile}
-        />
+      {displayProfile && currentSide && (
+        <UserProfileModal colony={currentSide} showModal={setDisplayProfile} />
       )}
     </div>
   );

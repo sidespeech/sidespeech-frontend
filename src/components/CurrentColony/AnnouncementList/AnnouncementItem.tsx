@@ -4,7 +4,8 @@ import {
   getRoleColorForStyle,
   reduceWalletAddress,
 } from "../../../helpers/utilities";
-import { Announcement, Comment } from "../../../models/Colony";
+import { Announcement } from "../../../models/Announcement";
+import { Comment } from "../../../models/Comment";
 import check from "../../../assets/check.svg";
 import UserBadge from "../../ui-components/UserBadge";
 import "./AnnouncementItem.css";

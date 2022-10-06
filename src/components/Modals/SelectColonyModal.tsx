@@ -59,7 +59,7 @@ export default function SelectColonyModal({
   const [loading, setloading] = useState<boolean>(false);
 
   const { userTokens } = useSelector((state: RootState) => state.user);
-  const { currentColony } = useSelector((state: RootState) => state.appDatas);
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
 
   const dispatch = useDispatch();
 

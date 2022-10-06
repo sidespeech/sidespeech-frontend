@@ -18,7 +18,7 @@ export default function UserColonies() {
   };
 
   useEffect(() => {
-    if (userData && userData.colonies.length > 0 && !isSubscribe) {
+    if (userData && userData.sides.length > 0 && !isSubscribe) {
     }
 
     return () => {};
@@ -27,7 +27,7 @@ export default function UserColonies() {
   return (
     <>
       <div className="f-column align-center mt-3" style={{ gap: 15 }}>
-        {userData.colonies.map((c) => {
+        {userData.sides.map((c) => {
           return (
             <div
               onClick={() => {
@@ -35,7 +35,7 @@ export default function UserColonies() {
               }}
               className="colony-badge pointer"
             >
-              <img alt="colony-icon" src={c.image} />
+              <img alt="colony-icon" src={c.sideImage} />
             </div>
           );
         })}

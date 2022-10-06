@@ -28,7 +28,7 @@ export default function UserBadge({
   color,
   check,
   connect,
-  username
+  username,
 }: {
   address?: string;
   weight: number;
@@ -42,6 +42,7 @@ export default function UserBadge({
     <div className="flex align-center">
       <span
         className="profile-round-small mr-1"
+        title={address}
         style={{ background: reduceWalletAddressForColor(address || "") }}
       >
         {/* {check && <img alt="verified" src={checkImg} />} */}
@@ -55,7 +56,7 @@ export default function UserBadge({
       </span>
 
       <WalletAddress color={color} weight={weight} fontSize={fontSize}>
-        {address ? reduceWalletAddress(address) : username }
+        {address ? reduceWalletAddress(address) : username}
       </WalletAddress>
     </div>
   );

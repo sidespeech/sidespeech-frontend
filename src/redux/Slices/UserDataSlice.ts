@@ -2,14 +2,16 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 import { UserTokensData } from "../../models/UserTokensData";
-import { Colony } from "../../models/Colony";
+import { User } from "../../models/User";
+import { Profile } from "../../models/Profile";
+import { Side } from "../../models/Side";
 
 export interface UserData {
-  user: any;
-  profiles: any[];
+  user: User | null;
+  profiles: Profile[];
   account: string | null;
   userTokens: UserTokensData | null;
-  colonies: Colony[];
+  sides: Side[];
 }
 
 const initialState: UserData = {
@@ -17,7 +19,7 @@ const initialState: UserData = {
   profiles: [],
   account: null,
   userTokens: null,
-  colonies: [],
+  sides: [],
 };
 
 export const fetchUserDatas = createAsyncThunk(
@@ -42,7 +44,7 @@ export const userDataSlice = createSlice({
       state.user = action.payload;
     },
     addColony: (state: UserData, action: PayloadAction<any>) => {
-      state.colonies = [...state.colonies, action.payload];
+      state.sides = [...state.sides, action.payload];
     },
   },
   extraReducers: (builder) => {

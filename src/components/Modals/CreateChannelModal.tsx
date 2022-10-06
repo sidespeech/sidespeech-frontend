@@ -8,7 +8,7 @@ import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
 
 export default function CreateChannelModal({ showModal }: { showModal: any }) {
-  const { currentColony } = useSelector((state: RootState) => state.appDatas);
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const [name, setName] = useState<string>("");
   const dispatch = useDispatch();
 
@@ -17,7 +17,7 @@ export default function CreateChannelModal({ showModal }: { showModal: any }) {
   };
 
   const createChannel = async () => {
-    if (currentColony) {
+    if (currentSide) {
     }
   };
 
