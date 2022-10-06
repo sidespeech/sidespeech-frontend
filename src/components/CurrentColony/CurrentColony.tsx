@@ -27,6 +27,7 @@ import InputText from "../ui-components/InputText";
 import { off, on } from "../../helpers/CustomEvent";
 import { Channel } from "../../models/Colony";
 import _ from "lodash";
+import {apiService} from "../../services/api.service";
 import AnnouncementItem from "./AnnouncementList/AnnouncementItem";
 import ChatComponent from "./ChatComponent/ChatComponent";
 
@@ -51,6 +52,9 @@ export default function CurrentColony() {
   const [extend, setExtend] = useState<string>("");
   const [sendMessage, setsendMessage] = useState("");
 
+  const [inputValue, setInputValue] = useState('')
+  
+
   useEffect(() => {
     if (selectedChannel && selectedChannel.announcements) {
       setAnnouncements([
@@ -70,6 +74,16 @@ export default function CurrentColony() {
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
   };
+
+  // This will handle sending an announcement to the api.
+  const handleAnnouncement = (value: string) => {
+    
+    // This will need to be made dynamic.
+    const creatorAddress = '0xFa446636A9e57ab763C1C70F80ea3c7C3969F397';
+
+    apiService.sendComment(value, creatorAddress);
+
+  }; 
 
   return (
     <div className="flex align-start w-100">
@@ -97,9 +111,14 @@ export default function CurrentColony() {
               height={55}
               radius="10px"
               placeholder={"Type your message here"}
-              onChange={(e) => {
-                console.log(sendMessage);
-                setsendMessage(e.target.value);
+              onChange={(event: any) => {
+               setInputValue(event.target.value)
+              }}
+              onKeyUp={(event: any) => {
+                if (event.key === "Enter") handleAnnouncement(inputValue);
+              }}
+              onClick={(e: any) => {
+                handleAnnouncement(inputValue);
               }}
             />
           </div>
