@@ -27,7 +27,7 @@ import InputText from "../ui-components/InputText";
 import { off, on } from "../../helpers/CustomEvent";
 import { Channel } from "../../models/Colony";
 import _ from "lodash";
-import {apiService} from "../../services/api.service";
+import { apiService } from "../../services/api.service";
 import AnnouncementItem from "./AnnouncementList/AnnouncementItem";
 import ChatComponent from "./ChatComponent/ChatComponent";
 
@@ -52,8 +52,7 @@ export default function CurrentColony() {
   const [extend, setExtend] = useState<string>("");
   const [sendMessage, setsendMessage] = useState("");
 
-  const [inputValue, setInputValue] = useState('')
-  
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     if (selectedChannel && selectedChannel.announcements) {
@@ -77,13 +76,19 @@ export default function CurrentColony() {
 
   // This will handle sending an announcement to the api.
   const handleAnnouncement = (value: string) => {
-    
     // This will need to be made dynamic.
-    const creatorAddress = '0xFa446636A9e57ab763C1C70F80ea3c7C3969F397';
+    const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
+
+    apiService.createAnnouncement(value, creatorAddress);
+  };
+
+  // This will handle sending an announcement to the api.
+  const handleComment = (value: string) => {
+    // This will need to be made dynamic.
+    const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
 
     apiService.sendComment(value, creatorAddress);
-
-  }; 
+  };
 
   return (
     <div className="flex align-start w-100">
@@ -91,6 +96,7 @@ export default function CurrentColony() {
 
       <div className="f-column w-100">
         <MiddleContainerHeader room={selectedRoom} />
+
         <div className="middle-container-center-colony f-column justify-start">
           <div className="channel-header size-14 fw-700 mb-2">
             <span>
@@ -112,13 +118,36 @@ export default function CurrentColony() {
               radius="10px"
               placeholder={"Type your message here"}
               onChange={(event: any) => {
-               setInputValue(event.target.value)
+                setInputValue(event.target.value);
               }}
               onKeyUp={(event: any) => {
                 if (event.key === "Enter") handleAnnouncement(inputValue);
               }}
               onClick={(e: any) => {
                 handleAnnouncement(inputValue);
+              }}
+            />
+          </div>
+          <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
+            <InputText
+              ref={ref}
+              size={14}
+              weight={600}
+              glass={false}
+              message
+              id="sendmessage"
+              iconRightPos={{ top: 19, right: 18 }}
+              height={55}
+              radius="10px"
+              placeholder={"Type your message here"}
+              onChange={(event: any) => {
+                setInputValue(event.target.value);
+              }}
+              onKeyUp={(event: any) => {
+                if (event.key === "Enter") handleComment(inputValue);
+              }}
+              onClick={(e: any) => {
+                handleComment(inputValue);
               }}
             />
           </div>
