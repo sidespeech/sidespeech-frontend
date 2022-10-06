@@ -88,7 +88,7 @@ export default function Login() {
 
         // Listen for the accounts being changed and disconnect them.
         provider.on("accountsChanged", handleDisconnect);
-        
+
         // Listen for accounts being disconnected - this only seems to work for WalletConnect.
         provider.on("disconnect", handleDisconnect);
 
@@ -101,6 +101,9 @@ export default function Login() {
       
       // Clear all the local storage.
       localStorage.clear();
+
+      // Reload the page to ensure logged out.
+      window.location.reload();
 
       console.log('Disconnected wallet.');
   
