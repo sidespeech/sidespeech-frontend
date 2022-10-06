@@ -105,7 +105,7 @@ export default function Login() {
       // Reload the page to ensure logged out.
       window.location.reload();
 
-      console.log('Disconnected wallet.');
+     // console.log('Disconnected wallet.');
   
     };
   
