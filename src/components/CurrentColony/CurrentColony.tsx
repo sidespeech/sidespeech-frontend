@@ -49,6 +49,7 @@ export default function CurrentColony() {
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
+  const [sendMessage, setsendMessage] = useState("");
 
   useEffect(() => {
     if (selectedChannel && selectedChannel.announcements) {
@@ -77,6 +78,32 @@ export default function CurrentColony() {
       <div className="f-column w-100">
         <MiddleContainerHeader room={selectedRoom} />
         <div className="middle-container-center-colony f-column justify-start">
+          <div className="channel-header size-14 fw-700 mb-2">
+            <span>
+              {" "}
+              <i className="fa-solid fa-hashtag mr-2"></i>Announcement
+            </span>
+          </div>
+          <AnnouncementList />
+          <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
+            <InputText
+              ref={ref}
+              size={14}
+              weight={600}
+              glass={false}
+              message
+              id="sendmessage"
+              iconRightPos={{ top: 19, right: 18 }}
+              height={55}
+              radius="10px"
+              placeholder={"Type your message here"}
+              onChange={(e) => {
+                console.log(sendMessage);
+                setsendMessage(e.target.value);
+              }}
+            />
+          </div>
+
           {selectedRoom ? (
             <ChatComponent room={selectedRoom} />
           ) : (
@@ -107,7 +134,6 @@ export default function CurrentColony() {
                           size={14}
                           weight={600}
                           glass={false}
-                          message
                           iconRightPos={{ top: 19, right: 18 }}
                           height={55}
                           radius="10px"
