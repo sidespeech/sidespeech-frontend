@@ -1,3 +1,4 @@
+import { create } from "lodash";
 import superagent from "superagent";
 import { BASE_URL } from "../constants/constants";
 import { Room } from "../models/Room";
@@ -15,7 +16,7 @@ class apiService {
     return createUser.body;
   }
 
-  static async getUserByAddress(address:string): Promise<User>{
+  static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
     return res.body;
   }
@@ -44,10 +45,9 @@ class apiService {
     const createAnnouncement = await superagent
       .post(`${BASE_URL}/announcement`)
       .send({ content: announcement, creatorAddress: creatorAddress })
-      .set("accept", "json")
-      .end((err, res) => {
-        console.log(res);
-      });
+      .set("accept", "json");
+
+    return createAnnouncement.body;
   }
 
   // Get all the announcements
@@ -57,10 +57,19 @@ class apiService {
   }
 
   // This method will send the comment to the API
-  static async sendComment(comment: any, creatorAddress: any): Promise<any> {
+  static async sendComment(
+    comment: any,
+    creatorAddress: any,
+    announcementId: string
+  ): Promise<any> {
     const sendComment = await superagent
       .post(`${BASE_URL}/comment`)
-      .send({ content: comment, creatorAddress: creatorAddress })
+      .send({
+        content: comment,
+        creatorAddress: creatorAddress,
+        announcementId: announcementId,
+        timestamp: Date.now().toString(),
+      })
       .set("accept", "json")
       .end((err, res) => {
         console.log(res);

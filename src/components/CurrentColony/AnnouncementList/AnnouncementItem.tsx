@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
 import { apiService } from "../../../services/api.service";
 import { channel } from "diagnostics_channel";
+import { ChannelType } from "../../../models/Channel";
 
 export default function AnnouncementItem({
   announcement,
@@ -32,6 +33,7 @@ export default function AnnouncementItem({
   const [comment, setComment] = useState<string>("");
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     setIsExtended(extend === announcement.id);
@@ -46,7 +48,7 @@ export default function AnnouncementItem({
     // This will need to be made dynamic.
     const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
 
-    apiService.sendComment(value, creatorAddress);
+    apiService.sendComment(value, creatorAddress, announcement.id);
   };
 
   return (
@@ -108,23 +110,25 @@ export default function AnnouncementItem({
                 </div>
               );
             })}
+
             <InputText
               size={14}
               weight={600}
               glass={false}
               message
-              iconRightPos={{ top: 15, right: 18 }}
-              height={45}
+              id="sendmessage"
+              iconRightPos={{ top: 19, right: 18 }}
+              height={55}
               radius="10px"
-              placeholder={""}
+              placeholder={"Type your message here"}
               onChange={(event: any) => {
-                setCommentText(event.target.value);
+                setInputValue(event.target.value);
               }}
               onKeyUp={(event: any) => {
-                if (event.key === "Enter") handleComment(comment);
+                if (event.key === "Enter") handleComment(inputValue);
               }}
               onClick={(e: any) => {
-                handleComment(comment);
+                handleComment(inputValue);
               }}
             />
           </div>
@@ -132,9 +136,4 @@ export default function AnnouncementItem({
       )}
     </div>
   );
-}
-export enum ChannelType {
-  Announcement,
-  Poll,
-  Textual,
 }

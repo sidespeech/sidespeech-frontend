@@ -83,9 +83,9 @@ export default function CurrentColonyLeft() {
     const connectedUser = currentSide?.profiles.find(
       (p) => p.username === connectedAccount
     );
-    if (connectedAccount && connectedUser){
+    if (connectedAccount && connectedUser) {
       const room = await apiService.createRoom(connectedUser?.id, a.id);
-      dispatch(setSelectedRoom(room))
+      dispatch(setSelectedRoom(room));
     }
     // setDisplayUserProfile(true);
   };
@@ -135,27 +135,6 @@ export default function CurrentColonyLeft() {
           className="fa-solid fa-plus pointer"
           onClick={handleDisplayNewChannel}
         ></i>
-      </div>
-
-      <div className="w-100 flex align-center justify-between px-2 mt-1 pointer selected-channel">
-        <span className="fw-600 size-12 flex align-center px-1 py-1">
-          <i className="fa-solid fa-hashtag mr-2"></i>Announcement
-        </span>
-      </div>
-      <div className="w-100 flex align-center justify-between px-2 mt-1 pointer false">
-        <span className="fw-600 size-12 flex align-center px-1 py-1">
-          <i className="fa-solid fa-hashtag mr-2"></i>Textual channel
-        </span>
-      </div>
-      <div className="w-100 flex align-center justify-between px-2 mt-1 pointer false">
-        <span className="fw-600 size-12 flex align-center px-1 py-1">
-          <i className="fa-solid fa-lock mr-2"></i>DAO
-        </span>
-      </div>
-      <div className="w-100 flex align-center justify-between px-2 mt-1 pointer false">
-        <span className="fw-600 size-12 flex align-center px-1 py-1">
-          <i className="fa-solid fa-lock mr-2"></i>DAO proposal
-        </span>
       </div>
 
       <div className="mt-2">
@@ -236,7 +215,7 @@ export default function CurrentColonyLeft() {
       <div className="w-100 f-column align-start justify-start px-2 mt-3">
         <span className="fw-700 size-9 flex align-center text-blue">USER</span>
         <div className="f-column align-start ml-2 pt-1">
-          {currentSide?.profiles.map((p: Profile) => {
+          {[].map((p: Profile) => {
             return (
               <div
                 onClick={() => handleSelectedUser(p)}
