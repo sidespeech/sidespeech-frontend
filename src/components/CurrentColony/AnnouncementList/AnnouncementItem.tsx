@@ -17,13 +17,15 @@ import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
 import { apiService } from "../../../services/api.service";
+import { channel } from "diagnostics_channel";
+import { ChannelType } from "../../../models/Channel";
 
 export default function AnnouncementItem({
   announcement,
   handleExtendComments,
   extend,
 }: {
-  announcement: Announcement;
+  announcement: any;
   handleExtendComments: any;
   extend: string;
 }) {
@@ -31,6 +33,7 @@ export default function AnnouncementItem({
   const [comment, setComment] = useState<string>("");
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     setIsExtended(extend === announcement.id);
@@ -42,11 +45,10 @@ export default function AnnouncementItem({
 
   // This will handle sending an comment to the api.
   const handleComment = (value: string) => {
-    
     // This will need to be made dynamic.
     const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
 
-    apiService.sendComment(value, creatorAddress);
+    apiService.sendComment(value, creatorAddress, announcement.id);
   };
 
   return (
@@ -57,14 +59,17 @@ export default function AnnouncementItem({
           color={"var(--text-red)"}
           weight={700}
           fontSize={14}
-          address={announcement.creator.attributes.ethAddress}
+          address={"announcement.creator.attributes.ethAddress"}
         />
         <div className="size-11 fw-500 open-sans" style={{ color: "#7F8CA4" }}>
-          {format(announcement.createdAt, "yyyy-mm-dd hh:mm")}
+          {format(
+            new Date(Number.parseInt(announcement.timestamp)),
+            "yyyy-mm-dd hh:mm"
+          )}
         </div>
       </div>
       <div>{announcement.content}</div>
-      {selectedChannel && selectedChannel.type === "announcement" && (
+      {selectedChannel && selectedChannel.type === ChannelType.Announcement && (
         <div className="pointer">
           <i className="fa-solid fa-comment-dots mr-2"></i>
           <span
@@ -89,41 +94,41 @@ export default function AnnouncementItem({
                   <div className="flex justify-between w-100">
                     <UserBadge
                       check
-                      color={getRoleColorForStyle(
-                        comment.creator.attributes.role
-                      )}
+                      color="asd"
                       weight={700}
                       fontSize={14}
-                      address={comment.creator.attributes.ethAddress}
+                      address={"test"}
                     />
                     <div
                       className="size-11 fw-500 open-sans"
                       style={{ color: "#7F8CA4" }}
                     >
-                      {comment.createdAt.toLocaleDateString()}
+                      {comment.timestamp}
                     </div>
                   </div>
                   <div>{comment.content}</div>
                 </div>
               );
             })}
+
             <InputText
               size={14}
               weight={600}
               glass={false}
               message
-              iconRightPos={{ top: 15, right: 18 }}
-              height={45}
+              id="sendmessage"
+              iconRightPos={{ top: 19, right: 18 }}
+              height={55}
               radius="10px"
-              placeholder={""}
+              placeholder={"Type your message here"}
               onChange={(event: any) => {
-                setCommentText(event.target.value);
+                setInputValue(event.target.value);
               }}
               onKeyUp={(event: any) => {
-                if (event.key === "Enter") handleComment(comment);
+                if (event.key === "Enter") handleComment(inputValue);
               }}
               onClick={(e: any) => {
-                handleComment(comment);
+                handleComment(inputValue);
               }}
             />
           </div>
