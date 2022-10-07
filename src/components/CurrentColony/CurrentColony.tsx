@@ -62,14 +62,6 @@ export default function CurrentColony() {
     }
   }, [selectedChannel]);
 
-  useEffect(() => {
-    function updateScroll() {
-      var element = document.getElementById("announcement-list");
-      if (element) element.scrollTop = element.scrollHeight;
-    }
-    updateScroll();
-  }, [announcements]);
-
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
   };
@@ -81,6 +73,10 @@ export default function CurrentColony() {
 
     apiService.createAnnouncement(value, creatorAddress);
   };
+
+  useEffect(() => {
+    apiService.getAnnouncements();
+  });
 
   // This will handle sending an announcement to the api.
   const handleComment = (value: string) => {
@@ -105,6 +101,7 @@ export default function CurrentColony() {
             </span>
           </div>
           <AnnouncementList />
+          <p id="demo"></p>
           <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
             <InputText
               ref={ref}

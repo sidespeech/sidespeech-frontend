@@ -4,6 +4,7 @@ import AnnouncementItem from "./AnnouncementItem";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
 import _ from "lodash";
+import { apiService } from "../../../services/api.service";
 
 export default function AnnouncementList() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -17,6 +18,14 @@ export default function AnnouncementList() {
       ]);
     }
   }, [selectedChannel]);
+
+  useEffect(() => {
+    async function getAnnouncements() {
+      const response = await apiService.getAnnouncements();
+      setAnnouncements(response);
+    }
+    getAnnouncements();
+  });
 
   useEffect(() => {
     function updateScroll() {

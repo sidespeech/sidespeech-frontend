@@ -16,13 +16,14 @@ import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
 import { apiService } from "../../../services/api.service";
+import { channel } from "diagnostics_channel";
 
 export default function AnnouncementItem({
   announcement,
   handleExtendComments,
   extend,
 }: {
-  announcement: Announcement;
+  announcement: any;
   handleExtendComments: any;
   extend: string;
 }) {
@@ -41,7 +42,6 @@ export default function AnnouncementItem({
 
   // This will handle sending an comment to the api.
   const handleComment = (value: string) => {
-    
     // This will need to be made dynamic.
     const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
 
@@ -56,14 +56,17 @@ export default function AnnouncementItem({
           color={"var(--text-red)"}
           weight={700}
           fontSize={14}
-          address={announcement.creator.attributes.ethAddress}
+          address={"announcement.creator.attributes.ethAddress"}
         />
         <div className="size-11 fw-500 open-sans" style={{ color: "#7F8CA4" }}>
-          {format(announcement.createdAt, "yyyy-mm-dd hh:mm")}
+          {format(
+            new Date(Number.parseInt(announcement.timestamp)),
+            "yyyy-mm-dd hh:mm"
+          )}
         </div>
       </div>
       <div>{announcement.content}</div>
-      {selectedChannel && selectedChannel.type === "announcement" && (
+      {selectedChannel && selectedChannel.type === ChannelType.Announcement && (
         <div className="pointer">
           <i className="fa-solid fa-comment-dots mr-2"></i>
           <span
@@ -88,18 +91,16 @@ export default function AnnouncementItem({
                   <div className="flex justify-between w-100">
                     <UserBadge
                       check
-                      color={getRoleColorForStyle(
-                        comment.creator.attributes.role
-                      )}
+                      color="asd"
                       weight={700}
                       fontSize={14}
-                      address={comment.creator.attributes.ethAddress}
+                      address={"test"}
                     />
                     <div
                       className="size-11 fw-500 open-sans"
                       style={{ color: "#7F8CA4" }}
                     >
-                      {comment.createdAt.toLocaleDateString()}
+                      {comment.timestamp}
                     </div>
                   </div>
                   <div>{comment.content}</div>
@@ -130,4 +131,9 @@ export default function AnnouncementItem({
       )}
     </div>
   );
+}
+export enum ChannelType {
+  Announcement,
+  Poll,
+  Textual,
 }
