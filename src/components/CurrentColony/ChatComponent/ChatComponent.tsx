@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import _ from "lodash";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { EventType } from "../../../constants/EventType";
 import { timestampToLocalString } from "../../../helpers/utilities";
 import { Message, Room } from "../../../models/Room";
@@ -24,6 +24,7 @@ export default function ChatComponent(props: IChatComponentProps) {
   const dispatch = useDispatch();
 
   const userData = useSelector((state: RootState) => state.user);
+  const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
 
   const handleSendMessage = (value: string) => {
     websocketService.sendMessage(
@@ -42,10 +43,11 @@ export default function ChatComponent(props: IChatComponentProps) {
     );
     if (ref.current) ref.current.value = "";
   };
+
   return (
     <>
       <div className="text-primary-light overflow-auto w-100 px-3">
-        {_.orderBy(props.room.messages, ["timestamp"], ["desc"]).map(
+        {_.orderBy(selectedRoom?.messages, ["timestamp"], ["desc"]).map(
           (m: Message) => {
             return (
               <div className="annoucement-item">

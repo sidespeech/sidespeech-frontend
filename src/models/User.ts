@@ -12,6 +12,6 @@ export class User {
     this.id = _data.id;
     this.accounts = _data.accounts;
     this.publicNfts = _data.publicNfts;
-    this.profiles = _data.profiles;
+    this.profiles = _data.profiles.map((p: any) => new Profile(p));
   }
 }

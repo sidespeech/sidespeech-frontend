@@ -3,15 +3,10 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../redux/store/app.store";
 import Login from "./Login";
-import MiddleContainerHeader from "../ui-components/MiddleContainerHeader";
 import CreateColonyModal from "../Modals/CreateColonyModal";
 import SelectColonyModal from "../Modals/SelectColonyModal";
-import Button from "../ui-components/Button";
-import logoShape from "../../assets/logoshape.svg";
 import "./DefaultView.css";
-import { reduceWalletAddress } from "../../helpers/utilities";
 import UserProfileModal from "../Modals/UserProfileModal";
-import { Colony } from "../../models/Colony";
 import { useNavigate } from "react-router";
 
 import CurrentColony from "../CurrentColony/CurrentColony";
@@ -106,23 +101,7 @@ export default function DefaultView() {
           showModal={setShowSelecteColonyModal}
         />
       )}
-      <div
-        className="flex justify-between text-secondary size-12 fw-400"
-        style={{
-          width: "calc(100% - 70px)",
-          padding: "0px 13px",
-          position: "absolute",
-          bottom: 10,
-          right: 0,
-        }}
-      >
-        <div className="flex">
-          <div>Privacy policy</div>
-          <div className="mx-2">|</div>
-          <div>Terms and Conditions</div>
-        </div>
-        <div> © Copyright 2022</div>
-      </div>
+
       {selectedColony && showProfileModal && (
         <UserProfileModal
           colony={selectedColony}

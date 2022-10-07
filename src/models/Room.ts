@@ -7,6 +7,14 @@ export class Room {
     this.name = _data.name;
     this.messages = _data.messages;
   }
+
+  getRoomNameForUser(username: string | undefined){
+    if(!username) return "";
+    const names = this.name.split("|");
+    const namesExceptUsername = names.filter((a) => a !== username);
+    const roomName = namesExceptUsername.join(",");
+    return roomName;
+  }
 }
 
 export class Message {

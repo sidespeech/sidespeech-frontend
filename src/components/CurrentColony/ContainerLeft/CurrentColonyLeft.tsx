@@ -42,7 +42,10 @@ export default function CurrentColonyLeft() {
   const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user, currentProfile } = useSelector(
+    (state: RootState) => state.user
+  );
+  const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
   const [displayColonySettings, setDisplayColonySettings] =
     useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
@@ -56,7 +59,8 @@ export default function CurrentColonyLeft() {
   const dispatch = useDispatch();
 
   const onChannelSelected = (c: Channel) => {
-    if (isMod) dispatch(setSelectedChannel(c));
+    dispatch(setSelectedChannel(c));
+    dispatch(setSelectedRoom(null));
   };
 
   useEffect(() => {
@@ -86,6 +90,7 @@ export default function CurrentColonyLeft() {
     if (connectedAccount && connectedUser) {
       const room = await apiService.createRoom(connectedUser?.id, a.id);
       dispatch(setSelectedRoom(room));
+      dispatch(setSelectedChannel(null));
     }
     // setDisplayUserProfile(true);
   };
@@ -214,12 +219,16 @@ export default function CurrentColonyLeft() {
       </div> */}
       <div className="w-100 f-column align-start justify-start px-2 mt-3">
         <span className="fw-700 size-9 flex align-center text-blue">USER</span>
-        <div className="f-column align-start ml-2 pt-1">
-          {[].map((p: Profile) => {
+        <div className="f-column align-start ml-2 pt-1 w-100">
+          {currentSide?.profiles.map((p: Profile) => {
+            const isMe = p.id === currentProfile?.id;
+            if (isMe) return;
             return (
               <div
                 onClick={() => handleSelectedUser(p)}
-                className="w-100 flex justify-between align-center"
+                className={`w-100 flex justify-between align-center px-1 py-1 ${
+                  selectedUser && selectedUser.id === p.id && "selected-channel"
+                }`}
               >
                 <UserBadge weight={400} fontSize={11} address={p.username} />
               </div>

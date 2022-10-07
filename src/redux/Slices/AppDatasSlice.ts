@@ -7,7 +7,7 @@ export interface AppDatas {
   currentSide: Side | null;
   selectedChannel: Channel | null;
 }
- 
+
 const initialState: AppDatas = {
   currentSide: null,
   selectedChannel: null,
@@ -20,7 +20,8 @@ export const appDatasSlice = createSlice({
     setCurrentColony: (state: AppDatas, action: PayloadAction<Side>) => {
       state.currentSide = action.payload;
     },
-    setSelectedChannel: (state: AppDatas, action: PayloadAction<Channel>) => {
+    setSelectedChannel: (state: AppDatas, action: PayloadAction<Channel | null>) => {
+      console.log("set channel");
       state.selectedChannel = action.payload;
     },
     updateChannel: (state: AppDatas, action: PayloadAction<Channel>) => {
@@ -28,8 +29,7 @@ export const appDatasSlice = createSlice({
         const c = state.currentSide?.channels.findIndex(
           (c: any) => c.id === action.payload.id
         );
-        if (c !== -1)
-          state.currentSide?.channels.splice(c, 1, action.payload);
+        if (c !== -1) state.currentSide?.channels.splice(c, 1, action.payload);
       }
     },
   },

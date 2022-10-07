@@ -2,6 +2,7 @@ import { trigger } from "../helpers/CustomEvent";
 import { WEBSOCKET_URL } from "../constants/constants";
 import { io, Socket } from "socket.io-client";
 import { EventType } from "../constants/EventType";
+import { Announcement } from "../models/Announcement";
 
 let instance: WebSocketService;
 class WebSocketService {
@@ -40,6 +41,11 @@ class WebSocketService {
       message: message,
       roomId: roomId,
       sender: sender,
+    });
+  }
+  sendAnnouncement(announcement: Announcement) {
+    this.socket?.emit("sendAnnouncement", {
+      announcement,
     });
   }
 

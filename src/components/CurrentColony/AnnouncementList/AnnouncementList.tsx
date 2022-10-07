@@ -7,6 +7,7 @@ import { RootState } from "../../../redux/store/app.store";
 import _ from "lodash";
 import { apiService } from "../../../services/api.service";
 import InputText from "../../ui-components/InputText";
+import websocketService from "../../../services/websocket.service";
 
 export default function AnnouncementList() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -52,6 +53,7 @@ export default function AnnouncementList() {
       creatorAddress
     );
     setAnnouncements([...announcements, newAnnouncement]);
+    websocketService.sendAnnouncement(newAnnouncement);
   };
   const setCommenttoannouncements = async (
     comment: any,

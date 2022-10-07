@@ -7,6 +7,7 @@ import {
   unSubscribeToEvent,
 } from "../../../../helpers/CustomEvent";
 import { Room } from "../../../../models/Room";
+import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
 import {
   addMessageToRoom,
   setSelectedRoom,
@@ -31,16 +32,20 @@ const Dot = styled.div`
 
 export default function PrivateMessages() {
   const dispatch = useDispatch();
-  const { rooms, selectedRoom } = useSelector(
-    (state: RootState) => state.chatDatas
+  const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
+  const { currentProfile, user } = useSelector(
+    (state: RootState) => state.user
   );
   const [dots, setDots] = useState<any>({});
 
-  const handleSelectedRoom = (room: any) => {
+  const handleSelectedRoom = (room: Room) => {
+    console.log(room);
     dispatch(setSelectedRoom(room));
+    dispatch(setSelectedChannel(null));
   };
   const handleReceiveMessage = (m: any) => {
     const { detail } = m;
+    console.log(detail, selectedRoom);
     if (!selectedRoom || (selectedRoom && detail.room.id !== selectedRoom.id)) {
       let number = dots[detail.room.id];
       setDots({ ...dots, [detail.room.id]: ++number });
@@ -54,11 +59,11 @@ export default function PrivateMessages() {
 
   useEffect(() => {
     let foo: any = {};
-    rooms.map((room: Room) => {
+    currentProfile?.rooms.map((room: Room) => {
       foo[room.id] = 0;
       setDots({ ...foo });
     });
-  }, []);
+  }, [currentProfile]);
 
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
@@ -70,19 +75,16 @@ export default function PrivateMessages() {
 
   return (
     <>
-      {rooms &&
-        rooms.map((room: any) => {
+      {currentProfile &&
+        currentProfile.rooms.map((room: Room) => {
+          const names = room.name.split("|");
+          const name = names.find((a) => a !== currentProfile.username);
           return (
             <div
               onClick={() => handleSelectedRoom(room)}
               className="w-100 flex justify-between align-center"
             >
-              <UserBadge
-                connect
-                weight={400}
-                fontSize={11}
-                username={room.name}
-              />
+              <UserBadge connect weight={400} fontSize={11} address={name} />
               {dots[room.id] > 0 && <Dot>{dots[room.id]}</Dot>}
             </div>
           );

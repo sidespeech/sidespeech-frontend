@@ -53,7 +53,7 @@ export const userDataSlice = createSlice({
       const profile = state.user?.profiles.find(
         (p) => p.side.id === action.payload.id
       );
-      state.currentProfile = profile
+      state.currentProfile = profile;
       websocketService.login(profile);
     },
   },

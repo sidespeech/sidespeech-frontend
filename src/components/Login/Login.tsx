@@ -121,6 +121,23 @@ export default function Login() {
       <div className="flex align-end">
         <ConnectWalletArea />
       </div>
+      <div
+        className="flex justify-between text-secondary size-12 fw-400"
+        style={{
+          width: "calc(100% - 70px)",
+          padding: "0px 13px",
+          position: "absolute",
+          bottom: 10,
+          right: 0,
+        }}
+      >
+        <div className="flex">
+          <div>Privacy policy</div>
+          <div className="mx-2">|</div>
+          <div>Terms and Conditions</div>
+        </div>
+        <div> © Copyright 2022</div>
+      </div>
     </div>
   );
 }
