@@ -1,56 +1,37 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-
-import { connect, fetchUserDatas } from "../../redux/Slices/UserDataSlice";
-
-import { toast } from "react-toastify";
-import { redirect } from "../../redux/Slices/RedirectSlice";
 import "./CurrentColony.css";
-
-import { Announcement } from "../../../models/Colony";
 import ChannelSettingsModal from "../Modals/ChannelSettingsModal";
 import "./AnnouncementList/AnnouncementItem.css";
 import AnnouncementList from "./AnnouncementList/AnnouncementList";
 import MiddleContainerHeader from "../ui-components/MiddleContainerHeader";
 import CurrentColonyLeft from "./ContainerLeft/CurrentColonyLeft";
-import {
-  setCurrentColony,
-  setSelectedChannel,
-  updateChannel,
-} from "../../redux/Slices/AppDatasSlice";
+import { setCurrentColony } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
 import Polls from "./Polls/Polls";
 import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
 import InputText from "../ui-components/InputText";
-import { off, on } from "../../helpers/CustomEvent";
-import { Channel } from "../../models/Colony";
 import _ from "lodash";
 import { apiService } from "../../services/api.service";
-import AnnouncementItem from "./AnnouncementList/AnnouncementItem";
 import ChatComponent from "./ChatComponent/ChatComponent";
+import { Announcement } from "../../models/Announcement";
+import { ChannelType } from "../../models/Channel";
 
 export default function CurrentColony() {
-  const { id } = useParams();
-  const { currentColony, selectedChannel } = useSelector(
+  const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
-  const { user } = useSelector((state: RootState) => state.user);
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
 
   const [displayEditChannelModal, setDisplayEditChannelModal] =
     useState<boolean>(false);
   const [createPollModal, setCreatePollModal] = useState<boolean>(false);
-  const [announcementText, setAnnouncementText] = useState<string>("");
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
-  const [sendMessage, setsendMessage] = useState("");
 
   const [inputValue, setInputValue] = useState("");
 
@@ -61,6 +42,24 @@ export default function CurrentColony() {
       ]);
     }
   }, [selectedChannel]);
+
+  useEffect(() => {
+    function updateScroll() {
+      var element = document.getElementById("announcement-list");
+      if (element) element.scrollTop = element.scrollHeight;
+    }
+    updateScroll();
+  }, [announcements]);
+
+  useEffect(() => {
+    async function getSide() {
+      const res = await apiService.getSideById(
+        "a70454a7-458e-4da4-96d9-e4b1b7a8d14b"
+      );
+      dispatch(setCurrentColony(res));
+    }
+    getSide();
+  }, []);
 
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
@@ -158,7 +157,6 @@ export default function CurrentColony() {
                   <div className="channel-header size-14 fw-700 mb-2">
                     <span>
                       <i className="fa-solid fa-hashtag mr-2"></i>
-                      {"Announcement"}
                       {selectedChannel?.name}
                     </span>
                     <i
@@ -166,8 +164,8 @@ export default function CurrentColony() {
                       onClick={undefined}
                     ></i>
                   </div>
-                  {selectedChannel.type === "announcement" ||
-                  selectedChannel.type === "textual" ? (
+                  {selectedChannel.type === ChannelType.Announcement ||
+                  selectedChannel.type === ChannelType.Textual ? (
                     <>
                       <AnnouncementList />
                       <div
@@ -179,11 +177,22 @@ export default function CurrentColony() {
                           size={14}
                           weight={600}
                           glass={false}
+                          message
+                          id="sendmessage"
                           iconRightPos={{ top: 19, right: 18 }}
                           height={55}
                           radius="10px"
-                          placeholder={""}
-                          onClick={console.log(15)}
+                          placeholder={"Type your message here"}
+                          onChange={(event: any) => {
+                            setInputValue(event.target.value);
+                          }}
+                          onKeyUp={(event: any) => {
+                            if (event.key === "Enter")
+                              handleAnnouncement(inputValue);
+                          }}
+                          onClick={(e: any) => {
+                            handleAnnouncement(inputValue);
+                          }}
                         />
                       </div>
                     </>
@@ -209,14 +218,14 @@ export default function CurrentColony() {
           )}
         </div>
       </div>
-      {displayEditChannelModal && selectedChannel && currentColony && (
+      {displayEditChannelModal && selectedChannel && currentSide && (
         <ChannelSettingsModal
           showModal={setDisplayEditChannelModal}
           selectedChannel={selectedChannel}
-          currentColony={currentColony}
+          currentColony={currentSide}
         />
       )}
-      {createPollModal && selectedChannel && currentColony && (
+      {createPollModal && selectedChannel && currentSide && (
         <CreatePollModal showModal={setCreatePollModal} />
       )}
     </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import "./App.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import settings from "./assets/settings.svg";
 
@@ -23,16 +23,26 @@ import Randoms from "./components/Login/Randoms";
 import io from "socket.io-client";
 import CurrentColony from "./components/CurrentColony/CurrentColony";
 import websocketService from "./services/websocket.service";
+import { connect } from "./redux/Slices/UserDataSlice";
+import { apiService } from "./services/api.service";
 
 const socket = io("http://localhost:3000/");
 function App() {
   const userData = useSelector((state: RootState) => state.user);
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
   const [lastPong, setLastPong] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     websocketService.connectToWebScoket();
-
+    async function getUser(account: string) {
+      const user = await apiService.getUserByAddress(account);
+      dispatch(connect({ account: account, user: user }));
+    }
+    const account = localStorage.getItem("userAccount");
+    if (account) {
+      getUser(account);
+    }
     return () => {
       websocketService.deconnectWebsocket();
     };

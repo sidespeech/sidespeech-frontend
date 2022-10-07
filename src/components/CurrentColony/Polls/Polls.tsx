@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Poll } from "../../../models/Colony";
+import { Poll } from "../../../models/Poll";
 import { RootState } from "../../../redux/store/app.store";
 import UserBadge from "../../ui-components/UserBadge";
 import { LeafPoll, Result } from "react-leaf-polls";

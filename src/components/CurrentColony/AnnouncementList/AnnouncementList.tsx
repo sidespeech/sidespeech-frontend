@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Announcement, Channel } from "../../../models/Colony";
+import { Channel } from "../../../models/Colony";
+import { Announcement } from "../../../models/Announcement";
 import AnnouncementItem from "./AnnouncementItem";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";

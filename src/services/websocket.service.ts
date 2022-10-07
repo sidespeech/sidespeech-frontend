@@ -1,5 +1,5 @@
 import { trigger } from "../helpers/CustomEvent";
-import { BASE_URL } from "../constants/constants";
+import { WEBSOCKET_URL } from "../constants/constants";
 import { io, Socket } from "socket.io-client";
 import { EventType } from "../constants/EventType";
 
@@ -12,8 +12,8 @@ class WebSocketService {
     return instance;
   }
   connectToWebScoket() {
-    if (this.socket !== null || !BASE_URL) return;
-    this.socket = io(BASE_URL + "/");
+    if (this.socket !== null || !WEBSOCKET_URL) return;
+    this.socket = io(WEBSOCKET_URL + "/");
     this.socket.on("connect", () => {
       console.log("connected");
     });

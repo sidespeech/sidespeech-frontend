@@ -2,12 +2,13 @@ import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import check from "../../../assets/check.svg";
-import polygon from "../../../assets/Polygon3.svg";
 import { Channel } from "../../../models/Colony";
+import { Profile } from "../../../models/Profile";
 import { setSelectedChannel } from "../../../redux/Slices/AppDatasSlice";
+import { setSelectedRoom } from "../../../redux/Slices/ChatSlice";
 import { RootState } from "../../../redux/store/app.store";
-import ChannelSettingsModal from "../../Modals/ChannelSettingsModal";
+import { apiService } from "../../../services/api.service";
+import websocketService from "../../../services/websocket.service";
 import ColonySettingsModal from "../../Modals/ColonySettingsModal";
 import CreateChannelModal from "../../Modals/CreateChannelModal";
 import ViewUserProfile from "../../Modals/ViewUserProfile";
@@ -37,26 +38,14 @@ const SeparationLine = styled.hr`
   margin: 0px;
 `;
 
-
-
-const initialMembers = {
-  Administrator: [],
-  User: [],
-  Moderator1: [],
-  Moderator2: [],
-  Moderator3: [],
-};
-
 export default function CurrentColonyLeft() {
-  const { currentColony, selectedChannel } = useSelector(
+  const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
   const { user } = useSelector((state: RootState) => state.user);
   const [displayColonySettings, setDisplayColonySettings] =
     useState<boolean>(false);
-
-  const [members, setMembers] = useState<any>(initialMembers);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
   const [displayNewChannelModal, setDisplayNewChannelModal] =
     useState<boolean>(false);
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -71,36 +60,12 @@ export default function CurrentColonyLeft() {
   };
 
   useEffect(() => {
-    if (currentColony && currentColony.members) {
-      const groupedMembers = _.groupBy(currentColony.members, (m) =>
-        m.get("role").get("name")
-      );
-      console.log(groupedMembers);
-      setMembers({ ...groupedMembers });
+    if (currentSide) {
       setChannels(
-        _.orderBy(
-          currentColony?.channels,
-          ["isVisible", "name"],
-          ["desc", "asc"]
-        )
+        _.orderBy(currentSide?.channels, ["isVisible", "name"], ["desc", "asc"])
       );
-      const address = user.get("ethAddress");
-      const admins = groupedMembers.Administrator;
-      const mods = _.concat(
-        groupedMembers["Moderator1"],
-        groupedMembers["Moderator2"],
-        groupedMembers["Moderator3"]
-      );
-      const isAdmin = admins.some(
-        (a: any) => a.get("user").get("ethAddress") === address
-      );
-      const isMod = mods.some(
-        (a: any) => a && a.get("user").get("ethAddress") === address
-      );
-      setIsAdmin(isAdmin);
-      setIsMod(isAdmin || isMod);
     }
-  }, [currentColony]);
+  }, [currentSide]);
 
   const handleDisplayNewChannel = () => {
     if (isAdmin) {
@@ -112,8 +77,16 @@ export default function CurrentColonyLeft() {
     if (isAdmin) setDisplayColonySettings(true);
   };
 
-  const handleSelectedUser = (a: any) => {
+  const handleSelectedUser = async (a: Profile) => {
     setSelectedUser(a);
+    const connectedAccount = localStorage.getItem("userAccount");
+    const connectedUser = currentSide?.profiles.find(
+      (p) => p.username === connectedAccount
+    );
+    if (connectedAccount && connectedUser){
+      const room = await apiService.createRoom(connectedUser?.id, a.id);
+      dispatch(setSelectedRoom(room))
+    }
     // setDisplayUserProfile(true);
   };
 
@@ -121,7 +94,7 @@ export default function CurrentColonyLeft() {
     <ContainerLeft>
       <div className="w-100 flex align-center justify-between px-2">
         <span className="fw-700 size-13 open-sans flex align-center text-secondary">
-          {currentColony?.name.toUpperCase()}
+          {currentSide?.name.toUpperCase()}
           {/* <img alt="check" className="ml-2" src={check} /> */}
         </span>
         <i
@@ -130,7 +103,7 @@ export default function CurrentColonyLeft() {
           style={{ marginLeft: "auto" }}
         ></i>
       </div>
-      <CoverImg src={currentColony?.cover} alt="cover-image" />
+      <CoverImg src={currentSide?.coverImage} alt="cover-image" />
       <div className="f-column px-2 mt-3">
         <div className="w-100 flex align-center justify-between text-secondary-dark">
           <span className="fw-400 size-11 flex align-center ">
@@ -215,7 +188,7 @@ export default function CurrentColonyLeft() {
         <span className="fw-400 size-11 flex align-center">Members</span>
         <i className="fa-solid fa-plus "></i>
       </div>
-      <div className="w-100 f-column align-start justify-start px-2 mt-3">
+      {/* <div className="w-100 f-column align-start justify-start px-2 mt-3">
         <span className="fw-700 size-9 flex align-center text-red">ADMIN</span>
         <div className="f-column align-start ml-2 pt-1">
           {members["Administrator"].map((a: any) => {
@@ -259,33 +232,33 @@ export default function CurrentColonyLeft() {
             );
           })}
         </div>
-      </div>
+      </div> */}
       <div className="w-100 f-column align-start justify-start px-2 mt-3">
         <span className="fw-700 size-9 flex align-center text-blue">USER</span>
         <div className="f-column align-start ml-2 pt-1">
-          {members["User"].map((a: any) => {
+          {currentSide?.profiles.map((p: Profile) => {
             return (
               <div
-                onClick={() => handleSelectedUser(a)}
+                onClick={() => handleSelectedUser(p)}
                 className="w-100 flex justify-between align-center"
               >
-                <UserBadge weight={400} fontSize={11} username={a.username} />
+                <UserBadge weight={400} fontSize={11} address={p.username} />
               </div>
             );
           })}
         </div>
       </div>
 
-      {currentColony && displayColonySettings && (
+      {currentSide && displayColonySettings && (
         <ColonySettingsModal
           showModal={setDisplayColonySettings}
-          currentColony={currentColony}
+          currentColony={currentSide}
         />
       )}
-      {currentColony && selectedUser && displayUserProfile && (
+      {currentSide && selectedUser && displayUserProfile && (
         <ViewUserProfile
           profile={selectedUser}
-          colony={currentColony}
+          colony={currentSide}
           showModal={setDisplayUserProfile}
         />
       )}
