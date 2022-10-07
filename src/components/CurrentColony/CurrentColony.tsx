@@ -17,12 +17,15 @@ import { apiService } from "../../services/api.service";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
+import { setCurrentProfile } from "../../redux/Slices/UserDataSlice";
+import websocketService from "../../services/websocket.service";
 
 export default function CurrentColony() {
   const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
+  const userData = useSelector((state: RootState) => state.user);
 
   const [displayEditChannelModal, setDisplayEditChannelModal] =
     useState<boolean>(false);
@@ -60,6 +63,10 @@ export default function CurrentColony() {
     }
     getSide();
   }, []);
+
+  useEffect(() => {
+    if (userData.user && currentSide) dispatch(setCurrentProfile(currentSide));
+  }, [userData.user, currentSide]);
 
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);

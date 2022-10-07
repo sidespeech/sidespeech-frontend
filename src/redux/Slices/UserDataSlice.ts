@@ -5,6 +5,7 @@ import { UserTokensData } from "../../models/UserTokensData";
 import { User } from "../../models/User";
 import { Profile } from "../../models/Profile";
 import { Side } from "../../models/Side";
+import websocketService from "../../services/websocket.service";
 
 export interface UserData {
   user: User | null;
@@ -12,6 +13,7 @@ export interface UserData {
   account: string | null;
   userTokens: UserTokensData | null;
   sides: Side[];
+  currentProfile: Profile | undefined;
 }
 
 const initialState: UserData = {
@@ -20,6 +22,7 @@ const initialState: UserData = {
   account: null,
   userTokens: null,
   sides: [],
+  currentProfile: undefined,
 };
 
 export const fetchUserDatas = createAsyncThunk(
@@ -46,6 +49,13 @@ export const userDataSlice = createSlice({
     addColony: (state: UserData, action: PayloadAction<any>) => {
       state.sides = [...state.sides, action.payload];
     },
+    setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
+      const profile = state.user?.profiles.find(
+        (p) => p.side.id === action.payload.id
+      );
+      state.currentProfile = profile
+      websocketService.login(profile);
+    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -54,7 +64,7 @@ export const userDataSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { connect, disconnect, updateUser, addColony } =
+export const { connect, disconnect, updateUser, addColony, setCurrentProfile } =
   userDataSlice.actions;
 
 export default userDataSlice.reducer;

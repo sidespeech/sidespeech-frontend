@@ -17,7 +17,7 @@ class apiService {
 
   static async getUserByAddress(address:string): Promise<User>{
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
-    return res.body;
+    return new User(res.body);
   }
 
   static async getProfileById(id: string): Promise<any> {

@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import _ from "lodash";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { EventType } from "../../../constants/EventType";
 import { timestampToLocalString } from "../../../helpers/utilities";
 import { Message, Room } from "../../../models/Room";
@@ -10,6 +10,7 @@ import {
   updateSelectedRoomMessages,
 } from "../../../redux/Slices/ChatSlice";
 import { userDataSlice } from "../../../redux/Slices/UserDataSlice";
+import { RootState } from "../../../redux/store/app.store";
 import websocketService from "../../../services/websocket.service";
 import InputText from "../../ui-components/InputText";
 import UserBadge from "../../ui-components/UserBadge";
@@ -22,8 +23,14 @@ export default function ChatComponent(props: IChatComponentProps) {
   const ref = useRef<HTMLInputElement>();
   const dispatch = useDispatch();
 
+  const userData = useSelector((state: RootState) => state.user);
+
   const handleSendMessage = (value: string) => {
-    websocketService.sendMessage(value, props.room.id, "nicolas");
+    websocketService.sendMessage(
+      value,
+      props.room.id,
+      userData.account || "error"
+    );
     dispatch(
       updateSelectedRoomMessages(
         new Message({
@@ -38,22 +45,24 @@ export default function ChatComponent(props: IChatComponentProps) {
   return (
     <>
       <div className="text-primary-light overflow-auto w-100 px-3">
-        {_.orderBy(props.room.messages, ["timestamp"],["desc"]).map((m: Message) => {
-          return (
-            <div className="annoucement-item">
-              <div className="flex justify-between w-100">
-                <UserBadge weight={700} fontSize={14} username={m.sender} />
-                <div
-                  className="size-11 fw-500 open-sans"
-                  style={{ color: "#7F8CA4" }}
-                >
-                  {format(m.timestamp * 1, "yyyy-mm-dd hh:mm")}
+        {_.orderBy(props.room.messages, ["timestamp"], ["desc"]).map(
+          (m: Message) => {
+            return (
+              <div className="annoucement-item">
+                <div className="flex justify-between w-100">
+                  <UserBadge weight={700} fontSize={14} username={m.sender} />
+                  <div
+                    className="size-11 fw-500 open-sans"
+                    style={{ color: "#7F8CA4" }}
+                  >
+                    {format(m.timestamp * 1, "yyyy-mm-dd hh:mm")}
+                  </div>
                 </div>
+                <div>{m.content}</div>
               </div>
-              <div>{m.content}</div>
-            </div>
-          );
-        })}
+            );
+          }
+        )}
       </div>
       <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
         <InputText
