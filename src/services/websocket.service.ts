@@ -26,6 +26,9 @@ class WebSocketService {
     this.socket.on("message", async (data) => {
       trigger(EventType.RECEIVE_MESSAGE, data);
     });
+    this.socket.on("newAnnouncement", async (data) => {
+      trigger(EventType.RECEIVE_ANNOUNCEMENT, data);
+    });
   }
 
   login(profile: any) {
@@ -46,6 +49,7 @@ class WebSocketService {
   sendAnnouncement(announcement: Announcement) {
     this.socket?.emit("sendAnnouncement", {
       announcement,
+      channelId: announcement.channel.id,
     });
   }
 

@@ -43,11 +43,17 @@ class apiService {
   // This method will create an announcement call to the API
   static async createAnnouncement(
     announcement: any,
-    creatorAddress: any
+    creatorAddress: any,
+    channelId: string
   ): Promise<Announcement> {
     const createAnnouncement = await superagent
       .post(`${BASE_URL}/announcement`)
-      .send({ content: announcement, creatorAddress: creatorAddress })
+      .send({
+        content: announcement,
+        creatorAddress: creatorAddress,
+        channelId,
+        timestamp: Date.now().toString(),
+      })
       .set("accept", "json");
 
     return new Announcement(createAnnouncement.body);
@@ -73,10 +79,9 @@ class apiService {
         announcementId: announcementId,
         timestamp: Date.now().toString(),
       })
-      .set("accept", "json")
-      .end((err, res) => {
-        console.log(res);
-      });
+      .set("accept", "json");
+
+    return new Comment(sendComment.body);
   }
 
   // Grab all the comments.

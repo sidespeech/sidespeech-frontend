@@ -61,8 +61,11 @@ export default function CurrentColony() {
         "a70454a7-458e-4da4-96d9-e4b1b7a8d14b"
       );
       dispatch(setCurrentColony(res));
-      console.log(res);
-      dispatch(setSelectedChannel(res.channels[0]));
+      dispatch(
+        setSelectedChannel(
+          res.channels.find((c) => c.type === 0) || res.channels[0]
+        )
+      );
     }
     getSide();
   }, []);
@@ -75,15 +78,6 @@ export default function CurrentColony() {
     setExtend(id === extend ? "" : id);
   };
 
-  // This will handle sending an announcement to the api.
-
-  // This will handle sending an announcement to the api.
-  const handleComment = (value: string) => {
-    // This will need to be made dynamic.
-    const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
-
-    apiService.sendComment(value, creatorAddress);
-  };
 
   return (
     <div className="flex align-start w-100">

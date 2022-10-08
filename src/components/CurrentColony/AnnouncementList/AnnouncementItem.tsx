@@ -25,30 +25,32 @@ export default function AnnouncementItem({
   handleExtendComments,
   extend,
 }: {
-  announcement: any;
+  announcement: Announcement;
   handleExtendComments: any;
   extend: string;
 }) {
   const [isExtended, setIsExtended] = useState<boolean>(false);
-  const [comment, setComment] = useState<string>("");
+  const [comments, setComments] = useState<Comment[]>([]);
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+  const { account } = useSelector((state: RootState) => state.user);
   const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     setIsExtended(extend === announcement.id);
   }, [extend]);
 
-  const setCommentText = (content: string) => {
-    setComment(content);
-  };
-
   // This will handle sending an comment to the api.
-  const handleComment = (value: string) => {
+  const handleComment = async (value: string) => {
     // This will need to be made dynamic.
-    const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
+    const creatorAddress = account;
 
-    apiService.sendComment(value, creatorAddress, announcement.id);
+    const newComment = await apiService.sendComment(
+      value,
+      creatorAddress,
+      announcement.id
+    );
+    setComments([...comments, newComment]);
   };
 
   return (
@@ -59,7 +61,7 @@ export default function AnnouncementItem({
           color={"var(--text-red)"}
           weight={700}
           fontSize={14}
-          address={"announcement.creator.attributes.ethAddress"}
+          address={announcement.creatorAddress}
         />
         <div className="size-11 fw-500 open-sans" style={{ color: "#7F8CA4" }}>
           {format(
@@ -76,12 +78,16 @@ export default function AnnouncementItem({
             onClick={() => handleExtendComments(announcement.id)}
             className="fw-700 size-10"
           >
-            {announcement.comments?.length || 0} replies
+            {announcement.comments?.length + comments.length || 0} replies
           </span>
           <div
             className={`comments-container mt-3  ${isExtended ? "extend" : ""}`}
           >
-            {_.orderBy(announcement.comments, "createdAt").map((comment) => {
+            {_.orderBy(
+              announcement.comments.concat(comments),
+              ["timestamp"],
+              ["desc"]
+            ).map((comment: Comment) => {
               return (
                 <div
                   className="f-column "
@@ -97,13 +103,16 @@ export default function AnnouncementItem({
                       color="asd"
                       weight={700}
                       fontSize={14}
-                      address={"test"}
+                      address={comment.creatorAddress}
                     />
                     <div
                       className="size-11 fw-500 open-sans"
                       style={{ color: "#7F8CA4" }}
                     >
-                      {comment.timestamp}
+                      {format(
+                        new Date(Number.parseInt(comment.timestamp)),
+                        "yyyy-mm-dd hh:mm"
+                      )}
                     </div>
                   </div>
                   <div>{comment.content}</div>

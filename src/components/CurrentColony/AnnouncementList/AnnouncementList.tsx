@@ -8,29 +8,38 @@ import _ from "lodash";
 import { apiService } from "../../../services/api.service";
 import InputText from "../../ui-components/InputText";
 import websocketService from "../../../services/websocket.service";
+import {
+  subscribeToEvent,
+  unSubscribeToEvent,
+} from "../../../helpers/CustomEvent";
+import { EventType } from "../../../constants/EventType";
 
 export default function AnnouncementList() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+  const { account } = useSelector((state: RootState) => state.user);
   const [inputValue, setInputValue] = useState("");
 
-  useEffect(() => {
-    if (selectedChannel && selectedChannel.announcements) {
-      setAnnouncements([
-        ..._.orderBy(selectedChannel.announcements, "createdAt"),
-      ]);
-    }
-    console.log(selectedChannel);
-  }, [selectedChannel]);
+  const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
+    if (selectedChannel?.id === detail.channel.id)
+      setAnnouncements([...announcements, detail]);
+  };
 
   useEffect(() => {
-    async function getAnnouncements() {
-      const response = await apiService.getAnnouncements();
-      setAnnouncements(response);
-    }
-    getAnnouncements();
-  }, []);
+    subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
+    return () => {
+      unSubscribeToEvent(
+        EventType.RECEIVE_ANNOUNCEMENT,
+        handleReceiveAnnouncement
+      );
+    };
+  }, [announcements]);
+
+  useEffect(() => {
+    if (selectedChannel && selectedChannel?.announcements)
+      setAnnouncements(selectedChannel?.announcements);
+  }, [selectedChannel]);
 
   useEffect(() => {
     function updateScroll() {
@@ -46,38 +55,32 @@ export default function AnnouncementList() {
 
   const handleAnnouncement = async (value: string) => {
     // This will need to be made dynamic.
-    const creatorAddress = "0xFa446636A9e57ab763C1C70F80ea3c7C3969F397";
-
+    const creatorAddress = account;
+    if (!selectedChannel) return;
     const newAnnouncement = await apiService.createAnnouncement(
       value,
-      creatorAddress
+      creatorAddress,
+      selectedChannel.id
     );
     setAnnouncements([...announcements, newAnnouncement]);
     websocketService.sendAnnouncement(newAnnouncement);
-  };
-  const setCommenttoannouncements = async (
-    comment: any,
-    announcementid: string
-  ) => {
-    const a = announcements.find(
-      (announcement) => announcement.id === announcementid
-    );
-    a.comments.push(comment);
   };
 
   return (
     <>
       <div id="announcement-list" className="w-100 overflow-auto">
-        {announcements.map((a: Announcement) => {
-          return (
-            <AnnouncementItem
-              key={a.id}
-              extend={extend}
-              handleExtendComments={handleExtendComments}
-              announcement={a}
-            />
-          );
-        })}
+        {_.orderBy(announcements, ["timestamp"], ["desc"]).map(
+          (a: Announcement) => {
+            return (
+              <AnnouncementItem
+                key={a.id}
+                extend={extend}
+                handleExtendComments={handleExtendComments}
+                announcement={a}
+              />
+            );
+          }
+        )}
       </div>
       <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
         <InputText
