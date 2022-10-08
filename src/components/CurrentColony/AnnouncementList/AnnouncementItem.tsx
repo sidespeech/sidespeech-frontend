@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   getRoleColor,
   getRoleColorForStyle,
@@ -36,6 +36,8 @@ export default function AnnouncementItem({
   const { account } = useSelector((state: RootState) => state.user);
   const [inputValue, setInputValue] = useState("");
 
+  const ref = useRef<HTMLInputElement>();
+
   useEffect(() => {
     setIsExtended(extend === announcement.id);
   }, [extend]);
@@ -51,6 +53,7 @@ export default function AnnouncementItem({
       announcement.id
     );
     setComments([...comments, newComment]);
+    if (ref.current) ref.current.value = "";
   };
 
   return (
@@ -121,6 +124,7 @@ export default function AnnouncementItem({
             })}
 
             <InputText
+              ref={ref}
               size={14}
               weight={600}
               glass={false}

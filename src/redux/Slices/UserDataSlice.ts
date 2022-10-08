@@ -6,6 +6,7 @@ import { User } from "../../models/User";
 import { Profile } from "../../models/Profile";
 import { Side } from "../../models/Side";
 import websocketService from "../../services/websocket.service";
+import { Room } from "../../models/Room";
 
 export interface UserData {
   user: User | null;
@@ -56,6 +57,9 @@ export const userDataSlice = createSlice({
       state.currentProfile = profile;
       websocketService.login(profile);
     },
+    updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
+      state.currentProfile = action.payload;
+    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -64,7 +68,7 @@ export const userDataSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { connect, disconnect, updateUser, addColony, setCurrentProfile } =
+export const { connect, disconnect, updateUser, addColony, setCurrentProfile, updateCurrentProfile } =
   userDataSlice.actions;
 
 export default userDataSlice.reducer;

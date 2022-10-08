@@ -13,7 +13,9 @@ import {
   setSelectedRoom,
   updateSelectedRoomMessages,
 } from "../../../../redux/Slices/ChatSlice";
+import { updateCurrentProfile } from "../../../../redux/Slices/UserDataSlice";
 import { RootState } from "../../../../redux/store/app.store";
+import { apiService } from "../../../../services/api.service";
 import UserBadge from "../../../ui-components/UserBadge";
 
 const Dot = styled.div`
@@ -43,17 +45,31 @@ export default function PrivateMessages() {
     dispatch(setSelectedRoom(room));
     dispatch(setSelectedChannel(null));
   };
-  const handleReceiveMessage = (m: any) => {
+  const handleReceiveMessage = async (m: any) => {
     const { detail } = m;
     console.log(detail, selectedRoom);
-    if (!selectedRoom || (selectedRoom && detail.room.id !== selectedRoom.id)) {
-      let number = dots[detail.room.id];
-      setDots({ ...dots, [detail.room.id]: ++number });
-      dispatch(
-        addMessageToRoom({ roomId: detail.room.id, newMessage: detail })
-      );
-    } else {
-      dispatch(updateSelectedRoomMessages(detail));
+    console.log("handleReceiveMessage");
+    if (currentProfile?.rooms.some((r) => r.id === detail.room.id)) {
+      console.log("handleReceiveMessage 1");
+      if (
+        !selectedRoom ||
+        (selectedRoom && detail.room.id !== selectedRoom.id)
+      ) {
+        let number = dots[detail.room.id];
+        setDots({ ...dots, [detail.room.id]: ++number });
+        dispatch(
+          addMessageToRoom({ roomId: detail.room.id, newMessage: detail })
+        );
+      } else {
+        dispatch(updateSelectedRoomMessages(detail));
+      }
+    } else if (currentProfile) {
+      console.log("handleReceiveMessage 2");
+
+      setDots({ ...dots, [detail.room.id]: 1 });
+      const updatedProfile = await apiService.getProfileById(currentProfile.id);
+      console.log(updatedProfile);
+      dispatch(updateCurrentProfile(updatedProfile));
     }
   };
 
@@ -67,11 +83,14 @@ export default function PrivateMessages() {
 
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
+    if (selectedRoom) {
+      setDots({ ...dots, [selectedRoom.id]: 0 });
+    }
 
     return () => {
       unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
     };
-  }, [dots, selectedRoom]);
+  }, [dots, selectedRoom, currentProfile]);
 
   return (
     <>

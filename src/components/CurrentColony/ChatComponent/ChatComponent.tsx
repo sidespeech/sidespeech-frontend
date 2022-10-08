@@ -46,7 +46,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 
   return (
     <>
-      <div className="text-primary-light overflow-auto w-100 px-3">
+      <div className="text-primary-light overflow-auto w-100 px-3 f-column-reverse">
         {_.orderBy(selectedRoom?.messages, ["timestamp"], ["desc"]).map(
           (m: Message) => {
             return (

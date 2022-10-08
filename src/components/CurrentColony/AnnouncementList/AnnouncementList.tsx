@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Channel } from "../../../models/Colony";
 import { Announcement } from "../../../models/Announcement";
 import AnnouncementItem from "./AnnouncementItem";
@@ -17,9 +17,13 @@ import { EventType } from "../../../constants/EventType";
 export default function AnnouncementList() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
-  const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+  const { selectedChannel, currentSide } = useSelector(
+    (state: RootState) => state.appDatas
+  );
   const { account } = useSelector((state: RootState) => state.user);
   const [inputValue, setInputValue] = useState("");
+
+  const ref = useRef<HTMLInputElement>();
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
     if (selectedChannel?.id === detail.channel.id)
@@ -64,12 +68,16 @@ export default function AnnouncementList() {
     );
     setAnnouncements([...announcements, newAnnouncement]);
     websocketService.sendAnnouncement(newAnnouncement);
+    if (ref.current) ref.current.value = "";
   };
 
   return (
     <>
-      <div id="announcement-list" className="w-100 overflow-auto">
-        {_.orderBy(announcements, ["timestamp"], ["desc"]).map(
+      <div
+        id="announcement-list"
+        className="w-100 overflow-auto f-column-reverse"
+      >
+        {_.orderBy(announcements, ["timestamp"], ["asc"]).map(
           (a: Announcement) => {
             return (
               <AnnouncementItem
@@ -82,28 +90,32 @@ export default function AnnouncementList() {
           }
         )}
       </div>
-      <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
-        <InputText
-          size={14}
-          weight={600}
-          glass={false}
-          message
-          id="sendmessage"
-          iconRightPos={{ top: 19, right: 18 }}
-          height={55}
-          radius="10px"
-          placeholder={"Type your message here"}
-          onChange={(event: any) => {
-            setInputValue(event.target.value);
-          }}
-          onKeyUp={(event: any) => {
-            if (event.key === "Enter") handleAnnouncement(inputValue);
-          }}
-          onClick={(e: any) => {
-            handleAnnouncement(inputValue);
-          }}
-        />
-      </div>
+      {(selectedChannel?.type !== 0 ||
+        currentSide?.creatorAddress === account) && (
+        <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
+          <InputText
+            ref={ref}
+            size={14}
+            weight={600}
+            glass={false}
+            message
+            id="sendmessage"
+            iconRightPos={{ top: 19, right: 18 }}
+            height={55}
+            radius="10px"
+            placeholder={"Type your message here"}
+            onChange={(event: any) => {
+              setInputValue(event.target.value);
+            }}
+            onKeyUp={(event: any) => {
+              if (event.key === "Enter") handleAnnouncement(inputValue);
+            }}
+            onClick={(e: any) => {
+              handleAnnouncement(inputValue);
+            }}
+          />
+        </div>
+      )}
     </>
   );
 }

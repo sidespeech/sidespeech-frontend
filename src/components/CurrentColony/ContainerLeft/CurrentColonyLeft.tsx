@@ -88,9 +88,10 @@ export default function CurrentColonyLeft() {
       (p) => p.username === connectedAccount
     );
     if (connectedAccount && connectedUser) {
-      const room = await apiService.createRoom(connectedUser?.id, a.id);
+      const room = await apiService.createRoom(connectedUser.id, a.id);
       dispatch(setSelectedRoom(room));
       dispatch(setSelectedChannel(null));
+      websocketService.addRoomToUsers(room.id, [connectedUser.id, a.id]);
     }
     // setDisplayUserProfile(true);
   };

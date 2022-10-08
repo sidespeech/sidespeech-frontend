@@ -26,6 +26,7 @@ export const chatDatasSlice = createSlice({
       const { newMessage, roomId } = action.payload;
       const room = state.rooms.find((r) => r.id === roomId);
       if (room) room.messages = [...room.messages, newMessage];
+      else state.rooms = [...state.rooms, newMessage.room];
     },
     setSelectedRoom: (state: ChatDatas, action: PayloadAction<Room | null>) => {
       console.log("setSelectedRoom");
@@ -41,7 +42,7 @@ export const chatDatasSlice = createSlice({
       if (state.selectedRoom) {
         const room = state.selectedRoom;
         room.messages.push(action.payload);
-        state.selectedRoom = null
+        state.selectedRoom = null;
         state.selectedRoom = room;
       }
     },

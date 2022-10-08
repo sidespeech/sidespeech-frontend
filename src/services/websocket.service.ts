@@ -52,6 +52,12 @@ class WebSocketService {
       channelId: announcement.channel.id,
     });
   }
+  addRoomToUsers(roomId: string, profiles: string[]) {
+    this.socket?.emit("addRoomToUsers", {
+      roomId,
+      profiles,
+    });
+  }
 
   deconnectWebsocket() {
     if (!this.socket) return;
