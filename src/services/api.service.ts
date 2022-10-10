@@ -4,7 +4,7 @@ import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
 import { Comment } from "../models/Comment";
 import { Profile } from "../models/Profile";
-import { Room } from "../models/Room";
+import { Message, Room } from "../models/Room";
 import { Side } from "../models/Side";
 import { User } from "../models/User";
 
@@ -88,6 +88,15 @@ class apiService {
   static async getComents(): Promise<any> {
     const res = await superagent.get(`${BASE_URL}/comments`);
     return res.body.map((c: any) => new Comment(c));
+  }
+
+  static async getRoomMessages(id: string): Promise<Message[]> {
+    const res = await superagent.get(`${BASE_URL}/room/messages`).query({ id });
+    return res.body.map((m: any) => new Message(m));
+  }
+  static async getChannelAnnouncements(id: string): Promise<Announcement[]> {
+    const res = await superagent.get(`${BASE_URL}/channel/announcements`).query({ id });
+    return res.body.map((m: any) => new Announcement(m));
   }
 }
 

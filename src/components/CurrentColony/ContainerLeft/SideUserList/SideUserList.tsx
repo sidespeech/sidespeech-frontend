@@ -10,11 +10,7 @@ import {
 import { Profile } from "../../../../models/Profile";
 import { Room } from "../../../../models/Room";
 import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
-import {
-  addMessageToRoom,
-  setSelectedRoom,
-  updateSelectedRoomMessages,
-} from "../../../../redux/Slices/ChatSlice";
+import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
 import {
   addRoomToProfile,
   updateCurrentProfile,
@@ -22,21 +18,10 @@ import {
 import { RootState } from "../../../../redux/store/app.store";
 import { apiService } from "../../../../services/api.service";
 import websocketService from "../../../../services/websocket.service";
+import { Dot } from "../../../ui-components/styled-components/shared-styled-components";
 import UserBadge from "../../../ui-components/UserBadge";
 
-const Dot = styled.div`
-  width: 15px;
-  height: 15px;
-  color: white;
-  background-color: var(--text-red);
-  weight: 700;
-  font-size: 10px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0px 1px 2px 0px;
-`;
+
 
 export default function SideUserList() {
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
@@ -46,77 +31,67 @@ export default function SideUserList() {
 
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
   const [dots, setDots] = useState<any>({});
-  const [profilesToDisplay, setProfilesToDisplay] = useState<Profile[]>([]);
 
   const handleSelectedUser = async (profile: Profile) => {
+    // set selected user
     setSelectedUser(profile);
+    // getting account
     const connectedAccount = localStorage.getItem("userAccount");
+    // getting room for given profile id
     let room = currentProfile?.getRoom(profile.id);
     if (!currentProfile || !connectedAccount) return;
-    if (room) {
-      dispatch(setSelectedRoom(room));
-      dispatch(setSelectedChannel(null));
-    } else {
+    // if room not exist in profile
+    if (!room) {
+      // creating the room
       room = await apiService.createRoom(currentProfile.id, profile.id);
+      // add this room in the user websocket
       websocketService.addRoomToUsers(room.id, [currentProfile.id, profile.id]);
+      // add the room to profile
       dispatch(addRoomToProfile(room));
     }
+    // selecting the room
     dispatch(setSelectedRoom(room));
     dispatch(setSelectedChannel(null));
   };
 
   const handleReceiveMessage = async (m: any) => {
     const { detail } = m;
-    console.log(detail, selectedRoom);
-    console.log("handleReceiveMessage");
+    // looking if the profile has already the room
     if (currentProfile?.rooms.some((r) => r.id === detail.room.id)) {
-      console.log("handleReceiveMessage 1");
+      //if yes, looking if the message comes from the selected room
       if (
         !selectedRoom ||
         (selectedRoom && detail.room.id !== selectedRoom.id)
       ) {
-        let number = dots[detail.room.id];
+        // if not incrementing the notification dot
+        let number = dots[detail.room.id] || 0;
         setDots({ ...dots, [detail.room.id]: ++number });
-        dispatch(
-          addMessageToRoom({ roomId: detail.room.id, newMessage: detail })
-        );
-      } else {
-        dispatch(updateSelectedRoomMessages(detail));
       }
     } else if (currentProfile) {
-      console.log("handleReceiveMessage 2");
-
-      setDots({ ...dots, [detail.room.id]: 1 });
+      // if not, getting the updated profile from backend
       const updatedProfile = await apiService.getProfileById(currentProfile.id);
-      console.log(updatedProfile);
+      // updating the profile in the store
       dispatch(updateCurrentProfile(updatedProfile));
+      // initializing notification for this room at 1
+      setDots({ ...dots, [detail.room.id]: 1 });
     }
   };
 
   useEffect(() => {
-    let foo: any = {};
-    currentProfile?.rooms.map((room: Room) => {
-      foo[room.id] = 0;
-      setDots({ ...foo });
-    });
-  }, [currentProfile]);
-
-  useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-    if (selectedRoom) {
+    if (selectedRoom && dots[selectedRoom.id] > 0)
       setDots({ ...dots, [selectedRoom.id]: 0 });
-    }
-
     return () => {
       unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
     };
   }, [dots, selectedRoom, currentProfile]);
 
+
   return (
     <>
       {currentSide?.profiles.map((p: Profile) => {
         const isMe = p.id === currentProfile?.id;
-        if (isMe) return;
+        const room = currentProfile?.getRoom(p.id);
         return (
           <div
             onClick={() => handleSelectedUser(p)}
@@ -125,6 +100,8 @@ export default function SideUserList() {
             }`}
           >
             <UserBadge weight={400} fontSize={11} address={p.username} />
+            {room && !isMe && dots[room.id] > 0 && <Dot>{dots[room.id]}</Dot>}
+            {isMe && "(you)"}
           </div>
         );
       })}

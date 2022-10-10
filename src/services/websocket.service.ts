@@ -49,7 +49,7 @@ class WebSocketService {
   sendAnnouncement(announcement: Announcement) {
     this.socket?.emit("sendAnnouncement", {
       announcement,
-      channelId: announcement.channel.id,
+      channelId: announcement.channelId,
     });
   }
   addRoomToUsers(roomId: string, profiles: string[]) {

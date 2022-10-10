@@ -13,6 +13,7 @@ import ColonySettingsModal from "../../Modals/ColonySettingsModal";
 import CreateChannelModal from "../../Modals/CreateChannelModal";
 import ViewUserProfile from "../../Modals/ViewUserProfile";
 import UserBadge from "../../ui-components/UserBadge";
+import ChannelsList from "./ChannelsList/ChannelsList";
 import SideUserList from "./SideUserList/SideUserList";
 
 const CoverImg = styled.img`
@@ -39,37 +40,15 @@ const SeparationLine = styled.hr`
 `;
 
 export default function CurrentColonyLeft() {
-  const { currentSide, selectedChannel } = useSelector(
-    (state: RootState) => state.appDatas
-  );
-  const { user, currentProfile } = useSelector(
-    (state: RootState) => state.user
-  );
-  const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const [displayColonySettings, setDisplayColonySettings] =
     useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
   const [displayNewChannelModal, setDisplayNewChannelModal] =
     useState<boolean>(false);
-  const [channels, setChannels] = useState<Channel[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isMod, setIsMod] = useState<boolean>(false);
   const [displayUserProfile, setDisplayUserProfile] = useState<boolean>(false);
-
-  const dispatch = useDispatch();
-
-  const onChannelSelected = (c: Channel) => {
-    dispatch(setSelectedChannel(c));
-    dispatch(setSelectedRoom(null));
-  };
-
-  useEffect(() => {
-    if (currentSide) {
-      setChannels(
-        _.orderBy(currentSide?.channels, ["isVisible", "name"], ["desc", "asc"])
-      );
-    }
-  }, [currentSide]);
 
   const handleDisplayNewChannel = () => {
     if (isAdmin) {
@@ -81,11 +60,13 @@ export default function CurrentColonyLeft() {
     if (isAdmin) setDisplayColonySettings(true);
   };
 
+  if (!currentSide) return <>No side selected</>;
+
   return (
     <ContainerLeft>
       <div className="w-100 flex align-center justify-between px-2">
         <span className="fw-700 size-13 open-sans flex align-center text-secondary">
-          {currentSide?.name.toUpperCase()}
+          {currentSide.name.toUpperCase()}
           {/* <img alt="check" className="ml-2" src={check} /> */}
         </span>
         <i
@@ -94,7 +75,7 @@ export default function CurrentColonyLeft() {
           style={{ marginLeft: "auto" }}
         ></i>
       </div>
-      <CoverImg src={currentSide?.coverImage} alt="cover-image" />
+      <CoverImg src={currentSide.coverImage} alt="cover-image" />
 
       <div className="w-100 flex align-center justify-between px-2 mt-3 text-secondary-dark">
         <span className="fw-400 size-11 flex align-center">
@@ -108,31 +89,7 @@ export default function CurrentColonyLeft() {
         ></i>
       </div>
 
-      <div className="mt-2">
-        {channels.map((c, index) => {
-          return (
-            <div
-              onClick={() => onChannelSelected(c)}
-              key={index}
-              className={`w-100 flex align-center justify-between px-2 mt-1 pointer ${
-                selectedChannel &&
-                selectedChannel.id === c.id &&
-                "selected-channel"
-              }`}
-            >
-              <span className="fw-600 size-12 flex align-center px-1 py-1">
-                {c.isVisible ? (
-                  <i className="fa-solid fa-hashtag mr-2"></i>
-                ) : (
-                  <i className="fa-solid fa-lock mr-2"></i>
-                )}
-
-                {c.name}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+      <ChannelsList channels={currentSide.channels} />
       <SeparationLine style={{ margin: "18px 0px 11px 0px" }} />
       <div className="w-100 flex align-center justify-between px-2 mt-3 text-secondary-dark">
         <span className="fw-400 size-11 flex align-center">Members</span>

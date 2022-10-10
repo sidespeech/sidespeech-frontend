@@ -21,7 +21,6 @@ export const appDatasSlice = createSlice({
       state.currentSide = action.payload;
     },
     setSelectedChannel: (state: AppDatas, action: PayloadAction<Channel | null>) => {
-      console.log("set channel");
       state.selectedChannel = action.payload;
     },
     updateChannel: (state: AppDatas, action: PayloadAction<Channel>) => {

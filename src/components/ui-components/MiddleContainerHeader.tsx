@@ -15,8 +15,6 @@ export default function MiddleContainerHeader({ room }: { room: Room | null }) {
     (state: RootState) => state.user
   );
 
-  console.log("MIDDLE ROOM", room);
-
   return (
     <div className="middle-container-top">
       {room && (

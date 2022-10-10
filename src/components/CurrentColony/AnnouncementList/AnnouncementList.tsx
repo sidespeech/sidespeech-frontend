@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Channel } from "../../../models/Colony";
 import { Announcement } from "../../../models/Announcement";
 import AnnouncementItem from "./AnnouncementItem";
 import { useSelector } from "react-redux";
@@ -26,7 +25,7 @@ export default function AnnouncementList() {
   const ref = useRef<HTMLInputElement>();
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-    if (selectedChannel?.id === detail.channel.id)
+    if (selectedChannel?.id === detail.channelId)
       setAnnouncements([...announcements, detail]);
   };
 
@@ -41,17 +40,14 @@ export default function AnnouncementList() {
   }, [announcements]);
 
   useEffect(() => {
-    if (selectedChannel && selectedChannel?.announcements)
-      setAnnouncements(selectedChannel?.announcements);
-  }, [selectedChannel]);
-
-  useEffect(() => {
-    function updateScroll() {
-      var element = document.getElementById("announcement-list");
-      if (element) element.scrollTop = element.scrollHeight;
+    async function getChannelAnnouncements() {
+      const announcements = await apiService.getChannelAnnouncements(
+        selectedChannel.id
+      );
+      setAnnouncements(announcements);
     }
-    updateScroll();
-  }, [announcements]);
+    if (selectedChannel) getChannelAnnouncements();
+  }, [selectedChannel]);
 
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
@@ -77,15 +73,18 @@ export default function AnnouncementList() {
         id="announcement-list"
         className="w-100 overflow-auto f-column-reverse"
       >
-        {_.orderBy(announcements, ["timestamp"], ["asc"]).map(
+        {_.orderBy(announcements, ["timestamp"], ["desc"]).map(
           (a: Announcement) => {
             return (
-              <AnnouncementItem
-                key={a.id}
-                extend={extend}
-                handleExtendComments={handleExtendComments}
-                announcement={a}
-              />
+              <>
+                {" "}
+                <AnnouncementItem
+                  key={a.id}
+                  extend={extend}
+                  handleExtendComments={handleExtendComments}
+                  announcement={a}
+                />{" "}
+              </>
             );
           }
         )}
