@@ -15,5 +15,6 @@ export class Announcement {
     this.creatorAddress = _data.creatorAddress;
     this.content = _data.content;
     this.channelId = _data.channelId;
+    this.comments = _data.comments;
   }
 }
