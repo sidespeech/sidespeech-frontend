@@ -1,12 +1,12 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 import { UserTokensData } from "../../models/UserTokensData";
+import websocketService from "../../services/websocket.service";
+import { Room } from "../../models/Room";
 import { User } from "../../models/User";
 import { Profile } from "../../models/Profile";
 import { Side } from "../../models/Side";
-import websocketService from "../../services/websocket.service";
-import { Room } from "../../models/Room";
 
 export interface UserData {
   user: User | null;
@@ -51,11 +51,14 @@ export const userDataSlice = createSlice({
       state.sides = [...state.sides, action.payload];
     },
     setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
-      const profile = state.user?.profiles.find(
-        (p) => p.side.id === action.payload.id
-      );
-      state.currentProfile = profile;
-      websocketService.login(profile);
+      const userprofiles = state.user?.profiles;
+      if (state.user && userprofiles) {
+        const profile = userprofiles.find(
+          (p) => p.side.id === action.payload.id
+        );
+        state.currentProfile = profile;
+        websocketService.login(profile);
+      }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
       state.currentProfile = action.payload;

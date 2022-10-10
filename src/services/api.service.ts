@@ -16,7 +16,7 @@ class apiService {
       .post(`${BASE_URL}/user`)
       .send({ accounts: accounts[0], publicNfts: "TBD" })
       .set("accept", "json");
-    return createUser.body;
+    return new User(createUser.body);
   }
 
   static async getUserByAddress(address: string): Promise<User> {
@@ -95,7 +95,9 @@ class apiService {
     return res.body.map((m: any) => new Message(m));
   }
   static async getChannelAnnouncements(id: string): Promise<Announcement[]> {
-    const res = await superagent.get(`${BASE_URL}/channel/announcements`).query({ id });
+    const res = await superagent
+      .get(`${BASE_URL}/channel/announcements`)
+      .query({ id });
     return res.body.map((m: any) => new Announcement(m));
   }
 }
