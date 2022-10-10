@@ -2,10 +2,12 @@ export class Room {
   id: string;
   name: string;
   messages: Message[] = [];
+  profileIds: string[] = [];
   constructor(_data: any) {
     this.id = _data.id;
     this.name = _data.name;
     this.messages = _data.messages;
+    this.profileIds = _data.profileIds;
   }
 
   getRoomNameForUser(username: string | undefined){

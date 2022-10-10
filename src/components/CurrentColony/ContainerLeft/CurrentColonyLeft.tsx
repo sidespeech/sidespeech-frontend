@@ -2,7 +2,7 @@ import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { Channel } from "../../../models/Colony";
+import { Channel } from "../../../models/Channel";
 import { Profile } from "../../../models/Profile";
 import { setSelectedChannel } from "../../../redux/Slices/AppDatasSlice";
 import { setSelectedRoom } from "../../../redux/Slices/ChatSlice";
@@ -13,7 +13,7 @@ import ColonySettingsModal from "../../Modals/ColonySettingsModal";
 import CreateChannelModal from "../../Modals/CreateChannelModal";
 import ViewUserProfile from "../../Modals/ViewUserProfile";
 import UserBadge from "../../ui-components/UserBadge";
-import PrivateMessages from "./PrivateMessages/PrivateMessages";
+import SideUserList from "./SideUserList/SideUserList";
 
 const CoverImg = styled.img`
   height: 130px;
@@ -81,21 +81,6 @@ export default function CurrentColonyLeft() {
     if (isAdmin) setDisplayColonySettings(true);
   };
 
-  const handleSelectedUser = async (a: Profile) => {
-    setSelectedUser(a);
-    const connectedAccount = localStorage.getItem("userAccount");
-    const connectedUser = currentSide?.profiles.find(
-      (p) => p.username === connectedAccount
-    );
-    if (connectedAccount && connectedUser) {
-      const room = await apiService.createRoom(connectedUser.id, a.id);
-      dispatch(setSelectedRoom(room));
-      dispatch(setSelectedChannel(null));
-      websocketService.addRoomToUsers(room.id, [connectedUser.id, a.id]);
-    }
-    // setDisplayUserProfile(true);
-  };
-
   return (
     <ContainerLeft>
       <div className="w-100 flex align-center justify-between px-2">
@@ -110,26 +95,6 @@ export default function CurrentColonyLeft() {
         ></i>
       </div>
       <CoverImg src={currentSide?.coverImage} alt="cover-image" />
-      <div className="f-column px-2 mt-3">
-        <div className="w-100 flex align-center justify-between text-secondary-dark">
-          <span className="fw-400 size-11 flex align-center ">
-            <i className="fa-solid fa-circle-chevron-right mr-2"></i>
-            Direct messages
-          </span>
-          <i className="fa-solid fa-plus "></i>
-        </div>
-        <div className="ml-2 mt-1">{<PrivateMessages />}</div>
-      </div>
-      <div
-        className="w-100 flex align-center justify-between px-2 ml-2"
-        style={{ margin: "11px 0px 14px 17px" }}
-      >
-        <span className="fw-400 size-11 flex align-center">
-          <i className="fa-solid fa-comment-dots mr-2"></i>
-          All my threads
-        </span>
-      </div>
-      <SeparationLine />
 
       <div className="w-100 flex align-center justify-between px-2 mt-3 text-secondary-dark">
         <span className="fw-400 size-11 flex align-center">
@@ -173,68 +138,10 @@ export default function CurrentColonyLeft() {
         <span className="fw-400 size-11 flex align-center">Members</span>
         <i className="fa-solid fa-plus "></i>
       </div>
-      {/* <div className="w-100 f-column align-start justify-start px-2 mt-3">
-        <span className="fw-700 size-9 flex align-center text-red">ADMIN</span>
-        <div className="f-column align-start ml-2 pt-1">
-          {members["Administrator"].map((a: any) => {
-            return (
-              <div
-                onClick={() => handleSelectedUser(a)}
-                className="w-100 flex justify-between align-center"
-              >
-                <UserBadge
-                  weight={400}
-                  fontSize={11}
-                  username={a.get("username")}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      <div className="w-100 f-column align-start justify-start px-2 mt-3">
-        <span className="fw-700 size-9 flex align-center text-green">
-          MODERATOR
-        </span>
-        <div className="f-column align-start ml-2 pt-1">
-          {_.concat(
-            members["Moderator1"],
-            members["Moderator2"],
-            members["Moderator3"]
-          ).map((a: any) => {
-            if (!a) return;
-            return (
-              <div
-                onClick={() => handleSelectedUser(a)}
-                className="w-100 flex justify-between align-center"
-              >
-                <UserBadge
-                  weight={400}
-                  fontSize={11}
-                  username={a.get("username")}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div> */}
       <div className="w-100 f-column align-start justify-start px-2 mt-3">
         <span className="fw-700 size-9 flex align-center text-blue">USER</span>
         <div className="f-column align-start ml-2 pt-1 w-100">
-          {currentSide?.profiles.map((p: Profile) => {
-            const isMe = p.id === currentProfile?.id;
-            if (isMe) return;
-            return (
-              <div
-                onClick={() => handleSelectedUser(p)}
-                className={`w-100 flex justify-between align-center px-1 py-1 ${
-                  selectedUser && selectedUser.id === p.id && "selected-channel"
-                }`}
-              >
-                <UserBadge weight={400} fontSize={11} address={p.username} />
-              </div>
-            );
-          })}
+          <SideUserList />
         </div>
       </div>
 

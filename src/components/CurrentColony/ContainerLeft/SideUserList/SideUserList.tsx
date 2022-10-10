@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -6,6 +7,7 @@ import {
   subscribeToEvent,
   unSubscribeToEvent,
 } from "../../../../helpers/CustomEvent";
+import { Profile } from "../../../../models/Profile";
 import { Room } from "../../../../models/Room";
 import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
 import {
@@ -13,9 +15,13 @@ import {
   setSelectedRoom,
   updateSelectedRoomMessages,
 } from "../../../../redux/Slices/ChatSlice";
-import { updateCurrentProfile } from "../../../../redux/Slices/UserDataSlice";
+import {
+  addRoomToProfile,
+  updateCurrentProfile,
+} from "../../../../redux/Slices/UserDataSlice";
 import { RootState } from "../../../../redux/store/app.store";
 import { apiService } from "../../../../services/api.service";
+import websocketService from "../../../../services/websocket.service";
 import UserBadge from "../../../ui-components/UserBadge";
 
 const Dot = styled.div`
@@ -32,19 +38,33 @@ const Dot = styled.div`
   padding: 0px 1px 2px 0px;
 `;
 
-export default function PrivateMessages() {
-  const dispatch = useDispatch();
+export default function SideUserList() {
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const { currentProfile } = useSelector((state: RootState) => state.user);
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
-  const { currentProfile, user } = useSelector(
-    (state: RootState) => state.user
-  );
-  const [dots, setDots] = useState<any>({});
+  const dispatch = useDispatch();
 
-  const handleSelectedRoom = (room: Room) => {
-    console.log(room);
+  const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
+  const [dots, setDots] = useState<any>({});
+  const [profilesToDisplay, setProfilesToDisplay] = useState<Profile[]>([]);
+
+  const handleSelectedUser = async (profile: Profile) => {
+    setSelectedUser(profile);
+    const connectedAccount = localStorage.getItem("userAccount");
+    let room = currentProfile?.getRoom(profile.id);
+    if (!currentProfile || !connectedAccount) return;
+    if (room) {
+      dispatch(setSelectedRoom(room));
+      dispatch(setSelectedChannel(null));
+    } else {
+      room = await apiService.createRoom(currentProfile.id, profile.id);
+      websocketService.addRoomToUsers(room.id, [currentProfile.id, profile.id]);
+      dispatch(addRoomToProfile(room));
+    }
     dispatch(setSelectedRoom(room));
     dispatch(setSelectedChannel(null));
   };
+
   const handleReceiveMessage = async (m: any) => {
     const { detail } = m;
     console.log(detail, selectedRoom);
@@ -94,20 +114,20 @@ export default function PrivateMessages() {
 
   return (
     <>
-      {currentProfile &&
-        currentProfile.rooms.map((room: Room) => {
-          const names = room.name.split("|");
-          const name = names.find((a) => a !== currentProfile.username);
-          return (
-            <div
-              onClick={() => handleSelectedRoom(room)}
-              className="w-100 flex justify-between align-center"
-            >
-              <UserBadge connect weight={400} fontSize={11} address={name} />
-              {dots[room.id] > 0 && <Dot>{dots[room.id]}</Dot>}
-            </div>
-          );
-        })}
+      {currentSide?.profiles.map((p: Profile) => {
+        const isMe = p.id === currentProfile?.id;
+        if (isMe) return;
+        return (
+          <div
+            onClick={() => handleSelectedUser(p)}
+            className={`w-100 flex justify-between align-center px-1 py-1 ${
+              selectedUser && selectedUser.id === p.id && "selected-channel"
+            }`}
+          >
+            <UserBadge weight={400} fontSize={11} address={p.username} />
+          </div>
+        );
+      })}
     </>
   );
 }

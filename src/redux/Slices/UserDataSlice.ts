@@ -60,6 +60,12 @@ export const userDataSlice = createSlice({
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
       state.currentProfile = action.payload;
     },
+    addRoomToProfile: (state: UserData, action: PayloadAction<Room>) => {
+      if (state.currentProfile) {
+        const rooms = state.currentProfile.rooms;
+        state.currentProfile.rooms = [...rooms, action.payload];
+      }
+    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -68,7 +74,14 @@ export const userDataSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { connect, disconnect, updateUser, addColony, setCurrentProfile, updateCurrentProfile } =
-  userDataSlice.actions;
+export const {
+  connect,
+  disconnect,
+  updateUser,
+  addColony,
+  setCurrentProfile,
+  updateCurrentProfile,
+  addRoomToProfile,
+} = userDataSlice.actions;
 
 export default userDataSlice.reducer;
