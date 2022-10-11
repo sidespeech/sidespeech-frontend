@@ -11,11 +11,13 @@ import { User } from "../models/User";
 // Create an API Service class
 class apiService {
   // Method that will manage sending the wallet connection.
-  static async walletConnection(accounts: any): Promise<User> {
+  static async walletConnection(accounts: any, signature: any): Promise<User> {
+
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
-      .send({ accounts: accounts[0], publicNfts: "TBD" })
+      .send({ accounts: accounts[0], publicNfts: "TBD", signature: signature })
       .set("accept", "json");
+
     return new User(createUser.body);
   }
 

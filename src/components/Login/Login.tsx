@@ -16,10 +16,9 @@ import { useNavigate } from "react-router-dom";
 import { redirect } from "../../redux/Slices/RedirectSlice";
 import logo from "../../assets/logoComplete.svg";
 
-import Web3 from "web3";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
-import { ethers } from "ethers";
+import { ethers, providers } from "ethers";
 
 import { apiService } from "../../services/api.service";
 
@@ -66,13 +65,37 @@ export default function Login() {
       // Grab the network
       const network = await library.getNetwork();
 
+      // Get Signer
+      const signer = library.getSigner();
+
+      // Create the signer message
+      const signerMessage = "sidespeech"; 
+
+      // Create the signature signing message.
+      const signature = await signer.signMessage(signerMessage);
+
+      // Grab the wallet address
+      const address = await signer.getAddress();
+
+      // Get the signer address.
+      const signerAddr = ethers.utils.verifyMessage(signerMessage, signature);
+
+      // Check if the signer address is the same as the connected address.
+      if (signerAddr !== address) {
+        return false;
+      }
+
       // If there are any accounts connected then send them to the API.
       if (accounts) {
+
+        console.log(signature);
+        console.log(signerAddr);
+
         // Set a local storage of the account
         localStorage.setItem("userAccount", accounts[0]);
 
         // Send the wallet to the api service.
-        const user = await apiService.walletConnection(accounts);
+        const user = await apiService.walletConnection(accounts, signature);
 
         // Dispatch the account that is connected to the redux slice.
         dispatch(connect({ account: accounts[0], user: user }));
@@ -93,7 +116,7 @@ export default function Login() {
       // Reload the page to ensure logged out.
       window.location.reload();
 
-      // console.log('Disconnected wallet.');
+      console.log('Disconnected wallet.');
     };
 
     return (
