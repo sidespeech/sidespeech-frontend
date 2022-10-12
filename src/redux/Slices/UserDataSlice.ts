@@ -38,6 +38,7 @@ export const userDataSlice = createSlice({
     connect: (state: UserData, action: PayloadAction<any>) => {
       state.user = action.payload.user;
       state.account = action.payload.account;
+      state.sides = action.payload.user.profiles.map((p: Profile) => p.side);
     },
     disconnect: (state: UserData) => {
       state.user = null;
