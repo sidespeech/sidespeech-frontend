@@ -7,6 +7,7 @@ import { Room } from "../../models/Room";
 import { User } from "../../models/User";
 import { Profile } from "../../models/Profile";
 import { Side } from "../../models/Side";
+import nftsService from "../../services/nfts.service";
 
 export interface UserData {
   user: User | null;
@@ -15,6 +16,7 @@ export interface UserData {
   userTokens: UserTokensData | null;
   sides: Side[];
   currentProfile: Profile | undefined;
+  nfts: any[]
 }
 
 const initialState: UserData = {
@@ -24,11 +26,14 @@ const initialState: UserData = {
   userTokens: null,
   sides: [],
   currentProfile: undefined,
+  nfts: []
 };
 
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
-  async (address: string) => {}
+  async (address: string) => {
+    return await nftsService.getNftsOwnedByAddress("0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74");
+  }
 );
 
 export const userDataSlice = createSlice({
@@ -73,7 +78,11 @@ export const userDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
-    builder.addCase(fetchUserDatas.fulfilled, (state, action) => {});
+    builder.addCase(fetchUserDatas.fulfilled, (state, action) => {
+      const nfts  = action.payload;
+      // Add user to the state array
+      state.nfts = nfts;
+    });
   },
 });
 
