@@ -13,12 +13,13 @@ import "react-leaf-polls/dist/index.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./override.css";
 import "./index.css";
-import { APP_ID, SERVER_URL } from "./constants/constants";
 import "semantic-ui-css/semantic.min.css";
 import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import ViewUserProfile from "./components/Modals/ViewUserProfile";
-console.log(process.env.REACT_APP_BASE_URL);
+
+import { MoralisProvider } from "react-moralis";
+
 ReactDOM.render(
   <Provider store={store}>
     <ToastContainer
@@ -37,21 +38,26 @@ ReactDOM.render(
       }}
     />
     <React.StrictMode>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<App />}>
-            <Route path=":id" element={<CurrentColony />} />
-            <Route index element={<DefaultView />} />
-            <Route
-              path="/CreateSideSpeechProfile"
-              element={<CreateSideSpeechProfile />}
-            />
-            <Route path="/ViewUserProfile" element={<ViewUserProfile />} />
+      <MoralisProvider
+        serverUrl="https://nyntqrq0zh4z.usemoralis.com:2053/server"
+        appId="UUQ8TnQNeOid3DJ5blkab3Jv2K9nsXDpFTasNs3f"
+      >
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<App />}>
+              <Route path=":id" element={<CurrentColony />} />
+              <Route index element={<DefaultView />} />
+              <Route
+                path="/CreateSideSpeechProfile"
+                element={<CreateSideSpeechProfile />}
+              />
+              <Route path="/ViewUserProfile" element={<ViewUserProfile />} />
 
-            <Route path="/UserProfileModal" element={<UserProfileModal />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+              <Route path="/UserProfileModal" element={<UserProfileModal />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </MoralisProvider>
     </React.StrictMode>
   </Provider>,
   document.getElementById("root")
