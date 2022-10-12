@@ -41,6 +41,7 @@ const SeparationLine = styled.hr`
 
 export default function CurrentColonyLeft() {
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const { account } = useSelector((state: RootState) => state.user);
   const [displayColonySettings, setDisplayColonySettings] =
     useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
@@ -60,6 +61,10 @@ export default function CurrentColonyLeft() {
     if (isAdmin) setDisplayColonySettings(true);
   };
 
+  useEffect(() => {
+    setIsAdmin(currentSide?.creatorAddress === account);
+  }, [currentSide, account]);
+
   if (!currentSide) return <>No side selected</>;
 
   return (
@@ -75,7 +80,6 @@ export default function CurrentColonyLeft() {
           style={{ marginLeft: "auto" }}
         ></i>
       </div>
-      <CoverImg src={currentSide.coverImage} alt="cover-image" />
 
       <div className="w-100 flex align-center justify-between px-2 mt-3 text-secondary-dark">
         <span className="fw-400 size-11 flex align-center">

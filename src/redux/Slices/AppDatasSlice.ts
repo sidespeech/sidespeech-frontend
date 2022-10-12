@@ -20,7 +20,10 @@ export const appDatasSlice = createSlice({
     setCurrentColony: (state: AppDatas, action: PayloadAction<Side>) => {
       state.currentSide = action.payload;
     },
-    setSelectedChannel: (state: AppDatas, action: PayloadAction<Channel | null>) => {
+    setSelectedChannel: (
+      state: AppDatas,
+      action: PayloadAction<Channel | null>
+    ) => {
       state.selectedChannel = action.payload;
     },
     updateChannel: (state: AppDatas, action: PayloadAction<Channel>) => {
@@ -31,11 +34,19 @@ export const appDatasSlice = createSlice({
         if (c !== -1) state.currentSide?.channels.splice(c, 1, action.payload);
       }
     },
+    addChannel: (state: AppDatas, action: PayloadAction<Channel>) => {
+      if (state.currentSide) {
+        state.currentSide.channels = [
+          ...state.currentSide.channels,
+          action.payload,
+        ];
+      }
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setCurrentColony, setSelectedChannel, updateChannel } =
+export const { setCurrentColony, setSelectedChannel, updateChannel, addChannel } =
   appDatasSlice.actions;
 
 export default appDatasSlice.reducer;

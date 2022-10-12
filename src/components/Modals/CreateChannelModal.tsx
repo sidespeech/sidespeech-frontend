@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentColony } from "../../redux/Slices/AppDatasSlice";
+import { ChannelType } from "../../models/Channel";
+import {
+  addChannel,
+  setCurrentColony,
+  setSelectedChannel,
+} from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
+import { apiService } from "../../services/api.service";
 
 import Button from "../ui-components/Button";
+import CustomSelect from "../ui-components/CustomSelect";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
 
 export default function CreateChannelModal({ showModal }: { showModal: any }) {
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const [name, setName] = useState<string>("");
+  const [type, setType] = useState<ChannelType>(0);
   const dispatch = useDispatch();
 
   const handleName = (event: any) => {
@@ -18,7 +26,18 @@ export default function CreateChannelModal({ showModal }: { showModal: any }) {
 
   const createChannel = async () => {
     if (currentSide) {
+      const channel = await apiService.createChannel(
+        currentSide.id,
+        name,
+        +type
+      );
+      dispatch(addChannel(channel));
+      dispatch(setSelectedChannel(channel));
     }
+  };
+
+  const handleOnChangeType = (event: BaseSyntheticEvent) => {
+    setType(event.target.value);
   };
 
   return (
@@ -28,7 +47,7 @@ export default function CreateChannelModal({ showModal }: { showModal: any }) {
       body={
         <>
           <div
-            className="w-100 flex justify-start align-end"
+            className="w-100 flex align-center f-column"
             style={{ maxWidth: 400, gap: 10 }}
           >
             <div className="w-100 f-column">
@@ -41,6 +60,11 @@ export default function CreateChannelModal({ showModal }: { showModal: any }) {
                 onChange={handleName}
               />
             </div>
+            <div>Channel type</div>
+            <CustomSelect
+              options={["Announcement", "Textual", "Poll"]}
+              onChange={handleOnChangeType}
+            />
           </div>
         </>
       }
