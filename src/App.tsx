@@ -6,25 +6,16 @@ import { useDispatch, useSelector } from "react-redux";
 import settings from "./assets/settings.svg";
 
 import { RootState } from "./redux/store/app.store";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Link,
-  Outlet,
-} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import UserColonies from "./components/UserColonies/UserColonies";
 
 import logoSmall from "./assets/logo.svg";
-import UserProfileModal from "./components/Modals/UserProfileModal";
-import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
-import ViewUserProfile from "./components/Modals/ViewUserProfile";
-import Randoms from "./components/Login/Randoms";
+
 import io from "socket.io-client";
-import CurrentColony from "./components/CurrentColony/CurrentColony";
 import websocketService from "./services/websocket.service";
 import { connect } from "./redux/Slices/UserDataSlice";
 import { apiService } from "./services/api.service";
+import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 
 const socket = io("http://localhost:3000/");
 function App() {
@@ -32,7 +23,14 @@ function App() {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
   const [lastPong, setLastPong] = useState<string | null>(null);
   const dispatch = useDispatch();
+  const { Moralis, isInitialized, isInitializing } = useMoralis();
+  const Web3Api = useMoralisWeb3Api();
 
+  const fetchSearchNFTs = async () => {
+    const options = { q: "Pancake", chain: "bsc", filter: "name" };
+    const NFTs = await Web3Api.token.searchNFTs(options);
+    console.log(NFTs);
+  };
   useEffect(() => {
     websocketService.connectToWebScoket();
     async function getUser(account: string) {
@@ -47,6 +45,10 @@ function App() {
       websocketService.deconnectWebsocket();
     };
   }, []);
+
+  useEffect(() => {
+    if (isInitialized) fetchSearchNFTs();
+  }, [isInitializing, isInitialized]);
 
   return (
     <div className="main-container relative">
