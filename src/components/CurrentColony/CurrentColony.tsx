@@ -20,7 +20,7 @@ import { apiService } from "../../services/api.service";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
-import { setCurrentProfile } from "../../redux/Slices/UserDataSlice";
+import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 import websocketService from "../../services/websocket.service";
 
 export default function CurrentColony() {
@@ -78,6 +78,31 @@ export default function CurrentColony() {
     setExtend(id === extend ? "" : id);
   };
 
+  async function accountWasChanged(accounts: any) {
+
+    // Check to see if the wallet already exists in the database.
+    const existingUser = await apiService.findExistingWallet(accounts[0]);
+
+    // Clear anything in the local storage.
+    localStorage.clear();
+
+    // If it doesn't then we need to send the user to the connect wallet view.
+    if(existingUser == undefined) {
+       window.location.reload();
+    } else {
+
+      // Set a local storage of the account
+      localStorage.setItem("userAccount", accounts[0]);
+
+      const user = await apiService.getUserByAddress(accounts[0]);
+      dispatch(connect({ account: accounts[0], user: user }));
+
+    }
+    
+  }
+
+  // This will trigger every time an account is connected or switched.
+  window.ethereum.on('accountsChanged', accountWasChanged);
 
   return (
     <div className="flex align-start w-100">

@@ -21,6 +21,13 @@ class apiService {
     return new User(createUser.body);
   }
 
+  static async findExistingWallet(accounts: string){
+    const checkUser = await superagent
+      .get(`${BASE_URL}/user/existing/${accounts}`);
+
+      return checkUser.body;
+  }
+
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
     return new User(res.body);
