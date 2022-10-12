@@ -22,6 +22,7 @@ import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile } from "../../redux/Slices/UserDataSlice";
 import websocketService from "../../services/websocket.service";
+import { sideAPI } from "../../services/side.service";
 
 export default function CurrentColony() {
   const { currentSide, selectedChannel } = useSelector(
@@ -57,7 +58,7 @@ export default function CurrentColony() {
 
   useEffect(() => {
     async function getSide() {
-      const res = await apiService.getSideById(
+      const res = await sideAPI.getSideById(
         "a70454a7-458e-4da4-96d9-e4b1b7a8d14b"
       );
       dispatch(setCurrentColony(res));
@@ -77,7 +78,6 @@ export default function CurrentColony() {
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
   };
-
 
   return (
     <div className="flex align-start w-100">
