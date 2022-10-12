@@ -17,11 +17,15 @@ export default function UserColonies() {
     navigate(id);
   };
 
+  const changeStateModal = (value: boolean) => {
+    setshowCreateModal(value)
+  };
+
   useEffect(() => {
     if (userData && userData.sides.length > 0 && !isSubscribe) {
     }
 
-    return () => {};
+    return () => { };
   }, [userData]);
 
   return (
@@ -34,13 +38,15 @@ export default function UserColonies() {
                 displayColony(c.id);
               }}
               className="colony-badge pointer"
+
+              key={c.id}
             >
               <img alt="colony-icon" src={c.sideImage} />
             </div>
           );
         })}
         <Link to={"/"}>
-          <i className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark"></i>
+          <i className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark" onClick={() => changeStateModal(true)}></i>
         </Link>
       </div>
       {showCreateModal && <CreateColonyModal showModal={setshowCreateModal} />}

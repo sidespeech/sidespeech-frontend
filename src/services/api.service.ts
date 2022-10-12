@@ -1,5 +1,6 @@
 import { create } from "lodash";
 import superagent from "superagent";
+import { InitialState } from "../components/Modals/CreateColonyModal";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
 import { Comment } from "../models/Comment";
@@ -34,6 +35,15 @@ class apiService {
   static async getSideById(id: string): Promise<Side> {
     const res = await superagent.get(`${BASE_URL}/side/${id}`);
     return new Side(res.body);
+  }
+
+  static async createSide(side: InitialState): Promise<Side> {
+    console.log("side :", side)
+    const res = await superagent
+      .post(`${BASE_URL}/side`)
+      .send(side);
+    console.log(res['body']['side']);
+    return res['body']['side'];
   }
 
   static async createRoom(id: string, id2: string): Promise<Room> {
