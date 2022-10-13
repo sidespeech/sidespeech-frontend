@@ -20,19 +20,21 @@ export default function UserColonies() {
 
   const changeStateModal = (value: boolean) => {
     // Iteration throw nft user to get every collection is holder
-    let collections = userData['nfts'].map(item => item.token_address).filter((value, index, self) => self.indexOf(value) === index);
-    setCollectionHolder(collections)
-    setshowCreateModal(value)
+    let collections = userData["nfts"]
+      .map((item) => item.token_address)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    setCollectionHolder(collections);
+    setshowCreateModal(value);
   };
 
   useEffect(() => {
     if (userData && userData.sides.length > 0 && !isSubscribe) {
     }
 
-    return () => { };
+    return () => {};
   }, [userData]);
 
-  console.log('userData :', userData)
+  console.log("userData :", userData);
 
   return (
     <>
@@ -44,7 +46,6 @@ export default function UserColonies() {
                 displayColony(c.id);
               }}
               className="colony-badge pointer"
-
               key={c.id}
             >
               <img alt="colony-icon" src={c.sideImage} />
@@ -52,10 +53,18 @@ export default function UserColonies() {
           );
         })}
         <Link to={"/"}>
-          <i className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark" onClick={() => changeStateModal(true)}></i>
+          <i
+            className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark"
+            onClick={() => changeStateModal(true)}
+          ></i>
         </Link>
       </div>
-      {showCreateModal && <CreateColonyModal showModal={setshowCreateModal} collections={collectionHolder} />}
+      {showCreateModal && (
+        <CreateColonyModal
+          showModal={setshowCreateModal}
+          collections={collectionHolder}
+        />
+      )}
     </>
   );
 }

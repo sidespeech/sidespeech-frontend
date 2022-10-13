@@ -31,14 +31,11 @@ class apiService {
     return new Profile(res.body);
   }
 
-
   static async createSide(side: InitialState): Promise<Side> {
-    console.log("side :", side)
-    const res = await superagent
-      .post(`${BASE_URL}/side`)
-      .send(side);
-    console.log(res['body']['side']);
-    return res['body']['side'];
+    console.log("side :", side);
+    const res = await superagent.post(`${BASE_URL}/side`).send(side);
+    console.log(res["body"]["side"]);
+    return res["body"]["side"];
   }
 
   static async createRoom(id: string, id2: string): Promise<Room> {
@@ -117,6 +114,11 @@ class apiService {
       .post(`${BASE_URL}/channel`)
       .send({ sideId, name, type, isVisible: true });
     return new Channel(res.body);
+  }
+
+  static async getSideById(id: string): Promise<Side> {
+    const res = await superagent.get(`${BASE_URL}/side/${id}`);
+    return new Side(res.body);
   }
 }
 
