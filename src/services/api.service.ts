@@ -29,7 +29,12 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/profile`).query({ id });
     return new Profile(res.body);
   }
-
+  static async joinSide(userId: string, sideId: string): Promise<Profile> {
+    const res = await superagent
+      .post(`${BASE_URL}/profile/join`)
+      .send({ userId, sideId });
+    return new Profile(res.body);
+  }
 
   static async createRoom(id: string, id2: string): Promise<Room> {
     const res = await superagent
