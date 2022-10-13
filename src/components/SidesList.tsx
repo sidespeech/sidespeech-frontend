@@ -13,9 +13,7 @@ import Button from "./ui-components/Button";
 import { apiService } from "../services/api.service";
 
 export default function SidesList() {
-  const { account, user } = useSelector(
-    (state: RootState) => state.user
-  );
+  const { account, user } = useSelector((state: RootState) => state.user);
   const [sides, setSides] = useState<Side[]>([]);
   const [filteredSides, setfilteredSides] = useState<Side[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
@@ -24,7 +22,7 @@ export default function SidesList() {
   useEffect(() => {
     async function getAllSides() {
       const sides = await sideAPI.getAllSides();
-      const collections = await nftsService.getUserNftCollections(
+      const collections = await nftsService.getAllCollectionsForUser(
         "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
       );
       setUserCollections(_.orderBy(collections, "name"));
