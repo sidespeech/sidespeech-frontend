@@ -1,8 +1,8 @@
-import { create } from "lodash";
 import superagent from "superagent";
 import { InitialState } from "../components/Modals/CreateColonyModal";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
+import { Channel, ChannelType } from "../models/Channel";
 import { Comment } from "../models/Comment";
 import { Profile } from "../models/Profile";
 import { Message, Room } from "../models/Room";
@@ -13,7 +13,6 @@ import { User } from "../models/User";
 class apiService {
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
-
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
       .send({ accounts: accounts[0], publicNfts: "TBD", signature: signature })
@@ -32,10 +31,6 @@ class apiService {
     return new Profile(res.body);
   }
 
-  static async getSideById(id: string): Promise<Side> {
-    const res = await superagent.get(`${BASE_URL}/side/${id}`);
-    return new Side(res.body);
-  }
 
   static async createSide(side: InitialState): Promise<Side> {
     console.log("side :", side)
@@ -111,6 +106,17 @@ class apiService {
       .get(`${BASE_URL}/channel/announcements`)
       .query({ id });
     return res.body.map((m: any) => new Announcement(m));
+  }
+
+  static async createChannel(
+    sideId: string,
+    name: string,
+    type: ChannelType
+  ): Promise<Channel> {
+    const res = await superagent
+      .post(`${BASE_URL}/channel`)
+      .send({ sideId, name, type, isVisible: true });
+    return new Channel(res.body);
   }
 }
 

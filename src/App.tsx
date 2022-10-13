@@ -6,25 +6,17 @@ import { useDispatch, useSelector } from "react-redux";
 import settings from "./assets/settings.svg";
 
 import { RootState } from "./redux/store/app.store";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Link,
-  Outlet,
-} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import UserColonies from "./components/UserColonies/UserColonies";
 
 import logoSmall from "./assets/logo.svg";
-import UserProfileModal from "./components/Modals/UserProfileModal";
-import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
-import ViewUserProfile from "./components/Modals/ViewUserProfile";
-import Randoms from "./components/Login/Randoms";
+
 import io from "socket.io-client";
-import CurrentColony from "./components/CurrentColony/CurrentColony";
 import websocketService from "./services/websocket.service";
-import { connect } from "./redux/Slices/UserDataSlice";
+import { connect, fetchUserDatas } from "./redux/Slices/UserDataSlice";
 import { apiService } from "./services/api.service";
+import { useMoralis, useMoralisWeb3Api } from "react-moralis";
+import SidesList from "./components/SidesList";
 
 const socket = io("http://localhost:3000/");
 function App() {
@@ -38,6 +30,7 @@ function App() {
     async function getUser(account: string) {
       const user = await apiService.getUserByAddress(account);
       dispatch(connect({ account: account, user: user }));
+      dispatch(fetchUserDatas(account));
     }
     const account = localStorage.getItem("userAccount");
     if (account) {
@@ -57,7 +50,8 @@ function App() {
         </div>
       </div>
       <div className="middle-container f-column align-center justify-center">
-        <Outlet></Outlet>
+        {/* <Outlet></Outlet> */}
+        <SidesList />
       </div>
     </div>
   );
