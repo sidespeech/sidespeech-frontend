@@ -16,7 +16,7 @@ import websocketService from "./services/websocket.service";
 import { connect, fetchUserDatas } from "./redux/Slices/UserDataSlice";
 import { apiService } from "./services/api.service";
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
-import SidesList from "./components/SidesList";
+// import SidesList from "./components/SidesList";
 
 const socket = io("http://localhost:3000/");
 function App() {
@@ -51,7 +51,7 @@ function App() {
       </div>
       <div className="middle-container f-column align-center justify-center">
         {/* <Outlet></Outlet> */}
-        <SidesList />
+        {/* <SidesList /> */}
       </div>
     </div>
   );

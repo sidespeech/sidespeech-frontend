@@ -9,6 +9,7 @@ import "./UserColonies.css";
 export default function UserColonies() {
   const userData = useSelector((state: RootState) => state.user);
   const [showCreateModal, setshowCreateModal] = useState<boolean>(false);
+  const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
   const [isSubscribe, setIsSubscribe] = useState<boolean>(false);
 
   const navigate = useNavigate();
@@ -18,6 +19,9 @@ export default function UserColonies() {
   };
 
   const changeStateModal = (value: boolean) => {
+    // Iteration throw nft user to get every collection is holder
+    let collections = userData['nfts'].map(item => item.token_address).filter((value, index, self) => self.indexOf(value) === index);
+    setCollectionHolder(collections)
     setshowCreateModal(value)
   };
 
@@ -27,6 +31,8 @@ export default function UserColonies() {
 
     return () => { };
   }, [userData]);
+
+  console.log('userData :', userData)
 
   return (
     <>
@@ -49,7 +55,7 @@ export default function UserColonies() {
           <i className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark" onClick={() => changeStateModal(true)}></i>
         </Link>
       </div>
-      {showCreateModal && <CreateColonyModal showModal={setshowCreateModal} />}
+      {showCreateModal && <CreateColonyModal showModal={setshowCreateModal} collections={collectionHolder} />}
     </>
   );
 }

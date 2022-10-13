@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { Input } from "semantic-ui-react";
 import { addColony } from "../../redux/Slices/UserDataSlice";
@@ -11,6 +11,8 @@ import Modal from "../ui-components/Modal";
 import { useNavigate } from "react-router";
 import CustomSelect from "../ui-components/CustomSelect";
 import { apiService } from "../../services/api.service";
+import nftsService from "../../services/nfts.service";
+import { RootState } from "../../redux/store/app.store";
 
 export interface InitialState {
   sideImage: string | null;
@@ -40,45 +42,77 @@ const initialState = {
   creatorAddress: localStorage.getItem("userAccount")
 };
 
+// Data to add collection in condition
+const initialDivCollections = {
+  customDiv: ['collection1']     // set initial state with one div
+};
 
-export default function CreateColonyModal({ showModal }: { showModal: any }) {
+
+// export default function CreateColonyModal({ showModal }: { showModal: any }) {
+export default function CreateColonyModal({ showModal, collections }: { showModal: any, collections: string[] }) {
   const dispatch = useDispatch();
+  const userData = useSelector((state: RootState) => state.user);
 
   const [formData, setFormData] = useState<InitialState>(initialState);
 
-  const [tokenProperties, setTokenProperties] = useState<any[]>([]);
+  const [tokenProperties, setTokenProperties] = useState<any>({});
 
-  const [propertySelected, setPropertySelected] = useState<string>("");
+  const [propertySelected, setPropertySelected] = useState<any>({});
   const [tokenSelected, setTokenSelected] = useState<string>("");
+
+  const [divCollections, setDivCollection] = useState<any>(initialDivCollections);
+
+  // Add collection div in condition
+  const addDivCollection = () => {
+    let currentDivs = divCollections.customDiv;
+    currentDivs.push(`collection${currentDivs.length + 1}`);
+    setDivCollection({ customDiv: currentDivs })
+  };
 
   const setSideName = (event: any) => {
     const name = event.target.value;
     setFormData({ ...formData, name: name });
   };
 
-  const setSideTokenAddress = (event: any) => {
+  // Creation properties object to display in conditions
+  function createPropertiesObject(address: string) {
+    const properties = userData['nfts'].reduce(function (filtered, current) {
+      if (current['token_address'] === address && current['metadata'] && JSON.parse(current['metadata'])['attributes']) {
+        let attributes = JSON.parse(current['metadata'])['attributes'];
+        for (let attribute of attributes) {
+          let property_exists = filtered.filter(function (o: any) { return o['property']['value'] == attribute['trait_type'] }).length > 0;
+          if (property_exists) {
+            for (let element of filtered) {
+              if (element['property']['value'] == attribute['trait_type']) {
+                let value_exists = element['values'].filter(function (o: any) { return o['value'] == attribute['value'] }).length > 0;
+                if (!value_exists) element['values'].push({ label: attribute['value'], value: attribute['value'] })
+              }
+            }
+          } else {
+            filtered.push({ property: { label: attribute['trait_type'], value: attribute['trait_type'] }, values: [{ label: attribute['value'], value: attribute['value'] }] },)
+          }
+
+        }
+      }
+      return filtered;
+
+    }, []);
+    return properties
+  }
+
+  const setSideTokenAddress = async (event: any, div:string) => {
     const address = event.target.value;
-
-    // if (!Web3.utils.isAddress(event.target.value, CONFIG.NETWORK.ID)) {
-    //   toast.error("This address is not an Ethereum Address",{toastId: 1});
-    //   return;
-    // }
-
     setFormData({ ...formData, NftTokenAddress: address });
     if (address.trim().length) {
-      // -- fetching properties and values of the collection from blockchain or opensea --
-      const properties = [
-        { property: { label: 'Background', value: 'background' }, values: [{ label: 'Red', value: 'red' }, { label: 'Blue', value: 'blue' }, { label: 'Green', value: 'green' }] },
-        { property: { label: 'Clothes', value: 'clothes' }, values: [{ label: 'Striped Tee', value: 'striped_tee' }, { label: 'Black T', value: 'black_t' }, { label: 'Navy Striped Tee', value: 'navy_striped_tee' }] }
-      ]
-      setTokenProperties(properties);
+      const properties = createPropertiesObject(address);
+      const current_object_properties = tokenProperties
+      current_object_properties[div] = properties
+      setTokenProperties(current_object_properties);
     } else setTokenProperties([]);
-
     setTokenSelected(address);
-
   };
 
-  const setSidePropertyCondition = (event: any) => {
+  const setSidePropertyCondition = (event: any, div:string) => {
     let conditions
     if (event.target.value.trim().length) {
       conditions = { ...formData.conditions }
@@ -86,7 +120,11 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
       conditions[formData.NftTokenAddress][event.target.value] = ""
     } else conditions = {}
     setFormData({ ...formData, conditions: conditions });
-    setPropertySelected(event.target.value);
+
+    // Define or modify property selected
+    let current_property_selected = propertySelected
+    current_property_selected[div] = event.target.value
+    setPropertySelected(current_property_selected);
   };
 
   const setSideValueCondition = (event: any) => {
@@ -114,7 +152,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
   const saveSide = async () => {
     // Save file input to IPFS
     try {
-      if (formData.sideImage){
+      if (formData.sideImage) {
         formData['conditions'] = JSON.stringify(formData['conditions']);
         const newSide = await apiService.createSide(formData);
         dispatch(addColony(newSide));
@@ -189,56 +227,66 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
               </label>
             </div>
           </div>
-          <div className="f-column mt-4 mb-3">
+
+          <div className="f-column mb-4">
             <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
-              NFT or Token address
+              Collections
             </label>
-            <InputText
-              id="address"
-              glass={false}
-              width={"400px"}
-              padding={"0px 40px 0px 20px"}
-              height={40}
-              onChange={setSideTokenAddress}
-              iconRightPos={{ top: 6, right: 16 }}
-              placeholder={"Paste the address of your NFT or Token"}
-              placeholderSize={14}
-              placeholderWeight={400}
-              placeholderColor="var(--placeholder)"
-            />
-          </div>
+            {divCollections.customDiv.map((current: any, i: number) => {
+              return <div className="collection-item" key={current}>
+                <div className="f-column mt-4 mb-3">
+                  <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
+                    NFT or Token address
+                  </label>
+                  <CustomSelect
+                    width={"400px"}
+                    height={"40px"}
+                    fontSize={12}
+                    fontWeight={700}
+                    arrowPosition={{ top: 12, right: 15 }}
+                    values={(collections.length) ? ['', ...collections] : [""]}
+                    options={(collections.length) ? ['Choose NFT collection', ...collections] : ["You don't hold any nfts"]}
+                    onChange={(event:any) => setSideTokenAddress(event, current)}
+                  />
+                </div>
 
-          <div className="f-column mt-4 mb-3">
-            <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
-              Features
-            </label>
+                <div className="f-column mb-3">
+                  <label htmlFor="name" className="size-14 fw-400 mb-1 text-left">
+                    Features
+                  </label>
 
-            <div
-              className="flex justify-between mt-4 w-100"
-              style={{ maxWidth: 400 }}
-            >
+                  <div
+                    className="flex justify-between w-100"
+                    style={{ maxWidth: 400 }}
+                  >
 
-              <CustomSelect
-                width={"400px"}
-                height={"40px"}
-                fontSize={12}
-                fontWeight={700}
-                arrowPosition={{ top: 12, right: 15 }}
-                values={["", ...(tokenProperties.map(item => item['property']['value']))]}
-                options={(tokenProperties.length) ? ["Select Property", ...(tokenProperties.map(item => item['property']['label']))] : ["Select NFT Collection"]}
-                onChange={setSidePropertyCondition}
-              />
-              <CustomSelect
-                width={"400px"}
-                height={"40px"}
-                fontSize={12}
-                fontWeight={700}
-                arrowPosition={{ top: 12, right: 15 }}
-                values={(propertySelected.trim().length) ? ["", ...(tokenProperties.find(item => item['property']['value'] === propertySelected )['values']).map((item:any) => item['label']) ]  : [""]}
-                options={(propertySelected.trim().length) ? ["Select Value", ...(tokenProperties.find(item => item['property']['value'] === propertySelected )['values']).map((item:any) => item['label']) ]  : ["Select NFT Collection"]}
-                onChange={setSideValueCondition}
-              />
-            </div>
+                    <CustomSelect
+                      width={"400px"}
+                      height={"40px"}
+                      fontSize={12}
+                      fontWeight={700}
+                      arrowPosition={{ top: 12, right: 15 }}
+                      values={(tokenProperties.hasOwnProperty(current) && tokenProperties[current].length) ? ["", ...(tokenProperties[current].map((item:any) => item['property']['value']))]: [""]}
+                      options={(tokenProperties.hasOwnProperty(current) && tokenProperties[current].length) ? ["Select Property", ...(tokenProperties[current].map((item:any) => item['property']['label']))] : ["Select NFT Collection"]}
+                      onChange={(event:any) => setSidePropertyCondition(event, current)}
+                    />
+                    <CustomSelect
+                      width={"400px"}
+                      height={"40px"}
+                      fontSize={12}
+                      fontWeight={700}
+                      arrowPosition={{ top: 12, right: 15 }}
+                      values={(tokenProperties.hasOwnProperty(current) && tokenProperties[current].length) ? ["", ...((tokenProperties[current].find((item:any) => item['property']['value'] === propertySelected[current]) || { values: [] })['values']).map((item: any) => item['value'])] : [""]}
+                      options={(tokenProperties.hasOwnProperty(current) && tokenProperties[current].length) ? ["Select Value", ...((tokenProperties[current].find((item:any) => item['property']['value'] === propertySelected[current]) || { values: [] })['values']).map((item: any) => item['label'])] : ["Select NFT Collection"]}
+                      onChange={setSideValueCondition}
+                    />
+                  </div>
+                </div>
+              </div>
+            })}
+            <Button width={130} height={35} onClick={() => addDivCollection()}>
+              + Add a collection
+            </Button>
           </div>
 
           <div className="f-column">
@@ -260,6 +308,7 @@ export default function CreateColonyModal({ showModal }: { showModal: any }) {
       }
       footer={
         <Button
+          classes="mt-3"
           width={159}
           height={46}
           onClick={() => saveSide()}
