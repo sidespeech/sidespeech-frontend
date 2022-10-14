@@ -21,6 +21,8 @@ import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 
 import { apiService } from "../../services/api.service";
+import NftsService from "../../services/nfts.service";
+import nftsService from "../../services/nfts.service";
 
 export const SeparatorVertical = styled.div`
   min-height: 415px;
@@ -99,13 +101,15 @@ export default function Login() {
          // Send the wallet to the api service.
          const user = await apiService.walletConnection(accounts, signature);
 
+          // Grab the users nfts
+          const theUsersNfts = await nftsService.getNftsOwnedByAddress(accounts);
+          
+
          // Dispatch the account that is connected to the redux slice.
          dispatch(connect({ account: accounts[0], user: user }));
 
         // Set a local storage of the account
         localStorage.setItem("userAccount", accounts[0]);
-
-      
         
       }
 
