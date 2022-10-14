@@ -1,4 +1,5 @@
 import superagent from "superagent";
+import { InitialStateUpdateSide } from "../components/CurrentColony/settings-admin/informations/informations";
 import { InitialState } from "../components/Modals/CreateColonyModal";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
@@ -39,6 +40,14 @@ class apiService {
   static async createSide(side: InitialState): Promise<Side> {
     console.log("side :", side);
     const res = await superagent.post(`${BASE_URL}/side`).send(side);
+    console.log(res["body"]["side"]);
+    return res["body"]["side"];
+  }
+
+  static async updateSide(side: InitialStateUpdateSide, id:string): Promise<Side> {
+    console.log("side :", side);
+    const res = await superagent.patch(`${BASE_URL}/side/${id}`).send(side);
+    console.log(res["body"]);
     console.log(res["body"]["side"]);
     return res["body"]["side"];
   }

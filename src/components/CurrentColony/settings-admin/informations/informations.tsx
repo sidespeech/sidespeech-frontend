@@ -7,14 +7,16 @@ import UserLine from "../../../ui-components/UserLine";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import "./informations.css";
+import { apiService } from "../../../../services/api.service";
+import { addColony } from "../../../../redux/Slices/UserDataSlice";
 
-export interface InitialState {
-  sideImage: File | null;
+export interface InitialStateUpdateSide {
+  sideImage: string | null;
   name: string;
   description: string;
 }
 
-const initialState = {
+const initialStateUpdateSide = {
   sideImage: null,
   name: "",
   description: "",
@@ -26,7 +28,7 @@ export default function Informations({
   currentSide: Colony;
 }) {
 
-  const [formData, setFormData] = useState<InitialState>(initialState);
+  const [formData, setFormData] = useState<InitialStateUpdateSide>(initialStateUpdateSide);
 
 
   const dispatch = useDispatch();
@@ -41,12 +43,27 @@ export default function Informations({
       toast.error("The image size has to be smaller than 500ko.");
       return;
     }
-    setFormData({ ...formData, sideImage: file });
+    setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
   };
 
   const onChangeSideName = (event: any) => {
     const name = event.target.value;
     setFormData({ ...formData, name: name });
+  };
+
+  const updateSide = async () => {
+    try {
+      if (formData.sideImage) {
+        const updatedSide = await apiService.updateSide(formData, currentSide['id']);
+        toast.success(formData.name + " has been updated.", {
+          toastId: 4,
+        });
+      }
+
+    } catch (error) {
+      console.log(error);
+      toast.error("Error creating colony.", { toastId: 3 });
+    }
   };
 
 
@@ -68,7 +85,7 @@ export default function Informations({
                     width: "inherit",
                     objectFit: "cover",
                   }}
-                  src={URL.createObjectURL(formData.sideImage)}
+                  src={formData.sideImage}
                   alt="file"
                 />
               ) : (
@@ -140,7 +157,7 @@ export default function Informations({
                 radius="10px"
               />
           </div>
-          <Button classes={"mt-3"} width={159} height={46} onClick={undefined} radius={10} color={'var(--text-primary-light)'}> Save </Button>
+          <Button classes={"mt-3"} width={159} height={46} onClick={updateSide} radius={10} color={'var(--text-primary-light)'}> Save </Button>
         </div>
     </>
   );
