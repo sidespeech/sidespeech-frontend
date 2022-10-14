@@ -52,45 +52,6 @@ export default function DefaultView() {
         <Login />
       ) : (
         <CurrentColony />
-        // <>
-        //   <div className="middle-container-center relative">
-        //     <div className="f-column align-center" style={{ zIndex: 20 }}>
-        //       <div className="fw-700 size-40 text-white">
-        //         Welcome to SideSpeech
-        //       </div>
-        //       <div className="text-secondary fw-400 size-20">
-        //         {reduceWalletAddress(userData.account || "")}
-        //       </div>
-        //       <SeparatorHorizontal />
-        //       <span className="fw-400 size-22 text-secondary">
-        //         What do you want to do?
-        //       </span>
-
-        //       <Button
-        //         classes="fw-700 size-22 button-margin"
-        //         width={367}
-        //         height={66}
-        //         onClick={() => navigate("/UserProfileModal")}
-        //       >
-        //         Create a Side server
-        //       </Button>
-        //       <Button
-        //         classes="fw-700 size-22"
-        //         width={367}
-        //         height={66}
-        //         onClick={() => setShowSelecteColonyModal(true)}
-        //       >
-        //         Find an existing Side server
-        //       </Button>
-        //     </div>
-        //     <img
-        //       className="absolute"
-        //       style={{ zIndex: 0 }}
-        //       src={logoShape}
-        //       alt="shape"
-        //     />
-        //   </div>
-        // </>
       )}
 
       {showColonyModal && <CreateColonyModal showModal={setShowColonyModal} />}
