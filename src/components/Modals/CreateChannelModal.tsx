@@ -62,7 +62,7 @@ export default function CreateChannelModal({ showModal }: { showModal: any }) {
             </div>
             <div>Channel type</div>
             <CustomSelect
-              options={["Announcement", "Textual", "Poll"]}
+              options={["Announcement", "Poll", "Textual"]}
               onChange={handleOnChangeType}
             />
           </div>
