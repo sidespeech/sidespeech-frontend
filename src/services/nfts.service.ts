@@ -34,6 +34,21 @@ class NftsService {
     return allResults;
   }
 
+  async getNFTsProperties(address: string): Promise<any> {
+    let allResults: any[] = [];
+    let respondedData = null;
+    do {
+      let response: any = await Moralis.EvmApi.nft.getWalletNFTCollections({
+        address,
+        chain: EvmChain.ETHEREUM,
+        cursor: respondedData,
+      });
+      allResults = allResults.concat(response.data.result);
+      respondedData = response.data;
+    } while (respondedData !== "" && respondedData !== null);
+    return allResults;
+  }
+
   async getAllNftsCollectionByContractAddress(address: string): Promise<any> {
     let allResults: any[] = [];
     let cursor = null;
