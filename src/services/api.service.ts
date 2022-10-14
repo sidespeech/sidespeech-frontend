@@ -30,7 +30,11 @@ class apiService {
     return new Profile(res.body);
   }
 
-
+  static async getSideById(id: string): Promise<Side> {
+    const res = await superagent.get(`${BASE_URL}/side/${id}`);
+    return new Side(res.body);
+  }
+  
   static async createRoom(id: string, id2: string): Promise<Room> {
     const res = await superagent
       .post(`${BASE_URL}/room`)

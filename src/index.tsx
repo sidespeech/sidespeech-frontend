@@ -17,6 +17,7 @@ import "semantic-ui-css/semantic.min.css";
 import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import ViewUserProfile from "./components/Modals/ViewUserProfile";
+import SettingsAdmin from "./components/CurrentColony/settings-admin/settings-admin";
 
 import { MoralisProvider } from "react-moralis";
 
@@ -46,6 +47,7 @@ ReactDOM.render(
           <Routes>
             <Route path="/" element={<App />}>
               <Route path=":id" element={<CurrentColony />} />
+              <Route path=":id/settings" element={<SettingsAdmin />} />
               <Route index element={<DefaultView />} />
               <Route
                 path="/CreateSideSpeechProfile"

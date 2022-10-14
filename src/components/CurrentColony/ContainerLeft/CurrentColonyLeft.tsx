@@ -1,6 +1,7 @@
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Channel } from "../../../models/Channel";
 import { Profile } from "../../../models/Profile";
@@ -51,6 +52,8 @@ export default function CurrentColonyLeft() {
   const [isMod, setIsMod] = useState<boolean>(false);
   const [displayUserProfile, setDisplayUserProfile] = useState<boolean>(false);
 
+  const navigate = useNavigate();
+
   const handleDisplayNewChannel = () => {
     if (isAdmin) {
       setDisplayNewChannelModal(true);
@@ -62,6 +65,7 @@ export default function CurrentColonyLeft() {
   };
 
   useEffect(() => {
+    console.log('currentSide:', currentSide)
     setIsAdmin(currentSide?.creatorAddress === account);
   }, [currentSide, account]);
 
@@ -76,7 +80,8 @@ export default function CurrentColonyLeft() {
         </span>
         <i
           className="fa-solid fa-ellipsis pointer"
-          onClick={handleDisplayColonySettings}
+          // onClick={handleDisplayColonySettings}
+          onClick={() => navigate(`/${currentSide['id']}/settings`, { state: { currentSide : currentSide } })}
           style={{ marginLeft: "auto" }}
         ></i>
       </div>
