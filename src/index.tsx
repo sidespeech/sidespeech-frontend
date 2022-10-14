@@ -19,6 +19,7 @@ import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile"
 import ViewUserProfile from "./components/Modals/ViewUserProfile";
 
 import { MoralisProvider } from "react-moralis";
+import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -47,7 +48,7 @@ ReactDOM.render(
               <Route path="/" element={<App />}>
                 <Route index element={<DefaultView />} />
                 <Route path=":id" element={<CurrentColony />}>
-                  <Route path="profile/:id" element={undefined} />
+                  <Route path="profile/:id" element={<UserProfile />} />
                   <Route path="settings" element={undefined} />
                 </Route>
                 <Route path="settings" element={undefined} />

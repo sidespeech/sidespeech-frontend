@@ -51,8 +51,7 @@ function App() {
         </div>
       </div>
       <div className="middle-container f-column align-center justify-center">
-        {/* <Outlet></Outlet> */}
-        <SidesList />
+        <Outlet></Outlet>
       </div>
     </div>
   );

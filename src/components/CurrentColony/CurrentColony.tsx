@@ -23,8 +23,10 @@ import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile } from "../../redux/Slices/UserDataSlice";
 import websocketService from "../../services/websocket.service";
 import { sideAPI } from "../../services/side.service";
+import { useParams } from "react-router-dom";
 
 export default function CurrentColony() {
+  const { id } = useParams();
   const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
@@ -58,18 +60,18 @@ export default function CurrentColony() {
 
   useEffect(() => {
     async function getSide() {
-      const res = await sideAPI.getSideById(
-        "a70454a7-458e-4da4-96d9-e4b1b7a8d14b"
-      );
-      dispatch(setCurrentColony(res));
-      dispatch(
-        setSelectedChannel(
-          res.channels.find((c) => c.type === 0) || res.channels[0]
-        )
-      );
+      if (id) {
+        const res = await sideAPI.getSideById(id);
+        dispatch(setCurrentColony(res));
+        dispatch(
+          setSelectedChannel(
+            res.channels.find((c) => c.type === 0) || res.channels[0]
+          )
+        );
+      }
     }
     getSide();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (userData.user && currentSide) dispatch(setCurrentProfile(currentSide));
