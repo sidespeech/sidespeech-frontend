@@ -12,3 +12,10 @@
     border-top: 1px solid var(--bg-secondary-light);
     overflow: auto;
 }
+
+.member-list {
+    background-color: var(--bg-primary);
+    width: 60%;
+    min-height: 96px;
+    border-radius: 10px;
+  }

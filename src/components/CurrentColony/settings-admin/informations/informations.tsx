@@ -32,10 +32,6 @@ export default function Informations({
 
 
   const dispatch = useDispatch();
-  
-  useEffect(() => {
-    console.log('currentSide Information:', currentSide)
-  });
 
   const onChangeSideImage = (event: any) => {
     const file = event.target.files[0];
@@ -70,7 +66,7 @@ export default function Informations({
   return (
     <>
         {/* Profile Picture Section */}
-        <div className="f-column ml-5">
+        <div className="f-column">
           <div className="text-primary-light mb-3 text fw-600">Profile Picture</div>
 
 
@@ -124,7 +120,7 @@ export default function Informations({
         </div>
 
         {/* Name Section */}
-        <div className="f-column ml-5 mt-5">
+        <div className="f-column mt-5">
           <div className="text-primary-light mb-3 text fw-600">Side Name</div>
           <div className="flex">
           <InputText
@@ -137,14 +133,10 @@ export default function Informations({
                 radius="10px"
               />
           </div>
-
-
-
-
         </div>
 
         {/* Description Section */}
-        <div className="f-column ml-5 mt-5">
+        <div className="f-column mt-5">
           <div className="text-primary-light mb-3 text fw-600">Description</div>
           <div className="flex">
           <TextArea
@@ -157,8 +149,10 @@ export default function Informations({
                 radius="10px"
               />
           </div>
-          <Button classes={"mt-3"} width={159} height={46} onClick={updateSide} radius={10} color={'var(--text-primary-light)'}> Save </Button>
         </div>
+
+        {/* Submit Button */}
+        <Button classes={"mt-3"} width={159} height={46} onClick={updateSide} radius={10} color={'var(--text-primary-light)'}>Save </Button>
     </>
   );
 }

@@ -103,10 +103,10 @@ export default function ColonySettingsModal({
 
             </ContainerLeft>
             {Object.keys(tabs).map((keyName, i) =>
-              (keyName == 'Informations' && tabs[keyName]) ? <Informations currentColony={currentColony} /> :
-                (keyName == 'Members' && tabs[keyName]) ? <MembersList currentColony={currentColony} /> :
-                  (keyName == 'Channels' && tabs[keyName]) ? <Channels currentColony={currentColony} /> :
-                    (keyName == 'Invitation' && tabs[keyName]) ? <Invitation currentColony={currentColony} /> : null
+              (keyName == 'Informations' && tabs[keyName]) ? <Informations currentSide={currentColony} /> :
+                (keyName == 'Members' && tabs[keyName]) ? <MembersList currentSide={currentColony} /> :
+                  (keyName == 'Channels' && tabs[keyName]) ? <Channels currentSide={currentColony} /> :
+                    (keyName == 'Invitation' && tabs[keyName]) ? <Invitation currentSide={currentColony} /> : null
             )}
 
             {/* <div className="row">
