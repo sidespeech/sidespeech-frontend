@@ -22,8 +22,11 @@ import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 import websocketService from "../../services/websocket.service";
+import { sideAPI } from "../../services/side.service";
+import { useParams } from "react-router-dom";
 
 export default function CurrentColony() {
+  const { id } = useParams();
   const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
@@ -57,18 +60,18 @@ export default function CurrentColony() {
 
   useEffect(() => {
     async function getSide() {
-      const res = await apiService.getSideById(
-        "a70454a7-458e-4da4-96d9-e4b1b7a8d14b"
-      );
-      dispatch(setCurrentColony(res));
-      dispatch(
-        setSelectedChannel(
-          res.channels.find((c) => c.type === 0) || res.channels[0]
-        )
-      );
+      if (id) {
+        const res = await sideAPI.getSideById(id);
+        dispatch(setCurrentColony(res));
+        dispatch(
+          setSelectedChannel(
+            res.channels.find((c) => c.type === 0) || res.channels[0]
+          )
+        );
+      }
     }
     getSide();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (userData.user && currentSide) dispatch(setCurrentProfile(currentSide));
@@ -77,32 +80,6 @@ export default function CurrentColony() {
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
   };
-
-  async function accountWasChanged(accounts: any) {
-
-    // Check to see if the wallet already exists in the database.
-    const existingUser = await apiService.findExistingWallet(accounts[0]);
-
-    // Clear anything in the local storage.
-    localStorage.clear();
-
-    // If it doesn't then we need to send the user to the connect wallet view.
-    if(existingUser == undefined) {
-       window.location.reload();
-    } else {
-
-      // Set a local storage of the account
-      localStorage.setItem("userAccount", accounts[0]);
-
-      const user = await apiService.getUserByAddress(accounts[0]);
-      dispatch(connect({ account: accounts[0], user: user }));
-
-    }
-    
-  }
-
-  // This will trigger every time an account is connected or switched.
-  window.ethereum.on('accountsChanged', accountWasChanged);
 
   return (
     <div className="flex align-start w-100">

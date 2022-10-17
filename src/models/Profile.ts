@@ -25,7 +25,7 @@ export class Profile {
     this.showNfts = _data.showNfts;
     this.role = _data.role;
     this.profilePicture = _data.profilePicture;
-    this.rooms = _data.rooms.map((r: any) => new Room(r));
+    this.rooms = _data.rooms?.map((r: any) => new Room(r));
     this.side = _data.side;
     this.user = _data.user;
   }
