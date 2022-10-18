@@ -20,6 +20,7 @@ import ViewUserProfile from "./components/Modals/ViewUserProfile";
 
 import { MoralisProvider } from "react-moralis";
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
+import UserSettings from "./components/GeneralSettings/DefaultView";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -49,9 +50,8 @@ ReactDOM.render(
                 <Route index element={<DefaultView />} />
                 <Route path=":id" element={<CurrentColony />}>
                   <Route path="profile/:id" element={<UserProfile />} />
-                  <Route path="settings" element={undefined} />
                 </Route>
-                <Route path="settings" element={undefined} />
+                <Route path="settings" element={<UserSettings />} />
               </Route>
           </Routes>
         </BrowserRouter>

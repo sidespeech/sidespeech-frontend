@@ -102,14 +102,13 @@ export default function Login() {
          const user = await apiService.walletConnection(accounts, signature);
 
           // Grab the users nfts
-          const theUsersNfts = await nftsService.getNftsOwnedByAddress(accounts);
-          
+          // const theUsersNfts = await nftsService.getNftsOwnedByAddress(accounts);
 
          // Dispatch the account that is connected to the redux slice.
          dispatch(connect({ account: accounts[0], user: user }));
 
-        // Set a local storage of the account
-        localStorage.setItem("userAccount", accounts[0]);
+          // Set a local storage of the account
+          localStorage.setItem("userAccount", accounts[0]);
         
       }
 

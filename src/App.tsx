@@ -2,22 +2,25 @@ import React, { useEffect, useState } from "react";
 
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
-
-import settings from "./assets/settings.svg";
-
 import { RootState } from "./redux/store/app.store";
 import { Outlet } from "react-router-dom";
-import UserColonies from "./components/UserColonies/UserColonies";
 
+// Components
+import GlobalSettingsMenu from "./components/GeneralSettings/ContainerLeft/Index";
+import UserColonies from "./components/UserColonies/UserColonies";
+import SidesList from "./components/SidesList";
+
+// Images
 import logoSmall from "./assets/logo.svg";
 
 import io from "socket.io-client";
 import websocketService from "./services/websocket.service";
+
+// Redux
 import { connect, fetchUserDatas } from "./redux/Slices/UserDataSlice";
+
+// API's
 import { apiService } from "./services/api.service";
-import { useMoralis, useMoralisWeb3Api } from "react-moralis";
-import SidesList from "./components/SidesList";
-// import SidesList from "./components/SidesList";
 
 const socket = io("http://localhost:3000/");
 function App() {
@@ -25,9 +28,15 @@ function App() {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
   const [lastPong, setLastPong] = useState<string | null>(null);
   const dispatch = useDispatch();
+  let globalSettings = false;
 
+  // Conditional for checking if we are the settings page as we need a different sidebar.
+  if(window.location.pathname == '/settings') {
+     globalSettings = true;
+  }
+  
   useEffect(() => {
-    websocketService.connectToWebScoket();
+    websocketService.connectToWebSocket();
     async function getUser(account: string) {
       const user = await apiService.getUserByAddress(account);
       dispatch(connect({ account: account, user: user }));
@@ -44,12 +53,18 @@ function App() {
 
   return (
     <div className="main-container relative">
-      <div className="left-container">
-        <div>{userData.user && <UserColonies />}</div>
-        <div>
-          <img width={45} height={45} src={logoSmall} alt="logo-small" />
+        <div className="left-container">
+            {!globalSettings
+            ? <div>
+                <div>{userData.user && <UserColonies />}</div>
+                <div>
+                  <img width={45} height={45} src={logoSmall} alt="logo-small" />
+                </div>
+              </div>
+            : <GlobalSettingsMenu />
+          }
+          
         </div>
-      </div>
       <div className="middle-container f-column align-center justify-center">
         <Outlet></Outlet>
       </div>

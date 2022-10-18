@@ -1,0 +1,8 @@
+.button-margin {
+    margin: 28px 0px 34px 0px;
+}
+
+.globalSettingsMenu .title img,
+.globalSettingsMenu .title h1{
+    display: inline-block;
+}
