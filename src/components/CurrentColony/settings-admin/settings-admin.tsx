@@ -17,9 +17,8 @@ import websocketService from "../../../services/websocket.service";
 import { apiService } from "../../../services/api.service";
 
 const ContainerLeft = styled.div`
-  min-width: 140px;
-  background-color: var(--bg-secondary-light);
-  height: 100vh;
+  min-width: 200px;
+  height: 92vh;
   display: flex;
   flex-direction: column;
   padding-top: 11px;
@@ -32,12 +31,25 @@ const TabItems = styled.div`
 `;
 
 const initialStateTabs = {
-  Informations: true,
-  Members: false,
-  Channels: false,
-  Invitation: false,
-  Account: false,
-  Eligibility: false
+  menu: [
+    {
+      title: 'Settings',
+      items: [
+        { active: true, icon: "fa-solid fa-gear", label: "Informations" },
+        { active: false, icon: "fa-solid fa-user-group", label: "Members" },
+        { active: false, icon: "fa-solid fa-bullhorn", label: "Channels" },
+        { active: false, icon: "fa-solid fa-circle-plus", label: "Invitation" },
+      ]
+    },
+    {
+      title: 'Profile',
+      items: [
+        { active: false, icon: "fa-solid fa-circle-user", label: "Account" },
+        { active: false, icon: "fa-solid fa-circle-check", label: "Eligibility" }
+      ]
+    }
+  ]
+
 };
 
 export default function SettingsAdmin(
@@ -53,52 +65,89 @@ export default function SettingsAdmin(
 
   const handleTabs = (tabName: any) => {
     let currentTabState = { ...tabs }
-    for (const key of Object.keys(currentTabState)) { currentTabState[key] = (key === tabName) ? true : false }
+    for (const submenu of tabs['menu']) {
+      for (const data of submenu['items']) {
+        data['active'] = (data['label'] === tabName) ? true : false
+      }
+    }
     setTabs(currentTabState);
   };
 
   // useEffect(() => {
-  //   websocketService.connectToWebScoket();
-  //   async function getUser(account: string) {
-  //     const user = await apiService.getUserByAddress(account);
-  //     dispatch(connect({ account: account, user: user }));
-  //     dispatch(fetchUserDatas(account));
-  //   }
-  //   const account = localStorage.getItem("userAccount");
-  //   if (account) {
-  //     getUser(account);
-  //   }
-  //   return () => {
-  //     websocketService.deconnectWebsocket();
-  //   };
+  // websocketService.connectToWebScoket();
+  // async function getUser(account: string) {
+  //   const user = await apiService.getUserByAddress(account);
+  //   dispatch(connect({ account: account, user: user }));
+  //   dispatch(fetchUserDatas(account));
+  // }
+  // const account = localStorage.getItem("userAccount");
+  // if (account) {
+  //   getUser(account);
+  // }
+  // return () => {
+  //   websocketService.deconnectWebsocket();
+  // };
   // }, []);
 
   return (
     <>
-      { (currentSide) ?
-      <div className="flex align-start w-100 text-left">
-        <ContainerLeft>
-          <TabItems className="pl-2 pt-3 pb-3" onClick={(e) => handleTabs("Informations")}><i className="fa-solid fa-gear mr-2"></i>Informations</TabItems>
-          <TabItems className="pl-2 pt-3 pb-3" onClick={(e) => handleTabs("Members")}><i className="fa-solid fa-user-group mr-2 pl-2"></i>Members</TabItems>
-          <TabItems className="pl-2 pt-3 pb-3" onClick={(e) => handleTabs("Channels")}><i className="fa-solid fa-bullhorn mr-2 pl-2"></i>Channels</TabItems>
-          <TabItems className="pl-2 pt-3 pb-3" onClick={(e) => handleTabs("Invitation")}><i className="fa-solid fa-circle-plus mr-2 pl-2"></i>Invitation</TabItems>
-          <TabItems className="pl-2 pt-3 pb-3" onClick={(e) => handleTabs("Account")}><i className="fa-solid fa-circle-user mr-2 pl-2"></i>Account</TabItems>
-          <TabItems className="pl-2 pt-3 pb-3" onClick={(e) => handleTabs("Eligibility")}><i className="fa-solid fa-circle-check mr-2 pl-2"></i>Eligibility</TabItems>
-        </ContainerLeft>
+      {(currentSide) ?
+        <nav>
+          <div className="menu-icon">
+            <span className="fas fa-bars"></span>
+          </div>
+          <div className="nav-items text-primary-light">
+            <li><i className="fa fa-sliders mr-2"></i> <label className='navTitle'> {currentSide.name} </label><i className="ml-2 fa-solid fa-circle-check collection-icon-check"></i></li>
+            <li className='flex'><div className="vl"></div> <label>Preference</label></li>
+          </div>
+          <div className='inputform'>
+            <input type="search" className="search-data" placeholder="Search" required />
+            <button><i className="fa fa-search" aria-hidden="true"></i></button>
+          </div>
+          <img className='avtr' src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar"></img>
+        </nav> : null}
 
-        <div className="f-column w-100 pt-3 ml-5">
-          {Object.keys(tabs).map((keyName, i) =>
-            (keyName == 'Informations' && tabs[keyName]) ? <Informations currentSide={currentSide} /> :
-              (keyName == 'Members' && tabs[keyName]) ? <MembersList currentSide={currentSide} /> :
-                (keyName == 'Channels' && tabs[keyName]) ? <Channels currentSide={currentSide} /> :
-                  (keyName == 'Invitation' && tabs[keyName]) ? <Invitation currentSide={currentSide} /> :
-                  (keyName == 'Account' && tabs[keyName]) ? <Account currentSide={currentSide} userData={userData} /> :
-                  (keyName == 'Eligibility' && tabs[keyName]) ? <Eligibility currentSide={currentSide} /> : null
-          )}
-        </div>
 
-      </div> : null
-    }
+      {(currentSide) ?
+        <div className="flex align-start w-100 text-left">
+          <ContainerLeft>
+            {/* <label className="pl-4 sidebar-title">Settings</label> */}
+            {tabs['menu'].map((submenu: any, index: number) => {
+              return (
+                <div key={index} className="mt-2">
+                  <label className="pl-4 sidebar-title">{submenu['title']}</label>
+
+                  {submenu['items'].map((subtitle: any, index: number) => {
+                    return (
+                      <TabItems key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </ContainerLeft>
+
+          <div className="f-column w-100 pt-3 ml-5">
+            {tabs['menu'].map((submenu: any, index: number) => {
+              return (
+                <div key={index}>
+                  {submenu['items'].map((subtitle: any, index: number) => {
+                    return (
+                      (subtitle['label'] == 'Informations' && subtitle['active']) ? <Informations currentSide={currentSide} /> :
+                        (subtitle['label'] == 'Members' && subtitle['active']) ? <MembersList currentSide={currentSide} /> :
+                          (subtitle['label'] == 'Channels' && subtitle['active']) ? <Channels currentSide={currentSide} /> :
+                            (subtitle['label'] == 'Invitation' && subtitle['active']) ? <Invitation currentSide={currentSide} /> :
+                              (subtitle['label'] == 'Account' && subtitle['active']) ? <Account currentSide={currentSide} userData={userData} /> :
+                                (subtitle['label'] == 'Eligibility' && subtitle['active']) ? <Eligibility currentSide={currentSide} /> : null
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+
+        </div> : null
+      }
 
     </>
   );

@@ -11,13 +11,13 @@ import { apiService } from "../../../../services/api.service";
 import { addColony } from "../../../../redux/Slices/UserDataSlice";
 
 export interface InitialStateUpdateSide {
-  sideImage: string | null;
+  sideImage: string | undefined;
   name: string;
   description: string;
 }
 
 const initialStateUpdateSide = {
-  sideImage: null,
+  sideImage: undefined,
   name: "",
   description: "",
 };
@@ -49,16 +49,17 @@ export default function Informations({
 
   const updateSide = async () => {
     try {
-      if (formData.sideImage) {
-        const updatedSide = await apiService.updateSide(formData, currentSide['id']);
-        toast.success(formData.name + " has been updated.", {
-          toastId: 4,
-        });
+      if (!formData.sideImage) {
+        delete formData['sideImage']
       }
+      const updatedSide = await apiService.updateSide(formData, currentSide['id']);
+      toast.success(formData.name + " has been updated.", {
+        toastId: 4,
+      });
 
     } catch (error) {
       console.log(error);
-      toast.error("Error creating colony.", { toastId: 3 });
+      toast.error("Error when update side.", { toastId: 3 });
     }
   };
 
