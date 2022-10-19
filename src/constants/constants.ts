@@ -4,4 +4,4 @@ export const BASE_URL = process.env.REACT_APP_BASE_URL;
 export const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
 export const MORALIS_API_KEY =
-  "X0Xa8Bofo5EYBKha7bvfQBX2pzVZbx7Dmu8xAwLsojj5p4YubFnxlUTAANdiMzxB";
+  "naSNkPGjvAexeM1BwPGxq2LqMZkM4INqNVFt6ZHtCfMh37hY2NhuXaUJhPEm9PFR";
