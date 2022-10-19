@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { useNavigate } from "react-router";
 
-// Logos
+// Icons
 import settingsTitle from "./../../../assets/settings.svg";
 import accountMenuIcon from "./../../../assets/account-menu.svg";
 import settingsMenuIcon from "./../../../assets/settings-menu.svg";
