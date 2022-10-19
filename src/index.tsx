@@ -20,6 +20,7 @@ import ViewUserProfile from "./components/Modals/ViewUserProfile";
 import SettingsAdmin from "./components/CurrentColony/settings/settings";
 
 import { MoralisProvider } from "react-moralis";
+import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -46,16 +47,12 @@ ReactDOM.render(
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<App />}>
-              <Route path=":id" element={<CurrentColony />} />
-              <Route path=":id/settings" element={<SettingsAdmin />} />
               <Route index element={<DefaultView />} />
-              <Route
-                path="/CreateSideSpeechProfile"
-                element={<CreateSideSpeechProfile />}
-              />
-              <Route path="/ViewUserProfile" element={<ViewUserProfile />} />
-
-              <Route path="/UserProfileModal" element={<UserProfileModal />} />
+              <Route path=":id" element={<CurrentColony />}>
+                <Route path="profile/:id" element={<UserProfile />} />
+              </Route>
+              <Route path=":id/admin-settings" element={<SettingsAdmin />} />
+              <Route path="settings" element={undefined} />
             </Route>
           </Routes>
         </BrowserRouter>

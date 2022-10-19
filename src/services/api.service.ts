@@ -47,6 +47,12 @@ class apiService {
     return new Side(res.body);
   }
   
+  static async joinSide(userId: string, sideId: string): Promise<Profile> {
+    const res = await superagent
+      .post(`${BASE_URL}/profile/join`)
+      .send({ userId, sideId });
+    return new Profile(res.body);
+  }
   static async createSide(side: InitialState): Promise<Side> {
     console.log("side :", side);
     const res = await superagent.post(`${BASE_URL}/side`).send(side);
