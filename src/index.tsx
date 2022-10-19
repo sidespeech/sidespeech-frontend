@@ -17,7 +17,7 @@ import "semantic-ui-css/semantic.min.css";
 import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import ViewUserProfile from "./components/Modals/ViewUserProfile";
-import SettingsAdmin from "./components/CurrentColony/settings-admin/settings-admin";
+import SettingsAdmin from "./components/CurrentColony/settings/settings";
 
 import { MoralisProvider } from "react-moralis";
 

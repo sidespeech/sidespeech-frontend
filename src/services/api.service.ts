@@ -1,6 +1,6 @@
 import superagent from "superagent";
-import { InitialStateProfile } from "../components/CurrentColony/settings-admin/account/account";
-import { InitialStateUpdateSide } from "../components/CurrentColony/settings-admin/informations/informations";
+import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
+import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialState } from "../components/Modals/CreateColonyModal";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";

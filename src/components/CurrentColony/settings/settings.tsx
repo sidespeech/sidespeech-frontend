@@ -11,7 +11,7 @@ import Invitation from "./invitation/invitation"
 import Informations from "./informations/informations"
 import Account from "./account/account"
 import Eligibility from "./eligibility/eligibility"
-import "./settings-admin.css";
+import "./settings.css";
 import { RootState } from "../../../redux/store/app.store";
 import websocketService from "../../../services/websocket.service";
 import { apiService } from "../../../services/api.service";

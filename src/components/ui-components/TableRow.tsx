@@ -7,10 +7,10 @@ import { first } from "lodash";
 import Button from "./Button";
 
 export default function TableRow({
-  colony,
+  side,
   user,
 }: {
-  colony: Colony;
+  side: Colony;
   user: any;
 }) {
   const [isCreator, setIsCreator] = useState<boolean>(false);
@@ -21,6 +21,17 @@ export default function TableRow({
   const handleRoleChange = (event: any) => {
     setNewRole(event.target.value);
   };
+
+  const getRole = (address:string) => {
+    console.log('address :', address)
+    console.log("side['creatorAddress']", side['creatorAddress'])
+    return (address === side['creatorAddress']) ? 'Administrator' : 'User'
+  };
+
+  useEffect(() => {
+    console.log("side :", side)
+    console.log("user :", user)
+  }, []);
 
   const handleSaveRole = async () => { };
 
@@ -50,7 +61,7 @@ export default function TableRow({
                 options={["User", "Moderator1", "Moderator2", "Moderator3"]}
                 values={["User", "Moderator1", "Moderator2", "Moderator3"]}
                 // valueToSet={user.get("role").get("name")}
-                valueToSet={user["role"]}
+                valueToSet={getRole(user['username'])}
                 onChange={handleRoleChange}
               />
               <i
@@ -63,14 +74,14 @@ export default function TableRow({
           )
         ) : (
           // <span className={getRoleColor(user.attributes.role.get("name"))}>
-          <span className={getRoleColor(user["role"]) + ' flex-1 ml-5 align-center text-center'}>
+          <span className={getRoleColor(getRole(user['username'])) + ' flex-1 ml-5 align-center text-center'}>
             {/* {user.get("role").get("name")} */}
-            {user["role"]}
+            {getRole(user['username'])}
           </span>
         )}
       </td>
       <td className="flex-1 ml-5 align-center text-center">
-        {(user["role"] !== 1 && user["role"] !== "Administrator") ? 
+        {(getRole(user['username']) !== "Administrator") ? 
         <Button
           width={70}
           height={35}
