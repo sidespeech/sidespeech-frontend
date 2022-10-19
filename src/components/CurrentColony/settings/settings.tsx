@@ -13,22 +13,9 @@ import Account from "./account/account"
 import Eligibility from "./eligibility/eligibility"
 import "./settings.css";
 import { RootState } from "../../../redux/store/app.store";
-import websocketService from "../../../services/websocket.service";
-import { apiService } from "../../../services/api.service";
+import ContainerLeft from "../../ui-components/ContainerLeft";
+import TabItems from "../../ui-components/TabItems";
 
-const ContainerLeft = styled.div`
-  min-width: 200px;
-  height: 92vh;
-  display: flex;
-  flex-direction: column;
-  padding-top: 11px;
-  color: var(--text-primary-light);
-`;
-
-const TabItems = styled.div`
-  cursor: pointer;
-  font-family : "Inter", sans-serif;
-`;
 
 const initialStateTabs = {
   menu: [

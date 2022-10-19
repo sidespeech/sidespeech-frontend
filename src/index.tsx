@@ -18,6 +18,7 @@ import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import ViewUserProfile from "./components/Modals/ViewUserProfile";
 import SettingsAdmin from "./components/CurrentColony/settings/settings";
+import NewSide from "./components/new-side/new-side";
 
 import { MoralisProvider } from "react-moralis";
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
@@ -48,6 +49,7 @@ ReactDOM.render(
           <Routes>
             <Route path="/" element={<App />}>
               <Route index element={<DefaultView />} />
+              <Route path="new-side" element={<NewSide />}/>
               <Route path=":id" element={<CurrentColony />} />
                 <Route path="profile/:id" element={<UserProfile />} />
                 <Route path=":id/settings" element={<SettingsAdmin />} />
