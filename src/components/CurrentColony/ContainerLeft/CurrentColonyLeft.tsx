@@ -65,8 +65,6 @@ export default function CurrentColonyLeft() {
   };
 
   useEffect(() => {
-    console.log('currentSide:', currentSide)
-    console.log('displayUserProfile:', displayUserProfile)
     setIsAdmin(currentSide?.creatorAddress === account);
   }, [currentSide, account]);
 
