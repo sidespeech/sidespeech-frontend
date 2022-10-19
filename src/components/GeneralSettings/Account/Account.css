@@ -1,0 +1,18 @@
+.general-settings .account{
+    flex-direction: row;
+    display: flex;
+    flex: 1;
+    padding: 28px;
+}
+
+.general-settings .form-area{
+    flex: 1.3;
+}
+
+.general-settings .my-nfts {
+    padding: 28px;
+    border-radius: 20px;
+    flex: 1;
+    background-color: var(--bg-secondary-dark);
+    overflow-y: scroll;
+}

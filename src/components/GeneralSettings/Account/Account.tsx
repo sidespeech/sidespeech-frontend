@@ -6,6 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { apiService } from "./../../../services/api.service";
 
+// CSS Import
+import "./../DefaultView.css";
+import "./Account.css";
+
 export interface InitialStateProfile {
   profilePicture: string | undefined;
   username: string;
@@ -23,7 +27,6 @@ export default function GeneralSettingsAccount({
 }: {
   userData: any;
 }) {
-
 
   const [formData, setFormData] = useState<InitialStateProfile>(initialStateProfile);
 
@@ -49,116 +52,132 @@ export default function GeneralSettingsAccount({
       });
 
     } catch (error) {
+      toast.error("There has been an issue updating your account.", { toastId: 3 });
       console.log(error);
-      toast.error("Error when update profile.", { toastId: 3 });
     }
   };
 
   return (
     <>
-      {/* Profile Picture Section */}
-      <div className="f-column">
-        <div className="text-primary-light mb-3 text fw-600">Account</div>
+    <div className="account">
+      <div className="f-row form-area">
+        {/* Profile Picture Section */}
+        <div className="f-column">
+            <div className="text-primary-light mb-3 text fw-600">Account</div>
 
-        <div className="flex">
-          <label
-            className="upload-colony-image f-column align-center justify-center"
-          >
-            {formData.profilePicture ? (
-              <img
-                style={{
-                  height: "inherit",
-                  width: "inherit",
-                  objectFit: "cover",
-                }}
-                src={formData.profilePicture}
-                alt="file"
-              />
-            ) : (
-              <img
-                style={{
-                  height: "inherit",
-                  width: "inherit",
-                  objectFit: "cover",
-                }}
-                src={userData ? userData.currentProfile.profilePicture : ''}
-                alt="file"
-              />
-            )}
-          </label>
-          <label className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">Choose an NFT from your wallet as your account avatar</label>
-
-          <div className="f-column align-center justify-center ml-3">
-            <input
-              accept=".png,.jpg,.jpeg,.webp"
-              style={{ display: "none" }}
-              id="input-colony-picture"
-              type={"file"}
-              onChange={undefined}
-            />
-            <label htmlFor={"input-colony-picture"}>
-              <Button width={159} height={46} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}>Select an NFT</Button>
+            <div className="flex">
+            <label
+                className="upload-colony-image f-column align-center justify-center"
+            >
+                {formData.profilePicture ? (
+                <img
+                    style={{
+                    height: "inherit",
+                    width: "inherit",
+                    objectFit: "cover",
+                    }}
+                    src={formData.profilePicture}
+                    alt="file"
+                />
+                ) : (
+                <img
+                    style={{
+                    height: "inherit",
+                    width: "inherit",
+                    objectFit: "cover",
+                    }}
+                    src={userData ? userData.currentProfile.profilePicture : ''}
+                    alt="file"
+                />
+                )}
             </label>
-          </div>
+            <label className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">Choose an NFT from your wallet as your account avatar</label>
+
+            <div className="f-column align-center justify-center ml-3">
+                <input
+                accept=".png,.jpg,.jpeg,.webp"
+                style={{ display: "none" }}
+                id="input-colony-picture"
+                type={"file"}
+                onChange={undefined}
+                />
+                <label htmlFor={"input-colony-picture"}>
+                <Button width={159} height={46} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}>Select an NFT</Button>
+                </label>
+            </div>
+            </div>
+
         </div>
 
+
+        {/* Username Section */}
+        <div className="f-column mt-5">
+            <div className="text-primary-light mb-3 text fw-600">Username</div>
+            <div className="flex">
+            <InputText
+                height={40}
+                width="70%"
+                bgColor="var(--bg-secondary-dark)"
+                glass={false}
+                placeholderColor="var(--text-primary-light)"
+                placeholder={userData ? userData.currentProfile.username : ''}
+                onChange={onChangeUsername}
+                radius="10px"
+            />
+            </div>
+        </div>
+
+        {/* Description Section */}
+        <div className="f-column mt-5">
+            <div className="text-primary-light mb-3 text fw-600">Bio</div>
+            <div className="flex">
+            <TextArea
+                height={120}
+                width="90%"
+                bgColor="var(--bg-secondary-dark)"
+                glass={false}
+                placeholder={"Describe yourself"}
+                placeholderColor="var(--text-primary-light)"
+                onChange={undefined}
+                radius="10px"
+            />
+            </div>
+        </div>
+
+        {/* Wallet Section */}
+        <div className="f-column mt-5">
+            <div className="text-primary-light mb-3 text fw-600">Connected wallet</div>
+            <div className="flex">
+            <InputText
+                height={40}
+                width="70%"
+                bgColor="var(--bg-secondary-dark)"
+                glass={false}
+                placeholder={userData ? userData.account : ''}
+                onChange={undefined}
+                disabled={true}
+                radius="10px"
+            />
+            </div>
+        </div>
+
+        {/* Submit Button */}
+        <Button classes={"mt-3"} width={159} height={46} onClick={onSubmit} radius={10} color={'var(--text-primary-light)'}>Save </Button>
       </div>
 
-
-      {/* Username Section */}
-      <div className="f-column mt-5">
-        <div className="text-primary-light mb-3 text fw-600">Username</div>
-        <div className="flex">
-          <InputText
+      <div className="f-row my-nfts">
+        <p>My public NFTS <span className="selected">67</span>/154</p>
+        <InputText
             height={40}
-            width="50%"
-            bgColor="var(--bg-secondary-dark)"
+            width="100%"
+            bgColor="var(--bg-primary)"
             glass={false}
-            placeholderColor="var(--text-primary-light)"
-            placeholder={userData ? userData.currentProfile.username : ''}
-            onChange={onChangeUsername}
-            radius="10px"
-          />
-        </div>
-      </div>
-
-      {/* Description Section */}
-      <div className="f-column mt-5">
-        <div className="text-primary-light mb-3 text fw-600">Bio</div>
-        <div className="flex">
-          <TextArea
-            height={120}
-            width="70%"
-            bgColor="var(--bg-secondary-dark)"
-            glass={false}
-            placeholder={"Describe yourself"}
-            placeholderColor="var(--text-primary-light)"
+            placeholder="Search NFT"
             onChange={undefined}
             radius="10px"
           />
-        </div>
       </div>
-
-      {/* Wallet Section */}
-      <div className="f-column mt-5">
-        <div className="text-primary-light mb-3 text fw-600">Connected wallet</div>
-        <div className="flex">
-          <InputText
-            height={40}
-            width="70%"
-            bgColor="var(--bg-secondary-dark)"
-            glass={false}
-            placeholder={userData ? userData.account : ''}
-            onChange={undefined}
-            disabled={true}
-            radius="10px"
-          />
-        </div>
-      </div>
-
-
-      {/* Submit Button */}
-      <Button classes={"mt-3"} width={159} height={46} onClick={onSubmit} radius={10} color={'var(--text-primary-light)'}>Save </Button>
+    </div>
     </>
   );
 }

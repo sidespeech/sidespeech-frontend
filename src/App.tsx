@@ -34,7 +34,7 @@ function App() {
   if(window.location.pathname == '/settings') {
      globalSettings = true;
   }
-  
+
   useEffect(() => {
     websocketService.connectToWebSocket();
     async function getUser(account: string) {
@@ -53,21 +53,26 @@ function App() {
 
   return (
     <div className="main-container relative">
-        <div className="left-container">
             {!globalSettings
-            ? <div>
+            ? <div className="left-container">
                 <div>{userData.user && <UserColonies />}</div>
                 <div>
                   <img width={45} height={45} src={logoSmall} alt="logo-small" />
                 </div>
               </div>
-            : <GlobalSettingsMenu />
+            : <div className="left-container global">
+                <GlobalSettingsMenu />
+              </div>
           }
-          
-        </div>
-      <div className="middle-container f-column align-center justify-center">
-        <Outlet></Outlet>
-      </div>
+        {!globalSettings
+          ? <div className="middle-container f-column align-center justify-center">
+              <Outlet></Outlet>
+            </div>
+          : 
+            <div className="general-settings">
+              <Outlet></Outlet>
+            </div>
+        }
     </div>
   );
 }
