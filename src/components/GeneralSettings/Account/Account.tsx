@@ -32,7 +32,41 @@ export default function GeneralSettingsAccount({
   userData: any;
 }) {
 
+  const collections = [
+    {
+      id: "001",
+      name: "Moonbirds"
+    },
+    {
+      id: "002",
+      name: "BAYC"
+    },
+    {
+      id: "003",
+      name: "Crypto Punks"
+    },
+  ];
+
+  const nfts = [
+    {
+      id: "001"
+    },
+    {
+      id: "002"
+    },
+    {
+      id: "003"
+    },
+  ];
+
   const [formData, setFormData] = useState<InitialStateProfile>(initialStateProfile);
+  
+  const [openCollection, setOpenCollection] = useState(
+    new Array(collections.length).fill(false)
+  );
+  const [checkedState, setCheckedState] = useState(
+    new Array(nfts.length).fill(false)
+  );
 
   const dispatch = useDispatch();
 
@@ -41,6 +75,31 @@ export default function GeneralSettingsAccount({
   useEffect(() => {
     console.log('userData Accounts:', userData)
   });
+
+  const handleCollectionShowing = (position : any) => {
+    const updatedCollectionShowing = openCollection.map((item, index) =>
+      index === position ? !item : item
+    );
+    setOpenCollection(updatedCollectionShowing);
+  } 
+
+  const handleNftChange = (position : any) => {
+    const updatedCheckedState = checkedState.map((item, index) =>
+      index === position ? !item : item
+    );
+    setCheckedState(updatedCheckedState);
+  } 
+
+  const handleSelectAll = () => {
+    const updatedCheckedState = checkedState.map((item, index) =>
+      item = true
+    );
+    setCheckedState(updatedCheckedState);
+  } 
+
+  const countSelected = () => {
+    console.log(checkedState);
+  };
 
   const onChangeUsername = (event: any) => {
     const username = event.target.value;
@@ -185,115 +244,66 @@ export default function GeneralSettingsAccount({
           />
           <i className="search-icon"><img src={searchIcon} /></i>
 
-        <div className="nftCollection" data-attr="moonbirds">
-
-            <div className="head">
-              <div className="float-left">
-                <div className="minus"></div> 
-                <div className="title">Moonbirds</div>
-              </div>
-              <div className="float-right">
-                <div className="selected">Public : <span className="selected">3</span>/6</div> 
-                <a className="selectAll">Select All</a>
-              </div>
-            </div>
-
-            <div className="the-nft selected">
-              <div className="inner">
-                <div className="status">PUBLIC</div>
-                <img src={nftIcon} />
-                <div className="detail text-center">
-                  <div className="number">
-                    <p>#6003</p>
+          {collections.map(({ id, name }, index) => {
+                return (
+                  <div 
+                      className={`nftCollection`}
+                      key={index} 
+                  >
+                      <div className="head">
+                        <div className="float-left" 
+                           onClick={() => handleCollectionShowing(index)}
+                        >
+                          <div className={`minus ${openCollection[index] ? "plus" : ""}`}></div> 
+                          <div className="title">{name}</div>
+                        </div>
+                        <div className="float-right">
+                          <div className="selected">Public : <span className="selected">3</span>/{nfts.length}</div> 
+                          <a className="selectAll" onClick={() => handleSelectAll()}>Select All</a>
+                        </div>
+                      </div>
+                      
+                      <div className={`nfts ${openCollection[index] ? "closed" : "open"}`}>
+                        {nfts.map(({ id }, index) => {
+                          return (
+                            <div 
+                              className={`the-nft ${checkedState[index] ? "selected" : ""}`} 
+                              key={index}
+                            >
+                              <div className="inner">
+                                {checkedState[index] ? <div className="status">Public</div> : ''}
+                                <img src={nftIcon} />
+                                <div className="detail text-center">
+                                  <div className="number">
+                                    <p>#{id}</p>
+                                  </div>
+                                  <div className="public">
+                                    <p>Public</p>
+                                    <div className="checkarea">
+                                      <input  
+                                      type="checkbox"
+                                      id={`nft-${index}`}
+                                      name={id}
+                                      value={id}
+                                      checked={checkedState[index]}
+                                      onChange={() => handleNftChange(index)}
+                                      />
+                                      <label htmlFor={`nft-${index}`}>Toggle</label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                   </div>
-                  <div className="public">
-                    <p>Public</p>
-                    <div className="checkarea">
-                      <input type="checkbox" id="switch" />
-                      <label htmlFor="switch">Toggle</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="the-nft">
-              <div className="inner">
-                <img src={nftIcon} />
-                <div className="detail text-center">
-                  <div className="number">
-                    <p>#6003</p>
-                  </div>
-                  <div className="public">
-                    <p>Public</p>
-                    <div className="checkarea">
-                      <input type="checkbox" id="switch" />
-                      <label htmlFor="switch">Toggle</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="the-nft">
-              <div className="inner">
-                <img src={nftIcon} />
-                <div className="detail text-center">
-                  <div className="number">
-                    <p>#6003</p>
-                  </div>
-                  <div className="public">
-                    <p>Public</p>
-                    <div className="checkarea">
-                      <input type="checkbox" id="switch" />
-                      <label htmlFor="switch">Toggle</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="the-nft">
-              <div className="inner">
-                <img src={nftIcon} />
-                <div className="detail text-center">
-                  <div className="number">
-                    <p>#6003</p>
-                  </div>
-                  <div className="public">
-                    <p>Public</p>
-                    <div className="checkarea">
-                      <input type="checkbox" id="switch" />
-                      <label htmlFor="switch">Toggle</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="the-nft">
-              <div className="inner">
-                <img src={nftIcon} />
-                <div className="detail text-center">
-                  <div className="number">
-                    <p>#6003</p>
-                  </div>
-                  <div className="public">
-                    <p>Public</p>
-                    <div className="checkarea">
-                      <input type="checkbox" id="switch" />
-                      <label htmlFor="switch">Toggle</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+                );
+              })}
             <div className="submitArea">
-            {/* Submit Button */}
-            <Button classes={"mt-3"} width={159} height={46} radius={10} color={'var(--text-primary-light)'}>Save Collection</Button>
+              {/* Submit Button */}
+              <Button classes={"mt-3"} width={159} height={46} radius={10} color={'var(--text-primary-light)'}>Save Collection</Button>
             </div>
-        </div>
       </div>
     </div>
     </>
