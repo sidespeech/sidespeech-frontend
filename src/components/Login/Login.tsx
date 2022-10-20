@@ -12,8 +12,8 @@ import {
   connect,
 } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
-import { useNavigate } from "react-router-dom";
-import { redirect } from "../../redux/Slices/RedirectSlice";
+import { useNavigate, redirect } from "react-router-dom";
+// import { redirect } from "../../redux/Slices/RedirectSlice";
 import logo from "../../assets/logoComplete.svg";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -22,7 +22,6 @@ import { ethers } from "ethers";
 
 import { apiService } from "../../services/api.service";
 import NftsService from "../../services/nfts.service";
-import nftsService from "../../services/nfts.service";
 
 export const SeparatorVertical = styled.div`
   min-height: 415px;
@@ -100,6 +99,9 @@ export default function Login() {
 
         // Send the wallet to the api service.
         const user = await apiService.walletConnection(accounts, signature);
+
+        // Redirect the user to the general settings page.
+        navigate('/general-settings');
 
         // Dispatch the account that is connected to the redux slice.
         dispatch(connect({ account: accounts[0], user: user }));

@@ -57,7 +57,7 @@ export default function IndexView() {
           <div className="inner">
             <a onClick={window.ethereum.disconnect}>
               <img width={45} height={45} src={disconnectMenuIcon} alt="logo-small" />
-              <p>Disconnect</p>
+              Disconnect
             </a>
           </div>
         </div>

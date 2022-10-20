@@ -20,16 +20,16 @@ export default function SidesList() {
   const [userCollections, setUserCollections] = useState<any[]>([]);
 
   useEffect(() => {
-    async function getAllSides() {
-      const sides = await sideAPI.getAllSides();
-      const collections = await nftsService.getAllCollectionsForUser(
-        "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
-      );
-      setUserCollections(_.orderBy(collections, "name"));
-      setSides(sides);
-      setfilteredSides(sides);
-    }
-    getAllSides();
+    // async function getAllSides() {
+    //   const sides = await sideAPI.getAllSides();
+    //   const collections = await nftsService.getAllCollectionsForUser(
+    //     "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
+    //   );
+    //   setUserCollections(_.orderBy(collections, "name"));
+    //   setSides(sides);
+    //   setfilteredSides(sides);
+    // }
+    // getAllSides();
   }, []);
 
   useEffect(() => {

@@ -10,6 +10,10 @@ import { apiService } from "./../../../services/api.service";
 import "./../DefaultView.css";
 import "./Account.css";
 
+// Example NFT icon.
+import nftIcon from "./../../../assets/example-nft.svg";
+import searchIcon from "./../../../assets/search.svg";
+
 export interface InitialStateProfile {
   profilePicture: string | undefined;
   username: string;
@@ -64,7 +68,7 @@ export default function GeneralSettingsAccount({
     <div className="account">
       <div className="f-row form-area">
         {/* Profile Picture Section */}
-        <div className="f-column">
+        {/* <div className="f-column">
             <div className="text-primary-light mb-3 text fw-600">Account</div>
 
             <div className="flex">
@@ -109,7 +113,7 @@ export default function GeneralSettingsAccount({
             </div>
             </div>
 
-        </div>
+        </div> */}
 
 
         {/* Username Section */}
@@ -169,7 +173,7 @@ export default function GeneralSettingsAccount({
       </div>
 
       <div className="f-row my-nfts">
-        <p>My public NFTS <span className="selected">67</span>/154</p>
+        <p>My public NFTS (<span className="selected">0</span>/6)</p>
         <InputText
             height={40}
             width="100%"
@@ -179,6 +183,117 @@ export default function GeneralSettingsAccount({
             onChange={undefined}
             radius="10px"
           />
+          <i className="search-icon"><img src={searchIcon} /></i>
+
+        <div className="nftCollection" data-attr="moonbirds">
+
+            <div className="head">
+              <div className="float-left">
+                <div className="minus"></div> 
+                <div className="title">Moonbirds</div>
+              </div>
+              <div className="float-right">
+                <div className="selected">Public : <span className="selected">3</span>/6</div> 
+                <a className="selectAll">Select All</a>
+              </div>
+            </div>
+
+            <div className="the-nft selected">
+              <div className="inner">
+                <div className="status">PUBLIC</div>
+                <img src={nftIcon} />
+                <div className="detail text-center">
+                  <div className="number">
+                    <p>#6003</p>
+                  </div>
+                  <div className="public">
+                    <p>Public</p>
+                    <div className="checkarea">
+                      <input type="checkbox" id="switch" />
+                      <label htmlFor="switch">Toggle</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="the-nft">
+              <div className="inner">
+                <img src={nftIcon} />
+                <div className="detail text-center">
+                  <div className="number">
+                    <p>#6003</p>
+                  </div>
+                  <div className="public">
+                    <p>Public</p>
+                    <div className="checkarea">
+                      <input type="checkbox" id="switch" />
+                      <label htmlFor="switch">Toggle</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="the-nft">
+              <div className="inner">
+                <img src={nftIcon} />
+                <div className="detail text-center">
+                  <div className="number">
+                    <p>#6003</p>
+                  </div>
+                  <div className="public">
+                    <p>Public</p>
+                    <div className="checkarea">
+                      <input type="checkbox" id="switch" />
+                      <label htmlFor="switch">Toggle</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="the-nft">
+              <div className="inner">
+                <img src={nftIcon} />
+                <div className="detail text-center">
+                  <div className="number">
+                    <p>#6003</p>
+                  </div>
+                  <div className="public">
+                    <p>Public</p>
+                    <div className="checkarea">
+                      <input type="checkbox" id="switch" />
+                      <label htmlFor="switch">Toggle</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="the-nft">
+              <div className="inner">
+                <img src={nftIcon} />
+                <div className="detail text-center">
+                  <div className="number">
+                    <p>#6003</p>
+                  </div>
+                  <div className="public">
+                    <p>Public</p>
+                    <div className="checkarea">
+                      <input type="checkbox" id="switch" />
+                      <label htmlFor="switch">Toggle</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="submitArea">
+            {/* Submit Button */}
+            <Button classes={"mt-3"} width={159} height={46} radius={10} color={'var(--text-primary-light)'}>Save Collection</Button>
+            </div>
+        </div>
       </div>
     </div>
     </>

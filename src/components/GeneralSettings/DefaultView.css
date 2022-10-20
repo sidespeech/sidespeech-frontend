@@ -43,3 +43,7 @@
 .globalSettingsMenu .tile.active .inner{
     background: var( --button-primary);
 }
+
+.globalSettingsMenu .tile a{
+    color: #fff!important;
+}

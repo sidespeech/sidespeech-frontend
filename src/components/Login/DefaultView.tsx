@@ -28,13 +28,7 @@ export default function DefaultView() {
     useState<boolean>(false);
   const [selectedColony, setSelectedColony] = useState<Side | null>(null);
   const userData = useSelector((state: RootState) => state.user);
-
-  /****
-   *
-   *  Will change to persisted reducer eventually....
-   *
-   ***/
-
+  const redirect = useSelector((state: RootState) => state.redirect);
   const userStorage = localStorage.getItem("userAccount");
 
   const navigate = useNavigate();
@@ -42,13 +36,15 @@ export default function DefaultView() {
   const showProfile = () => {
     setShowProfileModal(true);
   };
-
+  
   return (
     <>
       {userData.account === null && userStorage == null ? (
         <Login />
       ) : (
-        <SidesList />
+        <div>
+          Connected account and already registered user.
+        </div>
       )}
     </>
   );
