@@ -42,9 +42,7 @@ export default function DefaultView() {
       {userData.account === null && userStorage == null ? (
         <Login />
       ) : (
-        <div>
           <SidesList />
-        </div>
       )}
     </>
   );

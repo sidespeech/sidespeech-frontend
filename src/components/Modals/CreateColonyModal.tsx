@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Input } from "semantic-ui-react";
 import { addColony } from "../../redux/Slices/UserDataSlice";
 
 import Button from "../ui-components/Button";
