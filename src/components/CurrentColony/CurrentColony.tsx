@@ -20,7 +20,7 @@ import { apiService } from "../../services/api.service";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
-import { setCurrentProfile } from "../../redux/Slices/UserDataSlice";
+import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 import websocketService from "../../services/websocket.service";
 import { sideAPI } from "../../services/side.service";
 import { useParams } from "react-router-dom";
