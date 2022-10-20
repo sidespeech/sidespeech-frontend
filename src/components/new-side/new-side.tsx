@@ -63,9 +63,6 @@ const initialStateSide = {
 };
 
 // Data to add collection in condition
-// const initialDivCollections = {
-//   customDiv: ['collection1']     // set initial state with one div
-// };
 const initialDivCollections = [
   {
     collection: "",
@@ -74,6 +71,12 @@ const initialDivCollections = [
     traits_values: []
   }
 ];
+
+const initialChannelsState = {
+  currents: [],
+  removed: [],
+  added: []
+};
 
 export default function NewSide(
 ) {
@@ -93,9 +96,10 @@ export default function NewSide(
   const [tokenSelected, setTokenSelected] = useState<string>("");
   const [propertySelected, setPropertySelected] = useState<any>({});
 
+  // Variables for Channels component
+  const [channels, setChannels] = useState<any>(initialChannelsState);
+
   useEffect(() => {
-    console.log('currentSide :', currentSide)
-    console.log('userData :', userData)
     let collections = userData["nfts"]
       .map((item: any) => item.token_address)
       .filter((value: any, index: number, self: any) => self.indexOf(value) === index);
@@ -136,7 +140,7 @@ export default function NewSide(
 
   const onClick = () => {
     console.log('formData from onClick :', formData)
-    console.log('steps from onClick :', steps)
+    console.log('channels from onClick :', channels)
   };
 
   // Functions for information component
@@ -153,7 +157,7 @@ export default function NewSide(
     setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
   };
 
-  // Functions for Admission component
+  // ----- Functions for Admission component **start
   const setSideTokenAddress = async (event: any, index: number) => {
     const address = event.target.value;
     setFormData({ ...formData, NftTokenAddress: address });
@@ -238,6 +242,38 @@ export default function NewSide(
     setDivCollection(current_divs)
   };
 
+  // ----- Functions for Admission component **end
+
+  // ----- Functions for Channels component **start
+  const handleRemoveChannel = (index: number, current = true) => {
+
+    // Remove existing channel
+    if (current) {
+      let current_removed: Channel[] = [];
+      let current_channels: Channel[] = [];
+      if (channels['removed'].length) {
+        current_removed = [...channels['removed']];
+      }
+      if (channels['currents'].length) {
+        current_channels = [...channels['currents']];
+      }
+      if (!current_removed.includes(channels['currents'][index]['id'])) {
+        current_removed.push(channels['currents'][index]['id']);
+      }
+      current_channels.splice(index, 1);
+      setChannels({ ...channels, removed: current_removed, currents: current_channels });
+    }
+    // Remove new channel
+    else {
+      let current_added: Channel[] = []
+      if (channels['added'].length) {
+        current_added = [...channels['added']]
+      }
+      current_added.splice(index, 1);
+      setChannels({ ...channels, added: current_added })
+    }
+  };
+
   return (
     <>
       <nav>
@@ -284,7 +320,7 @@ export default function NewSide(
                     </>
                     : (step['label'] === 'Channels' && step['active']) ?
                       <>
-                        <Channels currentSide={currentSide} />
+                        <Channels currentSide={currentSide} channelsNewSide={channels} handleRemoveChannel={handleRemoveChannel} />
                         <div className="flex justify-between container-next-back">
                         <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
                         <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
@@ -298,7 +334,7 @@ export default function NewSide(
               </div>
             );
           })}
-          {/* <Button classes="mt-5" onClick={onClick}>Test</Button> */}
+          <Button classes="mt-5" onClick={onClick}>Test</Button>
         </div>
       </div>
     </>

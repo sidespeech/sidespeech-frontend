@@ -65,10 +65,13 @@ export default function SettingsAdmin(
   };
 
   useEffect(() => {
+    console.log('currentSide settings :', currentSide)
+    console.log('userData settings :', userData)
+
     if (!currentSide) {
       navigate(`/`)
     } else {
-      (currentSide && currentSide['creatorAddress'] === userData['account']) ? 
+      (currentSide && currentSide['creatorAddress'].toLowerCase() === (userData['account'] || "").toLowerCase()) ? 
       handleTabs('Informations') : handleTabs('Account'); 
     }
   }, []);
@@ -100,7 +103,7 @@ export default function SettingsAdmin(
               return (
                 // 
                 (submenu['admin'] === true) ?
-                  (currentSide['creatorAddress'] === userData['account']) ?
+                  (currentSide['creatorAddress'].toLowerCase() === (userData['account'] || "").toLowerCase()) ?
                     <div key={index} className="mt-2">
                       <label className="pl-4 sidebar-title">{submenu['title']}</label>
 

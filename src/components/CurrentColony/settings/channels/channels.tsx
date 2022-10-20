@@ -23,45 +23,57 @@ const initialChannelsState = {
 
 export default function Channels({
   currentSide,
+  channelsNewSide,
+  handleRemoveChannel
 }: {
   currentSide: Colony;
+  channelsNewSide?: Channel[];
+  handleRemoveChannel?: any;
 }) {
 
   const dispatch = useDispatch();
   const [channels, setChannels] = useState<any>(initialChannelsState);
 
   useEffect(() => {
+
+    console.log('channelsNewSide :', channelsNewSide)
+
     console.log('data :', { ...initialChannelsState, currents: (currentSide['channels']) ? currentSide['channels'] : [] })
     setChannels({ ...channels, currents: (currentSide['channels']) ? currentSide['channels'] : [] })
   }, []);
 
   const handleRemove = (index: number, current = true) => {
 
-    // Remove existing channel
-    if (current) {
-      let current_removed: Channel[] = [];
-      let current_channels: Channel[] = [];
-      if (channels['removed'].length) {
-        current_removed = [...channels['removed']];
+    if (channelsNewSide) {
+      handleRemoveChannel(index, current);
+    } else {
+      // Remove existing channel
+      if (current) {
+        let current_removed: Channel[] = [];
+        let current_channels: Channel[] = [];
+        if (channels['removed'].length) {
+          current_removed = [...channels['removed']];
+        }
+        if (channels['currents'].length) {
+          current_channels = [...channels['currents']];
+        }
+        if (!current_removed.includes(channels['currents'][index]['id'])) {
+          current_removed.push(channels['currents'][index]['id']);
+        }
+        current_channels.splice(index, 1);
+        setChannels({ ...channels, removed: current_removed, currents: current_channels });
       }
-      if (channels['currents'].length) {
-        current_channels = [...channels['currents']];
+      // Remove new channel
+      else {
+        let current_added: Channel[] = []
+        if (channels['added'].length) {
+          current_added = [...channels['added']]
+        }
+        current_added.splice(index, 1);
+        setChannels({ ...channels, added: current_added })
       }
-      if (!current_removed.includes(channels['currents'][index]['id'])) {
-        current_removed.push(channels['currents'][index]['id']);
-      }
-      current_channels.splice(index, 1);
-      setChannels({ ...channels, removed: current_removed, currents: current_channels });
     }
-    // Remove new channel
-    else {
-      let current_added: Channel[] = []
-      if (channels['added'].length) {
-        current_added = [...channels['added']]
-      }
-      current_added.splice(index, 1);
-      setChannels({ ...channels, added: current_added })
-    }
+
   };
 
   const handleAddChannel = () => {
@@ -109,7 +121,7 @@ export default function Channels({
         const updatedChannels = await apiService.updateManyChannels(channels['currents']);
         console.log('updatedChannels :', updatedChannels)
       }
-      
+
 
       toast.success(`Saved`, {
         toastId: 4,
@@ -135,14 +147,16 @@ export default function Channels({
               <i className="fa-solid fa-grip-lines fa-lg mr-2 text-secondary-dark"></i>
               <InputText
                 placeholderColor="var(--text-primary-light)"
+                parentWidth={"43rem"}
                 height={40}
                 width="50%"
                 bgColor="var(--bg-secondary-dark)"
                 glass={false}
                 placeholder={"# " + channel['name']}
-                onChange={(e:any) => onChangeName(e, index)}
+                onChange={(e: any) => onChangeName(e, index)}
                 radius="10px"
               />
+              <i onClick={(e) => handleRemove(index)} className="fa-solid fa-eye fa-xl remove-icon text-red cursor-pointer"></i>
               <i onClick={(e) => handleRemove(index)} className="fa-solid fa-circle-minus fa-xl remove-icon text-red cursor-pointer"></i>
             </div>
           )
@@ -155,14 +169,16 @@ export default function Channels({
               <i className="fa-solid fa-grip-lines fa-lg mr-2 text-secondary-dark"></i>
               <InputText
                 placeholderColor="var(--text-primary-light)"
+                parentWidth={"43rem"}
                 height={40}
                 width="50%"
                 bgColor="var(--bg-secondary-dark)"
                 glass={false}
                 placeholder={"#"}
-                onChange={(e:any) => onChangeName(e, index, false)}
+                onChange={(e: any) => onChangeName(e, index, false)}
                 radius="10px"
               />
+              <i onClick={(e) => handleRemove(index)} className="fa-solid fa-eye fa-xl display-icon mr-4 cursor-pointer"></i>
               <i onClick={(e) => handleRemove(index, false)} className="fa-solid fa-circle-minus fa-xl remove-icon text-red cursor-pointer"></i>
             </div>
           )
