@@ -3,7 +3,7 @@ import { Channel, Colony } from "../../../models/Colony";
 import { useDispatch, useSelector } from "react-redux";
 import { connect, fetchUserDatas } from "../../../redux/Slices/UserDataSlice";
 import { toast } from "react-toastify";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import MembersList from "./members-list/members-list"
 import Channels from "./channels/channels"
@@ -11,7 +11,7 @@ import Invitation from "./invitation/invitation"
 import Informations from "./informations/informations"
 import Account from "./account/account"
 import Eligibility from "./eligibility/eligibility"
-import "./settings-admin.css";
+import "./settings.css";
 import { RootState } from "../../../redux/store/app.store";
 import websocketService from "../../../services/websocket.service";
 import { apiService } from "../../../services/api.service";
@@ -34,6 +34,7 @@ const initialStateTabs = {
   menu: [
     {
       title: 'Settings',
+      admin: true,
       items: [
         { active: true, icon: "fa-solid fa-gear", label: "Informations" },
         { active: false, icon: "fa-solid fa-user-group", label: "Members" },
@@ -43,6 +44,7 @@ const initialStateTabs = {
     },
     {
       title: 'Profile',
+      admin: false,
       items: [
         { active: false, icon: "fa-solid fa-circle-user", label: "Account" },
         { active: false, icon: "fa-solid fa-circle-check", label: "Eligibility" }
@@ -57,6 +59,7 @@ export default function SettingsAdmin(
 ) {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const userData = useSelector((state: RootState) => state.user);
@@ -73,21 +76,14 @@ export default function SettingsAdmin(
     setTabs(currentTabState);
   };
 
-  // useEffect(() => {
-  // websocketService.connectToWebScoket();
-  // async function getUser(account: string) {
-  //   const user = await apiService.getUserByAddress(account);
-  //   dispatch(connect({ account: account, user: user }));
-  //   dispatch(fetchUserDatas(account));
-  // }
-  // const account = localStorage.getItem("userAccount");
-  // if (account) {
-  //   getUser(account);
-  // }
-  // return () => {
-  //   websocketService.deconnectWebsocket();
-  // };
-  // }, []);
+  useEffect(() => {
+    if (!currentSide) {
+      navigate(`/`)
+    } else {
+      (currentSide && currentSide['creatorAddress'] === userData['account']) ? 
+      handleTabs('Informations') : handleTabs('Account'); 
+    }
+  }, []);
 
   return (
     <>
@@ -114,15 +110,27 @@ export default function SettingsAdmin(
             {/* <label className="pl-4 sidebar-title">Settings</label> */}
             {tabs['menu'].map((submenu: any, index: number) => {
               return (
-                <div key={index} className="mt-2">
-                  <label className="pl-4 sidebar-title">{submenu['title']}</label>
+                // 
+                (submenu['admin'] === true) ?
+                  (currentSide['creatorAddress'] === userData['account']) ?
+                    <div key={index} className="mt-2">
+                      <label className="pl-4 sidebar-title">{submenu['title']}</label>
 
-                  {submenu['items'].map((subtitle: any, index: number) => {
-                    return (
-                      <TabItems key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
-                    );
-                  })}
-                </div>
+                      {submenu['items'].map((subtitle: any, index: number) => {
+                        return (
+                          <TabItems key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                        );
+                      })}
+                    </div> : null :
+                  <div key={index} className="mt-2">
+                    <label className="pl-4 sidebar-title">{submenu['title']}</label>
+
+                    {submenu['items'].map((subtitle: any, index: number) => {
+                      return (
+                        <TabItems key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                      );
+                    })}
+                  </div>
               );
             })}
           </ContainerLeft>

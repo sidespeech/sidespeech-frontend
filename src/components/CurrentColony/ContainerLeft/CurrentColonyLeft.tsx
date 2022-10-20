@@ -65,8 +65,6 @@ export default function CurrentColonyLeft() {
   };
 
   useEffect(() => {
-    console.log('currentSide:', currentSide)
-    console.log('displayUserProfile:', displayUserProfile)
     setIsAdmin(currentSide?.creatorAddress === account);
   }, [currentSide, account]);
 
@@ -82,7 +80,7 @@ export default function CurrentColonyLeft() {
         <i
           className="fa-solid fa-ellipsis pointer"
           // onClick={handleDisplayColonySettings}
-          onClick={() => navigate(`/${currentSide['id']}/settings`)}
+          onClick={() => navigate(`/${currentSide['id']}/admin-settings`)}
           style={{ marginLeft: "auto" }}
         ></i>
       </div>

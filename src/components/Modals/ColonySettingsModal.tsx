@@ -10,10 +10,10 @@ import InputText from "../ui-components/InputText";
 import { format } from "date-fns";
 import UserLine from "../ui-components/UserLine";
 import styled from "styled-components";
-import MembersList from "../CurrentColony/settings-admin/members-list/members-list"
-import Channels from "../CurrentColony/settings-admin/channels/channels"
-import Invitation from "../CurrentColony/settings-admin/invitation/invitation"
-import Informations from "../CurrentColony/settings-admin/informations/informations"
+import MembersList from "../CurrentColony/settings/members-list/members-list"
+import Channels from "../CurrentColony/settings/channels/channels"
+import Invitation from "../CurrentColony/settings/invitation/invitation"
+import Informations from "../CurrentColony/settings/informations/informations"
 
 import {
   setSelectedChannel,

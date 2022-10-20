@@ -17,7 +17,7 @@ import "semantic-ui-css/semantic.min.css";
 import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import ViewUserProfile from "./components/Modals/ViewUserProfile";
-import SettingsAdmin from "./components/CurrentColony/settings-admin/settings-admin";
+import SettingsAdmin from "./components/CurrentColony/settings/settings";
 
 // General Settings
 import GeneralSettings from "./components/GeneralSettings/DefaultView";
@@ -52,8 +52,6 @@ ReactDOM.render(
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<App />}>
-              <Route path=":id" element={<CurrentColony />} />
-              <Route path=":id/settings" element={<SettingsAdmin />} />
               <Route index element={<DefaultView />} />
               <Route
                 path="/CreateSideSpeechProfile"
