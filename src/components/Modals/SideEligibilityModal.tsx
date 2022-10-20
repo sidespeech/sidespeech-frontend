@@ -62,7 +62,7 @@ interface ISideEligibilityModalProps {
 export default function SideEligibilityModal(
   props: ISideEligibilityModalProps
 ) {
-  const { nfts, user } = useSelector((state: RootState) => state.user);
+  const { userCollectionsData: nfts, user } = useSelector((state: RootState) => state.user);
 
   const [isEligible, setIsEligible] = useState<boolean>(false);
   const [details, setDetails] = useState<any[]>([]);

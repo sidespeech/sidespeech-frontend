@@ -57,13 +57,13 @@ export function getRoleColor(role: string | number) {
 export function getRoleColorForStyle(role: string) {
   switch (role) {
     case "User":
-      return "var(--text-blue)";
+      return "var(--blue)";
     case "Moderator":
-      return "var(--text-green)";
+      return "var(--green)";
     case "Admin":
-      return "var(--text-red)";
+      return "var(--red)";
     default:
-      return "var(--text-blue)";
+      return "var(--blue)";
   }
 }
 
@@ -175,6 +175,7 @@ export function checkUserEligibility(nfts: any, selectedSide: Side): any[] {
 }
 
 export function getParsedNftMetaData(nft: any) {
+  if(!nft.metadata) return null;
   return JSON.parse(nft.metadata);
 }
 

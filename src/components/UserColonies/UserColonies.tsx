@@ -20,7 +20,7 @@ export default function UserColonies() {
 
   const changeStateModal = (value: boolean) => {
     // Iteration throw nft user to get every collection is holder
-    let collections = Object.keys(userData["nfts"]);
+    let collections = Object.keys(userData["userCollectionsData"]);
     setCollectionHolder(collections);
     setshowCreateModal(value);
   };

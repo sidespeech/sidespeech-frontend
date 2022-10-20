@@ -13,7 +13,7 @@ import { apiService } from "../services/api.service";
 import SideEligibilityModal from "./Modals/SideEligibilityModal";
 
 export default function SidesList() {
-  const { account, user, nfts } = useSelector((state: RootState) => state.user);
+  const { account, user, userCollectionsData: nfts } = useSelector((state: RootState) => state.user);
   const [sides, setSides] = useState<Side[]>([]);
   const [filteredSides, setfilteredSides] = useState<Side[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);

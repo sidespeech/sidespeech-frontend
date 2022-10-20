@@ -8,6 +8,7 @@ import { User } from "../../models/User";
 import { Profile } from "../../models/Profile";
 import { Side } from "../../models/Side";
 import nftsService from "../../services/nfts.service";
+import { UserCollectionsData } from "../../models/interfaces/UserCollectionsData";
 
 export interface UserData {
   user: User | null;
@@ -17,7 +18,7 @@ export interface UserData {
   redirectTo: null;
   sides: Side[];
   currentProfile: Profile | undefined;
-  nfts: any;
+  userCollectionsData: UserCollectionsData;
 }
 
 const initialState: UserData = {
@@ -28,7 +29,7 @@ const initialState: UserData = {
   redirectTo: null,
   sides: [],
   currentProfile: undefined,
-  nfts: {},
+  userCollectionsData: {},
 };
 
 export const fetchUserDatas = createAsyncThunk(
@@ -100,7 +101,7 @@ export const userDataSlice = createSlice({
           };
         }
       });
-      state.nfts = res;
+      state.userCollectionsData = res;
     });
   },
 });

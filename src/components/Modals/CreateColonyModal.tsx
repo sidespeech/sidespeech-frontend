@@ -77,7 +77,7 @@ export default function CreateColonyModal({ showModal, collections }: { showModa
   // Creation properties object to display in conditions
   function createPropertiesObject(address: string) {
     const foo = _.flatten(
-      Object.values(userData["nfts"]).map((value: any) => value.nfts)
+      Object.values(userData["userCollectionsData"]).map((value: any) => value.nfts)
     );
     const properties = foo.reduce(function (filtered, current) {
       if (current['token_address'] === address && current['metadata'] && JSON.parse(current['metadata'])['attributes']) {
