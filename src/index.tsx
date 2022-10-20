@@ -57,13 +57,18 @@ ReactDOM.render(
                 path="/CreateSideSpeechProfile"
                 element={<CreateSideSpeechProfile />}
               />
-              <Route path="/ViewUserProfile" element={<ViewUserProfile />} />
-
-              <Route path="/UserProfileModal" element={<UserProfileModal />} />
-
-              <Route path="/general-settings" element={<GeneralSettingsAccount />} />
-              <Route path="/general-settings/:page" element={<GeneralSettings />} />
+              <Route path=":id" element={<CurrentColony />}>
+                <Route path="profile/:id" element={<UserProfile />} />
+              </Route>
             </Route>
+            <Route
+              path="/general-settings"
+              element={<GeneralSettingsAccount />}
+            />
+            <Route
+              path="/general-settings/:page"
+              element={<GeneralSettings />}
+            />
           </Routes>
         </BrowserRouter>
       </MoralisProvider>

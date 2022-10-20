@@ -43,7 +43,7 @@ export default function DefaultView() {
         <Login />
       ) : (
         <div>
-          Connected account and already registered user.
+          <SidesList />
         </div>
       )}
     </>
