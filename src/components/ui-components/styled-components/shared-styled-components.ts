@@ -13,3 +13,23 @@ export const Dot = styled.div`
   align-items: center;
   padding: 0px 1px 2px 0px;
 `;
+
+interface IRoundedImageContainerProps {
+  width: string;
+  height: string;
+  radius: number;
+}
+export const RoundedImageContainer = styled.div<IRoundedImageContainerProps>`
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+  min-width: ${(props) => props.width};
+  min-height: ${(props) => props.height};
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid black;
+  border-radius: ${(props) => props.radius}px;
+  margin: 0px 12px;
+  overflow: hidden;
+  & img {
+    object-fit: cover;
+  }
+`;

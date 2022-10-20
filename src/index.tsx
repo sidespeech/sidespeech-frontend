@@ -13,11 +13,7 @@ import "react-leaf-polls/dist/index.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./override.css";
 import "./index.css";
-import "semantic-ui-css/semantic.min.css";
-import UserProfileModal from "./components/Modals/UserProfileModal";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
-import ViewUserProfile from "./components/Modals/ViewUserProfile";
-import SettingsAdmin from "./components/CurrentColony/settings/settings";
 
 // General Settings
 import GeneralSettings from "./components/GeneralSettings/DefaultView";
@@ -25,7 +21,6 @@ import GeneralSettingsAccount from "./components/GeneralSettings/Account/Account
 
 import { MoralisProvider } from "react-moralis";
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
-import UserSettings from "./components/GeneralSettings/DefaultView";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -57,12 +52,17 @@ ReactDOM.render(
                 path="/CreateSideSpeechProfile"
                 element={<CreateSideSpeechProfile />}
               />
-              <Route path="/ViewUserProfile" element={<ViewUserProfile />} />
-
-              <Route path="/UserProfileModal" element={<UserProfileModal />} />
-
-              <Route path="/general-settings" element={<GeneralSettingsAccount />} />
-              <Route path="/general-settings/:page" element={<GeneralSettings />} />
+              <Route path=":id" element={<CurrentColony />}>
+                <Route path="profile/:id" element={<UserProfile />} />
+              </Route>
+              <Route
+                path="/general-settings"
+                element={<GeneralSettingsAccount />}
+              />
+              <Route
+                path="/general-settings/:page"
+                element={<GeneralSettings />}
+              />
             </Route>
           </Routes>
         </BrowserRouter>

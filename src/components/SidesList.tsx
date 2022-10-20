@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useMoralis } from "react-moralis";
 import { useSelector } from "react-redux";
 import { reduceWalletAddress } from "../helpers/utilities";
 import { Side } from "../models/Side";
@@ -11,25 +10,28 @@ import _ from "lodash";
 import nftsService from "../services/nfts.service";
 import Button from "./ui-components/Button";
 import { apiService } from "../services/api.service";
+import SideEligibilityModal from "./Modals/SideEligibilityModal";
 
 export default function SidesList() {
-  const { account, user } = useSelector((state: RootState) => state.user);
+  const { account, user, userCollectionsData: nfts } = useSelector((state: RootState) => state.user);
   const [sides, setSides] = useState<Side[]>([]);
   const [filteredSides, setfilteredSides] = useState<Side[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
   const [userCollections, setUserCollections] = useState<any[]>([]);
+  const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
+  const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
   useEffect(() => {
-    // async function getAllSides() {
-    //   const sides = await sideAPI.getAllSides();
-    //   const collections = await nftsService.getAllCollectionsForUser(
-    //     "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
-    //   );
-    //   setUserCollections(_.orderBy(collections, "name"));
-    //   setSides(sides);
-    //   setfilteredSides(sides);
-    // }
-    // getAllSides();
+    async function getAllSides() {
+      const sides = await sideAPI.getAllSides();
+      const collections = await nftsService.getAllCollectionsForUser(
+        "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
+      );
+      setUserCollections(_.orderBy(collections, "name"));
+      setSides(sides);
+      setfilteredSides(sides);
+    }
+    getAllSides();
   }, []);
 
   useEffect(() => {
@@ -41,9 +43,13 @@ export default function SidesList() {
     }
   }, [selectedCollection, sides]);
 
-  const handleJoinSide = (side: Side) => {
-    if (user) apiService.joinSide(user.id, side.id);
+  const handleEligibilityCheck = (side: Side) => {
+    setSelectedSide(side);
+    setDisplayEligibility(true);
+    console.log(nfts);
   };
+
+ 
 
   return (
     <div className="justify-center align-center f-column w-100 mb-auto">
@@ -77,7 +83,7 @@ export default function SidesList() {
                   <div className="join-div">
                     <Button
                       children={"join"}
-                      onClick={() => handleJoinSide(s)}
+                      onClick={() => handleEligibilityCheck(s)}
                     />
                   </div>
                 </div>
@@ -86,6 +92,12 @@ export default function SidesList() {
           </div>
         </div>
       </div>
+      {displayEligibility && selectedSide && (
+        <SideEligibilityModal
+          setDisplayEligibility={setDisplayEligibility}
+          selectedSide={selectedSide}
+        />
+      )}
     </div>
   );
 }

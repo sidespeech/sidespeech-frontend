@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Input } from "semantic-ui-react";
 import { addColony } from "../../redux/Slices/UserDataSlice";
 
 import Button from "../ui-components/Button";
@@ -13,6 +12,7 @@ import CustomSelect from "../ui-components/CustomSelect";
 import { apiService } from "../../services/api.service";
 import nftsService from "../../services/nfts.service";
 import { RootState } from "../../redux/store/app.store";
+import _ from "lodash";
 
 export interface InitialState {
   sideImage: string | null;
@@ -76,7 +76,10 @@ export default function CreateColonyModal({ showModal, collections }: { showModa
 
   // Creation properties object to display in conditions
   function createPropertiesObject(address: string) {
-    const properties = userData['nfts'].reduce(function (filtered, current) {
+    const foo = _.flatten(
+      Object.values(userData["userCollectionsData"]).map((value: any) => value.nfts)
+    );
+    const properties = foo.reduce(function (filtered, current) {
       if (current['token_address'] === address && current['metadata'] && JSON.parse(current['metadata'])['attributes']) {
         let attributes = JSON.parse(current['metadata'])['attributes'];
         for (let attribute of attributes) {

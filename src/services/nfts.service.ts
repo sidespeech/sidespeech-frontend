@@ -62,5 +62,21 @@ class NftsService {
     } while (cursor !== "" && cursor !== null);
     return allResults;
   }
+  /**
+   * @description Get an array of nfts datas and add missing metadata if needed
+   * @param datas array of nfts datas
+   * @returns Array of nfts data with missing metadata
+   */
+  async getMissingMetadata(datas: any[]): Promise<any[]> {
+    datas.forEach(async (element) => {
+      if (element.token_uri && element.metadata === null) {
+        try {
+          const data = await fetch(element.token_uri);
+          element.metadata = JSON.stringify(data);
+        } catch (error: any) {}
+      }
+    });
+    return datas;
+  }
 }
 export default NftsService.getInstance();

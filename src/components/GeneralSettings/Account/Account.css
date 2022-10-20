@@ -37,6 +37,7 @@
     flex: 1.2;
     background-color: var(--bg-secondary-dark);
     overflow-y: scroll;
+    max-height: calc(100vh - 56px);
 }
 
 .general-settings .my-nfts .nfts.closed {
@@ -54,7 +55,7 @@
 }
 
 .general-settings .my-nfts span.selected {
-    color: var(--text-green);
+    color: var(--green);
 }
 
 .general-settings .my-nfts .nftCollection .head {
@@ -93,8 +94,11 @@
     top: -6px;
 }
 
-.general-settings .my-nfts .nftCollection .head .title {
-   
+.general-settings .my-nfts .nftCollection .head .float-left .title {
+   width: 80%;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+   overflow: hidden;
 }
 
 .general-settings .my-nfts .nftCollection .head .float-left {
@@ -105,7 +109,7 @@
 }
 
 .general-settings .my-nfts .nftCollection .head .selectAll {
-    color: var(--text-green)!important;
+    color: var(--green)!important;
     float: right;
     cursor: pointer;
 }
@@ -125,7 +129,7 @@
 }
 
 .general-settings .my-nfts .nftCollection .the-nft.selected .inner {
-    border: 2px solid var(--text-green);
+    border: 2px solid var(--green);
     border-radius: 10px;
     position: relative;
 }
@@ -133,7 +137,7 @@
 .general-settings .my-nfts .nftCollection .the-nft.selected .inner .status{
     position: absolute;
     width: 70px;
-    background: var(--text-green);
+    background: var(--green);
     border-radius: 0 0 10px 10px;
     display: block;
     margin: 0 auto;
@@ -205,7 +209,7 @@
 }
 
 .general-settings .my-nfts .nftCollection .the-nft input:checked + label {
-	background: var(--text-green);
+	background: var(--green);
 }
 
 .general-settings .my-nfts .nftCollection .the-nft input:checked + label:after {
