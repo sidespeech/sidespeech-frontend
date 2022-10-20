@@ -48,6 +48,7 @@ export default function CustomSelect({
   fontSize,
   radius,
   bgColor,
+  classes,
 }: {
   onChange: any;
   options: any[];
@@ -62,6 +63,7 @@ export default function CustomSelect({
   fontWeight?:number;
   radius?:string;
   bgColor?:string;
+  classes?: string;
 }) {
   const [selected, setSelected] = useState(false);
   const [defautState, setDefautState] = useState(null);
@@ -79,7 +81,7 @@ export default function CustomSelect({
   }, [valueToSet]);
 
   return (
-    <SelectContainer width={width} height={height}>
+    <SelectContainer width={width} height={height} className={classes}>
       <SelectCustom
       fontSize={fontSize}
       bgColor={bgColor}

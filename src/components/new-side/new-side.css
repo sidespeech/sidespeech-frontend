@@ -13,21 +13,9 @@
     font-family : "Inter", sans-serif;
 }
 
-.flex{
-    display: flex;
-  }
-  
-  .avtr {
-    border-radius: 50%;
-    margin-left: 10px;
-    width: 35px;
-  }
-  
-  .vl {
-    border-left: 3px solid  var(--text-primary-light);
-    height: 30px;
-    margin-right: 15px;
-  }
+.container-next-back {
+    width: 40rem;
+}
 
 nav{
     display: flex;
@@ -36,9 +24,6 @@ nav{
     justify-content: space-between;
     padding: 10px 10px;
     width: inherit;
-}
-.navTitle{
-    font-weight: 700 !important;
 }
 
 .nav-link.active {
@@ -73,49 +58,7 @@ nav .nav-items li a:hover {
     color: #4f4f4f;
 }
 
-nav .inputform {
-    display: flex;
-    height: 40px;
-    padding: 2px;
-
-    min-width: 18% !important;
-    background: #1e232b;
-    border: 1px solid rgba(155, 155, 155, 0.2);
-    border-radius: 36px;
-}
-
-nav .inputform .search-data {
-    width: 100%;
-    height: 100%;
-    padding: 0 10px;
-    color: #fff;
-    font-size: 17px;
-    border: none;
-    font-weight: 500;
-    background: none;
-
-}
-
-.inputform button {
-    padding: 0 15px;
-    color: #fff;
-    font-size: 17px;
-    background: transparent;
-    border: none;
-    border-radius: 2px;
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    cursor: pointer;
-    transition: .2s all;
-}
-
-nav form button:hover {
-    background: #2b9638;
-}
-
-nav .menu-icon,
-nav .cancel-icon,
-nav .search-icon {
+nav .menu-icon {
     width: 40px;
     text-align: center;
     margin: 0 50px;
@@ -125,32 +68,8 @@ nav .search-icon {
     display: none;
 }
 
-nav .menu-icon span,
-nav .cancel-icon,
-nav .search-icon {
+nav .menu-icon span {
     display: none;
-}
-
-.d-flex {
-    display: flex;
-}
-
-.profileInfo img {
-    border-radius: 50%;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    -ms-border-radius: 50%;
-    -o-border-radius: 50%;
-
-}
-
-.profileInfo p {
-    padding-left: 15px;
-    padding-right: 12px;
-}
-
-.profileInfo button {
-    padding: 4px 8px;
 }
 
 .collection-icon-check {

@@ -8,6 +8,7 @@ interface ButtonProps {
   radius?: number;
   background?: string;
   color?: string;
+  border?: string;
 }
 
 const CustomButton = styled.div<ButtonProps>`
@@ -16,6 +17,7 @@ const CustomButton = styled.div<ButtonProps>`
   color: ${(props) => (props.background ? props.color : 'white')};
   background: ${(props) => (props.background ? props.background : 'var(--button-primary)')};
   border-radius: ${(props) => (props.radius ? props.radius : 100)}px;
+  border : ${(props) => (props.border ? props.border : "none")};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,6 +34,7 @@ export default function Button({
   radius,
   background,
   color,
+  border
 }: {
   children: any;
   onClick: any;
@@ -42,11 +45,13 @@ export default function Button({
   radius?:number;
   background?:string;
   color?:string;
+  border?:string;
 }) {
   return (
     <CustomButton
       className={classes}
       width={width}
+      border={border}
       height={height}
       onClick={onClick}
       disabled={disabled}

@@ -106,7 +106,7 @@ export default function SettingsAdmin(
 
                       {submenu['items'].map((subtitle: any, index: number) => {
                         return (
-                          <TabItems key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                          <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
                         );
                       })}
                     </div> : null :
@@ -115,7 +115,7 @@ export default function SettingsAdmin(
 
                     {submenu['items'].map((subtitle: any, index: number) => {
                       return (
-                        <TabItems key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                        <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
                       );
                     })}
                   </div>

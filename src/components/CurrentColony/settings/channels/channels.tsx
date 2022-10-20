@@ -31,8 +31,8 @@ export default function Channels({
   const [channels, setChannels] = useState<any>(initialChannelsState);
 
   useEffect(() => {
-    console.log('data :', { ...initialChannelsState, currents: currentSide['channels'] })
-    setChannels({ ...channels, currents: currentSide['channels'] })
+    console.log('data :', { ...initialChannelsState, currents: (currentSide['channels']) ? currentSide['channels'] : [] })
+    setChannels({ ...channels, currents: (currentSide['channels']) ? currentSide['channels'] : [] })
   }, []);
 
   const handleRemove = (index: number, current = true) => {

@@ -14,7 +14,7 @@ import Informations from "../CurrentColony/settings/informations/informations";
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
 import Admission from "./admission/admission";
-import Channels from "./channels/channels";
+import Channels from "../CurrentColony/settings/channels/channels";
 import Invitation from "./invitation/invitation";
 
 const initialStateSteps = [
@@ -85,6 +85,8 @@ export default function NewSide(
   const [formData, setFormData] = useState<InitialStateSide>(initialStateSide);
   const userData = useSelector((state: RootState) => state.user);
   const [steps, setSteps] = useState<any>(initialStateSteps);
+
+  // Variables for Admission component
   const [divCollections, setDivCollection] = useState<any[]>(initialDivCollections);
   const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
   const [tokenProperties, setTokenProperties] = useState<any>({});
@@ -100,34 +102,32 @@ export default function NewSide(
     setCollectionHolder(collections);
   }, []);
 
-  const handleSteps = (index: number) => {
+  const newSideNextPreviousStep = (index: number, previous: boolean = false) => {
     const currentStepsState = steps.map((item: any, map_i: number) => {
-      // Turn active or not for selected item
-      item['active'] = (map_i === index) ? true : false;
-      // Turn completed or not for previous or next items
-      item['completed'] = (map_i < index) ? true : false;
-      return item
-    });
-    setSteps(currentStepsState);
-  };
 
-  const newSideNextStep = (index: number) => {
-    const currentStepsState = steps.map((item: any, map_i: number) => {
-      // Turn active or not for selected item
-      item['active'] = (map_i === index + 1) ? true : false;
-      // Turn completed or not for previous or next items
-      item['completed'] = (map_i < index + 1) ? true : false;
+      if (!previous) {
+        // Turn active or not for selected item
+        item['active'] = (map_i === index + 1) ? true : false;
+        // Turn completed or not for previous or next items
+        item['completed'] = (map_i < index + 1) ? true : false;
 
-      // Set condition of Side
-      if (item['label'] === 'Admission' && map_i === index ) {
-        let current_divs = [...divCollections]
-        let conditions:any = {};
-        for (let div of current_divs) {
-          conditions[div['collection']] = {};
-          conditions[div['collection']][div['trait_selected']] = div['value_selected'];
+        // Set condition of Side
+        if (item['label'] === 'Admission' && map_i === index) {
+          let current_divs = [...divCollections]
+          let conditions: any = {};
+          for (let div of current_divs) {
+            conditions[div['collection']] = {};
+            conditions[div['collection']][div['trait_selected']] = div['value_selected'];
+          }
+          setFormData({ ...formData, conditions: conditions });
         }
-        setFormData({ ...formData, conditions: conditions });
+      } else {
+        // Turn active or not for selected item
+        item['active'] = (map_i === index - 1) ? true : false;
+        // Turn completed or not for previous or next items
+        item['completed'] = (map_i < index - 1) ? true : false;
       }
+
 
       return item
     });
@@ -139,6 +139,7 @@ export default function NewSide(
     console.log('steps from onClick :', steps)
   };
 
+  // Functions for information component
   const onChangeSideName = (name: string) => {
     setFormData({ ...formData, name: name });
   };
@@ -152,6 +153,7 @@ export default function NewSide(
     setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
   };
 
+  // Functions for Admission component
   const setSideTokenAddress = async (event: any, index: number) => {
     const address = event.target.value;
     setFormData({ ...formData, NftTokenAddress: address });
@@ -202,7 +204,7 @@ export default function NewSide(
     }
   };
 
-  const setSideValueCondition = (event: any, index:number) => {
+  const setSideValueCondition = (event: any, index: number) => {
     const value = event.target.value;
     if (value.trim().length) {
       let current_divs = [...divCollections];
@@ -216,10 +218,23 @@ export default function NewSide(
     let current_divs = [...divCollections];
     current_divs.push({
       collection: "",
-      trait_selected: "",
-      value_selected: "",
+      // trait_selected: "",
+      // value_selected: "",
       traits_values: []
     });
+    setDivCollection(current_divs)
+  };
+
+  const addConditionToDivCollection = (index: number) => {
+    let current_divs = [...divCollections];
+    current_divs[index] = { ...current_divs[index], trait_selected: "", value_selected: "" }
+    setDivCollection(current_divs)
+  };
+
+  // Remove collection div in condition
+  const removeDivCollection = (index: number) => {
+    let current_divs = [...divCollections];
+    current_divs.splice(index, 1);
     setDivCollection(current_divs)
   };
 
@@ -230,7 +245,7 @@ export default function NewSide(
           <span className="fas fa-bars"></span>
         </div>
         <div className="nav-items text-primary-light size-17">
-          <li><i className="fa fa-circle-plus mr-2"></i> <label className='navTitle'> Create Side </label></li>
+          <li><i className="fa fa-circle-plus mr-2"></i> <label className='w-700'> Create Side </label></li>
         </div>
       </nav>
 
@@ -239,7 +254,7 @@ export default function NewSide(
           <label className="pl-4 sidebar-title  mb-2 mt-4">Steps</label>
           {steps.map((step: any, index: number) => {
             return (
-              <TabItems key={index} className={`nav-link pl-5 pt-3 pb-3 ${step['active'] ? 'active' : ''} ${step['completed'] ? 'completed' : ''} sidebar-item text-secondary-dark`} onClick={() => handleSteps(index)}><i className={`${step['icon']} mr-2`}></i>{step['label']} {step['completed'] ? <i className="fa-solid fa-check ml-4"></i> : null}</TabItems>
+              <TabItems key={index} className={`nav-link pl-5 pt-3 pb-3 ${step['active'] ? 'active' : ''} ${step['completed'] ? 'completed' : ''} sidebar-item text-secondary-dark`}><i className={`${step['icon']} mr-2`}></i>{step['label']} {step['completed'] ? <i className="fa-solid fa-check ml-4"></i> : null}</TabItems>
             );
           })}
         </ContainerLeft>
@@ -251,28 +266,39 @@ export default function NewSide(
                 (step['label'] === 'Informations' && step['active']) ?
                   <>
                     <Informations currentSide={formData} onChangeNewSideName={onChangeSideName} onChangeNewSideImage={onChangeSideImage} />
-                    <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                    <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
                   </>
                   : (step['label'] === 'Admission' && step['active']) ?
                     <>
-                      <Admission currentSide={currentSide} divCollections={divCollections} collections={collectionHolder} setSideTokenAddress={setSideTokenAddress} tokenProperties={tokenProperties} setSidePropertyCondition={setSidePropertyCondition} setSideValueCondition={setSideValueCondition} addDivCollection={addDivCollection} propertySelected={propertySelected} />
-                      <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                      <Admission currentSide={currentSide} divCollections={divCollections} collections={collectionHolder}
+                        setSideTokenAddress={setSideTokenAddress} tokenProperties={tokenProperties}
+                        setSidePropertyCondition={setSidePropertyCondition} setSideValueCondition={setSideValueCondition}
+                        addDivCollection={addDivCollection} propertySelected={propertySelected} removeDivCollection={removeDivCollection}
+                        addConditionToDivCollection={addConditionToDivCollection}
+                      />
+                      <div className="flex justify-between container-next-back">
+                        <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
+                        <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                      </div>
+
                     </>
                     : (step['label'] === 'Channels' && step['active']) ?
                       <>
                         <Channels currentSide={currentSide} />
-                        <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
-                      </>
+                        <div className="flex justify-between container-next-back">
+                        <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
+                        <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                      </div>                      </>
                       : (step['label'] === 'Invitation' && step['active']) ?
                         <>
                           <Invitation currentSide={currentSide} />
-                          <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                          <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
                         </> : null
               }
               </div>
             );
           })}
-          <Button classes="mt-5" onClick={onClick}>Test</Button>
+          {/* <Button classes="mt-5" onClick={onClick}>Test</Button> */}
         </div>
       </div>
     </>
