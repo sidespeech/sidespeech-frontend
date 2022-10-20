@@ -10,6 +10,12 @@ import { RootState } from "../../../redux/store/app.store";
 import { apiService } from "../../../services/api.service";
 import ContainerLeft from "../ui-components/ContainerLeft";
 import TabItems from "../ui-components/TabItems";
+import Informations from "../CurrentColony/settings/informations/informations";
+import { Side } from "../../models/Side";
+import Button from "../ui-components/Button";
+import Admission from "./admission/admission";
+import Channels from "./channels/channels";
+import Invitation from "./invitation/invitation";
 
 const initialStateSteps = [
   {
@@ -38,28 +44,183 @@ const initialStateSteps = [
   },
 ];
 
+export interface InitialStateSide {
+  sideImage: string | undefined;
+  name: string;
+  description: string;
+  NftTokenAddress: string;
+  conditions: any;
+  creatorAddress: string | null;
+}
+
+const initialStateSide = {
+  sideImage: undefined,
+  name: "",
+  description: "",
+  NftTokenAddress: "",
+  conditions: {},
+  creatorAddress: localStorage.getItem("userAccount")
+};
+
+// Data to add collection in condition
+// const initialDivCollections = {
+//   customDiv: ['collection1']     // set initial state with one div
+// };
+const initialDivCollections = [
+  {
+    collection: "",
+    trait_selected: "",
+    value_selected: "",
+    traits_values: []
+  }
+];
+
 export default function NewSide(
 ) {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const currentSide = new Side({});
+  const [formData, setFormData] = useState<InitialStateSide>(initialStateSide);
   const userData = useSelector((state: RootState) => state.user);
   const [steps, setSteps] = useState<any>(initialStateSteps);
+  const [divCollections, setDivCollection] = useState<any[]>(initialDivCollections);
+  const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
+  const [tokenProperties, setTokenProperties] = useState<any>({});
+  const [tokenSelected, setTokenSelected] = useState<string>("");
+  const [propertySelected, setPropertySelected] = useState<any>({});
 
   useEffect(() => {
+    console.log('currentSide :', currentSide)
+    console.log('userData :', userData)
+    let collections = userData["nfts"]
+      .map((item: any) => item.token_address)
+      .filter((value: any, index: number, self: any) => self.indexOf(value) === index);
+    setCollectionHolder(collections);
   }, []);
 
   const handleSteps = (index: number) => {
-    const currentStepsState = steps.map((item : any, map_i : number) => {
+    const currentStepsState = steps.map((item: any, map_i: number) => {
       // Turn active or not for selected item
       item['active'] = (map_i === index) ? true : false;
       // Turn completed or not for previous or next items
-      item['completed'] = (map_i < index ) ? true : false ;
+      item['completed'] = (map_i < index) ? true : false;
       return item
     });
     setSteps(currentStepsState);
+  };
+
+  const newSideNextStep = (index: number) => {
+    const currentStepsState = steps.map((item: any, map_i: number) => {
+      // Turn active or not for selected item
+      item['active'] = (map_i === index + 1) ? true : false;
+      // Turn completed or not for previous or next items
+      item['completed'] = (map_i < index + 1) ? true : false;
+
+      // Set condition of Side
+      if (item['label'] === 'Admission' && map_i === index ) {
+        let current_divs = [...divCollections]
+        let conditions:any = {};
+        for (let div of current_divs) {
+          conditions[div['collection']] = {};
+          conditions[div['collection']][div['trait_selected']] = div['value_selected'];
+        }
+        setFormData({ ...formData, conditions: conditions });
+      }
+
+      return item
+    });
+    setSteps(currentStepsState);
+  };
+
+  const onClick = () => {
+    console.log('formData from onClick :', formData)
+    console.log('steps from onClick :', steps)
+  };
+
+  const onChangeSideName = (name: string) => {
+    setFormData({ ...formData, name: name });
+  };
+
+  const onChangeSideImage = (event: any) => {
+    const file = event.target.files[0];
+    if (file.size > 500000) {
+      toast.error("The image size has to be smaller than 500ko.");
+      return;
+    }
+    setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
+  };
+
+  const setSideTokenAddress = async (event: any, index: number) => {
+    const address = event.target.value;
+    setFormData({ ...formData, NftTokenAddress: address });
+    if (address.trim().length) {
+      let current_divs = [...divCollections];
+      current_divs[index]['collection'] = address
+      current_divs[index]['traits_values'] = createPropertiesObject(address);
+      setDivCollection(current_divs);
+    }
+
+  };
+
+  // Creation properties object to display in conditions
+  function createPropertiesObject(address: string) {
+    const properties = userData['nfts'].reduce(function (filtered: any, current: any) {
+      if (current['token_address'] === address && current['metadata'] && JSON.parse(current['metadata'])['attributes']) {
+        let attributes = JSON.parse(current['metadata'])['attributes'];
+        if (Array.isArray(attributes)) {
+          for (let attribute of attributes) {
+            let property_exists = filtered.filter(function (o: any) { return o['property']['value'] == attribute['trait_type'] }).length > 0;
+            if (property_exists) {
+              for (let element of filtered) {
+                if (element['property']['value'] == attribute['trait_type']) {
+                  let value_exists = element['values'].filter(function (o: any) { return o['value'] == attribute['value'] }).length > 0;
+                  if (!value_exists) element['values'].push({ label: attribute['value'], value: attribute['value'] })
+                }
+              }
+            } else {
+              filtered.push({ property: { label: attribute['trait_type'], value: attribute['trait_type'] }, values: [{ label: attribute['value'], value: attribute['value'] }] },)
+            }
+
+          }
+        }
+
+      }
+      return filtered;
+
+    }, []);
+    return properties
+  }
+
+  const setSidePropertyCondition = (event: any, index: number) => {
+    const trait = event.target.value;
+    if (trait.trim().length) {
+      let current_divs = [...divCollections];
+      current_divs[index]['trait_selected'] = trait
+      setDivCollection(current_divs);
+    }
+  };
+
+  const setSideValueCondition = (event: any, index:number) => {
+    const value = event.target.value;
+    if (value.trim().length) {
+      let current_divs = [...divCollections];
+      current_divs[index]['value_selected'] = value
+      setDivCollection(current_divs);
+    }
+  };
+
+  // Add collection div in condition
+  const addDivCollection = () => {
+    let current_divs = [...divCollections];
+    current_divs.push({
+      collection: "",
+      trait_selected: "",
+      value_selected: "",
+      traits_values: []
+    });
+    setDivCollection(current_divs)
   };
 
   return (
@@ -75,13 +236,44 @@ export default function NewSide(
 
       <div className="flex align-start w-100 text-left">
         <ContainerLeft>
-        <label className="pl-4 sidebar-title  mb-2 mt-4">Steps</label>
+          <label className="pl-4 sidebar-title  mb-2 mt-4">Steps</label>
           {steps.map((step: any, index: number) => {
             return (
               <TabItems key={index} className={`nav-link pl-5 pt-3 pb-3 ${step['active'] ? 'active' : ''} ${step['completed'] ? 'completed' : ''} sidebar-item text-secondary-dark`} onClick={() => handleSteps(index)}><i className={`${step['icon']} mr-2`}></i>{step['label']} {step['completed'] ? <i className="fa-solid fa-check ml-4"></i> : null}</TabItems>
             );
           })}
         </ContainerLeft>
+
+        <div className="f-column w-100 pt-3 ml-5">
+          {steps.map((step: any, index: number) => {
+            return (
+              <div key={index}> {
+                (step['label'] === 'Informations' && step['active']) ?
+                  <>
+                    <Informations currentSide={formData} onChangeNewSideName={onChangeSideName} onChangeNewSideImage={onChangeSideImage} />
+                    <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                  </>
+                  : (step['label'] === 'Admission' && step['active']) ?
+                    <>
+                      <Admission currentSide={currentSide} divCollections={divCollections} collections={collectionHolder} setSideTokenAddress={setSideTokenAddress} tokenProperties={tokenProperties} setSidePropertyCondition={setSidePropertyCondition} setSideValueCondition={setSideValueCondition} addDivCollection={addDivCollection} propertySelected={propertySelected} />
+                      <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                    </>
+                    : (step['label'] === 'Channels' && step['active']) ?
+                      <>
+                        <Channels currentSide={currentSide} />
+                        <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                      </>
+                      : (step['label'] === 'Invitation' && step['active']) ?
+                        <>
+                          <Invitation currentSide={currentSide} />
+                          <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                        </> : null
+              }
+              </div>
+            );
+          })}
+          <Button classes="mt-5" onClick={onClick}>Test</Button>
+        </div>
       </div>
     </>
   );

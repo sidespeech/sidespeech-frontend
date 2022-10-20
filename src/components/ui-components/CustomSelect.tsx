@@ -10,6 +10,8 @@ interface ISelectContainer {
 interface ISelectCustom {
   fontSize?: number;
   fontWeight?: number;
+  radius?: string;
+  bgColor?:string;
 }
 
 const SelectContainer = styled.div<ISelectContainer>`
@@ -21,6 +23,8 @@ const SelectContainer = styled.div<ISelectContainer>`
 const SelectCustom = styled.select<ISelectCustom>`
   font-size: ${(props) => (props.fontSize ? props.fontSize : 11)}px;
   font-weight: ${(props) => (props.fontWeight ? props.fontWeight : "400")};
+  border-radius: ${(props) => (props.radius ? props.radius : "20px")};
+  background: ${(props) => (props.bgColor ? props.bgColor : "var(--bg-secondary-dark)")};
 `;
 
 /**
@@ -41,7 +45,9 @@ export default function CustomSelect({
   height,
   arrowPosition,
   fontWeight,
-  fontSize
+  fontSize,
+  radius,
+  bgColor,
 }: {
   onChange: any;
   options: any[];
@@ -54,6 +60,8 @@ export default function CustomSelect({
   arrowPosition?: any;
   fontSize?:number;
   fontWeight?:number;
+  radius?:string;
+  bgColor?:string;
 }) {
   const [selected, setSelected] = useState(false);
   const [defautState, setDefautState] = useState(null);
@@ -74,7 +82,9 @@ export default function CustomSelect({
     <SelectContainer width={width} height={height}>
       <SelectCustom
       fontSize={fontSize}
+      bgColor={bgColor}
       fontWeight={fontWeight}
+      radius={radius}
         onChange={(event: any) => {
           setValue(event.target.value);
           onChange(event);

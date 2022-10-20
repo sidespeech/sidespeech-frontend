@@ -1,0 +1,10 @@
+.collection-item {
+    background-color: var(--bg-secondary-dark);
+}
+
+html {
+    box-sizing: border-box;
+  }
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }

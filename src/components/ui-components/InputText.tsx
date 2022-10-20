@@ -12,7 +12,7 @@ interface InputTextPropsType {
   height?: number;
   bgColor?: string;
   placeholderColor?: string;
-  placeholder: string;
+  placeholder?: string;
   border?: string;
   padding?: string;
   radius?: string;
