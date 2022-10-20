@@ -2,14 +2,13 @@ import React, { forwardRef } from "react";
 import styled from "styled-components";
 import sendicon from "../../assets/send-icon.svg";
 
-interface InputTextPropsType {
+interface TextAreaPropsType {
   maxWidth?: number;
   disabled?: any;
   id?: any;
   maxLength?: number;
   iconSize?: number;
   width?: number | string;
-  parentWidth?: number | string;
   height?: number;
   bgColor?: string;
   placeholderColor?: string;
@@ -31,13 +30,12 @@ interface InputTextPropsType {
   defaultValue?: string;
 }
 
-interface InputProps {
+interface TextAreaProps {
   id?: any;
   maxWidth?: number;
   disabled?: any;
   maxLength?: number;
   width?: number | string;
-  parentWidth?: number | string;
   height?: number | string;
   bgColor?: string;
   border?: string;
@@ -53,17 +51,17 @@ interface InputProps {
   type: string;
 }
 
-const Input = styled.input<InputProps>`
+const InputTextArea = styled.textarea<TextAreaProps>`
   max-width: ${(props) => (props.maxWidth ? props.maxWidth : "")}px;
   width: ${(props) => (props.width ? props.width : "100%")};
   border: ${(props) => (props.border ? props.border : "")};
   background-color: ${(props) =>
     props.bgColor ? props.bgColor : "var(--bg-secondary-dark)"};
   border-radius: ${(props) => (props.radius ? props.radius : "40px")};
-  height: ${(props) => (props.height ? props.height : 35)}px;
+  height: ${(props) => (props.height ? props.height : 120)}px;
   color: ${(props) =>
     props.color ? props.color : "var(--text-secondary-dark)"};
-  padding: ${(props) => (props.padding ? props.padding : "0px 20px")};
+  padding: ${(props) => (props.padding ? props.padding : "10px 20px")};
   font-size: ${(props) => (props.size ? props.size : "15")}px;
   font-weight: ${(props) => (props.weight ? props.weight : "400")};
   &::placeholder {
@@ -78,13 +76,13 @@ const Input = styled.input<InputProps>`
   }
 `;
 
-const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
+const TextArea = forwardRef((props: TextAreaPropsType, ref: any) => {
   return (
     <div
-      className="relative input-container"
-      style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
+      className="relative"
+      style={{ width: props.width ? props.width : "100%" }}
     >
-      <Input
+      <InputTextArea
         id={props.id}
         ref={ref}
         width={props.width}
@@ -129,4 +127,4 @@ const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
     </div>
   );
 });
-export default InputText;
+export default TextArea;

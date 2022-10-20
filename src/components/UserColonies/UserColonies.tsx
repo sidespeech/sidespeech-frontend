@@ -32,8 +32,6 @@ export default function UserColonies() {
     return () => {};
   }, [userData]);
 
-  console.log("userData :", userData);
-
   return (
     <>
       <div className="f-column align-center mt-3" style={{ gap: 15 }}>

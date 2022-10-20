@@ -36,15 +36,19 @@ export function renameFile(originalFile: File, newName: string): File {
   });
 }
 
-export function getRoleColor(role: string) {
+export function getRoleColor(role: string | number) {
   switch (role) {
-    case "User":
+    case "User" || 2:
+      return "text-blue";
+    case 2:
       return "text-blue";
     case "Moderator1":
     case "Moderator2":
     case "Moderator3":
       return "text-green";
     case "Administrator":
+      return "text-red";
+    case 1:
       return "text-red";
     default:
       return "text-blue";

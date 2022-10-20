@@ -10,6 +10,8 @@
 
   --button-primary: #705ce9;
 
+  --checkbox-dark: #344d4f;
+
   --placeholer: #3f4256;
 
   --text-primary: #ffffff;
@@ -439,6 +441,12 @@ body {
 .overflow-auto {
   overflow: auto;
 }
+.float-left {
+  float: left;
+}
+.float-right {
+  float: right;
+}
 
 /*/////////////////////////////////////////////////////////////////////////////*/
 /*//////////////////////////// POLL OVERRIDE //////////////////////////////////*/
@@ -501,3 +509,10 @@ h3 {
 }
 
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.search-icon {
+  position: absolute;
+}
