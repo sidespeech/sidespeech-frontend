@@ -19,7 +19,7 @@ export interface InitialStateProfile {
 const initialStateProfile = {
   profilePicture: undefined,
   username: "",
-  bio: "",
+  bio: ""
 };
 
 export default function GeneralSettingsAccount({
@@ -31,6 +31,8 @@ export default function GeneralSettingsAccount({
   const [formData, setFormData] = useState<InitialStateProfile>(initialStateProfile);
 
   const dispatch = useDispatch();
+
+  const walletAddress = window.ethereum.selectedAddress;
 
   useEffect(() => {
     console.log('userData Accounts:', userData)
@@ -156,6 +158,7 @@ export default function GeneralSettingsAccount({
                 placeholder={userData ? userData.account : ''}
                 onChange={undefined}
                 disabled={true}
+                defaultValue={walletAddress}
                 radius="10px"
             />
             </div>

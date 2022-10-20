@@ -55,8 +55,10 @@ export default function IndexView() {
         </div>
         <div className="tile">
           <div className="inner">
-            <img width={45} height={45} src={disconnectMenuIcon} alt="logo-small" />
-            <p>Disconnect</p>
+            <a onClick={window.ethereum.disconnect}>
+              <img width={45} height={45} src={disconnectMenuIcon} alt="logo-small" />
+              <p>Disconnect</p>
+            </a>
           </div>
         </div>
       </div>

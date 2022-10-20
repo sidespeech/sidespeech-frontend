@@ -31,18 +31,23 @@ function App() {
   let globalSettings = false;
 
   // Conditional for checking if we are the settings page as we need a different sidebar.
-  if(window.location.pathname == '/settings') {
+  if(window.location.pathname.indexOf("/general-settings") > -1) {
      globalSettings = true;
   }
 
   useEffect(() => {
+    let account = null;
+    
     websocketService.connectToWebSocket();
     async function getUser(account: string) {
       const user = await apiService.getUserByAddress(account);
       dispatch(connect({ account: account, user: user }));
       dispatch(fetchUserDatas(account));
     }
-    const account = localStorage.getItem("userAccount");
+    if(window.ethereum.selectedAddress !== null) {
+     account = window.ethereum.selectedAddress;
+    }
+    
     if (account) {
       getUser(account);
     }

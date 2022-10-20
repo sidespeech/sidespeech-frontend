@@ -9,6 +9,7 @@ interface InputTextPropsType {
   maxLength?: number;
   iconSize?: number;
   width?: number | string;
+  parentWidth?: number | string;
   height?: number;
   bgColor?: string;
   placeholderColor?: string;
@@ -36,6 +37,7 @@ interface InputProps {
   disabled?: any;
   maxLength?: number;
   width?: number | string;
+  parentWidth?: number | string;
   height?: number | string;
   bgColor?: string;
   border?: string;
@@ -79,8 +81,8 @@ const Input = styled.input<InputProps>`
 const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
   return (
     <div
-      className="relative"
-      style={{ width: props.width ? props.width : "100%" }}
+      className="relative input-container"
+      style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
     >
       <Input
         id={props.id}

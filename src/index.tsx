@@ -20,6 +20,7 @@ import ViewUserProfile from "./components/Modals/ViewUserProfile";
 import SettingsAdmin from "./components/CurrentColony/settings-admin/settings-admin";
 
 // General Settings
+import GeneralSettings from "./components/GeneralSettings/DefaultView";
 import GeneralSettingsAccount from "./components/GeneralSettings/Account/Account";
 
 import { MoralisProvider } from "react-moralis";
@@ -62,7 +63,8 @@ ReactDOM.render(
 
               <Route path="/UserProfileModal" element={<UserProfileModal />} />
 
-              <Route path="/settings" element={<GeneralSettingsAccount />} />
+              <Route path="/general-settings" element={<GeneralSettingsAccount />} />
+              <Route path="/general-settings/:page" element={<GeneralSettings />} />
             </Route>
           </Routes>
         </BrowserRouter>
