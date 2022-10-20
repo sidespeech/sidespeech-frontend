@@ -20,8 +20,13 @@ import ViewUserProfile from "./components/Modals/ViewUserProfile";
 import SettingsAdmin from "./components/CurrentColony/settings/settings";
 import NewSide from "./components/new-side/new-side";
 
+// General Settings
+import GeneralSettings from "./components/GeneralSettings/DefaultView";
+import GeneralSettingsAccount from "./components/GeneralSettings/Account/Account";
+
 import { MoralisProvider } from "react-moralis";
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
+import UserSettings from "./components/GeneralSettings/DefaultView";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -50,9 +55,12 @@ ReactDOM.render(
             <Route path="/" element={<App />}>
               <Route index element={<DefaultView />} />
               <Route path="new-side" element={<NewSide />}/>
+              <Route path="general-settings" element={<GeneralSettingsAccount />} />
+              <Route path="general-settings/:page" element={<GeneralSettings />} />
               <Route path=":id" element={<CurrentColony />} />
-                <Route path="profile/:id" element={<UserProfile />} />
-                <Route path=":id/settings" element={<SettingsAdmin />} />
+              <Route path="profile/:id" element={<UserProfile />} />
+              <Route path=":id/settings" element={<SettingsAdmin />} />
+
             </Route>
           </Routes>
         </BrowserRouter>

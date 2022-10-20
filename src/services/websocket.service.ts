@@ -12,7 +12,7 @@ class WebSocketService {
     if (!instance) instance = new WebSocketService();
     return instance;
   }
-  connectToWebScoket() {
+  connectToWebSocket() {
     if (this.socket !== null || !WEBSOCKET_URL) return;
     this.socket = io(WEBSOCKET_URL + "/");
     this.socket.on("connect", () => {

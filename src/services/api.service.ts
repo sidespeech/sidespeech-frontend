@@ -15,12 +15,22 @@ import { User } from "../models/User";
 class apiService {
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
+
+    const retrieveNFTs = '';
+
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
-      .send({ accounts: accounts[0], publicNfts: "TBD", signature: signature })
+      .send({ accounts: accounts[0], publicNfts: retrieveNFTs, signature: signature })
       .set("accept", "json");
 
     return new User(createUser.body);
+  }
+
+  static async findExistingWallet(accounts: string){
+    const checkUser = await superagent
+      .get(`${BASE_URL}/user/existing/${accounts}`);
+
+      return checkUser.body;
   }
 
   static async getUserByAddress(address: string): Promise<User> {

@@ -1,0 +1,49 @@
+.general-settings {
+    background-color: var(--bg-primary);
+    flex: 1;
+}
+
+.left-container.global {
+    flex: 0.3;
+}
+
+.globalSettingsMenu .title {
+    margin: 30px 0;
+}
+
+.globalSettingsMenu .title img,
+.globalSettingsMenu .title h1{
+    display: inline-block;
+    vertical-align: top;
+    margin: 0;
+}
+
+.globalSettingsMenu .title img {
+    margin-right: 20px;
+}
+
+.globalSettingsMenu .title h1{
+    margin-top: 2px;
+}
+
+.globalSettingsMenu .tile{
+    display: inline-block;
+    width: 37%;
+    vertical-align: top;
+    margin: 10px;
+}
+
+.globalSettingsMenu .tile .inner{
+    vertical-align: top;
+    background: var(--bg-secondary-dark);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.globalSettingsMenu .tile.active .inner{
+    background: var( --button-primary);
+}
+
+.globalSettingsMenu .tile a{
+    color: #fff!important;
+}
