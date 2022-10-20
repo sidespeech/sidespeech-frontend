@@ -16,7 +16,7 @@ export interface UserData {
   userTokens: UserTokensData | null;
   sides: Side[];
   currentProfile: Profile | undefined;
-  nfts: any[]
+  nfts: any;
 }
 
 const initialState: UserData = {
@@ -26,13 +26,15 @@ const initialState: UserData = {
   userTokens: null,
   sides: [],
   currentProfile: undefined,
-  nfts: []
+  nfts: {},
 };
 
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string) => {
-    return await nftsService.getNftsOwnedByAddress("0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74");
+    return await nftsService.getNftsOwnedByAddress(
+      "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
+    );
   }
 );
 
@@ -79,9 +81,23 @@ export const userDataSlice = createSlice({
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
     builder.addCase(fetchUserDatas.fulfilled, (state, action) => {
-      const nfts  = action.payload;
+      const nfts = action.payload;
+      const res: any = {};
       // Add user to the state array
-      state.nfts = nfts;
+      nfts.forEach((nft: any) => {
+        const existingObject = res[nft["token_address"]];
+        if (existingObject) {
+          existingObject.nfts.push(nft);
+        } else {
+          res[nft["token_address"]] = {
+            address: nft["token_address"],
+            name: nft["name"],
+            symbol: nft["symbol"],
+            nfts: [nft],
+          };
+        }
+      });
+      state.nfts = res;
     });
   },
 });

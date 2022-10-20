@@ -19,15 +19,19 @@
   --text-secondary-dark: #717f99;
   --text-secondary-light: #f5f5f5;
 
-  --text-red: #dc4964;
-  --text-green: #40ce8a;
-  --text-blue: #3db4e7;
+  --red: #DC4964;
+  --red-opacity: #DC49641A;
+  --green: #36DA81;
+  --green-opacity: #36DA811A;
+  --blue: #3db4e7;
 }
 
 body {
   font-family: "Nunito Sans", sans-serif;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19px;
+  color: #B4C1D2;
   height: 100vh;
   width: 100vw;
 }
@@ -472,3 +476,28 @@ body {
   font-weight: 700;
   top: 5px;
 }
+
+/*///////////////////////////////////////////////////////////*/
+/*////////////////////DESIGN SYSTEM//////////////////////////*/
+/*///////////////////////////////////////////////////////////*/
+h1 {
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 40px;
+  color: #b4c1d2;
+}
+h2 {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 30px;
+  color: #b4c1d2;
+}
+
+h3 {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 19px;
+  color: #B4C1D2;
+}
+
+
