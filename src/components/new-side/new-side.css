@@ -33,7 +33,7 @@ nav{
 }
 
 .nav-link.completed {
-    color: green !important;
+    color: var(--text-green) !important;
     background-color: transparent !important;
 }
 

@@ -145,6 +145,7 @@ export default function Informations({
         <div className="text-primary-light mb-3 text fw-600">Side Name</div>
         <div className="flex">
           <InputText
+            parentWidth="70%"
             height={40}
             width="70%"
             bgColor="var(--bg-secondary-dark)"
@@ -162,7 +163,7 @@ export default function Informations({
         <div className="flex">
           <TextArea
             height={120}
-            width="70%"
+            width="90%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             placeholder={"Describe your Side"}

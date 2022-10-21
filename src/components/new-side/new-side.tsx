@@ -7,7 +7,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import "./new-side.css";
 import { RootState } from "../../../redux/store/app.store";
-import { apiService } from "../../../services/api.service";
 import ContainerLeft from "../ui-components/ContainerLeft";
 import TabItems from "../ui-components/TabItems";
 import Informations from "../CurrentColony/settings/informations/informations";
@@ -15,7 +14,9 @@ import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
 import Admission from "./admission/admission";
 import Channels from "../CurrentColony/settings/channels/channels";
-import Invitation from "./invitation/invitation";
+import Invitation from "../CurrentColony/settings/invitation/invitation";
+import { apiService } from "../../services/api.service";
+import { addColony } from "../../redux/Slices/UserDataSlice";
 
 const initialStateSteps = [
   {
@@ -73,7 +74,11 @@ const initialDivCollections = [
 ];
 
 const initialChannelsState = {
-  currents: [],
+  currents: [{
+    name: "Announcement",
+    isVisible: true,
+    type: 0
+  }],
   removed: [],
   added: []
 };
@@ -100,10 +105,14 @@ export default function NewSide(
   const [channels, setChannels] = useState<any>(initialChannelsState);
 
   useEffect(() => {
-    let collections = userData["nfts"]
-      .map((item: any) => item.token_address)
-      .filter((value: any, index: number, self: any) => self.indexOf(value) === index);
-    setCollectionHolder(collections);
+    if (!userData["nfts"].length) {
+      navigate(`/`)
+    } else {
+      let collections = userData["nfts"]
+        .map((item: any) => item.token_address)
+        .filter((value: any, index: number, self: any) => self.indexOf(value) === index);
+      setCollectionHolder(collections);
+    }
   }, []);
 
   const newSideNextPreviousStep = (index: number, previous: boolean = false) => {
@@ -136,11 +145,6 @@ export default function NewSide(
       return item
     });
     setSteps(currentStepsState);
-  };
-
-  const onClick = () => {
-    console.log('formData from onClick :', formData)
-    console.log('channels from onClick :', channels)
   };
 
   // Functions for information component
@@ -222,8 +226,6 @@ export default function NewSide(
     let current_divs = [...divCollections];
     current_divs.push({
       collection: "",
-      // trait_selected: "",
-      // value_selected: "",
       traits_values: []
     });
     setDivCollection(current_divs)
@@ -274,6 +276,57 @@ export default function NewSide(
     }
   };
 
+  const handleAddNewChannel = () => {
+    let current_added: Channel[] = []
+    if (channels['added'].length) {
+      current_added = [...channels['added']]
+    }
+    current_added.push({
+      name: "",
+      isVisible: true,
+      type: 2,
+      side: currentSide
+    });
+    setChannels({ ...channels, added: current_added })
+  };
+
+  const onChangeNameChannel = (event: any, index: number, current = true) => {
+    // Change name on existing channel
+    if (current) {
+      let current_channels = channels['currents'];
+      current_channels[index]['name'] = event.target.value;
+      setChannels({ ...channels, currents: current_channels })
+    }
+    // Change name on new channel
+    else {
+      let added_channels = channels['added'];
+      added_channels[index]['name'] = event.target.value;
+      setChannels({ ...channels, added: added_channels })
+    }
+  };
+
+  // ----- Functions for Channels component **end
+
+  const onSubmit = async () => {
+    console.log('formData from onClick :', formData)
+    console.log('channels from onClick :', channels)
+    // Save file input to IPFS
+    try {
+      if (formData.sideImage) {
+        formData['conditions'] = JSON.stringify(formData['conditions']);
+        const newSide = await apiService.createSide(formData);
+        dispatch(addColony(newSide));
+        toast.success(formData.name + " has been created.", {
+          toastId: 4,
+        });
+      }
+
+    } catch (error) {
+      console.log(error);
+      toast.error("Error creating side.", { toastId: 3 });
+    }
+  }
+
   return (
     <>
       <nav>
@@ -302,7 +355,9 @@ export default function NewSide(
                 (step['label'] === 'Informations' && step['active']) ?
                   <>
                     <Informations currentSide={formData} onChangeNewSideName={onChangeSideName} onChangeNewSideImage={onChangeSideImage} />
-                    <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                    <div className="f-column mt-3 align-end w-80">
+                      <Button width={159} height={46} onClick={() => newSideNextPreviousStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                    </div>
                   </>
                   : (step['label'] === 'Admission' && step['active']) ?
                     <>
@@ -320,21 +375,26 @@ export default function NewSide(
                     </>
                     : (step['label'] === 'Channels' && step['active']) ?
                       <>
-                        <Channels currentSide={currentSide} channelsNewSide={channels} handleRemoveChannel={handleRemoveChannel} />
+                        <Channels currentSide={currentSide} channelsNewSide={channels}
+                          handleRemoveChannel={handleRemoveChannel} handleAddNewChannel={handleAddNewChannel}
+                          onChangeNameChannel={onChangeNameChannel} />
                         <div className="flex justify-between container-next-back">
-                        <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
-                        <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
-                      </div>                      </>
+                          <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
+                          <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index)} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+                        </div>                      </>
                       : (step['label'] === 'Invitation' && step['active']) ?
                         <>
                           <Invitation currentSide={currentSide} />
-                          <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
+                          <div className="flex justify-between container-next-back">
+                            <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
+                            <Button classes={"mt-3"} width={159} height={46} onClick={onSubmit} radius={10} color={'var(--text-primary-light)'}>Finish</Button>
+                          </div>
                         </> : null
               }
               </div>
             );
           })}
-          <Button classes="mt-5" onClick={onClick}>Test</Button>
+          {/* <Button classes="mt-5" onClick={onClick}>Test</Button> */}
         </div>
       </div>
     </>

@@ -1,7 +1,7 @@
 import superagent from "superagent";
 import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
-import { InitialState } from "../components/Modals/CreateColonyModal";
+import { InitialStateSide } from "../components/new-side/new-side";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
 import { Channel, ChannelType } from "../models/Channel";
@@ -64,7 +64,7 @@ class apiService {
     return new Side(res.body);
   }
   
-  static async createSide(side: InitialState): Promise<Side> {
+  static async createSide(side: InitialStateSide): Promise<Side> {
     console.log("side :", side);
     const res = await superagent.post(`${BASE_URL}/side`).send(side);
     return res["body"]["side"];

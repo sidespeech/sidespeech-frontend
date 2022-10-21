@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import "./channels.css"
 import { apiService } from "../../../../services/api.service";
+import ChannelRow from "./channel-row/channel-row"
 
 export interface InitialChannelsState {
   currents: Channel[];
@@ -24,11 +25,15 @@ const initialChannelsState = {
 export default function Channels({
   currentSide,
   channelsNewSide,
-  handleRemoveChannel
+  handleRemoveChannel,
+  handleAddNewChannel,
+  onChangeNameChannel
 }: {
   currentSide: Colony;
-  channelsNewSide?: Channel[];
+  channelsNewSide?: any;
   handleRemoveChannel?: any;
+  handleAddNewChannel?: any;
+  onChangeNameChannel?: any;
 }) {
 
   const dispatch = useDispatch();
@@ -37,9 +42,9 @@ export default function Channels({
   useEffect(() => {
 
     console.log('channelsNewSide :', channelsNewSide)
-
     console.log('data :', { ...initialChannelsState, currents: (currentSide['channels']) ? currentSide['channels'] : [] })
     setChannels({ ...channels, currents: (currentSide['channels']) ? currentSide['channels'] : [] })
+
   }, []);
 
   const handleRemove = (index: number, current = true) => {
@@ -77,31 +82,40 @@ export default function Channels({
   };
 
   const handleAddChannel = () => {
-    let current_added: Channel[] = []
-    if (channels['added'].length) {
-      current_added = [...channels['added']]
+
+    if (channelsNewSide) {
+      handleAddNewChannel();
+    } else {
+      let current_added: Channel[] = []
+      if (channels['added'].length) {
+        current_added = [...channels['added']]
+      }
+      current_added.push({
+        name: "",
+        isVisible: true,
+        type: 2,
+        side: currentSide
+      });
+      setChannels({ ...channels, added: current_added })
     }
-    current_added.push({
-      name: "",
-      isVisible: true,
-      type: 2,
-      side: currentSide
-    });
-    setChannels({ ...channels, added: current_added })
   };
 
   const onChangeName = (event: any, index: number, current = true) => {
-    // Change name on existing channel
-    if (current) {
-      let current_channels = channels['currents'];
-      current_channels[index]['name'] = event.target.value;
-      setChannels({ ...channels, currents: current_channels })
-    }
-    // Change name on new channel
-    else {
-      let added_channels = channels['added'];
-      added_channels[index]['name'] = event.target.value;
-      setChannels({ ...channels, added: added_channels })
+    if (channelsNewSide) {
+      onChangeNameChannel(event, index, current);
+    } else {
+      // Change name on existing channel
+      if (current) {
+        let current_channels = channels['currents'];
+        current_channels[index]['name'] = event.target.value;
+        setChannels({ ...channels, currents: current_channels })
+      }
+      // Change name on new channel
+      else {
+        let added_channels = channels['added'];
+        added_channels[index]['name'] = event.target.value;
+        setChannels({ ...channels, added: added_channels })
+      }
     }
   };
 
@@ -142,52 +156,30 @@ export default function Channels({
 
         {/* Existing channels */}
         {
-          channels['currents'].map((channel: any, index: number) =>
-            <div className="flex mt-2 align-center" key={channel['id']}>
-              <i className="fa-solid fa-grip-lines fa-lg mr-2 text-secondary-dark"></i>
-              <InputText
-                placeholderColor="var(--text-primary-light)"
-                parentWidth={"43rem"}
-                height={40}
-                width="50%"
-                bgColor="var(--bg-secondary-dark)"
-                glass={false}
-                placeholder={"# " + channel['name']}
-                onChange={(e: any) => onChangeName(e, index)}
-                radius="10px"
-              />
-              <i onClick={(e) => handleRemove(index)} className="fa-solid fa-eye fa-xl remove-icon text-red cursor-pointer"></i>
-              <i onClick={(e) => handleRemove(index)} className="fa-solid fa-circle-minus fa-xl remove-icon text-red cursor-pointer"></i>
-            </div>
-          )
+          (channelsNewSide) ? (
+            channelsNewSide['currents'].map((channel: any, index: number) =>
+              <ChannelRow channel={channel} index={index} onChangeName={onChangeName} handleRemove={handleRemove} placeholder={"# " + channel['name']} />
+            ))
+            : (
+              channels['currents'].map((channel: any, index: number) =>
+                <ChannelRow channel={channel} index={index} onChangeName={onChangeName} handleRemove={handleRemove} placeholder={"# " + channel['name']} />
+              ))
         }
 
         {/* new channels created now */}
         {
-          channels['added'].map((channel: any, index: number) =>
-            <div className="flex mt-2 align-center" key={index}>
-              <i className="fa-solid fa-grip-lines fa-lg mr-2 text-secondary-dark"></i>
-              <InputText
-                placeholderColor="var(--text-primary-light)"
-                parentWidth={"43rem"}
-                height={40}
-                width="50%"
-                bgColor="var(--bg-secondary-dark)"
-                glass={false}
-                placeholder={"#"}
-                onChange={(e: any) => onChangeName(e, index, false)}
-                radius="10px"
-              />
-              <i onClick={(e) => handleRemove(index)} className="fa-solid fa-eye fa-xl display-icon mr-4 cursor-pointer"></i>
-              <i onClick={(e) => handleRemove(index, false)} className="fa-solid fa-circle-minus fa-xl remove-icon text-red cursor-pointer"></i>
-            </div>
-          )
+          (channelsNewSide) ? (
+            channelsNewSide['added'].map((channel: any, index: number) =>
+              <ChannelRow channel={channel} index={index} onChangeName={onChangeName} handleRemove={handleRemove} />
+            ))
+            : (
+              channels['added'].map((channel: any, index: number) =>
+                <ChannelRow channel={channel} index={index} onChangeName={onChangeName} handleRemove={handleRemove} />
+              ))
         }
 
-        <Button classes="ml-4 mt-2" width={298} height={40} onClick={handleAddChannel} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-plus mr-2"></i>Create a channel</Button>
-
-        {/* Submit Button */}
-        <Button classes={"mt-5"} width={159} height={46} onClick={onSubmit} radius={10} color={'var(--text-primary-light)'}>Save </Button>
+        {/* Add new channel Section*/}
+        <Button classes="ml-4 mt-2" width={360} height={40} onClick={handleAddChannel} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-plus mr-2"></i>Create a channel</Button>
       </div>
     </>
   );
