@@ -10,27 +10,21 @@ import Button from "../../ui-components/Button";
 import Switch from "../../ui-components/Switch";
 
 export default function Admission({
-  currentSide,
   divCollections,
   collections,
   setSideTokenAddress,
-  tokenProperties,
   setSidePropertyCondition,
   setSideValueCondition,
   addDivCollection,
-  propertySelected,
   removeDivCollection,
   addConditionToDivCollection
 }: {
-  currentSide: Colony;
   divCollections: any;
   collections: string[];
   setSideTokenAddress: any;
-  tokenProperties: any;
   setSidePropertyCondition: any;
   setSideValueCondition: any;
   addDivCollection: any;
-  propertySelected: any;
   removeDivCollection: any;
   addConditionToDivCollection:any;
 }) {

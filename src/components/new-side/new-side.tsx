@@ -97,9 +97,6 @@ export default function NewSide(
   // Variables for Admission component
   const [divCollections, setDivCollection] = useState<any[]>(initialDivCollections);
   const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
-  const [tokenProperties, setTokenProperties] = useState<any>({});
-  const [tokenSelected, setTokenSelected] = useState<string>("");
-  const [propertySelected, setPropertySelected] = useState<any>({});
 
   // Variables for Channels component
   const [channels, setChannels] = useState<any>(initialChannelsState);
@@ -116,9 +113,18 @@ export default function NewSide(
   }, []);
 
   const newSideNextPreviousStep = (index: number, previous: boolean = false) => {
+    let current_data = { ...formData };
+
+    // Checking if sideImage and name stored to continu to the other steps
+    if (!current_data['sideImage'] || !current_data['name'].trim().length) {
+      toast.error("Missing data", { toastId: 3 });
+      return
+    }
+
     const currentStepsState = steps.map((item: any, map_i: number) => {
 
       if (!previous) {
+
         // Turn active or not for selected item
         item['active'] = (map_i === index + 1) ? true : false;
         // Turn completed or not for previous or next items
@@ -134,6 +140,7 @@ export default function NewSide(
           }
           setFormData({ ...formData, conditions: conditions });
         }
+
       } else {
         // Turn active or not for selected item
         item['active'] = (map_i === index - 1) ? true : false;
@@ -144,6 +151,7 @@ export default function NewSide(
 
       return item
     });
+
     setSteps(currentStepsState);
   };
 
@@ -317,12 +325,11 @@ export default function NewSide(
         const newSide = await apiService.createSide(formData);
 
         if (channels['added'].length) {
-          let added = channels['added'].map((item:any) => {
+          let added = channels['added'].map((item: any) => {
             item['side'] = newSide;
             return item;
           })
           const addedChannels = await apiService.createManyChannels(added);
-          console.log('addedChannels :', addedChannels)
         }
 
         dispatch(addColony(newSide));
@@ -371,11 +378,10 @@ export default function NewSide(
                   </>
                   : (step['label'] === 'Admission' && step['active']) ?
                     <>
-                      <Admission currentSide={currentSide} divCollections={divCollections} collections={collectionHolder}
-                        setSideTokenAddress={setSideTokenAddress} tokenProperties={tokenProperties}
-                        setSidePropertyCondition={setSidePropertyCondition} setSideValueCondition={setSideValueCondition}
-                        addDivCollection={addDivCollection} propertySelected={propertySelected} removeDivCollection={removeDivCollection}
-                        addConditionToDivCollection={addConditionToDivCollection}
+                      <Admission divCollections={divCollections} collections={collectionHolder}
+                        setSideTokenAddress={setSideTokenAddress} setSidePropertyCondition={setSidePropertyCondition}
+                        setSideValueCondition={setSideValueCondition} addDivCollection={addDivCollection}
+                        removeDivCollection={removeDivCollection} addConditionToDivCollection={addConditionToDivCollection}
                       />
                       <div className="flex justify-between container-next-back">
                         <Button classes={"mt-3"} width={159} height={46} onClick={() => newSideNextPreviousStep(index, true)} radius={10} color={'var(--text-primary-light)'} background={'transparent'} border={'1px solid var(--bg-secondary-light);'}>Back</Button>
