@@ -285,7 +285,7 @@ export default function NewSide(
       name: "",
       isVisible: true,
       type: 2,
-      side: currentSide
+      side: formData
     });
     setChannels({ ...channels, added: current_added })
   };
@@ -315,6 +315,16 @@ export default function NewSide(
       if (formData.sideImage) {
         formData['conditions'] = JSON.stringify(formData['conditions']);
         const newSide = await apiService.createSide(formData);
+
+        if (channels['added'].length) {
+          let added = channels['added'].map((item:any) => {
+            item['side'] = newSide;
+            return item;
+          })
+          const addedChannels = await apiService.createManyChannels(added);
+          console.log('addedChannels :', addedChannels)
+        }
+
         dispatch(addColony(newSide));
         toast.success(formData.name + " has been created.", {
           toastId: 4,

@@ -121,7 +121,6 @@ export default function Channels({
 
   const onSubmit = async () => {
     console.log(channels)
-
     try {
       if (channels['added'].length) {
         const addedChannels = await apiService.createManyChannels(channels['added']);
@@ -135,13 +134,9 @@ export default function Channels({
         const updatedChannels = await apiService.updateManyChannels(channels['currents']);
         console.log('updatedChannels :', updatedChannels)
       }
-
-
       toast.success(`Saved`, {
         toastId: 4,
       });
-
-
     } catch (error) {
       console.log(error);
       toast.error("Error when added.", { toastId: 3 });
@@ -180,6 +175,13 @@ export default function Channels({
 
         {/* Add new channel Section*/}
         <Button classes="ml-4 mt-2" width={360} height={40} onClick={handleAddChannel} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-plus mr-2"></i>Create a channel</Button>
+
+        {/* Submit Button */}
+        {
+          (!channelsNewSide) ? (
+            <Button classes={"mt-5"} width={159} height={46} onClick={onSubmit} radius={10} color={'var(--text-primary-light)'}>Save </Button>
+          ) : null
+        }
       </div>
     </>
   );
