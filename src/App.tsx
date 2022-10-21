@@ -35,7 +35,7 @@ function App() {
   let generalSettings = false;
 
   useEffect(() => {
-    let account = null;
+    let account = localStorage.getItem('userAccount') || null;
 
     websocketService.connectToWebSocket();
     async function getUser(account: string) {
@@ -53,7 +53,7 @@ function App() {
     return () => {
       websocketService.deconnectWebsocket();
     };
-  }, []);
+  }, [window.ethereum.selectedAddress]);
 
    // Conditional for checking if we are the settings page as we need a different sidebar.
    if(location.pathname.indexOf("/general-settings") > -1) {
