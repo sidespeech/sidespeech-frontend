@@ -7,7 +7,12 @@ input:focus-visible {
   outline: none;
 }
 
-
+p {
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+}
 /* Chrome, Safari, Edge, Opera
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
@@ -68,14 +73,14 @@ button,
       ::-webkit-scrollbar-track
       {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-        border-radius: 10px;
+        border-radius: 8px;
         background-color: #717F99;
       }
       
       ::-webkit-scrollbar
       {
-        width: 10px;
-        height: 10px;  
+        width: 8px;
+        height: 8px;  
         background-color: #717F99;
         border-radius: 10px;
       }
