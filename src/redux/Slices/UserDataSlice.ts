@@ -48,7 +48,9 @@ export const userDataSlice = createSlice({
     connect: (state: UserData, action: PayloadAction<any>) => {
       state.user = action.payload.user;
       state.account = action.payload.account;
-      state.sides = action.payload.user.profiles ? action.payload.user.profiles.map((p: Profile) => p.side) : '';
+      state.sides = action.payload.user.profiles
+        ? action.payload.user.profiles.map((p: Profile) => p.side)
+        : "";
       state.redirectTo = action.payload.redirectTo;
     },
     disconnect: (state: UserData) => {
@@ -57,7 +59,7 @@ export const userDataSlice = createSlice({
       state.userTokens = null;
     },
     updateUser: (state: UserData, action: PayloadAction<any>) => {
-      state.user = action.payload;
+      state.user = { ...state.user, ...action.payload };
     },
     addColony: (state: UserData, action: PayloadAction<any>) => {
       state.sides = [...state.sides, action.payload];

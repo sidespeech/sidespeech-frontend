@@ -70,7 +70,7 @@ const Input = styled.input<InputProps>`
     color: ${(props) =>
       props.placeholderColor
         ? props.placeholderColor
-        : "var(--bg-secondary-light)"};
+        : "#B4C1D266"};
     font-size: ${(props) =>
       props.placeholderSize ? props.placeholderSize : "15"}px;
     font-weight: ${(props) =>
