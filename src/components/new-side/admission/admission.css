@@ -1,0 +1,89 @@
+.collection-item {
+    position: relative;
+    padding: 20px;
+    border-radius: 20px;
+    flex: 1.2;
+    background-color: var(--bg-secondary-dark);
+    width: 40rem;
+}
+
+.collection-name {
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    width: fit-content;
+}
+
+.features {
+    position: relative;
+    padding: 20px;
+    border-radius: 20px;
+    flex: 1.2;
+    background-color: var(--bg-secondary-light);
+    width: 30rem;
+}
+
+/* CSS for Feature Box Div */
+.featureBox {
+    width: 31rem;
+    background-color: #242635;
+    padding: 12px 15px;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+  }
+  
+  
+  .featureBtn {
+    text-align: center;
+  }
+  
+  .featureBtn button {
+    background-color: transparent;
+    border: none;
+  }
+  
+  .featureBtn button i {
+    background-color: var(--bg-secondary-light);
+    opacity: 0.7;
+    padding: 8px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .addFeature button {
+    width: 100%;
+    padding: 8px 0px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 17px;
+    color: var(--bg-primary-light);
+    background-color: var(--bg-secondary-dark);
+    border: 2px dashed var(--bg-secondary-light);
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+  }
+  
+  .addCondition button {
+    width: 100%;
+    padding: 8px 0px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 17px;
+    color: #fff;
+    background-color: #323544;
+    border: none;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+  }
+  
+  /* CSS for Feature Box Div */

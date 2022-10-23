@@ -1,6 +1,7 @@
 import superagent from "superagent";
 import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
+import { InitialStateSide } from "../components/new-side/new-side";
 import { InitialStateUser } from "../components/GeneralSettings/Account/Account";
 import { InitialState } from "../components/Modals/CreateColonyModal";
 import { BASE_URL } from "../constants/constants";
@@ -48,6 +49,13 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/profile`).query({ id });
     return new Profile(res.body);
   }
+  
+  static async joinSide(userId: string, sideId: string): Promise<Profile> {
+    const res = await superagent
+      .post(`${BASE_URL}/profile/join`)
+      .send({ userId, sideId });
+    return new Profile(res.body);
+  }
 
   static async updateProfile(
     id: string,
@@ -82,7 +90,6 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/side/${id}`);
     return new Side(res.body);
   }
-
   static async joinSide(userId: string, sideId: string): Promise<Profile> {
     const res = await superagent
       .post(`${BASE_URL}/profile/join`)

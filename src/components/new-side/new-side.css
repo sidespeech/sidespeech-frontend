@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap");
+
+* {
+    outline: none;
+    box-sizing: border-box;
+  }
+  body{
+    height: 100vh;
+    color: #fff;
+  }
+  
+.sidebar-title, .sidebar-item {
+    font-family : "Inter", sans-serif;
+}
+
+.container-next-back {
+    width: 40rem;
+}
+
+nav{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px;
+    width: inherit;
+}
+
+.nav-link.active {
+    color: #0d6efd !important;
+    background-color: transparent !important;
+    border-right: 2px solid #0d6efd;
+}
+
+.nav-link.completed {
+    color: var(--text-green) !important;
+    background-color: transparent !important;
+}
+
+nav .nav-items {
+    display: flex;
+    flex: 1;
+}
+
+nav .nav-items li {
+    list-style: none;
+    padding: 0 15px;
+}
+
+nav .nav-items li a {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+nav .nav-items li a:hover {
+    color: #4f4f4f;
+}
+
+nav .menu-icon {
+    width: 40px;
+    text-align: center;
+    margin: 0 50px;
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+    display: none;
+}
+
+nav .menu-icon span {
+    display: none;
+}
+
+.collection-icon-check {
+    color: #0d6efd;
+}

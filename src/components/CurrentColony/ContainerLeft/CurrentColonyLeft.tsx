@@ -16,21 +16,13 @@ import ViewUserProfile from "../../Modals/ViewUserProfile";
 import UserBadge from "../../ui-components/UserBadge";
 import ChannelsList from "./ChannelsList/ChannelsList";
 import SideUserList from "./SideUserList/SideUserList";
+import ContainerLeft from "../../ui-components/ContainerLeft";
 
 const CoverImg = styled.img`
   height: 130px;
   width: 100%;
   object-fit: cover;
   margin-top: 22px;
-`;
-const ContainerLeft = styled.div`
-  min-width: 210px;
-  background-color: var(--bg-secondary-light);
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding-top: 11px;
-  color: var(--text-primary-light);
 `;
 
 const SeparationLine = styled.hr`
@@ -71,7 +63,7 @@ export default function CurrentColonyLeft() {
   if (!currentSide) return <>No side selected</>;
 
   return (
-    <ContainerLeft>
+    <ContainerLeft backgroundColor="var(--bg-secondary-light)" minWidth={210} height={100}>
       <div className="w-100 flex align-center justify-between px-2">
         <span className="fw-700 size-13 open-sans flex align-center text-secondary">
           {currentSide.name.toUpperCase()}

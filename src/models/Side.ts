@@ -27,7 +27,7 @@ export class Side {
     this.NftTokenAddress = _data.NftTokenAddress;
     this.coverImage = _data.coverImage;
     this.sideImage = _data.sideImage;
-    this.conditions = JSON.parse(_data.conditions);
+    this.conditions = _data.conditions ? JSON.parse(_data.conditions) : {};
     this.channels = _data.channels;
     this.profiles = _data.profiles
       ? _data.profiles.map((p: any) => new Profile(p))
