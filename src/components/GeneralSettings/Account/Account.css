@@ -36,7 +36,6 @@
     border-radius: 20px;
     flex: 1.2;
     background-color: var(--bg-secondary-dark);
-    overflow-y: scroll;
     max-height: calc(100vh - 56px);
 }
 
@@ -58,6 +57,11 @@
     color: var(--green);
 }
 
+.general-settings .my-nfts .nftCollectionContainer {
+    overflow-y: scroll;
+    max-height: 90%;
+    padding-right: 10px;
+}
 .general-settings .my-nfts .nftCollection .head {
     border-bottom: 2px solid var(--bg-primary);
     overflow: hidden;
@@ -221,6 +225,15 @@
 	width: 50px;
 }
 
-.general-settings .my-nfts .nftCollection .submitArea div {
-    margin: 0 auto;
+.general-settings .my-nfts  .submitArea {
+    background: linear-gradient(180deg, rgba(29, 30, 42, 0) 0%, #1D1E2A 100%);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
 }
