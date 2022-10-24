@@ -24,6 +24,7 @@ class WebSocketService {
     });
 
     this.socket.on("message", async (data) => {
+      console.log("data :", data)
       trigger(EventType.RECEIVE_MESSAGE, data);
     });
     this.socket.on("newAnnouncement", async (data) => {
@@ -31,10 +32,10 @@ class WebSocketService {
     });
   }
 
-  login(profile: any) {
+  login(user: any, rooms: any) {
     this.socket?.emit("login", {
-      user: { id: profile.id, username: profile.username },
-      rooms: profile.rooms.map((r: any) => r.id),
+      user: { id: user.id, username: user.accounts },
+      rooms: rooms,
     });
   }
 

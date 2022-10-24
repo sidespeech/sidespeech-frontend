@@ -65,7 +65,6 @@ export default function GeneralSettingsAccount() {
   }, [userCollectionsData]);
 
   const handleCollectionShowing = (position: any) => {
-    console.log(position, openCollection);
     const updatedCollectionShowing = openCollection.map((item, index) =>
       index === position ? !item : item
     );
@@ -100,7 +99,6 @@ export default function GeneralSettingsAccount() {
   };
 
   const countSelected = () => {
-    console.log(checkedState);
   };
 
   const handleCopyWalletAddress = () => {

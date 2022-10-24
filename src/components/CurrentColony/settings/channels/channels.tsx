@@ -31,7 +31,6 @@ export default function Channels({
   const [channels, setChannels] = useState<any>(initialChannelsState);
 
   useEffect(() => {
-    console.log('data :', { ...initialChannelsState, currents: currentSide['channels'] })
     setChannels({ ...channels, currents: currentSide['channels'] })
   }, []);
 
@@ -94,20 +93,16 @@ export default function Channels({
   };
 
   const onSubmit = async () => {
-    console.log(channels)
 
     try {
       if (channels['added'].length) {
         const addedChannels = await apiService.createManyChannels(channels['added']);
-        console.log('addedChannels :', addedChannels)
       }
       if (channels['removed'].length) {
         const removedChannels = await apiService.removeChannels(channels['removed']);
-        console.log('removedChannels :', removedChannels)
       }
       if (channels['currents'].length) {
         const updatedChannels = await apiService.updateManyChannels(channels['currents']);
-        console.log('updatedChannels :', updatedChannels)
       }
       
 

@@ -23,14 +23,10 @@ export default function TableRow({
   };
 
   const getRole = (address:string) => {
-    console.log('address :', address)
-    console.log("side['creatorAddress']", side['creatorAddress'])
     return (address === side['creatorAddress']) ? 'Administrator' : 'User'
   };
 
   useEffect(() => {
-    console.log("side :", side)
-    console.log("user :", user)
   }, []);
 
   const handleSaveRole = async () => { };

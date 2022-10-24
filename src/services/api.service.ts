@@ -44,10 +44,7 @@ class apiService {
   }
 
   static async updateProfile(id:string, profile: InitialStateProfile): Promise<Profile> {
-    console.log("profile :", profile);
-    console.log("id :", id);
     const res = await superagent.patch(`${BASE_URL}/profile/${id}`).send(profile);
-    console.log(res["body"])
     return res["body"];
   }
 
@@ -64,13 +61,11 @@ class apiService {
     return new Profile(res.body);
   }
   static async createSide(side: InitialState): Promise<Side> {
-    console.log("side :", side);
     const res = await superagent.post(`${BASE_URL}/side`).send(side);
     return res["body"]["side"];
   }
 
   static async updateSide(side: InitialStateUpdateSide, id:string): Promise<Side> {
-    console.log("side :", side);
     const res = await superagent.patch(`${BASE_URL}/side/${id}`).send(side);
     return res["body"]["side"];
   }
@@ -161,10 +156,8 @@ class apiService {
   }
 
   static async updateManyChannels(channels:Channel[]): Promise<any> {
-    console.log("channels :", channels);
     const res = await superagent
     .patch(`${BASE_URL}/channel/many`).send(channels);
-    console.log(res["body"]);
     return res["body"];
   }
   static async removeChannels(ids: string|string[]): Promise<any> {

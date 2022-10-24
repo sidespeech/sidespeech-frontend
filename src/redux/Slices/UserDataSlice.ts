@@ -7,6 +7,7 @@ import { Room } from "../../models/Room";
 import { User } from "../../models/User";
 import { Profile } from "../../models/Profile";
 import { Side } from "../../models/Side";
+import { Channel } from "../../models/Channel";
 import nftsService from "../../services/nfts.service";
 import { UserCollectionsData } from "../../models/interfaces/UserCollectionsData";
 
@@ -32,6 +33,12 @@ const initialState: UserData = {
   userCollectionsData: {},
 };
 
+export const flattenChannels = (sides: any) => {
+  return sides.reduce(function (flat: any, toFlatten: any) {
+    return flat.concat(Array.isArray(toFlatten.channels) ? flattenChannels(toFlatten.channels) : toFlatten.id);
+  }, []);
+};
+
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string) => {
@@ -50,6 +57,8 @@ export const userDataSlice = createSlice({
       state.account = action.payload.account;
       state.sides = action.payload.user.profiles ? action.payload.user.profiles.map((p: Profile) => p.side) : '';
       state.redirectTo = action.payload.redirectTo;
+      let rooms = flattenChannels(state.sides);
+      websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {
       state.user = null;
@@ -69,7 +78,7 @@ export const userDataSlice = createSlice({
           (p) => p.side.id === action.payload.id
         );
         state.currentProfile = profile;
-        websocketService.login(profile);
+        // websocketService.login(state.user, profile);
       }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
