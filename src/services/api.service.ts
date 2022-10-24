@@ -2,7 +2,6 @@ import superagent from "superagent";
 import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialStateSide } from "../components/new-side/new-side";
-import { InitialStateUser } from "../components/GeneralSettings/Account/Account";
 import { InitialState } from "../components/Modals/CreateColonyModal";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
@@ -13,6 +12,7 @@ import { Profile } from "../models/Profile";
 import { Message, Room } from "../models/Room";
 import { Side } from "../models/Side";
 import { User } from "../models/User";
+import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 
 // Create an API Service class
 class apiService {
@@ -90,13 +90,7 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/side/${id}`);
     return new Side(res.body);
   }
-  static async joinSide(userId: string, sideId: string): Promise<Profile> {
-    const res = await superagent
-      .post(`${BASE_URL}/profile/join`)
-      .send({ userId, sideId });
-    return new Profile(res.body);
-  }
-  static async createSide(side: InitialState): Promise<Side> {
+  static async createSide(side: InitialStateSide): Promise<Side> {
     console.log("side :", side);
     const res = await superagent.post(`${BASE_URL}/side`).send(side);
     return res["body"]["side"];

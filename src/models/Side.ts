@@ -7,7 +7,6 @@ export class Side {
   creatorAddress: string;
   description: string;
   isCreatorOwner: boolean;
-  websiteUrl: string;
   NftTokenAddress: string;
   coverImage: string;
   sideImage: string;
@@ -23,7 +22,6 @@ export class Side {
     this.description = _data.description;
     this.creatorAddress = _data.creatorAddress;
     this.isCreatorOwner = _data.isCreatorOwner;
-    this.websiteUrl = _data.websiteUrl;
     this.NftTokenAddress = _data.NftTokenAddress;
     this.coverImage = _data.coverImage;
     this.sideImage = _data.sideImage;

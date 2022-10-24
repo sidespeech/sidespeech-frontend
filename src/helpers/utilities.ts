@@ -1,6 +1,7 @@
 import { NUMBER_OF_DECIMALS } from "../constants/constants";
 import { Duration } from "date-fns";
 import { Side } from "../models/Side";
+import { NFT } from "../models/interfaces/nft";
 
 export function weiToDecimals(
   value: number,
@@ -138,8 +139,8 @@ export function checkUserEligibility(nfts: any, selectedSide: Side): any[] {
         } else {
           // get nfts from collection with needed attributes
           const filteredNfts: any[] = [];
-          collection.nfts.filter((nft: any) =>
-            getParsedNftMetaData(nft)?.attributes.some((a: any) => {
+          collection.nfts.filter((nft: NFT) =>
+            nft.metadata.attributes.some((a) => {
               const success =
                 condition.hasOwnProperty(a.trait_type) &&
                 a.value === condition[a.trait_type];
@@ -174,17 +175,27 @@ export function checkUserEligibility(nfts: any, selectedSide: Side): any[] {
   return res;
 }
 
-export function getParsedNftMetaData(nft: any) {
-  if(!nft.metadata) return null;
-  return JSON.parse(nft.metadata);
-}
+
 
 export function fixURL(url: string) {
   if (url.startsWith("ipfs")) {
-    return (
-      "https://ipfs.io/ipfs/" + url.split("ipfs://").slice(-1)[0]
-    );
+    return "https://ipfs.io/ipfs/" + url.split("ipfs://").slice(-1)[0];
   } else if (url.startsWith("https://")) {
     return url;
   }
+}
+
+export function alchemyNftModelToSideNftModel(nft: any) {
+  const sideNft  = {
+    name: nft.title,
+    metadata: nft.rawMetadata,
+    token_address: nft.contract.address,
+    token_id: nft.tokenId,
+    // token_uri: nft.tokenUri.raw,
+    amount: nft.balance,
+    description: nft.description,
+    contract_type: nft.tokenType,
+    symbol: nft.symbol,
+  };
+  return sideNft;
 }

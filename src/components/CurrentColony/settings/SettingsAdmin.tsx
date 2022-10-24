@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Channel, Colony } from "../../../models/Colony";
-import { Side } from "../../../models/Side";
 import { useDispatch, useSelector } from "react-redux";
-import { connect, fetchUserDatas } from "../../../redux/Slices/UserDataSlice";
-import { toast } from "react-toastify";
-import { useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import MembersList from "./members-list/members-list"
 import Channels from "./channels/channels"
 import Invitation from "./invitation/invitation"

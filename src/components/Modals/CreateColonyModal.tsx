@@ -18,7 +18,6 @@ export interface InitialState {
   sideImage: string | null;
   name: string;
   NftTokenAddress: string;
-  websiteUrl: string;
   conditions: any;
   creatorAddress: string | null;
 }
@@ -138,10 +137,6 @@ export default function CreateColonyModal({ showModal, collections }: { showModa
     setFormData({ ...formData, conditions: conditions });
   };
 
-  const setSideWebsiteUrl = (event: any) => {
-    const url = event.target.value;
-    setFormData({ ...formData, websiteUrl: url });
-  };
 
   const setSideImage = (event: any) => {
     const file = event.target.files[0];
@@ -302,7 +297,6 @@ export default function CreateColonyModal({ showModal, collections }: { showModa
               width={"400px"}
               padding={"0px 40px 0px 20px"}
               height={40}
-              onChange={setSideWebsiteUrl}
               iconRightPos={{ top: 6, right: 16 }}
               placeholder={"Enter your Website link"}
             />

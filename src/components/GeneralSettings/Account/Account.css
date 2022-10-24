@@ -58,7 +58,8 @@
 }
 
 .general-settings .my-nfts .nftCollectionContainer {
-    overflow-y: scroll;
+    overflow-y: auto;
+    height: 90%;
     max-height: 90%;
     padding-right: 10px;
 }
