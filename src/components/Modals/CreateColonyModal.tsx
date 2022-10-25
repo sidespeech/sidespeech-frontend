@@ -10,7 +10,6 @@ import Modal from "../ui-components/Modal";
 import { useNavigate } from "react-router";
 import CustomSelect from "../ui-components/CustomSelect";
 import { apiService } from "../../services/api.service";
-import nftsService from "../../services/nfts.service";
 import { RootState } from "../../redux/store/app.store";
 import _ from "lodash";
 

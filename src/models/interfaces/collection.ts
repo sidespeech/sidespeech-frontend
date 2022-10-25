@@ -7,14 +7,21 @@ export class Collection {
   public tokenType: string;
   public totalSupply: string;
   public openseaData: OpenSeaData;
+  public totalBalance: number;
+  public isSpam: boolean;
   public nfts: NFT[] = [];
+  public numDistinctTokensOwned: number;
+  public ownedCount: number;
   constructor(_data: any) {
     this.address = _data.address;
-    this.name = _data.contractMetadata.name;
-    this.symbol = _data.contractMetadata.symbol;
-    this.tokenType = _data.contractMetadata.tokenType;
-    this.totalSupply = _data.contractMetadata.totalSupply;
-    this.openseaData = _data.contractMetadata.openSea;
+    this.name = _data.name;
+    this.symbol = _data.symbol;
+    this.tokenType = _data.tokenType;
+    this.totalSupply = _data.totalSupply;
+    this.totalBalance = _data.totalBalance;
+    this.isSpam = _data.isSpam;
+    this.numDistinctTokensOwned = _data.numDistinctTokensOwned;
+    this.ownedCount = _data.ownedCount;
   }
 
   getCollectionProperties() {
@@ -29,7 +36,7 @@ export class Collection {
               filtered.filter(function (o: any) {
                 return o["property"]["value"] == attribute["trait_type"];
               }).length > 0;
-              console.log(property_exists,"property_exist")
+            console.log(property_exists, "property_exist");
             if (property_exists) {
               for (let element of filtered) {
                 if (element["property"]["value"] == attribute["trait_type"]) {

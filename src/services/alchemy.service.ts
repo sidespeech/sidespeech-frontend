@@ -1,4 +1,5 @@
 import { Network, Alchemy, NftContract } from "alchemy-sdk";
+import { ALCHEMY_API_KEY } from "../constants/constants";
 import { alchemyNftModelToSideNftModel } from "../helpers/utilities";
 import { Collection } from "../models/interfaces/collection";
 
@@ -52,7 +53,7 @@ class AlchemyService {
     (async function startMoralis() {
       // Optional Config object, but defaults to demo api-key and eth-mainnet.
       const settings = {
-        apiKey: "CceqrR9PDp3YFbyTwRrx2Vpi5a3Pb5HF", // Replace with your Alchemy API Key.
+        apiKey: ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
         network: Network.ETH_MAINNET, // Replace with your network.
       };
 
@@ -74,20 +75,26 @@ class AlchemyService {
       allResults = allResults.concat(response.ownedNfts);
       pageKey = response.pageKey;
     } while (pageKey !== "" && pageKey !== undefined);
-    console.log(allResults);
     const toSideNftModel = allResults.map((v) =>
       alchemyNftModelToSideNftModel(v)
     );
-    console.log(toSideNftModel);
     return toSideNftModel;
   }
   async getContractMetadata(address: string): Promise<Collection> {
     const res = await fetch(
-      `https://eth-mainnet.g.alchemy.com/nft/v2/CceqrR9PDp3YFbyTwRrx2Vpi5a3Pb5HF/getContractMetadata?contractAddress=${address}`
+      `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getContractMetadata?contractAddress=${address}`
     );
     const data = await res.json();
     const collection = new Collection(data);
     return collection;
+  }
+  async getUserCollections(address: string): Promise<Collection[]> {
+    const res = await fetch(
+      `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getContractsForOwner?owner=${address}`
+    );
+    const result = await res.json();
+    const ownedCollections = result.contracts.map((c: any) => new Collection(c));
+    return ownedCollections; 
   }
 }
 export default AlchemyService.getInstance();
