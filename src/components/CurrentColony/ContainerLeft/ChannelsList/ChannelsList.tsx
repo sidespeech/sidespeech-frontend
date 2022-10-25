@@ -26,11 +26,14 @@ export default function ChannelsList({ channels }: { channels: Channel[] }) {
   };
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
+    console.log('detail ChannesList :', detail)
     if (
       !selectedChannel ||
       (selectedChannel && selectedChannel.id !== detail.channelId)
     ) {
       let number = dots[detail.channelId] || 0;
+
+      console.log('{ ...dots, [detail.channelId]: number++ } ChannesList :', { ...dots, [detail.channelId]: number++ })
 
       setDots({ ...dots, [detail.channelId]: number++ });
     }

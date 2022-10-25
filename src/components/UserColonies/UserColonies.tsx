@@ -43,17 +43,18 @@ export default function UserColonies() {
   }, [userData]);
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
+    console.log('detail userColonies :', detail)
     for (let side of userData.sides) {
       let channels_ids = side.channels.map((c: any) => c.id);
       if (channels_ids.includes(detail.channelId)) {
         let number = dots[side.id] || 0;
+
+        console.log('{ ...dots, [side.id]: number++ } userColonies :', { ...dots, [side.id]: number++ })
+
         setDots({ ...dots, [side.id]: number++ });
       }
     }
-
-
   };
-
 
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
