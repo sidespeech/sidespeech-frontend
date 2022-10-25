@@ -55,7 +55,9 @@ export default function SideUserList() {
   };
 
   const handleReceiveMessage = async (m: any) => {
+    console.log('m :', m);
     const { detail } = m;
+    console.log('detail :', detail);
     // looking if the profile has already the room
     if (currentProfile?.rooms.some((r) => r.id === detail.room.id)) {
       //if yes, looking if the message comes from the selected room
@@ -78,22 +80,23 @@ export default function SideUserList() {
   };
 
   useEffect(() => {
+    console.log('useEffect')
     subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-    if (selectedRoom && dots[selectedRoom.id] > 0)
-      setDots({ ...dots, [selectedRoom.id]: 0 });
+    // if (selectedRoom && dots[selectedRoom.id] > 0)
+    //   setDots({ ...dots, [selectedRoom.id]: 0 });
     return () => {
       unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
     };
-  }, [dots, selectedRoom, currentProfile]);
+  }, [currentProfile]);
 
 
   return (
     <>
-      {currentSide?.profiles.map((p: Profile) => {
+      {currentSide?.profiles.map((p: Profile, index:number) => {
         const isMe = p.id === currentProfile?.id;
         const room = currentProfile?.getRoom(p.id);
         return (
-          <div
+          <div key={index}
             onClick={() => handleSelectedUser(p)}
             className={`w-100 flex justify-between align-center px-1 py-1 ${
               selectedUser && selectedUser.id === p.id && "selected-channel"

@@ -24,7 +24,6 @@ class WebSocketService {
     });
 
     this.socket.on("message", async (data) => {
-      console.log("data :", data)
       trigger(EventType.RECEIVE_MESSAGE, data);
     });
     this.socket.on("newAnnouncement", async (data) => {

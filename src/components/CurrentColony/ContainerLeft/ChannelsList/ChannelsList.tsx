@@ -41,7 +41,6 @@ export default function ChannelsList({ channels }: { channels: Channel[] }) {
       if (selectedChannel) dots_object[selectedChannel.id] = 0
       if (detail.channelId in dots_object) dots_object[detail.channelId] += 1
       else dots_object[detail.channelId] = 1
-      // let number = dots_object[detail.channelId] || 0;      
       setDots(dots_object);
     }
     else {

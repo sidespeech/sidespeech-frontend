@@ -21,7 +21,7 @@ export default function UserColonies() {
   const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
   const [isSubscribe, setIsSubscribe] = useState<boolean>(false);
   const [dots, setDots] = useState<any>({});
-  const { currentSide  } = useSelector((state: RootState) => state.appDatas);
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
 
   const navigate = useNavigate();
 
@@ -63,15 +63,15 @@ export default function UserColonies() {
         handleReceiveAnnouncement
       );
     };
-  }, [dots,  userData, currentSide]);
+  }, [dots, userData, currentSide]);
 
 
   useEffect(() => {
     const account = localStorage.getItem('userAccount')
-    async function getChannelNotifications(account:string) {
+    async function getChannelNotifications(account: string) {
       const notifications = await apiService.getNotification(account!);
-      let dots_object:any = {...dots}
-      const currentChannelsIds = currentSide!.channels.map((c:any)=> c.id)
+      let dots_object: any = { ...dots }
+      const currentChannelsIds = currentSide!.channels.map((c: any) => c.id)
       for (let notification of notifications) {
         if (currentSide!['id'] in dots_object && !(currentChannelsIds.includes(notification['name']))) dots_object[currentSide!['id']] = dots_object[currentSide!['id']]++
         else if (currentChannelsIds.includes(notification['name'])) {
@@ -88,9 +88,8 @@ export default function UserColonies() {
   return (
     <>
       <div className="f-column align-center mt-3" style={{ gap: 15 }}>
-        {userData.sides.map((c) => {
+        {userData.sides.map((c, i) => {
           return (
-            <>
               <div
                 onClick={() => {
                   displayColony(c.id);
@@ -101,13 +100,12 @@ export default function UserColonies() {
                 <img alt="colony-icon" src={c.sideImage} />
                 {c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
               </div>
-            </>
           );
         })}
         <Link to={"/new-side"}>
           <i
             className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark"
-            // onClick={() => changeStateModal(true)}
+          // onClick={() => changeStateModal(true)}
           ></i>
         </Link>
       </div>

@@ -72,9 +72,9 @@ export default function ChatComponent(props: IChatComponentProps) {
   return (
     <>
       <div className="text-primary-light overflow-auto w-100 px-3 f-column-reverse">
-        {_.orderBy(messages, ["timestamp"], ["desc"]).map((m: Message) => {
+        {_.orderBy(messages, ["timestamp"], ["desc"]).map((m: Message, i) => {
           return (
-            <div className="annoucement-item">
+            <div className="annoucement-item" key={i}>
               <div className="flex justify-between w-100">
                 <UserBadge weight={700} fontSize={14} username={m.sender} />
                 <div
