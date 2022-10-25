@@ -7,13 +7,13 @@ import InputText from "./ui-components/InputText";
 import "./SidesList.css";
 import { sideAPI } from "../services/side.service";
 import _ from "lodash";
-import nftsService from "../services/nfts.service";
 import Button from "./ui-components/Button";
-import { apiService } from "../services/api.service";
 import SideEligibilityModal from "./Modals/SideEligibilityModal";
 
 export default function SidesList() {
-  const { account, user, userCollectionsData: nfts } = useSelector((state: RootState) => state.user);
+  const { account, user, userCollectionsData } = useSelector(
+    (state: RootState) => state.user
+  );
   const [sides, setSides] = useState<Side[]>([]);
   const [filteredSides, setfilteredSides] = useState<Side[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
@@ -24,15 +24,13 @@ export default function SidesList() {
   useEffect(() => {
     async function getAllSides() {
       const sides = await sideAPI.getAllSides();
-      const collections = await nftsService.getAllCollectionsForUser(
-        "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
-      );
-      setUserCollections(_.orderBy(collections, "name"));
       setSides(sides);
       setfilteredSides(sides);
     }
     getAllSides();
-  }, []);
+    if (userCollectionsData)
+      setUserCollections(_.orderBy(userCollectionsData, "name"));
+  }, [userCollectionsData]);
 
   useEffect(() => {
     if (selectedCollection && sides) {
@@ -46,10 +44,8 @@ export default function SidesList() {
   const handleEligibilityCheck = (side: Side) => {
     setSelectedSide(side);
     setDisplayEligibility(true);
-    console.log(nfts);
+    console.log(userCollectionsData);
   };
-
- 
 
   return (
     <div className="justify-center align-center f-column w-100 mb-auto">
@@ -77,7 +73,7 @@ export default function SidesList() {
             {filteredSides.map((s: Side) => {
               return (
                 <div style={{ width: 256, height: 320, background: "white" }}>
-                  <img src={s.sideImage} />
+                  <img src={s.sideImage} alt="side" />
                   <div>Name: {s.name}</div>
                   <div>Members: {s.profiles.length}</div>
                   <div className="join-div">

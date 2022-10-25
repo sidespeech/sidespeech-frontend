@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 import { UserTokensData } from "../../models/UserTokensData";
@@ -7,8 +7,9 @@ import { Room } from "../../models/Room";
 import { User } from "../../models/User";
 import { Profile } from "../../models/Profile";
 import { Side } from "../../models/Side";
-import nftsService from "../../services/nfts.service";
 import { UserCollectionsData } from "../../models/interfaces/UserCollectionsData";
+import { Collection } from "../../models/interfaces/collection";
+import alchemyService from "../../services/alchemy.service";
 
 export interface UserData {
   user: User | null;
@@ -18,7 +19,7 @@ export interface UserData {
   redirectTo: null;
   sides: Side[];
   currentProfile: Profile | undefined;
-  userCollectionsData: UserCollectionsData;
+  userCollectionsData: UserCollectionsData | null;
 }
 
 const initialState: UserData = {
@@ -29,15 +30,32 @@ const initialState: UserData = {
   redirectTo: null,
   sides: [],
   currentProfile: undefined,
-  userCollectionsData: {},
+  userCollectionsData: null,
 };
 
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string) => {
-    return await nftsService.getNftsOwnedByAddress(
+    const nfts = await alchemyService.getUserNfts(
       "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
     );
+    const collections = await alchemyService.getUserCollections(
+      "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
+    );
+    let res: any = {};
+    for (let nft of nfts) {
+      const address = nft["token_address"];
+      const existingObject = res[address];
+      if (existingObject) {
+        existingObject.nfts.push(nft);
+      } else {
+        res[address] = collections.find(
+          (c: Collection) => c.address === address
+        );
+        res[address].nfts.push(nft);
+      }
+    }
+    return res;
   }
 );
 
@@ -87,23 +105,7 @@ export const userDataSlice = createSlice({
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
     builder.addCase(fetchUserDatas.fulfilled, (state, action) => {
-      const nfts = action.payload;
-      const res: any = {};
-      // Add user to the state array
-      nfts.forEach((nft: any) => {
-        const existingObject = res[nft["token_address"]];
-        if (existingObject) {
-          existingObject.nfts.push(nft);
-        } else {
-          res[nft["token_address"]] = {
-            address: nft["token_address"],
-            name: nft["name"],
-            symbol: nft["symbol"],
-            nfts: [nft],
-          };
-        }
-      });
-      state.userCollectionsData = res;
+      state.userCollectionsData = { ...action.payload };
     });
   },
 });

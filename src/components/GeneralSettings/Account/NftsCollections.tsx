@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/Slices/UserDataSlice";
 // service / utilities
-import { getParsedNftMetaData, fixURL } from "../../../helpers/utilities";
+import { fixURL } from "../../../helpers/utilities";
 import { apiService } from "../../../services/api.service";
 // ui component
 import Button from "../../ui-components/Button";
@@ -18,6 +18,7 @@ import { User } from "../../../models/User";
 // libraries
 import { toast } from "react-toastify";
 import _ from "lodash";
+import { FadeLoader } from "react-spinners";
 
 interface IUserNftsCollectionsProps {
   user: User;
@@ -35,22 +36,31 @@ export default function NftsCollections({
   const [filteredCollections, setFilteredCollections] = useState<
     Collection[] | null
   >(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const collections = Object.keys(userCollectionsData);
-    const array: boolean[] = new Array(collections.length).fill(true);
-    setOpenCollection(array);
-    const initCheckedState: any = {};
-    collections.forEach((key) => {
-      const nfts =
-        user?.publicNfts?.filter((nft) => nft.token_address === key) || [];
-      initCheckedState[key] = [...nfts];
-    });
-    setCheckedState(initCheckedState);
-    setFilteredCollections(Object.values(userCollectionsData));
+    if (userCollectionsData && user) {
+      const collections = Object.keys(userCollectionsData);
+      const array: boolean[] = new Array(collections.length).fill(true);
+      setOpenCollection(array);
+      const initCheckedState: any = {};
+      collections.forEach((key) => {
+        const nfts =
+          user?.publicNfts?.filter((nft) => nft.token_address === key) || [];
+        initCheckedState[key] = [...nfts];
+      });
+      setCheckedState(initCheckedState);
+      setFilteredCollections(Object.values(userCollectionsData));
+    }
   }, [userCollectionsData, user]);
+
+  useEffect(() => {
+    if (checkedState && Object.values(checkedState).length > 0) {
+      setLoading(false);
+    }
+  }, [checkedState]);
 
   //#region NFTS handlers
   const handleCollectionShowing = (position: any) => {
@@ -123,7 +133,7 @@ export default function NftsCollections({
             ? _.sum(Object.values(checkedState).map((c) => c.length))
             : 0}
         </span>
-        /{_.sum(Object.values(userCollectionsData).map((c) => c.nfts.length))})
+        /{_.sum(filteredCollections?.map((c) => c.nfts.length))})
       </p>
       <InputText
         height={40}
@@ -136,6 +146,15 @@ export default function NftsCollections({
       />
 
       <div className="nftCollectionContainer">
+        {loading && (
+          <div
+            className="f-column align-center justify-center"
+            style={{ margin: "auto" }}
+          >
+            <div className="mb-1">Fetching your NFTS...</div>
+            <FadeLoader loading={loading} color="var(--text-secondary)" />
+          </div>
+        )}
         {filteredCollections &&
           checkedState &&
           filteredCollections.map((collection, index) => {
@@ -179,7 +198,7 @@ export default function NftsCollections({
                   }`}
                 >
                   {collection.nfts.map((nft: NFT, index: number) => {
-                    const metadata = getParsedNftMetaData(nft);
+                    const metadata = nft.metadata;
                     return (
                       <div
                         onClick={() => handleNftChange(nft)}

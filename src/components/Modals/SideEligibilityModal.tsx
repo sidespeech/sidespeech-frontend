@@ -3,9 +3,9 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import {
   checkUserEligibility,
-  fixURL,
-  getParsedNftMetaData,
+  fixURL
 } from "../../helpers/utilities";
+import { NFT } from "../../models/interfaces/nft";
 import { Side } from "../../models/Side";
 import { RootState } from "../../redux/store/app.store";
 import { apiService } from "../../services/api.service";
@@ -62,7 +62,7 @@ interface ISideEligibilityModalProps {
 export default function SideEligibilityModal(
   props: ISideEligibilityModalProps
 ) {
-  const { userCollectionsData: nfts, user } = useSelector((state: RootState) => state.user);
+  const { userCollectionsData, user } = useSelector((state: RootState) => state.user);
 
   const [isEligible, setIsEligible] = useState<boolean>(false);
   const [details, setDetails] = useState<any[]>([]);
@@ -72,12 +72,12 @@ export default function SideEligibilityModal(
   };
 
   useEffect(() => {
-    if (nfts) {
-      const res = checkUserEligibility(nfts, props.selectedSide);
+    if (userCollectionsData) {
+      const res = checkUserEligibility(userCollectionsData, props.selectedSide);
       setIsEligible(!res.some((r) => r.type === "error") && res.length > 0);
       setDetails(res);
     }
-  }, [nfts]);
+  }, [userCollectionsData]);
 
   return (
     <Modal
@@ -103,15 +103,16 @@ export default function SideEligibilityModal(
           <ConditionsContainer>
             <div>Conditions</div>
             {details.map((d) => {
+              console.log(d)
               return (
                 <div className="f-column">
-                  <div>{nfts[d.id].name}</div>
+                  <div>{userCollectionsData[d.id].name}</div>
                   <div className="flex">
-                    {d.usefulNfts.map((nft: any) => {
-                      const metadata = getParsedNftMetaData(nft);
+                    {d.usefulNfts.map((nft: NFT) => {
+                      const metadata = nft.metadata;
                       return (
                         <div>
-                          {nfts[d.id].name} #{nft.token_id}
+                          {userCollectionsData[d.id].name} #{nft.token_id}
                           <div>
                             <NftImage
                               src={fixURL(metadata.image)}

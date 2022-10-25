@@ -4,7 +4,7 @@
     border-radius: 20px;
     flex: 1.2;
     background-color: var(--bg-secondary-dark);
-    width: 40rem;
+    width: 547px;
 }
 
 .collection-name {
@@ -25,7 +25,7 @@
 
 /* CSS for Feature Box Div */
 .featureBox {
-    width: 31rem;
+    width: 29rem;
     background-color: #242635;
     padding: 12px 15px;
     border-radius: 8px;
