@@ -21,7 +21,6 @@ import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 
 import { apiService } from "../../services/api.service";
-import NftsService from "../../services/nfts.service";
 
 export const SeparatorVertical = styled.div`
   min-height: 415px;

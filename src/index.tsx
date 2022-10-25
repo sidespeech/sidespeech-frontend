@@ -14,8 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./override.css";
 import "./index.css";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
-import ViewUserProfile from "./components/Modals/ViewUserProfile";
-import SettingsAdmin from "./components/CurrentColony/settings/settings";
+import SettingsAdmin from "./components/CurrentColony/settings/SettingsAdmin";
 import NewSide from "./components/new-side/new-side";
 
 // General Settings
@@ -55,11 +54,11 @@ ReactDOM.render(
                 path="/CreateSideSpeechProfile"
                 element={<CreateSideSpeechProfile />}
               />
-              <Route path="new-side" element={<NewSide />}/>
+              <Route path="new-side" element={<NewSide />} />
               <Route path=":id" element={<CurrentColony />}>
                 <Route path="profile/:id" element={<UserProfile />} />
-                <Route path=":id/settings" element={<SettingsAdmin />} />
               </Route>
+              <Route path=":id/admin-settings" element={<SettingsAdmin />} />
               <Route
                 path="/general-settings"
                 element={<GeneralSettingsAccount />}
