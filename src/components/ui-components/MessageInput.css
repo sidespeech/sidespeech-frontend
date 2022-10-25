@@ -1,0 +1,34 @@
+.message-intput-editor {
+    background-color: var(--bg-secondary-dark);
+}
+
+.message-input-toolbar {
+    background-color: var(--bg-secondary-dark);
+    border-color: var(--bg-secondary-dark);
+}
+
+.message-input-wrapper {
+    background-color: var(--bg-secondary-dark);
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 0 1rem;
+}
+
+.bordered-option-classname {
+    padding: 3px 5px;
+    background-color: var(--bg-secondary-dark);
+    border-color: var(--text-secondary-dark); 
+    color: var(--text-secondary-dark);
+}
+
+.bordered-option-classname[aria-selected='true'] {
+    background-color: var(--bg-secondary-light);
+}
+
+.bordered-option-classname:hover {
+    box-shadow: none;
+}
+
+.bordered-option-classname > img {
+    height: 100%;
+}

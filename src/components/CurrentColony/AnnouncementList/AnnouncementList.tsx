@@ -5,8 +5,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
 import _ from "lodash";
 import { apiService } from "../../../services/api.service";
-import InputText from "../../ui-components/InputText";
+import MessageInput from "../../ui-components/MessageInput";
 import websocketService from "../../../services/websocket.service";
+import { EditorState } from 'draft-js';
 import {
   subscribeToEvent,
   unSubscribeToEvent,
@@ -20,7 +21,7 @@ export default function AnnouncementList() {
     (state: RootState) => state.appDatas
   );
   const { account } = useSelector((state: RootState) => state.user);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(EditorState.createEmpty());
 
   const ref = useRef<HTMLInputElement>();
 
@@ -92,19 +93,17 @@ export default function AnnouncementList() {
       {(selectedChannel?.type !== 0 ||
         currentSide?.creatorAddress === account) && (
         <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
-          <InputText
+          <MessageInput
             ref={ref}
             size={14}
             weight={600}
-            glass={false}
-            message
             id="sendmessage"
-            iconRightPos={{ top: 19, right: 18 }}
+            iconRightPos={{ bottom: 10, right: 10 }}
             height={55}
             radius="10px"
             placeholder={"Type your message here"}
-            onChange={(event: any) => {
-              setInputValue(event.target.value);
+            onChange={(editorState: any) => {
+              setInputValue(editorState);
             }}
             onKeyUp={(event: any) => {
               if (event.key === "Enter") handleAnnouncement(inputValue);
