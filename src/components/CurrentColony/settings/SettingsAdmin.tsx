@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Channel, Colony } from "../../../models/Colony";
 import { useDispatch, useSelector } from "react-redux";
-import { connect, fetchUserDatas } from "../../../redux/Slices/UserDataSlice";
-import { toast } from "react-toastify";
-import { useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import MembersList from "./members-list/members-list"
 import Channels from "./channels/channels"
 import Invitation from "./invitation/invitation"
@@ -13,22 +9,9 @@ import Account from "./account/account"
 import Eligibility from "./eligibility/eligibility"
 import "./settings.css";
 import { RootState } from "../../../redux/store/app.store";
-import websocketService from "../../../services/websocket.service";
-import { apiService } from "../../../services/api.service";
+import ContainerLeft from "../../ui-components/ContainerLeft";
+import TabItems from "../../ui-components/TabItems";
 
-const ContainerLeft = styled.div`
-  min-width: 200px;
-  height: 92vh;
-  display: flex;
-  flex-direction: column;
-  padding-top: 11px;
-  color: var(--text-primary-light);
-`;
-
-const TabItems = styled.div`
-  cursor: pointer;
-  font-family : "Inter", sans-serif;
-`;
 
 const initialStateTabs = {
   menu: [
@@ -77,10 +60,13 @@ export default function SettingsAdmin(
   };
 
   useEffect(() => {
+    console.log('currentSide settings :', currentSide)
+    console.log('userData settings :', userData)
+
     if (!currentSide) {
       navigate(`/`)
     } else {
-      (currentSide && currentSide['creatorAddress'] === userData['account']) ? 
+      (currentSide && currentSide['creatorAddress'].toLowerCase() === (userData['account'] || "").toLowerCase()) ? 
       handleTabs('Informations') : handleTabs('Account'); 
     }
   }, []);
@@ -112,13 +98,13 @@ export default function SettingsAdmin(
               return (
                 // 
                 (submenu['admin'] === true) ?
-                  (currentSide['creatorAddress'] === userData['account']) ?
+                  (currentSide['creatorAddress'].toLowerCase() === (userData['account'] || "").toLowerCase()) ?
                     <div key={index} className="mt-2">
                       <label className="pl-4 sidebar-title">{submenu['title']}</label>
 
                       {submenu['items'].map((subtitle: any, index: number) => {
                         return (
-                          <TabItems key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                          <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
                         );
                       })}
                     </div> : null :
@@ -127,7 +113,7 @@ export default function SettingsAdmin(
 
                     {submenu['items'].map((subtitle: any, index: number) => {
                       return (
-                        <TabItems key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                        <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
                       );
                     })}
                   </div>

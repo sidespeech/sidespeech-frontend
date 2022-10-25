@@ -104,10 +104,10 @@ export default function UserColonies() {
             </>
           );
         })}
-        <Link to={"/"}>
+        <Link to={"/new-side"}>
           <i
             className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark"
-            onClick={() => changeStateModal(true)}
+            // onClick={() => changeStateModal(true)}
           ></i>
         </Link>
       </div>

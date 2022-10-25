@@ -12,7 +12,7 @@
 
   --checkbox-dark: #344d4f;
 
-  --placeholer: #3f4256;
+  --placeholer: #65688a;
 
   --text-primary: #ffffff;
   --text-primary-light: #c1c7cf;
@@ -194,6 +194,27 @@ body {
 }
 .underline {
   text-decoration: underline;
+}
+.w-30 {
+  width: 30%;
+}
+.w-40 {
+  width: 40%;
+}
+.w-50 {
+  width: 50%;
+}
+.w-60 {
+  width: 60%;
+}
+.w-70 {
+  width: 70%;
+}
+.w-80 {
+  width: 80%;
+}
+.w-90 {
+  width: 90%;
 }
 .w-100 {
   width: 100%;
@@ -428,6 +449,9 @@ body {
 }
 .text-left {
   text-align: left;
+}
+.text-right{
+  text-align: right;
 }
 .pointer {
   cursor: pointer;
