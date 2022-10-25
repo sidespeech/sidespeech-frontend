@@ -10,6 +10,7 @@ import { RootState } from "../../redux/store/app.store"; import { flattenChannel
 import { Side } from "../../models/Side";
 import { Channel } from "diagnostics_channel";
 import { Dot } from "../ui-components/styled-components/shared-styled-components";
+import { apiService } from "../../services/api.service";
 ;
 
 
@@ -43,23 +44,19 @@ export default function UserColonies() {
   }, [userData]);
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-    console.log('detail userColonies :', detail)
     for (let side of userData.sides) {
       let channels_ids = side.channels.map((c: any) => c.id);
-      if (channels_ids.includes(detail.channelId)) {
+      if (channels_ids.includes(detail.channelId) && currentSide!['id'] !== side['id']) {
         let number = dots[side.id] || 0;
-
-        console.log('{ ...dots, [side.id]: number++ } userColonies :', { ...dots, [side.id]: number++ })
-
-        setDots({ ...dots, [side.id]: number++ });
+        setDots({ ...dots, [side.id]: ++number });
       }
     }
   };
 
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-    if (currentSide && dots[currentSide.id] > 0)
-      setDots({ ...dots, [currentSide.id]: 0 });
+    // if (currentSide && dots[currentSide.id] > 0)
+    //   setDots({ ...dots, [currentSide.id]: 0 });
     return () => {
       unSubscribeToEvent(
         EventType.RECEIVE_ANNOUNCEMENT,
@@ -67,6 +64,26 @@ export default function UserColonies() {
       );
     };
   }, [dots,  userData, currentSide]);
+
+
+  useEffect(() => {
+    const account = localStorage.getItem('userAccount')
+    async function getChannelNotifications(account:string) {
+      const notifications = await apiService.getNotification(account!);
+      let dots_object:any = {...dots}
+      const currentChannelsIds = currentSide!.channels.map((c:any)=> c.id)
+      for (let notification of notifications) {
+        if (currentSide!['id'] in dots_object && !(currentChannelsIds.includes(notification['name']))) dots_object[currentSide!['id']] = dots_object[currentSide!['id']]++
+        else if (currentChannelsIds.includes(notification['name'])) {
+          dots_object[currentSide!['id']] = 0
+          // await apiService.deleteNotification(notification['name'], account!);
+        }
+        else dots_object[currentSide!['id']] = 1
+      }
+      setDots(dots_object);
+    }
+    if (currentSide && account) getChannelNotifications(account);
+  }, [currentSide]);
 
   return (
     <>

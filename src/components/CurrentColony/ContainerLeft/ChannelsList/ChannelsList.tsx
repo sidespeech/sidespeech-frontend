@@ -11,6 +11,7 @@ import { Channel } from "../../../../models/Channel";
 import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
 import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
 import { RootState } from "../../../../redux/store/app.store";
+import { apiService } from "../../../../services/api.service";
 import { Dot } from "../../../ui-components/styled-components/shared-styled-components";
 
 export default function ChannelsList({ channels }: { channels: Channel[] }) {
@@ -18,7 +19,7 @@ export default function ChannelsList({ channels }: { channels: Channel[] }) {
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
 
-  const [dots, setDots] = useState<any>({});
+  const [dots_channel, setDots] = useState<any>({});
 
   const onChannelSelected = (c: Channel) => {
     dispatch(setSelectedChannel(c));
@@ -26,30 +27,57 @@ export default function ChannelsList({ channels }: { channels: Channel[] }) {
   };
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-    console.log('detail ChannesList :', detail)
+    const account = localStorage.getItem('userAccount')
+
+    async function removeNotification() {
+      await apiService.deleteNotification(selectedChannel!.id, account!);
+    }
+
     if (
       !selectedChannel ||
       (selectedChannel && selectedChannel.id !== detail.channelId)
     ) {
-      let number = dots[detail.channelId] || 0;
-
-      console.log('{ ...dots, [detail.channelId]: number++ } ChannesList :', { ...dots, [detail.channelId]: number++ })
-
-      setDots({ ...dots, [detail.channelId]: number++ });
+      let dots_object:any = {...dots_channel}
+      if (selectedChannel) dots_object[selectedChannel.id] = 0
+      if (detail.channelId in dots_object) dots_object[detail.channelId] += 1
+      else dots_object[detail.channelId] = 1
+      // let number = dots_object[detail.channelId] || 0;      
+      setDots(dots_object);
+    }
+    else {
+      removeNotification();
     }
   };
 
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-    if (selectedChannel && dots[selectedChannel.id] > 0)
-      setDots({ ...dots, [selectedChannel.id]: 0 });
     return () => {
       unSubscribeToEvent(
         EventType.RECEIVE_ANNOUNCEMENT,
         handleReceiveAnnouncement
       );
     };
-  }, [dots, selectedChannel]);
+  }, [selectedChannel]);
+
+
+  useEffect(() => {
+    const account = localStorage.getItem('userAccount')
+    async function getChannelNotifications(account:string) {
+      const notifications = await apiService.getNotification(account!);
+      let dots_object:any = {}
+      for (let notification of notifications) {
+        if (notification['name'] in dots_object && notification['name'] !== selectedChannel!.id) dots_object[notification.name] += 1
+        else if (notification['name'] === selectedChannel!.id) {
+          dots_object[notification.name] = 0
+          await apiService.deleteNotification(selectedChannel!.id, account!);
+        }
+        else dots_object[notification.name] = 1
+      }
+      setDots(dots_object);
+    }
+    if (selectedChannel && account) getChannelNotifications(account);
+  }, [selectedChannel]);
+
 
   return (
     <div className="mt-2">
@@ -73,7 +101,7 @@ export default function ChannelsList({ channels }: { channels: Channel[] }) {
 
               {c.name}
             </span>
-            {c && dots[c.id] > 0 && <Dot>{dots[c.id]}</Dot>}
+            {c && dots_channel[c.id] > 0 && <Dot>{dots_channel[c.id]}</Dot>}
           </div>
         );
       })}

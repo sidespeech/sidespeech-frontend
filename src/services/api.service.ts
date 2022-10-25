@@ -10,6 +10,7 @@ import { Profile } from "../models/Profile";
 import { Message, Room } from "../models/Room";
 import { Side } from "../models/Side";
 import { User } from "../models/User";
+import { Notification } from "../models/Notification";
 
 // Create an API Service class
 class apiService {
@@ -166,6 +167,20 @@ class apiService {
       .send({ ids : ids });
     return res.body;
   }
+
+
+  // Fetch notification by channel id and user wallet address
+  static async getNotification(address:string): Promise<any> {
+    const res = await superagent.get(`${BASE_URL}/notification/allNotifications/${address}`);
+    return res.body.map((c: any) => new Notification(c));
+  }
+
+  // remove notification by channel id and user wallet address
+  static async deleteNotification(id:string, address:string): Promise<any> {
+    const res = await superagent.delete(`${BASE_URL}/notification/${id}/${address}`);
+    return new User(res.body);
+  }
 }
+
 
 export { apiService };
