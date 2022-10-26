@@ -11,6 +11,7 @@ import { Side } from "../../models/Side";
 import { Channel } from "diagnostics_channel";
 import { Dot } from "../ui-components/styled-components/shared-styled-components";
 import { apiService } from "../../services/api.service";
+import { Profile } from "../../models/Profile";
 ;
 
 
@@ -44,6 +45,7 @@ export default function UserColonies() {
   }, [userData]);
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
+    console.log('handleReceiveAnnouncement :', detail)
     for (let side of userData.sides) {
       let channels_ids = side.channels.map((c: any) => c.id);
       if (channels_ids.includes(detail.channelId) && currentSide!['id'] !== side['id']) {
@@ -67,18 +69,35 @@ export default function UserColonies() {
 
 
   useEffect(() => {
+    console.log('userData.sides :', userData.sides)
     const account = localStorage.getItem('userAccount')
     async function getChannelNotifications(account: string) {
       const notifications = await apiService.getNotification(account!);
+      console.log('notifications :', notifications)
       let dots_object: any = { ...dots }
       const currentChannelsIds = currentSide!.channels.map((c: any) => c.id)
+      console.log('currentChannelsIds :', currentChannelsIds)
       for (let notification of notifications) {
         if (currentSide!['id'] in dots_object && !(currentChannelsIds.includes(notification['name']))) dots_object[currentSide!['id']] = dots_object[currentSide!['id']]++
         else if (currentChannelsIds.includes(notification['name'])) {
           dots_object[currentSide!['id']] = 0
           // await apiService.deleteNotification(notification['name'], account!);
         }
-        else dots_object[currentSide!['id']] = 1
+        else if (currentSide?.profiles.find((p:Profile) => p.rooms.some(el => el.id === notification['name'])))
+          dots_object[currentSide!['id']] = 1
+        else {
+          let sideFounded = userData.sides.filter((s:Side) => {
+            console.log("s :", s);
+            return s.profiles.find((p:Profile) => {
+              console.log("p :", p)
+              return p.rooms.find(el => el.id === notification['name'])
+            })
+          })
+          console.log("sideFounded :", sideFounded)
+        }
+        // console.log(currentSide?.profiles.find((p:Profile) => console.log(p)))
+        // console.log(currentSide?.profiles.find((p:Profile) => p.rooms.some(el => el.id === notification['name'])))
+
       }
       setDots(dots_object);
     }

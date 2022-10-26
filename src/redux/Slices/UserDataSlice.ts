@@ -33,9 +33,9 @@ const initialState: UserData = {
   userCollectionsData: null,
 };
 
-export const flattenChannels = (sides: any) => {
-  return sides.reduce(function (flat: any, toFlatten: any) {
-    return flat.concat(Array.isArray(toFlatten.channels) ? flattenChannels(toFlatten.channels) : toFlatten.id);
+export const flattenChannels = (array: any, key:string) => {
+  return array.reduce(function (flat: any, toFlatten: any) {
+    return flat.concat(Array.isArray(toFlatten[key]) ? flattenChannels(toFlatten[key], key) : toFlatten.id);
   }, []);
 };
 
@@ -72,11 +72,15 @@ export const userDataSlice = createSlice({
     connect: (state: UserData, action: PayloadAction<any>) => {
       state.user = action.payload.user;
       state.account = action.payload.account;
+      let rooms = flattenChannels(state.user?.profiles, 'rooms');
       state.sides = action.payload.user.profiles
-        ? action.payload.user.profiles.map((p: Profile) => p.side)
+        ? action.payload.user.profiles.map((p: Profile, i:number, profiles:Profile[]) => {
+          p.side['profiles'] = profiles
+          return p.side
+        })
         : "";
       state.redirectTo = action.payload.redirectTo;
-      let rooms = flattenChannels(state.sides);
+      rooms = rooms.concat(flattenChannels(state.sides, 'channels'));
       websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {

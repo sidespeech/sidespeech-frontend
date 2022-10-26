@@ -55,39 +55,78 @@ export default function SideUserList() {
   };
 
   const handleReceiveMessage = async (m: any) => {
-    console.log('m :', m);
+    console.log('m :', m)
     const { detail } = m;
+    const account = localStorage.getItem('userAccount')
     console.log('detail :', detail);
-    // looking if the profile has already the room
-    if (currentProfile?.rooms.some((r) => r.id === detail.room.id)) {
-      //if yes, looking if the message comes from the selected room
-      if (
-        !selectedRoom ||
-        (selectedRoom && detail.room.id !== selectedRoom.id)
-      ) {
-        // if not incrementing the notification dot
-        let number = dots[detail.room.id] || 0;
-        setDots({ ...dots, [detail.room.id]: ++number });
-      }
-    } else if (currentProfile) {
-      // if not, getting the updated profile from backend
-      const updatedProfile = await apiService.getProfileById(currentProfile.id);
-      // updating the profile in the store
-      dispatch(updateCurrentProfile(updatedProfile));
-      // initializing notification for this room at 1
-      setDots({ ...dots, [detail.room.id]: 1 });
+    // // looking if the profile has already the room
+    // if (currentProfile?.rooms.some((r) => r.id === detail.room.id)) {
+    //   //if yes, looking if the message comes from the selected room
+    //   if (
+    //     !selectedRoom ||
+    //     (selectedRoom && detail.room.id !== selectedRoom.id)
+    //   ) {
+    //     // if not incrementing the notification dot
+    //     let number = dots[detail.room.id] || 0;
+    //     setDots({ ...dots, [detail.room.id]: ++number });
+    //   }
+    // } else if (currentProfile) {
+    //   // if not, getting the updated profile from backend
+    //   const updatedProfile = await apiService.getProfileById(currentProfile.id);
+    //   // updating the profile in the store
+    //   dispatch(updateCurrentProfile(updatedProfile));
+    //   // initializing notification for this room at 1
+    //   setDots({ ...dots, [detail.room.id]: 1 });
+    // }
+
+
+    async function removeNotification() {
+      await apiService.deleteNotification(selectedRoom!.id, account!);
+    }
+
+    if (
+      !selectedRoom ||
+      (selectedRoom && selectedRoom.id !== detail.room.id)
+    ) {
+      let dots_object:any = {...dots}
+      if (selectedRoom) dots_object[selectedRoom.id] = 0
+      if (detail.room.id in dots_object) dots_object[detail.room.id] += 1
+      else dots_object[detail.room.id] = 1
+      setDots(dots_object);
+    }
+    else {
+      removeNotification();
     }
   };
 
   useEffect(() => {
-    console.log('useEffect')
+    console.log('useEffect');
+    console.log('selectedRoom :', selectedRoom);
     subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-    // if (selectedRoom && dots[selectedRoom.id] > 0)
-    //   setDots({ ...dots, [selectedRoom.id]: 0 });
     return () => {
       unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
     };
   }, [currentProfile]);
+
+  useEffect(() => {
+    console.log('useEffect notif')
+    const account = localStorage.getItem('userAccount')
+    async function getRoomNotifications(account:string) {
+      const notifications = await apiService.getNotification(account!);
+      console.log('notifications :', notifications)
+      let dots_object:any = {}
+      for (let notification of notifications) {
+        if (notification['name'] in dots_object && (notification['name'] !== selectedRoom!.id || !selectedRoom)) dots_object[notification.name] += 1
+        else if (selectedRoom && notification['name'] === selectedRoom!.id) {
+          dots_object[notification.name] = 0
+          await apiService.deleteNotification(selectedRoom!.id, account!);
+        }
+        else dots_object[notification.name] = 1
+      }
+      setDots(dots_object);
+    }
+    if (account) getRoomNotifications(account);
+  }, [selectedRoom]);
 
 
   return (

@@ -27,6 +27,7 @@ export default function ChannelsList({ channels }: { channels: Channel[] }) {
   };
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
+    console.log('handleReceiveAnnouncement channelList :', detail)
     const account = localStorage.getItem('userAccount')
 
     async function removeNotification() {
