@@ -1,5 +1,11 @@
 .message-intput-editor {
     background-color: var(--bg-secondary-dark);
+    color: var(--text-primary);
+}
+
+.message-intput-editor a {
+    color: #FFFFFF!important;
+    text-decoration: underline!important;
 }
 
 .message-input-toolbar {
@@ -10,7 +16,6 @@
 .message-input-wrapper {
     background-color: var(--bg-secondary-dark);
     border-radius: 10px;
-    overflow: hidden;
     padding: 0 1rem;
 }
 
@@ -31,4 +36,32 @@
 
 .bordered-option-classname > img {
     height: 100%;
+}
+
+.toolbar-popup {
+    top: auto;
+    bottom: 150%;
+    background-color: var(--bg-secondary-dark);
+    border-color: var(--text-secondary-dark); 
+    box-shadow: none;
+}
+
+.toolbar-popup .rdw-image-modal-upload-option,
+.toolbar-popup .rdw-link-modal-input {
+    background-color: var(--bg-secondary-dark);
+    color: var(--text-secondary-dark);
+}
+
+.toolbar-popup .rdw-image-modal-btn,
+.toolbar-popup .rdw-link-modal-btn {
+    background-color: var(--bg-secondary-dark);
+    color: var(--text-secondary-dark);
+}
+
+.toolbar-popup .rdw-image-modal-size {
+    display: none;
+}
+
+.toolbar-icon:focus, .send-icon:focus {
+    outline: 1px solid var(--text-secondary-dark);
 }

@@ -7,7 +7,6 @@ import _ from "lodash";
 import { apiService } from "../../../services/api.service";
 import MessageInput from "../../ui-components/MessageInput";
 import websocketService from "../../../services/websocket.service";
-import { EditorState } from 'draft-js';
 import {
   subscribeToEvent,
   unSubscribeToEvent,
@@ -21,7 +20,6 @@ export default function AnnouncementList() {
     (state: RootState) => state.appDatas
   );
   const { account } = useSelector((state: RootState) => state.user);
-  const [inputValue, setInputValue] = useState(EditorState.createEmpty());
 
   const ref = useRef<HTMLInputElement>();
 
@@ -42,9 +40,9 @@ export default function AnnouncementList() {
 
   useEffect(() => {
     async function getChannelAnnouncements() {
-      const announcements = await apiService.getChannelAnnouncements(
+      const announcements = selectedChannel ? await apiService.getChannelAnnouncements(
         selectedChannel.id
-      );
+      ) : [];
       setAnnouncements(announcements);
     }
     if (selectedChannel) getChannelAnnouncements();
@@ -53,6 +51,11 @@ export default function AnnouncementList() {
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
   };
+
+  const handleUploadFile = async (image: File): Promise<string> => {
+    // TODO api call to upload file vvv
+    return await Promise.resolve(image.name);
+  }
 
   const handleAnnouncement = async (value: string) => {
     // This will need to be made dynamic.
@@ -78,13 +81,12 @@ export default function AnnouncementList() {
           (a: Announcement) => {
             return (
               <>
-                {" "}
                 <AnnouncementItem
                   key={a.id}
                   extend={extend}
                   handleExtendComments={handleExtendComments}
                   announcement={a}
-                />{" "}
+                />
               </>
             );
           }
@@ -97,20 +99,11 @@ export default function AnnouncementList() {
             ref={ref}
             size={14}
             weight={600}
+            handleUploadFile={handleUploadFile}
             id="sendmessage"
-            iconRightPos={{ bottom: 10, right: 10 }}
-            height={55}
             radius="10px"
             placeholder={"Type your message here"}
-            onChange={(editorState: any) => {
-              setInputValue(editorState);
-            }}
-            onKeyUp={(event: any) => {
-              if (event.key === "Enter") handleAnnouncement(inputValue);
-            }}
-            onClick={(e: any) => {
-              handleAnnouncement(inputValue);
-            }}
+            onSubmit={handleAnnouncement}
           />
         </div>
       )}

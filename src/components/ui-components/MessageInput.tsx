@@ -5,6 +5,7 @@ import { EditorState } from 'draft-js';
 import boldIcon from "../../assets/bold.svg"
 import codeIcon from "../../assets/code.svg"
 import emojiIcon from "../../assets/face-smile.svg"
+import gifIcon from "../../assets/gif.svg"
 import imageIcon from "../../assets/image.svg"
 import italicIcon from "../../assets/italic.svg"
 import linkIcon from "../../assets/link.svg"
@@ -13,6 +14,11 @@ import sendicon from "../../assets/send-icon.svg";
 import strikeThroughIcon from "../../assets/strikethrough.svg"
 import underlineIcon from "../../assets/underline.svg"
 import undoIcon from "../../assets/rotate-left.svg"
+import outdentIcon from "../../assets/outdent.svg"
+import indentIcon from "../../assets/indent.svg"
+import orderedIcon from "../../assets/list-ol.svg"
+import unorderedIcon from "../../assets/list-ul.svg"
+import emojisArray from "../../assets/emojisArray"
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import './MessageInput.css';
@@ -23,17 +29,17 @@ interface MessageInputPropsType {
     color?: string;
     defaultValue?: string;
     disabled?: any;
-    editorState?: typeof EditorState;
+    editorState?: EditorState;
+    handleUploadFile?:  (image: File) => Promise<string>,
     height?: number;
-    iconRightPos?: { bottom?: number, top?: number; right?: number, left?: number };
     iconSize?: number;
     id?: any;
     maxLength?: number;
     maxWidth?: number;
     onChange?: any;
-    onClick?: any;
     onEditorStateChange?: any;
     onKeyUp?: any;
+    onSubmit: (state: string) => void;
     parentWidth?: number | string;
     padding?: string;
     placeholder?: string;
@@ -63,7 +69,6 @@ interface MessageInputProps {
     placeholderSize?: number;
     radius?: string;
     size?: number;
-    type: string;
     weight?: number;
     width?: number | string;
 }
@@ -94,8 +99,17 @@ const EditorSyled = styled(Editor)<MessageInputProps>`
 `;
 
 const MessageInput = forwardRef((props: MessageInputPropsType, ref: any) => {
-    const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty())
+    const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const [toolbarhidden, setToolbarHidden] = useState<boolean>(true);
+
+    const toolbarOptions = ['inline', 'link', 'list', 'history', 'emoji'];
+
+    if (props.handleUploadFile) toolbarOptions.splice(4, 0, 'image');
+
+    const handleSubmit = (): void => {
+      props.onSubmit(editorState.getCurrentContent().getPlainText());
+      setEditorState(EditorState.createEmpty());
+    }
 
   return (
     <div
@@ -112,10 +126,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: any) => {
             height={props.height}
             id={props.id}
             maxLength={props.maxLength}
-            onEditorStateChange={(state: EditorState) => {
-                setEditorState(state)
-                props.onChange(state)
-            }}
+            onEditorStateChange={(state: EditorState) => setEditorState(state)}
             placeholder={props.placeholder}
             placeholderColor={props.placeholderColor}
             placeholderSize={props.placeholderSize}
@@ -125,7 +136,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: any) => {
             size={props.size}
             toolbarHidden={toolbarhidden}
             toolbar={{
-              options: ['inline', 'link', 'emoji', 'image', 'history'],
+              options: toolbarOptions,
               inline: {
                 options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
                 bold: { icon: boldIcon, className: 'bordered-option-classname' },
@@ -135,33 +146,53 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: any) => {
                 monospace: { icon: codeIcon, className: 'bordered-option-classname' },
               },
               link: {
-                inDropdown: false,
-                className: undefined,
-                component: undefined,
-                popupClassName: undefined,
-                dropdownClassName: undefined,
+                popupClassName: 'toolbar-popup',
                 showOpenOptionOnHover: true,
-                defaultTargetOption: '_self',
                 options: ['link'],
-                link: { icon: linkIcon, className: 'bordered-option-classname' },
-                linkCallback: undefined
+                link: { icon: linkIcon, className: 'bordered-option-classname' }
               },
-              emoji: { icon: emojiIcon, className: 'bordered-option-classname' },
-              image: { icon: imageIcon, className: 'bordered-option-classname' },
+              list: {
+                options: ['unordered', 'ordered', 'indent', 'outdent'],
+                unordered: { icon: unorderedIcon, className: 'bordered-option-classname' },
+                ordered: { icon: orderedIcon, className: 'bordered-option-classname' },
+                indent: { icon: indentIcon, className: 'bordered-option-classname' },
+                outdent: { icon: outdentIcon, className: 'bordered-option-classname' },
+              },
+              emoji: { 
+                emojis: emojisArray,
+                icon: emojiIcon, 
+                className: 'bordered-option-classname', 
+                popupClassName: 'toolbar-popup' 
+              },
+              image: { 
+                alignmentEnabled: false,
+                className: 'bordered-option-classname', 
+                icon: imageIcon, 
+                popupClassName: 'toolbar-popup',
+                previewImage: true,
+                uploadCallback: props.handleUploadFile,
+                urlEnabled: false
+              },
               history: { 
                 undo: { icon: undoIcon, className: 'bordered-option-classname' },
                 redo: { icon: redoIcon, className: 'bordered-option-classname' },
               },
             }}
             toolbarClassName="message-input-toolbar"
-            type={"text"}
             weight={props.weight}
             width={props.width}
             wrapperClassName="flex-1 message-input-wrapper"
         />
-        <div className="absolute flex align-center ml-3 mr-3" style={{...props.iconRightPos, zIndex: 3}}>
+        <div className="absolute flex align-center ml-3 mr-3" style={{bottom: 10, right: 10, zIndex: 3}}>
           <span
-            className="pointer mr-3 pr-1 pl-1 pt-1 pb-1"
+            className="pointer flex align-center mr-3 pr-1 pl-1 pt-1 pb-1 toolbar-icon"
+            // onClick={null}
+          >
+            <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
+          </span>
+
+          <span
+            className="pointer mr-3 pr-1 pl-1 pt-1 pb-1 toolbar-icon"
             onClick={() => setToolbarHidden(bool => !bool)}
             style={toolbarhidden? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
           >
@@ -169,8 +200,8 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: any) => {
           </span>
 
           <span
-            className="pointer"
-            onClick={props.onClick}
+            className="pointer send-icon"
+            onClick={handleSubmit}
             >
             <img src={sendicon} alt="send-icon" />
           </span>
@@ -178,4 +209,5 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: any) => {
     </div>
   );
 });
+
 export default MessageInput;
