@@ -62,6 +62,10 @@
     display: none;
 }
 
-.toolbar-icon:focus, .send-icon:focus {
+.toolbar-button {
+    background: transparent;
+}
+
+.toolbar-button:focus {
     outline: 1px solid var(--text-secondary-dark);
 }

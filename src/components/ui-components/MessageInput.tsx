@@ -1,7 +1,7 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useRef, useState } from "react";
 import styled from "styled-components";
 import { Editor } from 'react-draft-wysiwyg';
-import { EditorState } from 'draft-js';
+import { convertToRaw, EditorState } from 'draft-js';
 import boldIcon from "../../assets/bold.svg"
 import codeIcon from "../../assets/code.svg"
 import emojiIcon from "../../assets/face-smile.svg"
@@ -19,6 +19,8 @@ import indentIcon from "../../assets/indent.svg"
 import orderedIcon from "../../assets/list-ol.svg"
 import unorderedIcon from "../../assets/list-ul.svg"
 import emojisArray from "../../assets/emojisArray"
+
+import GifsModule from "./GifsModule";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import './MessageInput.css';
@@ -98,9 +100,12 @@ const EditorSyled = styled(Editor)<MessageInputProps>`
   }
 `;
 
-const MessageInput = forwardRef((props: MessageInputPropsType, ref: any) => {
+const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Editor> | null) => {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
+    const [isGiphyOpen, setIsGiphyOpen] = useState<boolean>(false);
     const [toolbarhidden, setToolbarHidden] = useState<boolean>(true);
+
+    const $giphyButtonRef = useRef<any>(null)
 
     const toolbarOptions = ['inline', 'link', 'list', 'history', 'emoji'];
 
@@ -112,101 +117,116 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: any) => {
     }
 
   return (
-    <div
-      className="relative flex align-end"
-      style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
-    >
-        <EditorSyled 
-            bgColor={props.bgColor}
-            border={props.border}
-            color={props.color}
-            disabled={props.disabled}
-            editorClassName="message-intput-editor"
-            editorState={editorState}
-            height={props.height}
-            id={props.id}
-            maxLength={props.maxLength}
-            onEditorStateChange={(state: EditorState) => setEditorState(state)}
-            placeholder={props.placeholder}
-            placeholderColor={props.placeholderColor}
-            placeholderSize={props.placeholderSize}
-            placeholderWeight={props.placeholderWeight}
-            radius={props.radius}
-            ref={ref}
-            size={props.size}
-            toolbarHidden={toolbarhidden}
-            toolbar={{
-              options: toolbarOptions,
-              inline: {
-                options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
-                bold: { icon: boldIcon, className: 'bordered-option-classname' },
-                italic: { icon: italicIcon, className: 'bordered-option-classname' },
-                underline: { icon: underlineIcon, className: 'bordered-option-classname' },
-                strikethrough: { icon: strikeThroughIcon, className: 'bordered-option-classname' },
-                monospace: { icon: codeIcon, className: 'bordered-option-classname' },
-              },
-              link: {
-                popupClassName: 'toolbar-popup',
-                showOpenOptionOnHover: true,
-                options: ['link'],
-                link: { icon: linkIcon, className: 'bordered-option-classname' }
-              },
-              list: {
-                options: ['unordered', 'ordered', 'indent', 'outdent'],
-                unordered: { icon: unorderedIcon, className: 'bordered-option-classname' },
-                ordered: { icon: orderedIcon, className: 'bordered-option-classname' },
-                indent: { icon: indentIcon, className: 'bordered-option-classname' },
-                outdent: { icon: outdentIcon, className: 'bordered-option-classname' },
-              },
-              emoji: { 
-                emojis: emojisArray,
-                icon: emojiIcon, 
-                className: 'bordered-option-classname', 
-                popupClassName: 'toolbar-popup' 
-              },
-              image: { 
-                alignmentEnabled: false,
-                className: 'bordered-option-classname', 
-                icon: imageIcon, 
-                popupClassName: 'toolbar-popup',
-                previewImage: true,
-                uploadCallback: props.handleUploadFile,
-                urlEnabled: false
-              },
-              history: { 
-                undo: { icon: undoIcon, className: 'bordered-option-classname' },
-                redo: { icon: redoIcon, className: 'bordered-option-classname' },
-              },
-            }}
-            toolbarClassName="message-input-toolbar"
-            weight={props.weight}
-            width={props.width}
-            wrapperClassName="flex-1 message-input-wrapper"
-        />
-        <div className="absolute flex align-center ml-3 mr-3" style={{bottom: 10, right: 10, zIndex: 3}}>
-          <span
-            className="pointer flex align-center mr-3 pr-1 pl-1 pt-1 pb-1 toolbar-icon"
-            // onClick={null}
-          >
-            <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
-          </span>
+    <>
+      <div
+        className="relative flex align-end"
+        style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
+      >
+          <EditorSyled 
+              bgColor={props.bgColor}
+              border={props.border}
+              color={props.color}
+              disabled={props.disabled}
+              editorClassName="message-intput-editor"
+              editorState={editorState}
+              height={props.height}
+              id={props.id}
+              maxLength={props.maxLength}
+              onEditorStateChange={(state: EditorState) => {
+                if (isGiphyOpen) setIsGiphyOpen(false);
+                setEditorState(state);
+                console.log(convertToRaw(state.getCurrentContent()));
+              }}
+              placeholder={props.placeholder}
+              placeholderColor={props.placeholderColor}
+              placeholderSize={props.placeholderSize}
+              placeholderWeight={props.placeholderWeight}
+              radius={props.radius}
+              ref={ref}
+              size={props.size}
+              toolbarHidden={toolbarhidden}
+              toolbar={{
+                options: toolbarOptions,
+                inline: {
+                  options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
+                  bold: { icon: boldIcon, className: 'bordered-option-classname' },
+                  italic: { icon: italicIcon, className: 'bordered-option-classname' },
+                  underline: { icon: underlineIcon, className: 'bordered-option-classname' },
+                  strikethrough: { icon: strikeThroughIcon, className: 'bordered-option-classname' },
+                  monospace: { icon: codeIcon, className: 'bordered-option-classname' },
+                },
+                link: {
+                  popupClassName: 'toolbar-popup',
+                  showOpenOptionOnHover: true,
+                  options: ['link'],
+                  link: { icon: linkIcon, className: 'bordered-option-classname' }
+                },
+                list: {
+                  options: ['unordered', 'ordered', 'indent', 'outdent'],
+                  unordered: { icon: unorderedIcon, className: 'bordered-option-classname' },
+                  ordered: { icon: orderedIcon, className: 'bordered-option-classname' },
+                  indent: { icon: indentIcon, className: 'bordered-option-classname' },
+                  outdent: { icon: outdentIcon, className: 'bordered-option-classname' },
+                },
+                emoji: { 
+                  emojis: emojisArray,
+                  icon: emojiIcon, 
+                  className: 'bordered-option-classname', 
+                  popupClassName: 'toolbar-popup' 
+                },
+                image: { 
+                  alignmentEnabled: false,
+                  className: 'bordered-option-classname', 
+                  icon: imageIcon, 
+                  popupClassName: 'toolbar-popup',
+                  previewImage: true,
+                  uploadCallback: props.handleUploadFile,
+                  urlEnabled: false
+                },
+                history: { 
+                  undo: { icon: undoIcon, className: 'bordered-option-classname' },
+                  redo: { icon: redoIcon, className: 'bordered-option-classname' },
+                },
+              }}
+              toolbarClassName="message-input-toolbar"
+              weight={props.weight}
+              width={props.width}
+              wrapperClassName="flex-1 message-input-wrapper"
+          />
+          <div className="absolute flex align-center ml-3 mr-3" style={{bottom: 10, right: 10, zIndex: 3}}>
+            <div>
+              <button
+                ref={$giphyButtonRef}
+                className="pointer flex align-center mr-3 pr-1 pl-1 pt-1 pb-1  toolbar-button"
+                onClick={() => {
+                  $giphyButtonRef.current.focus()
+                  setIsGiphyOpen(state => !state)}}
+              >
+                <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
 
-          <span
-            className="pointer mr-3 pr-1 pl-1 pt-1 pb-1 toolbar-icon"
-            onClick={() => setToolbarHidden(bool => !bool)}
-            style={toolbarhidden? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
-          >
-            <i className="fa-sharp fa-solid fa-font"></i>
-          </span>
+              </button>
+              {isGiphyOpen && (
+                <GifsModule onCloseModal={() => setIsGiphyOpen(false)} />
+              )}
+            </div>
 
-          <span
-            className="pointer send-icon"
-            onClick={handleSubmit}
+            <button
+              className="pointer mr-3 pr-1 pl-1 pt-1 pb-1 toolbar-button"
+              onClick={() => setToolbarHidden(state => !state)}
+              style={toolbarhidden? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
             >
-            <img src={sendicon} alt="send-icon" />
-          </span>
-        </div>
-    </div>
+              <i className="fa-sharp fa-solid fa-font"></i>
+            </button>
+
+            <button
+              className="pointer toolbar-button"
+              onClick={handleSubmit}
+              >
+              <img src={sendicon} alt="send-icon" />
+            </button>
+          </div>
+      </div>
+    </>
   );
 });
 

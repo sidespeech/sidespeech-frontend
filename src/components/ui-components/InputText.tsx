@@ -29,6 +29,8 @@ interface InputTextPropsType {
   onClick?: any;
   onKeyUp?: any;
   defaultValue?: string;
+  focus?: boolean;
+  onBlur?: any;
 }
 
 interface InputProps {
@@ -102,9 +104,11 @@ const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
         bgColor={props.bgColor}
         placeholder={props.placeholder}
         type={"text"}
+        onBlur={props.onBlur}
         onChange={props.onChange}
         onKeyUp={props.onKeyUp}
         defaultValue={props.defaultValue}
+        autoFocus={props.focus}
       />
       {props.glass && (
         <span

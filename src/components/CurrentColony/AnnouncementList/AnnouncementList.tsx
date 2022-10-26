@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Editor } from 'react-draft-wysiwyg';
 import { Announcement } from "../../../models/Announcement";
 import AnnouncementItem from "./AnnouncementItem";
 import { useSelector } from "react-redux";
@@ -21,7 +22,7 @@ export default function AnnouncementList() {
   );
   const { account } = useSelector((state: RootState) => state.user);
 
-  const ref = useRef<HTMLInputElement>();
+  const ref = useRef<Editor>(null);
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
     if (selectedChannel?.id === detail.channelId)
@@ -68,7 +69,6 @@ export default function AnnouncementList() {
     );
     setAnnouncements([...announcements, newAnnouncement]);
     websocketService.sendAnnouncement(newAnnouncement);
-    if (ref.current) ref.current.value = "";
   };
 
   return (
