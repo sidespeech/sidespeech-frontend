@@ -50,11 +50,11 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/profile`).query({ id });
     return new Profile(res.body);
   }
-  
-  static async joinSide(userId: string, sideId: string): Promise<Profile> {
+
+  static async joinSide(userId: string, sideId: string,role: number): Promise<Profile> {
     const res = await superagent
       .post(`${BASE_URL}/profile/join`)
-      .send({ userId, sideId });
+      .send({ userId, sideId, role });
     return new Profile(res.body);
   }
 
@@ -91,10 +91,16 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/side/${id}`);
     return new Side(res.body);
   }
+  static async isSideNameExist(name: string): Promise<boolean> {
+    const res = await superagent
+      .get(`${BASE_URL}/side/name/exist`)
+      .query({ name: name });
+    return res.body.exist;
+  }
   static async createSide(side: InitialStateSide): Promise<Side> {
     console.log("side :", side);
     const res = await superagent.post(`${BASE_URL}/side`).send(side);
-    return res["body"]["side"];
+    return new Side(res["body"]);
   }
 
   static async updateSide(

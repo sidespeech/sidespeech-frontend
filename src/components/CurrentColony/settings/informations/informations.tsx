@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import "./informations.css";
 import { apiService } from "../../../../services/api.service";
 import { addColony } from "../../../../redux/Slices/UserDataSlice";
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from "react-router-dom";
 
 export interface InitialStateUpdateSide {
   sideImage: string | undefined;
@@ -26,19 +26,21 @@ const initialStateUpdateSide = {
 export default function Informations({
   currentSide,
   onChangeNewSideName,
-  onChangeNewSideImage
+  onChangeNewSideImage,
+  formError,
 }: {
   currentSide: Colony;
-  onChangeNewSideName?:any;
-  onChangeNewSideImage?:any
+  onChangeNewSideName?: any;
+  onChangeNewSideImage?: any;
+  formError: any;
 }) {
-
-  const [formData, setFormData] = useState<InitialStateUpdateSide>(initialStateUpdateSide);
+  const [formData, setFormData] = useState<InitialStateUpdateSide>(
+    initialStateUpdateSide
+  );
   const [isNewSide, setIsNewSide] = useState<boolean>(true);
 
-
   useEffect(() => {
-    console.log('currentSide info :', currentSide)
+    console.log("currentSide info :", currentSide);
     if (window.location.href.includes("settings")) setIsNewSide(false);
   }, []);
 
@@ -64,31 +66,31 @@ export default function Informations({
   const updateSide = async () => {
     try {
       if (!formData.sideImage) {
-        delete formData['sideImage']
+        delete formData["sideImage"];
       }
-      const updatedSide = await apiService.updateSide(formData, currentSide['id']);
+      const updatedSide = await apiService.updateSide(
+        formData,
+        currentSide["id"]
+      );
       toast.success(formData.name + " has been updated.", {
         toastId: 4,
       });
-
     } catch (error) {
       console.log(error);
       toast.error("Error when update side.", { toastId: 3 });
     }
   };
 
-
   return (
     <>
       {/* Profile Picture Section */}
       <div className="f-column">
-        <div className="text-primary-light mb-3 text fw-600">Profile Picture</div>
-
+        <div className="text-primary-light mb-3 text fw-600">
+          Profile Picture
+        </div>
 
         <div className="flex">
-          <label
-            className="upload-colony-image f-column align-center justify-center"
-          >
+          <label className="upload-colony-image f-column align-center justify-center">
             {formData.sideImage ? (
               <img
                 style={{
@@ -108,7 +110,8 @@ export default function Informations({
                 }}
                 src={currentSide.sideImage}
                 alt="file"
-              />) : (
+              />
+            ) : (
               <>
                 <i className="fa-solid fa-camera size-30 mb-1 mt-2"></i>
                 <span>
@@ -118,7 +121,9 @@ export default function Informations({
             )}
           </label>
 
-          <label className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">Use square image (1:1 ratio) to have a better rendering.</label>
+          <label className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">
+            Use square image (1:1 ratio) to have a better rendering.
+          </label>
 
           <div className="f-column align-center justify-center ml-3">
             <input
@@ -129,15 +134,20 @@ export default function Informations({
               onChange={onChangeSideImage}
             />
             <label htmlFor={"input-colony-picture"}>
-              <Button width={159} height={46} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}> Upload a new image</Button>
+              <Button
+                width={159}
+                height={46}
+                onClick={undefined}
+                radius={10}
+                background={"var(--bg-secondary-light)"}
+                color={"var(--text-primary-light)"}
+              >
+                {" "}
+                Upload a new image
+              </Button>
             </label>
           </div>
-
         </div>
-
-
-
-
       </div>
 
       {/* Name Section */}
@@ -155,6 +165,14 @@ export default function Informations({
             radius="10px"
           />
         </div>
+        {formError.name.exist && (
+          <div className="text-red">Side name already exist.</div>
+        )}
+        {formError.name.length && (
+          <div className="text-red">
+            Side name has to be between 3 and 50 character.
+          </div>
+        )}
       </div>
 
       {/* Description Section */}
@@ -169,19 +187,31 @@ export default function Informations({
             placeholder={"Describe your Side"}
             onChange={undefined}
             radius="10px"
+            maxLength={500}
           />
         </div>
+        <div className="size-10">Max number of characters: 500</div>
       </div>
 
       {/* Submit Button */}
-      {!isNewSide ? (
-        // If we are in settings on existing Side
-        <Button classes={"mt-3"} width={159} height={46} onClick={updateSide} radius={10} color={'var(--text-primary-light)'}>Save </Button>
-      ) : null
-      // (
-      //   // If we are on Create Side
-      //   <Button classes={"mt-3"} width={159} height={46} onClick={newSideNextStep} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
-      // )
+      {
+        !isNewSide ? (
+          // If we are in settings on existing Side
+          <Button
+            classes={"mt-3"}
+            width={159}
+            height={46}
+            onClick={updateSide}
+            radius={10}
+            color={"var(--text-primary-light)"}
+          >
+            Save{" "}
+          </Button>
+        ) : null
+        // (
+        //   // If we are on Create Side
+        //   <Button classes={"mt-3"} width={159} height={46} onClick={newSideNextStep} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
+        // )
       }
     </>
   );

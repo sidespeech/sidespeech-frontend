@@ -2,8 +2,74 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import "./admission.css";
 import CustomSelect from "../../ui-components/CustomSelect";
+import check from "../../../assets/check.svg";
 import Button from "../../ui-components/Button";
 import Switch from "../../ui-components/Switch";
+import styled from "styled-components";
+import Dropdown from "../../ui-components/Dropdown";
+import {
+  Collection,
+  OpenSeaRequestStatus,
+} from "../../../models/interfaces/collection";
+import { fixURL } from "../../../helpers/utilities";
+import CustomInputNumber from "../../ui-components/InputNumber";
+import { filter, unionBy } from "lodash";
+
+interface IAdmissionProps {
+  divCollections: any[];
+  collections: Collection[];
+  setSideTokenAddress: any;
+  setSidePropertyCondition: any;
+  setSideValueCondition: any;
+  addDivCollection: any;
+  removeDivCollection: any;
+  addConditionToDivCollection: any;
+  onlyOneRequired: boolean;
+  setOnlyOneRequired: any;
+  setNumberOfNftNeededToDivCollection: any;
+}
+interface IRequirementsRadioButtonContainerProps {
+  selected: boolean;
+}
+const Chip = styled.span`
+  width: fit-content;
+  border-radius: 50px;
+  background-color: var(--disable);
+  padding: 1px 8px;
+`;
+const Thumbnail = styled.img`
+  border-radius: 15px;
+`;
+const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonContainerProps>`
+  height: 44px;
+  background-color: ${(props) =>
+    props.selected ? "var(--primary)" : "var(--input)"};
+  border-radius: 50px;
+  flex: 1 0 0;
+  align-items: center;
+  color: ${(props) => (props.selected ? "var(--white)" : "var(--inactive)")};
+  display: flex;
+  cursor: pointer;
+
+  & > div:first-child {
+    border: 1px solid
+      ${(props) => (props.selected ? "var(--white)" : "var(--inactive)")};
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    margin-right: 13px;
+    margin-left: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    & div {
+      background-color: var(--white);
+      width: 12px;
+      height: 12px;
+      border-radius: 8px;
+    }
+  }
+`;
 
 export default function Admission({
   divCollections,
@@ -14,183 +80,252 @@ export default function Admission({
   addDivCollection,
   removeDivCollection,
   addConditionToDivCollection,
-}: {
-  divCollections: any;
-  collections: string[];
-  setSideTokenAddress: any;
-  setSidePropertyCondition: any;
-  setSideValueCondition: any;
-  addDivCollection: any;
-  removeDivCollection: any;
-  addConditionToDivCollection: any;
-}) {
+  onlyOneRequired,
+  setOnlyOneRequired,
+  setNumberOfNftNeededToDivCollection,
+}: IAdmissionProps) {
   const dispatch = useDispatch();
   const [value, setValue] = useState(false);
+  const [filteredCollections, setFilteredCollections] = useState<Collection[]>(
+    []
+  );
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const selectedCollections: string[] = divCollections.map(
+      (d: any) => d.collection
+    );
+    const filtered = collections.filter(
+      (c) => !selectedCollections.includes(c.address)
+    );
+    setFilteredCollections(filtered);
+  }, [divCollections]);
 
   return (
-    <>
-      <div className="f-column mb-4">
+    <div className="flex  text-main">
+      <div className="f-column mb-4 flex-1">
         <label htmlFor="name" className="size-14 fw-400 mb-4 text-left">
           Admission conditions ({divCollections.length})
         </label>
-        <div className="f-column" style={{maxHeight: 460,overflow: 'auto',width: "fit-content"}}>
-        {divCollections.map((current: any, i: number) => {
-          return (
-            <div className="collection-item mb-3" key={i}>
-              <div className="flex justify-between">
-                <label className="size-14">Collection</label>
+        <div>Collection requirements</div>
+        <div className="flex gap-20 mt-2 mb-3" style={{ width: 547 }}>
+          <RequirementsRadioButtonContainer
+            onClick={() => setOnlyOneRequired(true)}
+            selected={onlyOneRequired}
+          >
+            <div>{onlyOneRequired && <div></div>}</div>
+            <div>1 collection from the list</div>
+          </RequirementsRadioButtonContainer>
+          <RequirementsRadioButtonContainer
+            onClick={() => setOnlyOneRequired(false)}
+            selected={!onlyOneRequired}
+          >
+            <div>{!onlyOneRequired && <div></div>}</div>
+            <div>All collections are required</div>
+          </RequirementsRadioButtonContainer>
+        </div>
 
-                <label
-                  className="size-14 text-red cursor-pointer"
-                  onClick={() => removeDivCollection(i)}
-                >
-                  <i className="fa-regular fa-trash-can mr-2"></i>Remove
-                </label>
-              </div>
+        <div
+          className="f-column"
+          style={{
+            maxHeight: "50vh",
+            overflow: "auto",
+            width: "fit-content",
+            paddingRight: 10,
+          }}
+        >
+          {divCollections.map((current: any, i: number) => {
+            return (
+              <>
+                <div className="collection-item mb-3" key={i}>
+                  <div className="flex justify-between">
+                    <label className="size-14">Collection</label>
 
-              <div className="f-row collection-name">
-                <div className="f-column mt-3 mb-3">
-                  <CustomSelect
-                    width={"500px"}
-                    bgColor={"var(--bg-secondary-light)"}
-                    radius={"10px"}
-                    valueToSet={
-                      current["collection"].length ? current["collection"] : ""
-                    }
-                    height={"40px"}
-                    fontSize={12}
-                    fontWeight={700}
-                    arrowPosition={{ top: 12, right: 15 }}
-                    values={collections.length ? ["", ...collections] : [""]}
-                    options={
-                      collections.length
-                        ? ["Choose NFT collection", ...collections]
-                        : ["You don't hold any nfts"]
-                    }
-                    onChange={(event: any) => setSideTokenAddress(event, i)}
-                  />
-                </div>
-                {"trait_selected" in current ? (
-                  <div className="d-flex">
-                    <div className="featureBox mr-auto">
-                      <div className="flex hdBox justify-between mb-3">
-                        <label>Feature</label>
-
-                        <label className="">
-                          Required <Switch onClick={() => setValue(!value)} />
-                        </label>
-                      </div>
-
-                      <div className="d-flex justify-space-between">
-                        <CustomSelect
-                          width={"400px"}
-                          height={"40px"}
-                          radius={"10px"}
-                          classes={"mr-3"}
-                          valueToSet={
-                            current["trait_selected"].length
-                              ? current["trait_selected"]
-                              : ""
-                          }
-                          fontSize={12}
-                          fontWeight={700}
-                          arrowPosition={{ top: 12, right: 15 }}
-                          values={
-                            current["traits_values"].length
-                              ? [
-                                  "",
-                                  ...current["traits_values"].map(
-                                    (item: any) => item["property"]["value"]
-                                  ),
-                                ]
-                              : [""]
-                          }
-                          options={
-                            current["traits_values"].length
-                              ? [
-                                  "Select trait",
-                                  ...current["traits_values"].map(
-                                    (item: any) => item["property"]["label"]
-                                  ),
-                                ]
-                              : ["Traits"]
-                          }
-                          onChange={(event: any) =>
-                            setSidePropertyCondition(event, i)
-                          }
-                        />
-                        <CustomSelect
-                          width={"400px"}
-                          height={"40px"}
-                          radius={"10px"}
-                          valueToSet={
-                            current["value_selected"].length
-                              ? current["value_selected"]
-                              : ""
-                          }
-                          fontSize={12}
-                          fontWeight={700}
-                          arrowPosition={{ top: 12, right: 15 }}
-                          values={
-                            current["traits_values"].length
-                              ? [
-                                  "",
-                                  ...(current["traits_values"].find(
-                                    (item: any) =>
-                                      item["property"]["value"] ===
-                                      current["trait_selected"]
-                                  ) || { values: [] })["values"].map(
-                                    (item: any) => item["value"]
-                                  ),
-                                ]
-                              : [""]
-                          }
-                          options={
-                            current["traits_values"].length
-                              ? [
-                                  "Select value of trait",
-                                  ...(current["traits_values"].find(
-                                    (item: any) =>
-                                      item["property"]["value"] ===
-                                      current["trait_selected"]
-                                  ) || { values: [] })["values"].map(
-                                    (item: any) => item["label"]
-                                  ),
-                                ]
-                              : ["Values"]
-                          }
-                          onChange={(event: any) =>
-                            setSideValueCondition(event, i)
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="featureBtn f-column align-items-center">
-                      <button className="mt-2 text-red">
-                        <i className="fa-solid fa-minus"></i>
-                      </button>
-                      <button className="mt-3">
-                        <i className="fa-regular fa-copy"></i>
-                      </button>
-                    </div>
+                    <label
+                      className="size-14 text-red cursor-pointer"
+                      onClick={() => removeDivCollection(i)}
+                    >
+                      <i className="fa-regular fa-trash-can mr-2"></i>Remove
+                    </label>
                   </div>
-                ) : (
-                  <div
-                    className="addFeature"
-                    onClick={() => addConditionToDivCollection(i)}
-                  >
-                    <button>
-                      <i className="fa fa-plus-circle" aria-hidden="true"></i>{" "}
-                      Add a Feature
-                    </button>
+
+                  <div className="f-row collection-name">
+                    <div className="f-column mt-3 mb-3">
+                      <div className="flex">
+                        <Dropdown
+                          values={
+                            filteredCollections.length
+                              ? [
+                                  "",
+                                  ...filteredCollections.map((c) => c.address),
+                                ]
+                              : [""]
+                          }
+                          options={
+                            filteredCollections.length
+                              ? [
+                                  "Choose NFT collection",
+                                  ...filteredCollections.map((c) => {
+                                    return (
+                                      <span className="flex align-center pl-3">
+                                        <Thumbnail
+                                          width={27}
+                                          height={27}
+                                          src={c.openseaData?.imageUrl}
+                                          alt="thumbnail"
+                                        />
+                                        <span className="ml-2 mr-3">
+                                          {c.name}
+                                        </span>
+                                        {c.openseaData
+                                          ?.safelistRequestStatus ===
+                                          OpenSeaRequestStatus.verified && (
+                                          <img alt="check" src={check} />
+                                        )}
+                                      </span>
+                                    );
+                                  }),
+                                ]
+                              : ["You don't hold any nfts"]
+                          }
+                          onChange={(address: string) =>
+                            setSideTokenAddress(address, i)
+                          }
+                        />
+                        <div className="ml-4">
+                          <CustomInputNumber
+                            onChange={(value: number) =>
+                              setNumberOfNftNeededToDivCollection(value, i)
+                            }
+                            defaultValue={1}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    {"trait_selected" in current ? (
+                      <div className="d-flex">
+                        <div className="featureBox mr-auto">
+                          <div className="flex hdBox justify-between mb-3">
+                            <label>Feature</label>
+                          </div>
+
+                          <div className="d-flex justify-space-between">
+                            <CustomSelect
+                              width={"400px"}
+                              height={"40px"}
+                              radius={"10px"}
+                              classes={"mr-3"}
+                              valueToSet={
+                                current["trait_selected"].length
+                                  ? current["trait_selected"]
+                                  : ""
+                              }
+                              fontSize={12}
+                              fontWeight={700}
+                              arrowPosition={{ top: 12, right: 15 }}
+                              values={
+                                current["traits_values"].length
+                                  ? [
+                                      "",
+                                      ...current["traits_values"].map(
+                                        (item: any) => item["property"]["value"]
+                                      ),
+                                    ]
+                                  : [""]
+                              }
+                              options={
+                                current["traits_values"].length
+                                  ? [
+                                      "Select trait",
+                                      ...current["traits_values"].map(
+                                        (item: any) => item["property"]["label"]
+                                      ),
+                                    ]
+                                  : ["Traits"]
+                              }
+                              onChange={(event: any) =>
+                                setSidePropertyCondition(event, i)
+                              }
+                            />
+                            <CustomSelect
+                              width={"400px"}
+                              height={"40px"}
+                              radius={"10px"}
+                              valueToSet={
+                                current["value_selected"].length
+                                  ? current["value_selected"]
+                                  : ""
+                              }
+                              fontSize={12}
+                              fontWeight={700}
+                              arrowPosition={{ top: 12, right: 15 }}
+                              values={
+                                current["traits_values"].length
+                                  ? [
+                                      "",
+                                      ...(current["traits_values"].find(
+                                        (item: any) =>
+                                          item["property"]["value"] ===
+                                          current["trait_selected"]
+                                      ) || { values: [] })["values"].map(
+                                        (item: any) => item["value"]
+                                      ),
+                                    ]
+                                  : [""]
+                              }
+                              options={
+                                current["traits_values"].length
+                                  ? [
+                                      "Select value of trait",
+                                      ...(current["traits_values"].find(
+                                        (item: any) =>
+                                          item["property"]["value"] ===
+                                          current["trait_selected"]
+                                      ) || { values: [] })["values"].map(
+                                        (item: any) => item["label"]
+                                      ),
+                                    ]
+                                  : ["Values"]
+                              }
+                              onChange={(event: any) =>
+                                setSideValueCondition(event, i)
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="featureBtn f-column justify-center">
+                          <button className="mt-2 text-red">
+                            <i className="fa-solid fa-minus"></i>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        className="addFeature"
+                        onClick={() => addConditionToDivCollection(i)}
+                      >
+                        <button>
+                          <i
+                            className="fa fa-plus-circle"
+                            aria-hidden="true"
+                          ></i>{" "}
+                          Add a Feature
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>{" "}
+                {i < divCollections.length - 1 && (
+                  <div className="flex align-center w-100 mb-3">
+                    <hr className="separator"></hr>
+                    <span className="mx-3">
+                      {onlyOneRequired ? "OR" : "AND"}
+                    </span>
+                    <hr className="separator"></hr>
                   </div>
                 )}
-              </div>
-            </div>
-          );
-        })}
+              </>
+            );
+          })}
         </div>
         <Button
           width={547}
@@ -203,6 +338,39 @@ export default function Admission({
           <i className="fa-solid fa-circle-plus mr-2"></i> Add a collection
         </Button>
       </div>
-    </>
+      <div className="flex-1">
+        <div>Summary</div>
+        <div style={{ lineHeight: "26px" }}>
+          To join this Side, you must have in your wallet : <br />
+          {divCollections.map((d, index) => {
+            if (!d["collection"]) return;
+            return (
+              <>
+                <Chip>{d["numberNeeded"] || 1} NFT</Chip> From the{" "}
+                <Chip>
+                  {collections.find((c) => c.address === d["collection"])
+                    ?.name || ""}
+                </Chip>
+                collection{" "}
+                {d["trait_selected"] && d["value_selected"] && (
+                  <>
+                    {" "}
+                    that has this trait : <br />
+                    <Chip>
+                      {d["trait_selected"]} - {d["value_selected"]}
+                    </Chip>
+                  </>
+                )}
+                <br />
+                {index < divCollections.length - 1 && (
+                  <>{onlyOneRequired ? "OR" : "AND"}</>
+                )}
+                <br />
+              </>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -80,21 +80,27 @@ class AlchemyService {
     );
     return toSideNftModel;
   }
-  async getContractMetadata(address: string): Promise<Collection> {
+  async getContractMetadata(address: string): Promise<any> {
     const res = await fetch(
       `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getContractMetadata?contractAddress=${address}`
     );
     const data = await res.json();
-    const collection = new Collection(data);
-    return collection;
+    return data.contractMetadata.openSea;
   }
   async getUserCollections(address: string): Promise<Collection[]> {
     const res = await fetch(
       `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getContractsForOwner?owner=${address}`
     );
     const result = await res.json();
-    const ownedCollections = result.contracts.map((c: any) => new Collection(c));
-    return ownedCollections; 
+    const ownedCollections: Collection[] = result.contracts.map(
+      (c: any) => new Collection(c)
+    );
+    const promises: Promise<any>[] = [];
+    for (const collection of ownedCollections) {
+      promises.push(collection.getMetadata());
+    }
+    await Promise.all(promises);
+    return ownedCollections;
   }
 }
 export default AlchemyService.getInstance();

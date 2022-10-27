@@ -1,31 +1,32 @@
 import React from "react";
-import { Channel, Colony } from "../../../models/Colony";
 import Button from "../../../ui-components/Button";
 import InputText from "../../../ui-components/InputText";
-import UserLine from "../../../ui-components/UserLine";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
+import { Side } from "../../../../models/Side";
+import facebook from "../../../../assets/facebook.svg";
+import twitter from "../../../../assets/twitter.svg";
+import linkedin from "../../../../assets/linkedin.svg";
 import "./invitation.css"
 
 
 export default function Invitation({
   currentSide,
 }: {
-  currentSide: Colony;
+  currentSide: Side;
 }) {
 
   const dispatch = useDispatch();
   const socialsMedia = [{
-    class: 'fa-brands fa-facebook mr-2',
-    label: 'Facebook'
+    icon: facebook,
+    label: "Facebook"
   },
   {
-    class: 'fa-brands fa-twitter mr-2',
-    label: 'Twitter'
+    icon: twitter,
+    label: "Twitter"
   },
   {
-    class: 'fa-brands fa-linkedin mr-2',
-    label: 'Linkedin'
+    icon: linkedin,
+    label: "LinkedIn"
   }]
 
   const exampleUsers = [{
@@ -81,8 +82,7 @@ export default function Invitation({
     <>
 
       {/* Search and Invite Section */}
-
-
+    <div>Search and invite</div>
       <div className="search-and-invite mb-3">
         <InputText
           placeholderColor="var(--placeholer)"
@@ -118,7 +118,6 @@ export default function Invitation({
                     <Button classes="size-12" width={70} height={27} radius={5} onClick={undefined} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
                   }
                 </div>
-
               </div>
             )
           }
@@ -149,8 +148,8 @@ export default function Invitation({
         <div className="text-primary-light mb-3 text fw-600">Share on social networks</div>
         <div className="flex mt-2 align-center">
           {
-            socialsMedia.map(social =>
-              <Button key={social.class} classes="cursor-pointer mr-2" width={100} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className={social.class}></i>{social.label}</Button>
+            socialsMedia.map((social,index) =>
+              <Button key={index} classes="cursor-pointer mr-2" width={100} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2"/>{social.label}</Button>
             )
           }
         </div>

@@ -20,6 +20,7 @@ const ContainerLeft = styled.div<DivProps>`
   padding-top: ${(props) => (props.paddingTop ? props.paddingTop : "11")}px;
   color: ${(props) => (props.color ? props.color : "var(--text-primary-light)")};
   background-color: ${(props) => (props.backgroundColor ? props.backgroundColor : "")};
+  border-right: 1px solid var(--disable)
 `;
 
 export default ContainerLeft;
