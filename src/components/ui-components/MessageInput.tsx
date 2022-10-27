@@ -1,7 +1,8 @@
-import React, { forwardRef, useRef, useState } from "react";
+import React, { forwardRef, useState } from "react";
 import styled from "styled-components";
 import { Editor } from 'react-draft-wysiwyg';
 import { convertToRaw, EditorState } from 'draft-js';
+import { draftToMarkdown } from 'markdown-draft-js';
 import boldIcon from "../../assets/bold.svg"
 import codeIcon from "../../assets/code.svg"
 import emojiIcon from "../../assets/face-smile.svg"
@@ -32,7 +33,7 @@ interface MessageInputPropsType {
     defaultValue?: string;
     disabled?: any;
     editorState?: EditorState;
-    handleUploadFile?:  (image: File) => Promise<string>,
+    imageUpload?:  boolean,
     height?: number;
     iconSize?: number;
     id?: any;
@@ -105,15 +106,29 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
     const [isGiphyOpen, setIsGiphyOpen] = useState<boolean>(false);
     const [toolbarhidden, setToolbarHidden] = useState<boolean>(true);
 
-    const $giphyButtonRef = useRef<any>(null)
-
     const toolbarOptions = ['inline', 'link', 'list', 'history', 'emoji'];
 
-    if (props.handleUploadFile) toolbarOptions.splice(4, 0, 'image');
+    if (props.imageUpload) toolbarOptions.splice(4, 0, 'image');
+
+    const handleSubmitGif = (gifId: string): void => {
+      const gifMarkdown = `[GIPHY]!${gifId}`;
+      if (gifMarkdown) props.onSubmit(gifMarkdown);
+    }
+
+    const handleUploadFile = async (image: File): Promise<string> => {
+      // TODO api call to upload file vvv
+      return await Promise.resolve(image.name);
+    }
 
     const handleSubmit = (): void => {
-      props.onSubmit(editorState.getCurrentContent().getPlainText());
-      setEditorState(EditorState.createEmpty());
+      const stateContent = editorState.getCurrentContent();
+      const rawState = convertToRaw(stateContent);
+      const message = draftToMarkdown(rawState);
+      
+      if (message) {
+        props.onSubmit(message);
+        setEditorState(EditorState.createEmpty());
+      }
     }
 
   return (
@@ -135,7 +150,6 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
               onEditorStateChange={(state: EditorState) => {
                 if (isGiphyOpen) setIsGiphyOpen(false);
                 setEditorState(state);
-                console.log(convertToRaw(state.getCurrentContent()));
               }}
               placeholder={props.placeholder}
               placeholderColor={props.placeholderColor}
@@ -180,7 +194,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
                   icon: imageIcon, 
                   popupClassName: 'toolbar-popup',
                   previewImage: true,
-                  uploadCallback: props.handleUploadFile,
+                  uploadCallback: handleUploadFile,
                   urlEnabled: false
                 },
                 history: { 
@@ -196,24 +210,22 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
           <div className="absolute flex align-center ml-3 mr-3" style={{bottom: 10, right: 10, zIndex: 3}}>
             <div>
               <button
-                ref={$giphyButtonRef}
-                className="pointer flex align-center mr-3 pr-1 pl-1 pt-1 pb-1  toolbar-button"
+                className="pointer flex align-center mr-2 pr-1 pl-1 pt-1 pb-1  toolbar-button"
                 onClick={() => {
-                  $giphyButtonRef.current.focus()
                   setIsGiphyOpen(state => !state)}}
               >
                 <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
 
               </button>
               {isGiphyOpen && (
-                <GifsModule onCloseModal={() => setIsGiphyOpen(false)} />
+                <GifsModule onSubmit={handleSubmitGif} onCloseModal={() => setIsGiphyOpen(false)} />
               )}
             </div>
 
             <button
-              className="pointer mr-3 pr-1 pl-1 pt-1 pb-1 toolbar-button"
+              className="pointer mr-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
               onClick={() => setToolbarHidden(state => !state)}
-              style={toolbarhidden? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
+              style={toolbarhidden ? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
             >
               <i className="fa-sharp fa-solid fa-font"></i>
             </button>
@@ -221,7 +233,8 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
             <button
               className="pointer toolbar-button"
               onClick={handleSubmit}
-              >
+              disabled={!editorState.getCurrentContent().getPlainText('\u0001')}
+            >
               <img src={sendicon} alt="send-icon" />
             </button>
           </div>

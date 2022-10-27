@@ -6,8 +6,7 @@
     overflow: hidden;
     bottom: 50px; 
     right: 0;
-    background-color: var(--bg-secondary-dark);
-    border: 1px solid var(--text-secondary-dark);
+    background-color: var(--bg-secondary-light);
     padding: .5rem;
     padding-bottom: 0;
     border-radius: 6px;

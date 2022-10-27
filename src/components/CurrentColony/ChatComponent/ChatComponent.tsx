@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { Editor } from 'react-draft-wysiwyg';
 import _ from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -7,26 +8,28 @@ import {
   subscribeToEvent,
   unSubscribeToEvent,
 } from "../../../helpers/CustomEvent";
-import { timestampToLocalString } from "../../../helpers/utilities";
+// import { timestampToLocalString } from "../../../helpers/utilities";
 import { Message, Room } from "../../../models/Room";
-import {
-  addMessageToRoom,
-  updateSelectedRoomMessages,
-} from "../../../redux/Slices/ChatSlice";
+// import {
+//   addMessageToRoom,
+//   updateSelectedRoomMessages,
+// } from "../../../redux/Slices/ChatSlice";
 import { userDataSlice } from "../../../redux/Slices/UserDataSlice";
 import { RootState } from "../../../redux/store/app.store";
 import { apiService } from "../../../services/api.service";
 import websocketService from "../../../services/websocket.service";
-import InputText from "../../ui-components/InputText";
+import MessageInput from "../../ui-components/MessageInput";
 import UserBadge from "../../ui-components/UserBadge";
+import MessageContent from "../../ui-components/MessageContent";
 
 interface IChatComponentProps {
   room: Room;
 }
 
 export default function ChatComponent(props: IChatComponentProps) {
-  const ref = useRef<HTMLInputElement>();
   const dispatch = useDispatch();
+
+  const ref = useRef<Editor>(null);
 
   const userData = useSelector((state: RootState) => state.user);
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
@@ -47,7 +50,6 @@ export default function ChatComponent(props: IChatComponentProps) {
         sender: userData.account,
       }),
     ]);
-    if (ref.current) ref.current.value = "";
   };
 
   const handleReceiveMessage = ({ detail }: { detail: Message }) => {
@@ -56,7 +58,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 
   useEffect(() => {
     async function getRoomMessages() {
-      const messages = await apiService.getRoomMessages(selectedRoom.id);
+      const messages = await apiService.getRoomMessages(selectedRoom?.id || '');
       setMessages(messages);
     }
     if (selectedRoom) getRoomMessages();
@@ -84,28 +86,23 @@ export default function ChatComponent(props: IChatComponentProps) {
                   {format(m.timestamp * 1, "yyyy-mm-dd hh:mm")}
                 </div>
               </div>
-              <div>{m.content}</div>
+              <MessageContent
+                message={m.content}
+              />
             </div>
           );
         })}
       </div>
       <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
-        <InputText
+        <MessageInput
+          height={55}
+          imageUpload
+          onSubmit={handleSendMessage}
+          placeholder={""}
+          radius="10px"
           ref={ref}
           size={14}
           weight={600}
-          glass={false}
-          message
-          iconRightPos={{ top: 19, right: 18 }}
-          height={55}
-          radius="10px"
-          placeholder={""}
-          onKeyUp={(event: any) => {
-            if (event.key === "Enter") handleSendMessage(event.target.value);
-          }}
-          onClick={(e: any) => {
-            handleSendMessage(e.target.value);
-          }}
         />
       </div>
     </>

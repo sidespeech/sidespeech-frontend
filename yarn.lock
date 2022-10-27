@@ -3045,6 +3045,13 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.185.tgz#c9843f5a40703a8f5edfd53358a58ae729816908"
   integrity sha512-evMDG1bC4rgQg4ku9tKpuMh5iBNEwNa3tf9zRHdP1qlv+1WUg44xat4IxCE14gIpZRGUUWAx2VhItCZc25NfMA==
 
+"@types/markdown-draft-js@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@types/markdown-draft-js/-/markdown-draft-js-2.2.4.tgz#fd45ded84f9e1b34c6ef07317c998e4e5aca05dc"
+  integrity sha512-sEb5/uYSl12mnBXF5lgycEJZnzy9BtOQYJJW+UP/prdy2fjTIAm4c1MFRUqSunWocPAhcm6BvjLinGb2awtwOA==
+  dependencies:
+    "@types/draft-js" "*"
+
 "@types/minimatch@*":
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-5.1.2.tgz#07508b45797cb81ec3f273011b054cd0755eddca"

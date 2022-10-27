@@ -7,7 +7,8 @@ import InputText from './InputText';
 import './GifsModule.css';
 
 interface GifsModulePropTypes {
-    onCloseModal?: any;
+    onCloseModal?: () => void;
+    onSubmit?: (gifUrl: string, gifTitle: string) => void;
     width?: number;
 }
 
@@ -33,15 +34,16 @@ const GifsModule = forwardRef((props: GifsModulePropTypes, ref: React.Ref<HTMLDi
                     fetchGifs={fetchGifs}
                     hideAttribution
                     noLink
-                    onGifClick={(gif, ev) => {
-                        console.log(gif);
-                        props.onCloseModal();
+                    onGifClick={(gif) => {
+                        props.onSubmit?.(gif.id?.toString(), gif.title);
+                        props.onCloseModal?.();
                     }}
                     key={searchValue}
                     width={props.width || 300}
                 />
             </div>
-            <InputText 
+            <InputText
+                className='mt-2'
                 focus
                 glass
                 height={55}

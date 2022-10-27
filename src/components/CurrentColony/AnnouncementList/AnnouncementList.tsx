@@ -53,11 +53,6 @@ export default function AnnouncementList() {
     setExtend(id === extend ? "" : id);
   };
 
-  const handleUploadFile = async (image: File): Promise<string> => {
-    // TODO api call to upload file vvv
-    return await Promise.resolve(image.name);
-  }
-
   const handleAnnouncement = async (value: string) => {
     // This will need to be made dynamic.
     const creatorAddress = account;
@@ -99,7 +94,7 @@ export default function AnnouncementList() {
             ref={ref}
             size={14}
             weight={600}
-            handleUploadFile={handleUploadFile}
+            imageUpload
             id="sendmessage"
             radius="10px"
             placeholder={"Type your message here"}

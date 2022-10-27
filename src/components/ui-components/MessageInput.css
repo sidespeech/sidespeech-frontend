@@ -1,5 +1,5 @@
 .message-intput-editor {
-    background-color: var(--bg-secondary-dark);
+    background-color: var(--bg-secondary-light);
     color: var(--text-primary);
 }
 
@@ -9,19 +9,19 @@
 }
 
 .message-input-toolbar {
-    background-color: var(--bg-secondary-dark);
-    border-color: var(--bg-secondary-dark);
+    background-color: var(--bg-secondary-light);
+    border-color: var(--bg-secondary-light);
 }
 
 .message-input-wrapper {
-    background-color: var(--bg-secondary-dark);
+    background-color: var(--bg-secondary-light);
     border-radius: 10px;
     padding: 0 1rem;
 }
 
 .bordered-option-classname {
     padding: 3px 5px;
-    background-color: var(--bg-secondary-dark);
+    background-color: var(--bg-secondary-light);
     border-color: var(--text-secondary-dark); 
     color: var(--text-secondary-dark);
 }
@@ -64,6 +64,12 @@
 
 .toolbar-button {
     background: transparent;
+}
+
+.toolbar-button[disabled] {
+    opacity: .3;
+    cursor: default;
+    pointer-events: none;
 }
 
 .toolbar-button:focus {
