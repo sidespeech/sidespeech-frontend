@@ -31,10 +31,10 @@ class WebSocketService {
     });
   }
 
-  login(profile: any) {
+  login(user: any, rooms: any) {
     this.socket?.emit("login", {
-      user: { id: profile.id, username: profile.username },
-      rooms: profile.rooms?.map((r: any) => r.id),
+      user: { id: user.id, username: user.accounts },
+      rooms: rooms,
     });
   }
 

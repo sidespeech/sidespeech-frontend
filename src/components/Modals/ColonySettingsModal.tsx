@@ -59,8 +59,6 @@ export default function ColonySettingsModal({
   const handleTabs = (tabName: any) => {    
     let currentTabState = {...tabs}
     for (const key of Object.keys(currentTabState)) { currentTabState[key] = (key === tabName) ? true : false }
-    console.log('tabName :', tabName);
-    console.log("currentTabState :", currentTabState)
     setTabs(currentTabState);
   };
 
