@@ -5,6 +5,7 @@ import { GiphyFetch } from '@giphy/js-fetch-api';
 import InputText from './InputText';
 
 import './GifsModule.css';
+import useDebounceValue from '../../hooks/useDebounceValue';
 
 interface GifsModulePropTypes {
     onCloseModal?: () => void;
@@ -19,8 +20,10 @@ const GifsModule = forwardRef((props: GifsModulePropTypes, ref: React.Ref<HTMLDi
 
     const [ searchValue, setSearchValue ] = useState<string>('');
 
+    const debounceValue = useDebounceValue(searchValue)
+
     const fetchGifs = (offset: number) => {
-        return searchValue ? giphyService.search(searchValue, {offset, limit: 10}) : giphyService.trending({ offset, limit: 10 })
+        return debounceValue ? giphyService.search(debounceValue, {offset, limit: 10}) : giphyService.trending({ offset, limit: 10 })
     }
 
     return (
@@ -38,7 +41,7 @@ const GifsModule = forwardRef((props: GifsModulePropTypes, ref: React.Ref<HTMLDi
                         props.onSubmit?.(gif.id?.toString(), gif.title);
                         props.onCloseModal?.();
                     }}
-                    key={searchValue}
+                    key={debounceValue}
                     width={props.width || 300}
                 />
             </div>

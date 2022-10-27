@@ -87,7 +87,7 @@ const CustomGif = (props: CustomGifPropTypes) => {
 
     if (!gif) return null;
     
-    return <Gif gif={gif} width={400} />
+    return <Gif gif={gif} hideAttribution noLink width={400} />
 }
 
 const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Ref<Editor> | null) => {

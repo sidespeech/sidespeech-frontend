@@ -208,28 +208,6 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
               wrapperClassName="flex-1 message-input-wrapper"
           />
           <div className="absolute flex align-center ml-3 mr-3" style={{bottom: 10, right: 10, zIndex: 3}}>
-            <div>
-              <button
-                className="pointer flex align-center mr-2 pr-1 pl-1 pt-1 pb-1  toolbar-button"
-                onClick={() => {
-                  setIsGiphyOpen(state => !state)}}
-              >
-                <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
-
-              </button>
-              {isGiphyOpen && (
-                <GifsModule onSubmit={handleSubmitGif} onCloseModal={() => setIsGiphyOpen(false)} />
-              )}
-            </div>
-
-            <button
-              className="pointer mr-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
-              onClick={() => setToolbarHidden(state => !state)}
-              style={toolbarhidden ? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
-            >
-              <i className="fa-sharp fa-solid fa-font"></i>
-            </button>
-
             <button
               className="pointer toolbar-button"
               onClick={handleSubmit}
@@ -237,6 +215,29 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
             >
               <img src={sendicon} alt="send-icon" />
             </button>
+
+            <button
+              className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
+              onClick={() => setToolbarHidden(state => !state)}
+              style={toolbarhidden ? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
+            >
+              <i className="fa-sharp fa-solid fa-font"></i>
+            </button>
+
+            <div>
+              <button
+                className="pointer flex align-center ml-2 pr-1 pl-1 pt-1 pb-1  toolbar-button"
+                onClick={() => {
+                  setIsGiphyOpen(state => !state)}}
+              >
+                <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
+
+              </button>
+              
+              {isGiphyOpen && (
+                <GifsModule onSubmit={handleSubmitGif} onCloseModal={() => setIsGiphyOpen(false)} />
+              )}
+            </div>
           </div>
       </div>
     </>

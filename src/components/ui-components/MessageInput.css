@@ -1,6 +1,8 @@
 .message-intput-editor {
     background-color: var(--bg-secondary-light);
     color: var(--text-primary);
+    max-height: 250px;
+    overflow-y: scroll;
 }
 
 .message-intput-editor a {
