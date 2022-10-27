@@ -1,0 +1,6 @@
+.channels-container {
+  max-height: 67vh;
+  overflow: auto;
+  max-width: 724px;
+  width: 724px;
+}

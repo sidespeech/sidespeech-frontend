@@ -6,6 +6,7 @@ import {
   fixURL
 } from "../../helpers/utilities";
 import { NFT } from "../../models/interfaces/nft";
+import { Role } from "../../models/Profile";
 import { Side } from "../../models/Side";
 import { RootState } from "../../redux/store/app.store";
 import { apiService } from "../../services/api.service";
@@ -68,7 +69,7 @@ export default function SideEligibilityModal(
   const [details, setDetails] = useState<any[]>([]);
 
   const handleJoinSide = () => {
-    if (user) apiService.joinSide(user.id, props.selectedSide.id);
+    if (user) apiService.joinSide(user.id, props.selectedSide.id, Role.User);
   };
 
   useEffect(() => {

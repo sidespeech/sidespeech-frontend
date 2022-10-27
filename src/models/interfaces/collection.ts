@@ -1,3 +1,4 @@
+import alchemyService from "../../services/alchemy.service";
 import { NFT } from "./nft";
 
 export class Collection {
@@ -12,6 +13,7 @@ export class Collection {
   public nfts: NFT[] = [];
   public numDistinctTokensOwned: number;
   public ownedCount: number;
+  public media: any[];
   constructor(_data: any) {
     this.address = _data.address;
     this.name = _data.name;
@@ -22,12 +24,19 @@ export class Collection {
     this.isSpam = _data.isSpam;
     this.numDistinctTokensOwned = _data.numDistinctTokensOwned;
     this.ownedCount = _data.ownedCount;
+    this.media = _data.media;
+  }
+
+  async getMetadata() {
+    if (!this.openseaData) {
+      const data = await alchemyService.getContractMetadata(this.address);
+      this.openseaData = data;
+    }
   }
 
   getCollectionProperties() {
     return this.nfts.reduce(function (filtered: any, current) {
       const metadata = current["metadata"];
-      console.log(metadata, filtered);
       if (metadata["attributes"]) {
         const attributes = metadata["attributes"];
         if (Array.isArray(attributes)) {
@@ -36,7 +45,6 @@ export class Collection {
               filtered.filter(function (o: any) {
                 return o["property"]["value"] == attribute["trait_type"];
               }).length > 0;
-            console.log(property_exists, "property_exist");
             if (property_exists) {
               for (let element of filtered) {
                 if (element["property"]["value"] == attribute["trait_type"]) {
@@ -82,7 +90,7 @@ interface OpenSeaData {
   lastIngestedAt: string;
 }
 
-enum OpenSeaRequestStatus {
+export enum OpenSeaRequestStatus {
   verified = "verified",
   approved = "approved",
   requested = "requested",

@@ -14,7 +14,6 @@ import SidesList from "./components/SidesList";
 // Images
 import logoSmall from "./assets/logo.svg";
 
-import io from "socket.io-client";
 import websocketService from "./services/websocket.service";
 
 // Redux
@@ -23,11 +22,8 @@ import { connect, fetchUserDatas } from "./redux/Slices/UserDataSlice";
 // API's
 import { apiService } from "./services/api.service";
 
-const socket = io("http://localhost:3000/");
 function App() {
   const userData = useSelector((state: RootState) => state.user);
-  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
-  const [lastPong, setLastPong] = useState<string | null>(null);
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -53,7 +49,7 @@ function App() {
     return () => {
       websocketService.deconnectWebsocket();
     };
-  }, [window.ethereum.selectedAddress]);
+  }, []);
 
   // Conditional for checking if we are the settings page as we need a different sidebar.
   if (location.pathname.indexOf("/general-settings") > -1) {

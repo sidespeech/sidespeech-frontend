@@ -4,7 +4,7 @@ export const Dot = styled.div`
   width: 15px;
   height: 15px;
   color: white;
-  background-color: var(--text-red);
+  background-color: var(--red);
   weight: 700;
   font-size: 10px;
   border-radius: 8px;

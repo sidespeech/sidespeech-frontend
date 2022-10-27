@@ -24,7 +24,7 @@ const CustomButton = styled.div<ButtonProps>`
   justify-content: center;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 400px;
+  font-weight: 700;
   pointer-events: all;
 `;
 

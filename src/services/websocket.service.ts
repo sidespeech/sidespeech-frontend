@@ -34,7 +34,7 @@ class WebSocketService {
   login(profile: any) {
     this.socket?.emit("login", {
       user: { id: profile.id, username: profile.username },
-      rooms: profile.rooms.map((r: any) => r.id),
+      rooms: profile.rooms?.map((r: any) => r.id),
     });
   }
 
