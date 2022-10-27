@@ -107,6 +107,7 @@ export default function Login() {
 
         // Set a local storage of the account
         localStorage.setItem("userAccount", accounts[0]);
+        localStorage.setItem("jwtToken", user.token);
         
       }
 
