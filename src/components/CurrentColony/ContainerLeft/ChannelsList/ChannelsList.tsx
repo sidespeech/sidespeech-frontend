@@ -14,70 +14,10 @@ import { RootState } from "../../../../redux/store/app.store";
 import { apiService } from "../../../../services/api.service";
 import { Dot } from "../../../ui-components/styled-components/shared-styled-components";
 
-export default function ChannelsList({ channels }: { channels: Channel[] }) {
+export default function ChannelsList({ channels, dots, onChannelSelected }: { channels: Channel[];  dots:any; onChannelSelected:any }) {
   const dispatch = useDispatch();
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
-
-  const [dots_channel, setDots] = useState<any>({});
-
-  const onChannelSelected = (c: Channel) => {
-    dispatch(setSelectedChannel(c));
-    dispatch(setSelectedRoom(null));
-  };
-
-  const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-    console.log('handleReceiveAnnouncement channelList :', detail)
-    const account = localStorage.getItem('userAccount')
-
-    async function removeNotification() {
-      await apiService.deleteNotification(selectedChannel!.id, account!);
-    }
-
-    if (
-      !selectedChannel ||
-      (selectedChannel && selectedChannel.id !== detail.channelId)
-    ) {
-      let dots_object:any = {...dots_channel}
-      if (selectedChannel) dots_object[selectedChannel.id] = 0
-      if (detail.channelId in dots_object) dots_object[detail.channelId] += 1
-      else dots_object[detail.channelId] = 1
-      setDots(dots_object);
-    }
-    else {
-      removeNotification();
-    }
-  };
-
-  useEffect(() => {
-    subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-    return () => {
-      unSubscribeToEvent(
-        EventType.RECEIVE_ANNOUNCEMENT,
-        handleReceiveAnnouncement
-      );
-    };
-  }, [selectedChannel]);
-
-
-  useEffect(() => {
-    const account = localStorage.getItem('userAccount')
-    async function getChannelNotifications(account:string) {
-      const notifications = await apiService.getNotification(account!);
-      let dots_object:any = {}
-      for (let notification of notifications) {
-        if (notification['name'] in dots_object && notification['name'] !== selectedChannel!.id) dots_object[notification.name] += 1
-        else if (notification['name'] === selectedChannel!.id) {
-          dots_object[notification.name] = 0
-          await apiService.deleteNotification(selectedChannel!.id, account!);
-        }
-        else dots_object[notification.name] = 1
-      }
-      setDots(dots_object);
-    }
-    if (selectedChannel && account) getChannelNotifications(account);
-  }, [selectedChannel]);
-
 
   return (
     <div className="mt-2">
@@ -101,7 +41,7 @@ export default function ChannelsList({ channels }: { channels: Channel[] }) {
 
               {c.name}
             </span>
-            {c && dots_channel[c.id] > 0 && <Dot>{dots_channel[c.id]}</Dot>}
+            {c && dots[c.id] > 0 && <Dot>{dots[c.id]}</Dot>}
           </div>
         );
       })}

@@ -101,7 +101,6 @@ class apiService {
     side: InitialStateUpdateSide,
     id: string
   ): Promise<Side> {
-    console.log("side :", side);
     const res = await superagent.patch(`${BASE_URL}/side/${id}`).send(side);
     return res["body"]["side"];
   }
@@ -192,11 +191,9 @@ class apiService {
   }
 
   static async updateManyChannels(channels: Channel[]): Promise<any> {
-    console.log("channels :", channels);
     const res = await superagent
       .patch(`${BASE_URL}/channel/many`)
       .send(channels);
-    console.log(res["body"]);
     return res["body"];
   }
   static async removeChannels(ids: string | string[]): Promise<any> {

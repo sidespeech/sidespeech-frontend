@@ -7,7 +7,7 @@ import Invitation from "./invitation/invitation"
 import Informations from "./informations/informations"
 import Account from "./account/account"
 import Eligibility from "./eligibility/eligibility"
-import "./settings.css";
+import "./Settings.css";
 import { RootState } from "../../../redux/store/app.store";
 import ContainerLeft from "../../ui-components/ContainerLeft";
 import TabItems from "../../ui-components/TabItems";
@@ -37,7 +37,7 @@ const initialStateTabs = {
 
 };
 
-export default function SettingsAdmin(
+export default function Settings(
   // { currentSide }: { currentSide: Colony;}
 ) {
 

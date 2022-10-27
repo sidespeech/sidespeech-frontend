@@ -30,35 +30,20 @@ export default function UserColonies() {
     navigate(id);
   };
 
-  const changeStateModal = (value: boolean) => {
-    // Iteration throw nft user to get every collection is holder
-    let collections = Object.keys(userData["userCollectionsData"]);
-    setCollectionHolder(collections);
-    setshowCreateModal(value);
-  };
-
-  useEffect(() => {
-    if (userData && userData.sides.length > 0 && !isSubscribe) {
-    }
-
-    return () => { };
-  }, [userData]);
-
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-    console.log('handleReceiveAnnouncement :', detail)
-    for (let side of userData.sides) {
-      let channels_ids = side.channels.map((c: any) => c.id);
-      if (channels_ids.includes(detail.channelId) && currentSide!['id'] !== side['id']) {
-        let number = dots[side.id] || 0;
-        setDots({ ...dots, [side.id]: ++number });
-      }
-    }
+    const account = localStorage.getItem('userAccount')
+    if (currentSide && account) getAndSetRoomNotifications(account);
   };
 
+  const handleReceiveMessage = async (m: any) => {
+    const { detail } = m;
+    const account = localStorage.getItem('userAccount')
+    if (currentSide && account) getAndSetRoomNotifications(account);
+  };
+
+  // LISTENING WS =====================================================================
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-    // if (currentSide && dots[currentSide.id] > 0)
-    //   setDots({ ...dots, [currentSide.id]: 0 });
     return () => {
       unSubscribeToEvent(
         EventType.RECEIVE_ANNOUNCEMENT,
@@ -67,41 +52,47 @@ export default function UserColonies() {
     };
   }, [dots, userData, currentSide]);
 
-
   useEffect(() => {
-    console.log('userData.sides :', userData.sides)
-    const account = localStorage.getItem('userAccount')
-    async function getChannelNotifications(account: string) {
-      const notifications = await apiService.getNotification(account!);
-      console.log('notifications :', notifications)
-      let dots_object: any = { ...dots }
-      const currentChannelsIds = currentSide!.channels.map((c: any) => c.id)
-      console.log('currentChannelsIds :', currentChannelsIds)
-      for (let notification of notifications) {
-        if (currentSide!['id'] in dots_object && !(currentChannelsIds.includes(notification['name']))) dots_object[currentSide!['id']] = dots_object[currentSide!['id']]++
-        else if (currentChannelsIds.includes(notification['name'])) {
-          dots_object[currentSide!['id']] = 0
-          // await apiService.deleteNotification(notification['name'], account!);
-        }
-        else if (currentSide?.profiles.find((p:Profile) => p.rooms.some(el => el.id === notification['name'])))
-          dots_object[currentSide!['id']] = 1
-        else {
-          let sideFounded = userData.sides.filter((s:Side) => {
-            console.log("s :", s);
+    subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
+    return () => {
+      unSubscribeToEvent(
+        EventType.RECEIVE_MESSAGE,
+        handleReceiveMessage
+      );
+    };
+  }, [dots, userData, currentSide]);
+  // LISTENING WS =====================================================================
+
+  // Function to get notification from db and assign them to the state variable
+  async function getAndSetRoomNotifications(account: string) {
+    const notifications = await apiService.getNotification(account!);
+    let dots_object: any = { ...dots }
+    const currentChannelsIds = currentSide!.channels.map((c: any) => c.id)
+    for (let notification of notifications) {
+      if (currentChannelsIds.includes(notification['name']) || currentSide?.profiles.find((p: Profile) => p.rooms.some(el => el.id === notification['name']))) {
+        dots_object[currentSide!['id']] = 0
+      } else {
+        let sideFounded: any;
+        if (notification['type'] == 1) {
+          sideFounded = userData.sides.find((s:Side) => {
+            return s.channels.find((c:any) => c.id === notification['name'])
+          })
+        }else {
+          sideFounded = userData.sides.find((s: Side) => {
             return s.profiles.find((p:Profile) => {
-              console.log("p :", p)
               return p.rooms.find(el => el.id === notification['name'])
             })
           })
-          console.log("sideFounded :", sideFounded)
         }
-        // console.log(currentSide?.profiles.find((p:Profile) => console.log(p)))
-        // console.log(currentSide?.profiles.find((p:Profile) => p.rooms.some(el => el.id === notification['name'])))
-
+        dots_object[sideFounded!['id']] = dots_object[sideFounded!['id']]++ || 1
       }
-      setDots(dots_object);
     }
-    if (currentSide && account) getChannelNotifications(account);
+    (notifications.length) ? setDots(dots_object) : setDots({});
+  }
+
+  useEffect(() => {
+    const account = localStorage.getItem('userAccount')
+    if (currentSide && account) getAndSetRoomNotifications(account);
   }, [currentSide]);
 
   return (
@@ -109,16 +100,16 @@ export default function UserColonies() {
       <div className="f-column align-center mt-3" style={{ gap: 15 }}>
         {userData.sides.map((c, i) => {
           return (
-              <div
-                onClick={() => {
-                  displayColony(c.id);
-                }}
-                className="colony-badge pointer"
-                key={c.id}
-              >
-                <img alt="colony-icon" src={c.sideImage} />
-                {c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
-              </div>
+            <div
+              onClick={() => {
+                displayColony(c.id);
+              }}
+              className="colony-badge pointer"
+              key={c.id}
+            >
+              <img alt="colony-icon" src={c.sideImage} />
+              {c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
+            </div>
           );
         })}
         <Link to={"/new-side"}>
