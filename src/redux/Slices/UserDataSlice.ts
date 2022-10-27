@@ -68,7 +68,7 @@ export const userDataSlice = createSlice({
       state.account = action.payload.account;
       state.sides = action.payload.user.profiles
         ? action.payload.user.profiles.map((p: Profile) => p.side)
-        : "";
+        : [];
       state.redirectTo = action.payload.redirectTo;
     },
     disconnect: (state: UserData) => {

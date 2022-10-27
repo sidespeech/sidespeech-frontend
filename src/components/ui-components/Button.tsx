@@ -18,14 +18,16 @@ const CustomButton = styled.div<ButtonProps>`
   background: ${(props) =>
     props.background ? props.background : "var(--button-primary)"};
   border-radius: ${(props) => (props.radius ? props.radius : 100)}px;
-  border : ${(props) => (props.border ? props.border : "none")};
+  border: ${(props) => (props.border ? props.border : "none")};
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-size: 14px;
   font-weight: 700;
-  pointer-events: all;
+  pointer-events: ${(props) => (props.disabled ? "none" : "all")};
+  filter: ${props => props.disabled && "grayscale(1)"};
+  opacity: ${props => props.disabled && 0.2}
 `;
 
 export default function Button({
@@ -38,7 +40,7 @@ export default function Button({
   radius,
   background,
   color,
-  border
+  border,
 }: {
   children: any;
   onClick: any;
@@ -46,10 +48,10 @@ export default function Button({
   height?: number;
   classes?: string;
   disabled?: any;
-  radius?:number;
-  background?:string;
-  color?:string;
-  border?:string;
+  radius?: number;
+  background?: string;
+  color?: string;
+  border?: string;
 }) {
   return (
     <CustomButton

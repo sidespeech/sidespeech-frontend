@@ -51,35 +51,31 @@ export default function Login() {
       providerOptions, // required
     });
 
-
     // Method for wallet connection...
     const connectWallet = async () => {
-     
-     // Open the connector
-     const provider = await web3Modal.connect();
+      // Open the connector
+      const provider = await web3Modal.connect();
 
-     // Set the provider.
-     const library = new ethers.providers.Web3Provider(provider);
+      // Set the provider.
+      const library = new ethers.providers.Web3Provider(provider);
 
-     // Grab the accounts.
-     const accounts = await library.listAccounts();
-      
-     const existingUser = await apiService.findExistingWallet(accounts[0]);
+      // Grab the accounts.
+      const accounts = await library.listAccounts();
 
-     let signature;
+      const existingUser = await apiService.findExistingWallet(accounts[0]);
+
+      let signature;
 
       // If there are any accounts connected then send them to the API.
       if (accounts) {
-
         // If there isn't an existing user then ensure that he signs the signature.
-        if(existingUser == undefined) {
-
+        if (existingUser == undefined) {
           // Get Signer
           const signer = library.getSigner();
 
           // Create the signer message
-          const signerMessage = "sidespeech"; 
-            
+          const signerMessage = "sidespeech";
+
           // Create the signature signing message.
           signature = await signer.signMessage(signerMessage);
 
@@ -87,43 +83,42 @@ export default function Login() {
           const address = await signer.getAddress();
 
           // Get the signer address.
-          const signerAddr = ethers.utils.verifyMessage(signerMessage, signature);
+          const signerAddr = ethers.utils.verifyMessage(
+            signerMessage,
+            signature
+          );
 
           // Check if the signer address is the same as the connected address.
           if (signerAddr !== address) {
             return false;
           }
-
-        } 
+        }
 
         // Send the wallet to the api service.
         const user = await apiService.walletConnection(accounts, signature);
 
         // Redirect the user to the general settings page.
-        navigate('/general-settings');
+        navigate("/general-settings");
 
         // Dispatch the account that is connected to the redux slice.
         dispatch(connect({ account: accounts[0], user: user }));
+        dispatch(fetchUserDatas(accounts[0]));
 
         // Set a local storage of the account
         localStorage.setItem("userAccount", accounts[0]);
-        
       }
 
       // Listen for accounts being disconnected - this only seems to work for WalletConnect.
       provider.on("disconnect", handleDisconnect);
-
     };
 
     // Method for handling the disconnection.
     const handleDisconnect = async () => {
-
       // Clear all the local storage.
       localStorage.clear();
 
       // Reload the page to ensure logged out.
       window.location.reload();
-
     };
 
     return (
