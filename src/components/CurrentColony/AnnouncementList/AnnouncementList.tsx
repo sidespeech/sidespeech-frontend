@@ -74,9 +74,9 @@ export default function AnnouncementList() {
         className="w-100 overflow-auto f-column-reverse"
       >
         {_.orderBy(announcements, ["timestamp"], ["desc"]).map(
-          (a: Announcement) => {
+          (a: Announcement, i) => {
             return (
-              <>
+              <div key={i}>
                 {" "}
                 <AnnouncementItem
                   key={a.id}
@@ -84,7 +84,7 @@ export default function AnnouncementList() {
                   handleExtendComments={handleExtendComments}
                   announcement={a}
                 />{" "}
-              </>
+              </div>
             );
           }
         )}

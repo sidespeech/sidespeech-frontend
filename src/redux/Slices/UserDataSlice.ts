@@ -33,6 +33,12 @@ const initialState: UserData = {
   userCollectionsData: null,
 };
 
+export const flattenChannels = (array: any, key:string) => {
+  return array.reduce(function (flat: any, toFlatten: any) {
+    return flat.concat(Array.isArray(toFlatten[key]) ? flattenChannels(toFlatten[key], key) : toFlatten.id);
+  }, []);
+};
+
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string) => {
@@ -66,10 +72,16 @@ export const userDataSlice = createSlice({
     connect: (state: UserData, action: PayloadAction<any>) => {
       state.user = action.payload.user;
       state.account = action.payload.account;
+      let rooms = flattenChannels(state.user?.profiles, 'rooms');
       state.sides = action.payload.user.profiles
-        ? action.payload.user.profiles.map((p: Profile) => p.side)
+        ? action.payload.user.profiles.map((p: Profile) => {
+          p.side['profiles'] = [p]
+          return p.side
+        })
         : "";
       state.redirectTo = action.payload.redirectTo;
+      rooms = rooms.concat(flattenChannels(state.sides, 'channels'));
+      websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {
       state.user = null;
@@ -89,7 +101,7 @@ export const userDataSlice = createSlice({
           (p) => p.side.id === action.payload.id
         );
         state.currentProfile = profile;
-        websocketService.login(profile);
+        // websocketService.login(state.user, profile);
       }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {

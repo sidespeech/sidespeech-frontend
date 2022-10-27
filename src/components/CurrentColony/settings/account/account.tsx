@@ -37,8 +37,6 @@ export default function Account({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('currentSide Accounts:', currentSide)
-    console.log('userData Accounts:', userData)
   });
 
   const onChangeUsername = (event: any) => {
