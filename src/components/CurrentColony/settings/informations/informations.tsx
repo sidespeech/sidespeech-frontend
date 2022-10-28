@@ -10,6 +10,7 @@ import "./informations.css";
 import { apiService } from "../../../../services/api.service";
 import { addColony } from "../../../../redux/Slices/UserDataSlice";
 import { useSearchParams } from "react-router-dom";
+import { Side } from "../../../../models/Side";
 
 export interface InitialStateUpdateSide {
   sideImage: string | undefined;
@@ -29,10 +30,10 @@ export default function Informations({
   onChangeNewSideImage,
   formError,
 }: {
-  currentSide: Colony;
+  currentSide: Side;
   onChangeNewSideName?: any;
   onChangeNewSideImage?: any;
-  formError: any;
+  formError?: any;
 }) {
   const [formData, setFormData] = useState<InitialStateUpdateSide>(
     initialStateUpdateSide
@@ -165,10 +166,10 @@ export default function Informations({
             radius="10px"
           />
         </div>
-        {formError.name.exist && (
+        {formError?.name.exist && (
           <div className="text-red">Side name already exist.</div>
         )}
-        {formError.name.length && (
+        {formError?.name.length && (
           <div className="text-red">
             Side name has to be between 3 and 50 character.
           </div>
