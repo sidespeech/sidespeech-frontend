@@ -13,11 +13,18 @@ import Admission from "./admission/admission";
 import Channels from "../CurrentColony/settings/channels/channels";
 import Invitation from "../CurrentColony/settings/invitation/invitation";
 import { apiService } from "../../services/api.service";
-import { addColony } from "../../redux/Slices/UserDataSlice";
+import {
+  addColony,
+  updateProfiles,
+  updateUser,
+} from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
 import { Collection } from "../../models/interfaces/collection";
-import _ from "lodash";
-import { Channel } from "../../models/Channel";
+import _, { valuesIn } from "lodash";
+import { Channel, ChannelType } from "../../models/Channel";
+import { Role } from "../../models/Profile";
+
+const MAX_NUMBER_OF_COLLECTIONS = 5;
 
 const initialStateSteps = [
   {
@@ -71,6 +78,7 @@ const initialDivCollections = [
     trait_selected: "",
     value_selected: "",
     traits_values: [],
+    numberNeeded: 1,
   },
 ];
 
@@ -79,12 +87,17 @@ const initialChannelsState = {
     {
       name: "Announcement",
       isVisible: true,
-      type: 0,
+      type: ChannelType.Announcement,
     },
   ],
   removed: [],
   added: [],
 };
+
+const Middle = styled.div`
+  overflow: auto;
+  max-height: calc(100vh - 58px);
+`;
 
 export default function NewSide() {
   const dispatch = useDispatch();
@@ -92,14 +105,20 @@ export default function NewSide() {
 
   const currentSide = new Side({});
   const [formData, setFormData] = useState<InitialStateSide>(initialStateSide);
-  const { userCollectionsData } = useSelector((state: RootState) => state.user);
-  const [steps, setSteps] = useState<any>(initialStateSteps);
+  const [formError, setFormError] = useState({
+    name: { exist: false, length: false },
+  });
+  const { userCollectionsData, user } = useSelector(
+    (state: RootState) => state.user
+  );
+  const [steps, setSteps] = useState<any[]>(initialStateSteps);
 
   // Variables for Admission component
   const [divCollections, setDivCollection] = useState<any[]>(
     initialDivCollections
   );
   const [collectionHolder, setCollectionHolder] = useState<Collection[]>([]);
+  const [onlyOneRequired, setOnlyOneRequired] = useState<boolean>(true);
 
   // Variables for Channels component
   const [channels, setChannels] = useState<any>(initialChannelsState);
@@ -138,6 +157,7 @@ export default function NewSide() {
             conditions[div["collection"]] = {};
             conditions[div["collection"]][div["trait_selected"]] =
               div["value_selected"];
+            conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
           }
           setFormData({ ...formData, conditions: conditions });
         }
@@ -155,8 +175,22 @@ export default function NewSide() {
   };
 
   // Functions for information component
-  const onChangeSideName = (name: string) => {
-    setFormData({ ...formData, name: name });
+  const onChangeSideName = async (name: string) => {
+    const valid = await validateName(name);
+    if (valid) {
+      setFormData({ ...formData, name: name });
+    }
+  };
+
+  const validateForm = async () => {};
+
+  // validate the name, return true if name is valid;
+  const validateName = async (name: string) => {
+    const exist = await apiService.isSideNameExist(name);
+    const inValidLength = !(name.length < 50 && name.length > 3);
+    console.log(inValidLength);
+    setFormError({ ...formError, name: { exist, length: inValidLength } });
+    return !(exist || inValidLength);
   };
 
   const onChangeSideImage = (event: any) => {
@@ -169,8 +203,7 @@ export default function NewSide() {
   };
 
   // ----- Functions for Admission component **start
-  const setSideTokenAddress = async (event: any, index: number) => {
-    const address = event.target.value;
+  const setSideTokenAddress = async (address: string, index: number) => {
     setFormData({ ...formData, NftTokenAddress: address });
     if (address.trim().length) {
       let current_divs = [...divCollections];
@@ -206,7 +239,7 @@ export default function NewSide() {
 
   // Add collection div in condition
   const addDivCollection = () => {
-    if (divCollections.length < 3) {
+    if (divCollections.length < MAX_NUMBER_OF_COLLECTIONS) {
       let current_divs = [...divCollections];
       current_divs.push({
         collection: "",
@@ -215,7 +248,7 @@ export default function NewSide() {
       setDivCollection(current_divs);
     } else {
       toast.error(
-        "You can not create side with more than 3 linked collections.",
+        "You can not create side with more than 5 linked collections.",
         { toastId: 8 }
       );
     }
@@ -227,6 +260,17 @@ export default function NewSide() {
       ...current_divs[index],
       trait_selected: "",
       value_selected: "",
+    };
+    setDivCollection(current_divs);
+  };
+  const setNumberOfNftNeededToDivCollection = (
+    number: number,
+    index: number
+  ) => {
+    let current_divs = [...divCollections];
+    current_divs[index] = {
+      ...current_divs[index],
+      numberNeeded: number,
     };
     setDivCollection(current_divs);
   };
@@ -281,8 +325,9 @@ export default function NewSide() {
     current_added.push({
       name: "",
       isVisible: true,
-      type: 2,
+      type: ChannelType.Announcement,
       side: formData,
+      authorizeComments: false,
     });
     setChannels({ ...channels, added: current_added });
   };
@@ -301,6 +346,61 @@ export default function NewSide() {
       setChannels({ ...channels, added: added_channels });
     }
   };
+  const onChangeTypeChannel = (
+    value: number,
+    index: number,
+    current = true
+  ) => {
+    // Change name on existing channel
+    if (current) {
+      let current_channels = channels["currents"];
+      current_channels[index]["type"] = value;
+      setChannels({ ...channels, currents: current_channels });
+    }
+    // Change name on new channel
+    else {
+      let added_channels = channels["added"];
+      added_channels[index]["type"] = value;
+      setChannels({ ...channels, added: added_channels });
+    }
+  };
+  const onChangeAuthorizeCommentsChannel = (
+    event: any,
+    index: number,
+    current = true
+  ) => {
+    console.log(event);
+    // Change name on existing channel
+    if (current) {
+      let current_channels = channels["currents"];
+      current_channels[index]["authorizeComments"] = event.target.checked;
+      setChannels({ ...channels, currents: current_channels });
+    }
+    // Change name on new channel
+    else {
+      let added_channels = channels["added"];
+      added_channels[index]["authorizeComments"] = event.target.checked;
+      setChannels({ ...channels, added: added_channels });
+    }
+  };
+  const onChangeIsVisibleChannel = (
+    value: any,
+    index: number,
+    current = true
+  ) => {
+    // Change name on existing channel
+    if (current) {
+      let current_channels = channels["currents"];
+      current_channels[index]["isVisible"] = value;
+      setChannels({ ...channels, currents: current_channels });
+    }
+    // Change name on new channel
+    else {
+      let added_channels = channels["added"];
+      added_channels[index]["isVisible"] = value;
+      setChannels({ ...channels, added: added_channels });
+    }
+  };
 
   // ----- Functions for Channels component **end
 
@@ -311,6 +411,8 @@ export default function NewSide() {
     try {
       if (formData.sideImage) {
         formData["conditions"] = JSON.stringify(formData["conditions"]);
+        formData["NftTokenAddress"] = formData["conditions"];
+        formData["creatorAddress"] = user?.["accounts"][0] || null;
         const newSide = await apiService.createSide(formData);
 
         if (channels["added"].length) {
@@ -320,7 +422,17 @@ export default function NewSide() {
           });
           const addedChannels = await apiService.createManyChannels(added);
         }
-
+        if (user) {
+          try {
+            const profile = await apiService.joinSide(
+              user?.id,
+              newSide.id,
+              Role.Admin
+            );
+            console.log("profile", profile);
+            dispatch(updateProfiles(profile));
+          } catch (error) {}
+        }
         dispatch(addColony(newSide));
         toast.success(formData.name + " has been created.", {
           toastId: 4,
@@ -369,136 +481,113 @@ export default function NewSide() {
           })}
         </ContainerLeft>
 
-        <div className="f-column w-100 pt-3 ml-5">
+        <Middle className="f-column w-100 pt-3 ml-5">
           {steps.map((step: any, index: number) => {
             return (
               <div key={index}>
-                {" "}
                 {step["label"] === "Informations" && step["active"] ? (
                   <>
                     <Informations
                       currentSide={formData}
                       onChangeNewSideName={onChangeSideName}
                       onChangeNewSideImage={onChangeSideImage}
+                      formError={formError}
                     />
-                    <div className="f-column mt-3 align-end w-80">
-                      <Button
-                        width={159}
-                        height={46}
-                        onClick={() => newSideNextPreviousStep(index)}
-                        radius={10}
-                        color={"var(--text-primary-light)"}
-                      >
-                        Continue
-                      </Button>
-                    </div>
                   </>
                 ) : step["label"] === "Admission" && step["active"] ? (
                   <>
                     <Admission
                       divCollections={divCollections}
-                      collections={collectionHolder.map((c) => c.address)}
+                      collections={collectionHolder}
                       setSideTokenAddress={setSideTokenAddress}
                       setSidePropertyCondition={setSidePropertyCondition}
                       setSideValueCondition={setSideValueCondition}
                       addDivCollection={addDivCollection}
                       removeDivCollection={removeDivCollection}
                       addConditionToDivCollection={addConditionToDivCollection}
+                      onlyOneRequired={onlyOneRequired}
+                      setOnlyOneRequired={setOnlyOneRequired}
+                      setNumberOfNftNeededToDivCollection={
+                        setNumberOfNftNeededToDivCollection
+                      }
                     />
-                    <div className="flex justify-between container-next-back">
-                      <Button
-                        classes={"mt-3"}
-                        width={159}
-                        height={46}
-                        onClick={() => newSideNextPreviousStep(index, true)}
-                        radius={10}
-                        color={"var(--text-primary-light)"}
-                        background={"transparent"}
-                        border={"1px solid var(--bg-secondary-light);"}
-                      >
-                        Back
-                      </Button>
-                      <Button
-                        classes={"mt-3"}
-                        width={159}
-                        height={46}
-                        onClick={() => newSideNextPreviousStep(index)}
-                        radius={10}
-                        color={"var(--text-primary-light)"}
-                      >
-                        Continue
-                      </Button>
-                    </div>
                   </>
                 ) : step["label"] === "Channels" && step["active"] ? (
-                  <>
+                  <div style={{ maxWidth: "fit-content" }}>
                     <Channels
                       currentSide={currentSide}
                       channelsNewSide={channels}
                       handleRemoveChannel={handleRemoveChannel}
                       handleAddNewChannel={handleAddNewChannel}
                       onChangeNameChannel={onChangeNameChannel}
+                      onChangeTypeChannel={onChangeTypeChannel}
+                      onChangeAuthorizeCommentsChannel={
+                        onChangeAuthorizeCommentsChannel
+                      }
+                      onChangeIsVisibleChannel={onChangeIsVisibleChannel}
                     />
-                    <div className="flex justify-between container-next-back">
-                      <Button
-                        classes={"mt-3"}
-                        width={159}
-                        height={46}
-                        onClick={() => newSideNextPreviousStep(index, true)}
-                        radius={10}
-                        color={"var(--text-primary-light)"}
-                        background={"transparent"}
-                        border={"1px solid var(--bg-secondary-light);"}
-                      >
-                        Back
-                      </Button>
-                      <Button
-                        classes={"mt-3"}
-                        width={159}
-                        height={46}
-                        onClick={() => newSideNextPreviousStep(index)}
-                        radius={10}
-                        color={"var(--text-primary-light)"}
-                      >
-                        Continue
-                      </Button>
-                    </div>{" "}
-                  </>
+                  </div>
                 ) : step["label"] === "Invitation" && step["active"] ? (
                   <>
                     <Invitation currentSide={currentSide} />
-                    <div className="flex justify-between container-next-back">
-                      <Button
-                        classes={"mt-3"}
-                        width={159}
-                        height={46}
-                        onClick={() => newSideNextPreviousStep(index, true)}
-                        radius={10}
-                        color={"var(--text-primary-light)"}
-                        background={"transparent"}
-                        border={"1px solid var(--bg-secondary-light);"}
-                      >
-                        Back
-                      </Button>
-                      <Button
-                        classes={"mt-3"}
-                        width={159}
-                        height={46}
-                        onClick={onSubmit}
-                        radius={10}
-                        color={"var(--text-primary-light)"}
-                      >
-                        Finish
-                      </Button>
-                    </div>
                   </>
                 ) : null}
               </div>
             );
           })}
-          {/* <Button classes="mt-5" onClick={onClick}>Test</Button> */}
-        </div>
+          <FooterButtons
+            steps={steps}
+            onSubmit={onSubmit}
+            index={steps.findIndex((s) => s.active)}
+            newSideNextPreviousStep={newSideNextPreviousStep}
+          />
+        </Middle>
       </div>
     </>
   );
 }
+
+const FooterButtons = ({
+  index,
+  newSideNextPreviousStep,
+  onSubmit,
+  steps,
+}: any) => {
+  const handleContinue = () => {
+    if (steps.length === index + 1) {
+      onSubmit();
+    } else {
+      newSideNextPreviousStep(index);
+    }
+  };
+
+  return (
+    <div className="flex justify-between container-next-back">
+      {index > 0 && (
+        <Button
+          classes={"mt-4"}
+          width={159}
+          height={46}
+          onClick={() => newSideNextPreviousStep(index, true)}
+          radius={10}
+          color={"var(--text-primary-light)"}
+          background={"transparent"}
+          border={"1px solid var(--bg-secondary-light);"}
+        >
+          Back
+        </Button>
+      )}
+
+      <Button
+        classes={"mt-4"}
+        width={159}
+        height={46}
+        onClick={handleContinue}
+        radius={10}
+        color={"var(--text-primary-light)"}
+      >
+        {steps.length === index + 1 ? "Finish" : "Continue"}
+      </Button>
+    </div>
+  );
+};

@@ -61,7 +61,7 @@ export default function AnnouncementItem({
       <div className="flex justify-between w-100">
         <UserBadge
           check
-          color={"var(--text-red)"}
+          color={"var(--red)"}
           weight={700}
           fontSize={14}
           address={announcement.creatorAddress}
@@ -124,14 +124,15 @@ export default function AnnouncementItem({
             })}
 
           <MessageInput
+            id="sendmessage"
+            imageUpload
+            onSubmit={handleComment}
+            placeholder={"Type your message here"}
+            radius="10px"
             ref={ref}
             size={14}
+            toolbar
             weight={600}
-            imageUpload
-            id="sendmessage"
-            radius="10px"
-            placeholder={"Type your message here"}
-            onSubmit={handleComment}
           />
           </div>
         </div>

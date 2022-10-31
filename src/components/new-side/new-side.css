@@ -14,7 +14,7 @@
 }
 
 .container-next-back {
-    width: 40rem;
+    max-width: 536px;
 }
 
 nav{
@@ -27,13 +27,13 @@ nav{
 }
 
 .nav-link.active {
-    color: #0d6efd !important;
+    color: var(--primary) !important;
     background-color: transparent !important;
-    border-right: 2px solid #0d6efd;
+    border-right: 2px solid  var(--primary);
 }
 
 .nav-link.completed {
-    color: var(--text-green) !important;
+    color: var(--green) !important;
     background-color: transparent !important;
 }
 

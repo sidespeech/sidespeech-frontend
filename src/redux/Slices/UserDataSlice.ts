@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 import { UserTokensData } from "../../models/UserTokensData";
@@ -31,6 +31,12 @@ const initialState: UserData = {
   sides: [],
   currentProfile: undefined,
   userCollectionsData: null,
+};
+
+export const flattenChannels = (array: any, key:string) => {
+  return array?.reduce(function (flat: any, toFlatten: any) {
+    return flat.concat(Array.isArray(toFlatten[key]) ? flattenChannels(toFlatten[key], key) : toFlatten.id);
+  }, []);
 };
 
 export const fetchUserDatas = createAsyncThunk(
@@ -66,10 +72,16 @@ export const userDataSlice = createSlice({
     connect: (state: UserData, action: PayloadAction<any>) => {
       state.user = action.payload.user;
       state.account = action.payload.account;
+      let rooms = flattenChannels(state.user?.profiles, 'rooms');
       state.sides = action.payload.user.profiles
-        ? action.payload.user.profiles.map((p: Profile) => p.side)
-        : "";
+        ? action.payload.user.profiles.map((p: Profile) => {
+          p.side['profiles'] = [p]
+          return p.side
+        })
+        : [];
       state.redirectTo = action.payload.redirectTo;
+      rooms = rooms.concat(flattenChannels(state.sides, 'channels'));
+      websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {
       state.user = null;
@@ -79,17 +91,24 @@ export const userDataSlice = createSlice({
     updateUser: (state: UserData, action: PayloadAction<any>) => {
       state.user = { ...state.user, ...action.payload };
     },
+    updateProfiles: (state: UserData, action: PayloadAction<any>) => {
+      if (state.user) {
+        const profiles = [...state.user?.profiles, action.payload];
+        state.user = { ...state.user, profiles: profiles };
+      }
+    },
     addColony: (state: UserData, action: PayloadAction<any>) => {
       state.sides = [...state.sides, action.payload];
     },
     setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
       const userprofiles = state.user?.profiles;
       if (state.user && userprofiles) {
-        const profile = userprofiles.find(
-          (p) => p.side.id === action.payload.id
-        );
+        console.log("payload", action.payload);
+        const profile = userprofiles.find((p) => {
+          return p.side.id === action.payload.id;
+        });
         state.currentProfile = profile;
-        websocketService.login(profile);
+        // websocketService.login(state.user, profile);
       }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
@@ -119,6 +138,7 @@ export const {
   setCurrentProfile,
   updateCurrentProfile,
   addRoomToProfile,
+  updateProfiles,
 } = userDataSlice.actions;
 
 export default userDataSlice.reducer;

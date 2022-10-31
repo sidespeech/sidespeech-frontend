@@ -12,6 +12,7 @@ import { Profile } from "../models/Profile";
 import { Message, Room } from "../models/Room";
 import { Side } from "../models/Side";
 import { User } from "../models/User";
+import { Notification } from "../models/Notification";
 import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 
 // Create an API Service class
@@ -49,11 +50,11 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/profile`).query({ id });
     return new Profile(res.body);
   }
-  
-  static async joinSide(userId: string, sideId: string): Promise<Profile> {
+
+  static async joinSide(userId: string, sideId: string,role: number): Promise<Profile> {
     const res = await superagent
       .post(`${BASE_URL}/profile/join`)
-      .send({ userId, sideId });
+      .send({ userId, sideId, role });
     return new Profile(res.body);
   }
 
@@ -90,17 +91,22 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/side/${id}`);
     return new Side(res.body);
   }
+  static async isSideNameExist(name: string): Promise<boolean> {
+    const res = await superagent
+      .get(`${BASE_URL}/side/name/exist`)
+      .query({ name: name });
+    return res.body.exist;
+  }
   static async createSide(side: InitialStateSide): Promise<Side> {
     console.log("side :", side);
     const res = await superagent.post(`${BASE_URL}/side`).send(side);
-    return res["body"]["side"];
+    return new Side(res["body"]);
   }
 
   static async updateSide(
     side: InitialStateUpdateSide,
     id: string
   ): Promise<Side> {
-    console.log("side :", side);
     const res = await superagent.patch(`${BASE_URL}/side/${id}`).send(side);
     return res["body"]["side"];
   }
@@ -191,11 +197,9 @@ class apiService {
   }
 
   static async updateManyChannels(channels: Channel[]): Promise<any> {
-    console.log("channels :", channels);
     const res = await superagent
       .patch(`${BASE_URL}/channel/many`)
       .send(channels);
-    console.log(res["body"]);
     return res["body"];
   }
   static async removeChannels(ids: string | string[]): Promise<any> {
@@ -209,8 +213,21 @@ class apiService {
     const res = await superagent
       .post(`${BASE_URL}/files`)
       .send(image)
-    return res.body || '';
+    return res.text || '';
+  }
+
+  // Fetch notification by channel id and user wallet address
+  static async getNotification(address:string): Promise<any> {
+    const res = await superagent.get(`${BASE_URL}/notification/allNotifications/${address}`);
+    return res.body.map((c: any) => new Notification(c));
+  }
+
+  // remove notification by channel id and user wallet address
+  static async deleteNotification(id:string, address:string): Promise<any> {
+    const res = await superagent.delete(`${BASE_URL}/notification/${id}/${address}`);
+    return new User(res.body);
   }
 }
+
 
 export { apiService };

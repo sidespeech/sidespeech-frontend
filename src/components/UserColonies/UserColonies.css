@@ -13,3 +13,8 @@
     width: 51px;
     height: 51px;
 }
+
+.badge-notification {
+    position: absolute;
+    margin-top: -21px;
+}

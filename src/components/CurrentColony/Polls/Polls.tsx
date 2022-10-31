@@ -46,7 +46,7 @@ export default function Polls() {
             <div key={poll.id} className="flex justify-between w-100">
               <UserBadge
                 check
-                color={"var(--text-red)"}
+                color={"var(--red)"}
                 weight={700}
                 fontSize={14}
                 address={poll.creator.attributes.ethAddress}

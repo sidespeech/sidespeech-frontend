@@ -65,6 +65,19 @@ const EditorSyled = styled(Editor)<MessageContentProps>`
 
 const giphyService = new GiphyFetch(process.env.REACT_APP_GIPHY_API_KEY || '')
 
+interface CustomImagePropTypes {
+    src: string;
+    alt?: string;
+}
+
+const CustomImage = (props: CustomImagePropTypes) => {
+    return (
+        <div style={{width: '400px'}}>
+            <img style={{width: '100%'}} src={props.src} alt={props.alt} />
+        </div>
+    )
+}
+
 interface CustomGifPropTypes {
     gifId: string;
 }
@@ -102,6 +115,11 @@ const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Re
     }, [props.message])
 
     if (!props.message) return null;
+
+    const regex = /!\[(.*?)\]\((.*?)\)/gi
+    const imageArray = regex.exec(props.message)
+
+    if (imageArray) return <CustomImage src={imageArray[2]} alt={imageArray[1]} />
 
     if (props.message.startsWith('[GIPHY]')) return <CustomGif gifId={props.message.split('!')[1]} />
 

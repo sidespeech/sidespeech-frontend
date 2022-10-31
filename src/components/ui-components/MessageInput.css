@@ -3,6 +3,7 @@
     color: var(--text-primary);
     max-height: 250px;
     overflow-y: scroll;
+    scrollbar-width: thin;
 }
 
 .message-intput-editor a {

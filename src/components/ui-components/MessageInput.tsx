@@ -53,6 +53,7 @@ interface MessageInputPropsType {
     placeholderWeight?: number;
     radius?: string;
     size?: number;
+    toolbar?: boolean;
     weight?: number;
     width?: number | string;
 }
@@ -110,17 +111,18 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 
     const toolbarOptions = ['inline', 'link', 'list', 'history', 'emoji'];
 
-    if (props.imageUpload) toolbarOptions.splice(4, 0, 'image');
-
     const handleSubmitGif = (gifId: string): void => {
       const gifMarkdown = `[GIPHY]!${gifId}`;
-      if (gifMarkdown) props.onSubmit(gifMarkdown);
+      if (gifId) props.onSubmit(gifMarkdown);
     }
 
-    const handleUploadFile = async (image: File): Promise<string> => {
+    const handleUploadFile = async (image: File | undefined): Promise<void> => {
+      if (!image) return;
       const formData = new FormData();
       formData.append('file', image);
-      return await apiService.uploadImage(formData);
+      const uploadedUrl = await apiService.uploadImage(formData);
+      const imageMarkdown = `![${image.name}](${uploadedUrl})`
+      if (uploadedUrl) props.onSubmit(imageMarkdown);
     }
 
     const handleSubmit = (): void => {
@@ -219,13 +221,37 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
               <img src={sendicon} alt="send-icon" />
             </button>
 
-            <button
-              className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
-              onClick={() => setToolbarHidden(state => !state)}
-              style={toolbarhidden ? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
-            >
-              <i className="fa-sharp fa-solid fa-font"></i>
-            </button>
+            {!!props.toolbar && (
+              <button
+                className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
+                onClick={() => setToolbarHidden(state => !state)}
+                style={toolbarhidden ? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
+              >
+                <i className="fa-sharp fa-solid fa-font"></i>
+              </button>
+            )}
+
+            {!!props.imageUpload && (
+              <label htmlFor="upload-file">
+                <input 
+                  id="upload-file" 
+                  name="upload-file" 
+                  onChange={(ev) => handleUploadFile(ev.target.files?.[0])}
+                  style={{
+                    position: 'absolute', 
+                    pointerEvents: 'none', 
+                    opacity: '0', 
+                    zIndex: '-1'
+                  }} 
+                  type="file" 
+                />
+                <div
+                  className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
+                >
+                  <i style={{fontSize: '1.1rem', color: 'var(--text-secondary)'}} className="fa-solid fa-image"></i>
+                </div>
+              </label>
+            )}
 
             <div>
               <button

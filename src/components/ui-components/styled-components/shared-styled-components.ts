@@ -4,14 +4,31 @@ export const Dot = styled.div`
   width: 15px;
   height: 15px;
   color: white;
-  background-color: var(--text-red);
+  background-color: var(--red);
   weight: 700;
   font-size: 10px;
   border-radius: 8px;
   display: flex;
+  z-index: 100;
   justify-content: center;
   align-items: center;
-  padding: 0px 1px 2px 0px;
+  padding: 3px 1px 2px 0px;
+  width: 15px;
+  height: 15px;
+  font-size: 10px;
+  weight: 700;
+  border-radius: 50%;
+  background-color: #ff4927;
+  color: #fff;
+  animation: bell 1s 1s both infinite;
+  @keyframes bell {
+    0% { transform: rotate(0); }
+    10% { transform: rotate(30deg); }
+    20% { transform: rotate(0); }
+    80% { transform: rotate(0); }
+    90% { transform: rotate(-30deg); }
+    100% { transform: rotate(0); }
+  }
 `;
 
 interface IRoundedImageContainerProps {

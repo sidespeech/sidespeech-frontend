@@ -11,42 +11,13 @@ import { Channel } from "../../../../models/Channel";
 import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
 import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
 import { RootState } from "../../../../redux/store/app.store";
+import { apiService } from "../../../../services/api.service";
 import { Dot } from "../../../ui-components/styled-components/shared-styled-components";
 
-export default function ChannelsList({ channels }: { channels: Channel[] }) {
+export default function ChannelsList({ channels, dots, onChannelSelected }: { channels: Channel[];  dots:any; onChannelSelected:any }) {
   const dispatch = useDispatch();
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
-
-  const [dots, setDots] = useState<any>({});
-
-  const onChannelSelected = (c: Channel) => {
-    dispatch(setSelectedChannel(c));
-    dispatch(setSelectedRoom(null));
-  };
-
-  const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-    console.log(detail, selectedChannel);
-    if (
-      !selectedChannel ||
-      (selectedChannel && selectedChannel.id !== detail.channelId)
-    ) {
-      let number = dots[detail.channelId] || 0;
-      setDots({ ...dots, [detail.channelId]: ++number });
-    }
-  };
-
-  useEffect(() => {
-    subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-    if (selectedChannel && dots[selectedChannel.id] > 0)
-      setDots({ ...dots, [selectedChannel.id]: 0 });
-    return () => {
-      unSubscribeToEvent(
-        EventType.RECEIVE_ANNOUNCEMENT,
-        handleReceiveAnnouncement
-      );
-    };
-  }, [dots, selectedChannel]);
 
   return (
     <div className="mt-2">

@@ -42,7 +42,7 @@ export default function AnnouncementList() {
   useEffect(() => {
     async function getChannelAnnouncements() {
       const announcements = selectedChannel ? await apiService.getChannelAnnouncements(
-        selectedChannel.id
+        selectedChannel.id || ''
       ) : [];
       setAnnouncements(announcements);
     }
@@ -60,7 +60,7 @@ export default function AnnouncementList() {
     const newAnnouncement = await apiService.createAnnouncement(
       value,
       creatorAddress,
-      selectedChannel.id
+      selectedChannel.id || ''
     );
     setAnnouncements([...announcements, newAnnouncement]);
     websocketService.sendAnnouncement(newAnnouncement);
@@ -73,16 +73,17 @@ export default function AnnouncementList() {
         className="w-100 overflow-auto f-column-reverse"
       >
         {_.orderBy(announcements, ["timestamp"], ["desc"]).map(
-          (a: Announcement) => {
+          (a: Announcement, i) => {
             return (
-              <>
+              <div key={i}>
+                {" "}
                 <AnnouncementItem
                   key={a.id}
                   extend={extend}
                   handleExtendComments={handleExtendComments}
                   announcement={a}
-                />
-              </>
+                />{" "}
+              </div>
             );
           }
         )}
@@ -91,14 +92,15 @@ export default function AnnouncementList() {
         currentSide?.creatorAddress === account) && (
         <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
           <MessageInput
+            id="sendmessage"
+            imageUpload
+            onSubmit={handleAnnouncement}
+            placeholder={"Type your message here"}
+            radius="10px"
             ref={ref}
             size={14}
+            toolbar
             weight={600}
-            imageUpload
-            id="sendmessage"
-            radius="10px"
-            placeholder={"Type your message here"}
-            onSubmit={handleAnnouncement}
           />
         </div>
       )}
