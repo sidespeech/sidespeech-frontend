@@ -179,7 +179,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
               radius={props.radius}
               ref={ref}
               size={props.size}
-              toolbarHidden={false}
+              toolbarHidden={!props.toolbar}
               toolbar={{
                 options: toolbarOptions,
                 inline: {
