@@ -204,6 +204,13 @@ class apiService {
       .send({ ids: ids });
     return res.body;
   }
+
+  static async uploadImage(image: FormData): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/files`)
+      .send(image)
+    return res.body || '';
+  }
 }
 
 export { apiService };

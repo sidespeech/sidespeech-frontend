@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { Editor } from 'react-draft-wysiwyg';
 import { convertToRaw, EditorState } from 'draft-js';
 import { draftToMarkdown } from 'markdown-draft-js';
+import { apiService } from "../../services/api.service";
+
 import boldIcon from "../../assets/bold.svg"
 import codeIcon from "../../assets/code.svg"
 import emojiIcon from "../../assets/face-smile.svg"
@@ -116,8 +118,9 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
     }
 
     const handleUploadFile = async (image: File): Promise<string> => {
-      // TODO api call to upload file vvv
-      return await Promise.resolve(image.name);
+      const formData = new FormData();
+      formData.append('file', image);
+      return await apiService.uploadImage(formData);
     }
 
     const handleSubmit = (): void => {
