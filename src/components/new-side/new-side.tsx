@@ -412,7 +412,6 @@ export default function NewSide() {
       if (formData.sideImage) {
         formData["conditions"] = JSON.stringify(formData["conditions"]);
         formData["NftTokenAddress"] = formData["conditions"];
-        formData["creatorAddress"] = user?.["accounts"][0] || null;
         const newSide = await apiService.createSide(formData);
 
         if (channels["added"].length) {

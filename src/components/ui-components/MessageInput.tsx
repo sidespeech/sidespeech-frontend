@@ -1,15 +1,13 @@
 import React, { forwardRef, useState } from "react";
 import styled from "styled-components";
 import { Editor } from 'react-draft-wysiwyg';
-import { convertToRaw, EditorState } from 'draft-js';
+import { convertToRaw, EditorState, Modifier } from 'draft-js';
 import { draftToMarkdown } from 'markdown-draft-js';
 import { apiService } from "../../services/api.service";
 
 import boldIcon from "../../assets/bold.svg"
 import codeIcon from "../../assets/code.svg"
-import emojiIcon from "../../assets/face-smile.svg"
 import gifIcon from "../../assets/gif.svg"
-import imageIcon from "../../assets/image.svg"
 import italicIcon from "../../assets/italic.svg"
 import linkIcon from "../../assets/link.svg"
 import redoIcon from "../../assets/rotate-right.svg"
@@ -21,8 +19,8 @@ import outdentIcon from "../../assets/outdent.svg"
 import indentIcon from "../../assets/indent.svg"
 import orderedIcon from "../../assets/list-ol.svg"
 import unorderedIcon from "../../assets/list-ul.svg"
-import emojisArray from "../../assets/emojisArray"
 
+import EmojisModule from "./EmojisModule";
 import GifsModule from "./GifsModule";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -106,10 +104,27 @@ const EditorSyled = styled(Editor)<MessageInputProps>`
 
 const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Editor> | null) => {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
+    const [isEmojiMenuOpen, setIsEmojiMenuOpen] = useState<boolean>(false);
     const [isGiphyOpen, setIsGiphyOpen] = useState<boolean>(false);
     const [toolbarhidden, setToolbarHidden] = useState<boolean>(true);
 
-    const toolbarOptions = ['inline', 'link', 'list', 'history', 'emoji'];
+    const toolbarOptions = ['inline', 'link', 'list', 'history'];
+
+    console.log(editorState.getCurrentContent())
+
+    const handleAddEmoji = (emoji: string): void => {
+      setIsEmojiMenuOpen(false);
+      
+      const contentState = Modifier.replaceText(
+        editorState.getCurrentContent(),
+        editorState.getSelection(),
+        emoji,
+        editorState.getCurrentInlineStyle()
+      );
+      
+      const newContentState = EditorState.push(editorState, contentState, 'insert-characters')
+      setEditorState(newContentState);
+    }
 
     const handleSubmitGif = (gifId: string): void => {
       const gifMarkdown = `[GIPHY]!${gifId}`;
@@ -154,6 +169,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
               maxLength={props.maxLength}
               onEditorStateChange={(state: EditorState) => {
                 if (isGiphyOpen) setIsGiphyOpen(false);
+                if (isEmojiMenuOpen) setIsEmojiMenuOpen(false);
                 setEditorState(state);
               }}
               placeholder={props.placeholder}
@@ -163,7 +179,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
               radius={props.radius}
               ref={ref}
               size={props.size}
-              toolbarHidden={toolbarhidden}
+              toolbarHidden={false}
               toolbar={{
                 options: toolbarOptions,
                 inline: {
@@ -186,21 +202,6 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
                   ordered: { icon: orderedIcon, className: 'bordered-option-classname' },
                   indent: { icon: indentIcon, className: 'bordered-option-classname' },
                   outdent: { icon: outdentIcon, className: 'bordered-option-classname' },
-                },
-                emoji: { 
-                  emojis: emojisArray,
-                  icon: emojiIcon, 
-                  className: 'bordered-option-classname', 
-                  popupClassName: 'toolbar-popup' 
-                },
-                image: { 
-                  alignmentEnabled: false,
-                  className: 'bordered-option-classname', 
-                  icon: imageIcon, 
-                  popupClassName: 'toolbar-popup',
-                  previewImage: true,
-                  uploadCallback: handleUploadFile,
-                  urlEnabled: false
                 },
                 history: { 
                   undo: { icon: undoIcon, className: 'bordered-option-classname' },
@@ -226,10 +227,26 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
                 className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
                 onClick={() => setToolbarHidden(state => !state)}
                 style={toolbarhidden ? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
-              >
-                <i className="fa-sharp fa-solid fa-font"></i>
+                >
+                <i style={{fontSize: '1rem', color: 'var(--text-secondary)'}} className="fa-sharp fa-solid fa-font" />
               </button>
             )}
+
+            <div>
+              <button
+                onClick={() => {
+                  setIsGiphyOpen(false);
+                  setIsEmojiMenuOpen(state => !state);
+                }}
+                className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
+              >
+                <i style={{fontSize: '1rem', color: 'var(--text-secondary)'}} className="fa-solid fa-face-smile" />
+              </button>
+
+              {isEmojiMenuOpen && (
+                <EmojisModule onAddEmoji={handleAddEmoji} />
+              )}
+            </div>
 
             {!!props.imageUpload && (
               <label htmlFor="upload-file">
@@ -248,7 +265,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
                 <div
                   className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
                 >
-                  <i style={{fontSize: '1.1rem', color: 'var(--text-secondary)'}} className="fa-solid fa-image"></i>
+                  <i style={{fontSize: '1.1rem', color: 'var(--text-secondary)'}} className="fa-solid fa-image" />
                 </div>
               </label>
             )}
@@ -257,6 +274,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
               <button
                 className="pointer flex align-center ml-2 pr-1 pl-1 pt-1 pb-1  toolbar-button"
                 onClick={() => {
+                  setIsEmojiMenuOpen(false);
                   setIsGiphyOpen(state => !state)}}
               >
                 <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
@@ -264,7 +282,10 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
               </button>
               
               {isGiphyOpen && (
-                <GifsModule onSubmit={handleSubmitGif} onCloseModal={() => setIsGiphyOpen(false)} />
+                <GifsModule 
+                  onCloseModal={() => setIsGiphyOpen(false)} 
+                  onSubmit={handleSubmitGif} 
+                />
               )}
             </div>
           </div>

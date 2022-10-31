@@ -131,7 +131,6 @@ export default function AnnouncementItem({
             radius="10px"
             ref={ref}
             size={14}
-            toolbar
             weight={600}
           />
           </div>

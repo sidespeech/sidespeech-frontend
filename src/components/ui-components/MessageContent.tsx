@@ -116,12 +116,15 @@ const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Re
 
     if (!props.message) return null;
 
-    const regex = /!\[(.*?)\]\((.*?)\)/gi
-    const imageArray = regex.exec(props.message)
+    const imageRegex = /!\[(.*?)\]\((.*?)\)/gi;
+    const imageArray = imageRegex.exec(props.message);
 
     if (imageArray) return <CustomImage src={imageArray[2]} alt={imageArray[1]} />
 
-    if (props.message.startsWith('[GIPHY]')) return <CustomGif gifId={props.message.split('!')[1]} />
+    const gifRegex = /\[GIPHY\]![a-zA-Z0-9^]/gi;
+    const gifArray = gifRegex.exec(props.message);
+
+    if (gifArray) return <CustomGif gifId={props.message.split('!')[1]} />
 
     return (
         <>

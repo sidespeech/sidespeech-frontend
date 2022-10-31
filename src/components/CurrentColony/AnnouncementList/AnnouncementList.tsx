@@ -99,7 +99,6 @@ export default function AnnouncementList() {
             radius="10px"
             ref={ref}
             size={14}
-            toolbar
             weight={600}
           />
         </div>

@@ -102,7 +102,6 @@ export default function ChatComponent(props: IChatComponentProps) {
           radius="10px"
           ref={ref}
           size={14}
-          toolbar
           weight={600}
         />
       </div>
