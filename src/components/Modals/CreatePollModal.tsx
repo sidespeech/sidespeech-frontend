@@ -9,10 +9,13 @@ import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
 
+import { apiService } from "../../services/api.service";
+
 export default function CreatePollModal({ showModal }: { showModal: any }) {
   const [answerElements, setAnswerElements] = useState<any[]>([]);
   const [values, setValues] = useState<string[]>([]);
   const [question, setQuestion] = useState<string>("");
+  const [showModals, setShowModal] = useState<boolean>(true);
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
   const dispatch = useDispatch();
@@ -46,11 +49,20 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
   };
 
   const handleSavePoll = async () => {
+    console.log('modal: ', showModal);
+
+    // Grab values from Poll.
+    const createThePoll = apiService.createPoll('Test', 0, 'test answer');
+
     try {
       if (selectedChannel) {
         
+        // Hide the modal after the admin has submitted.
+        showModal(false)
+
         toast.success("Poll has been created.", { toastId: 8 });
-        dispatch(updateChannel(newChannel));
+        dispatch(updateChannel(selectedChannel));
+        
       }
     } catch (error) {
       toast.error("Error when creating poll", { toastId: 9 });

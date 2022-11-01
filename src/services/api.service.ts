@@ -13,6 +13,7 @@ import { Message, Room } from "../models/Room";
 import { Side } from "../models/Side";
 import { User } from "../models/User";
 import { Notification } from "../models/Notification";
+import { Poll } from "../models/Poll";
 import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 
 // Create an API Service class
@@ -208,6 +209,18 @@ class apiService {
       .send({ ids: ids });
     return res.body;
   }
+
+  static async createPoll(
+    question: string,
+    isProposed: boolean,
+    answers: string
+  ): Promise<Poll> {
+    const res = await superagent
+      .post(`${BASE_URL}/poll`)
+      .send({ question, isProposed, answers });
+    return new Poll(res.body);
+  }
+
 
 
   // Fetch notification by channel id and user wallet address
