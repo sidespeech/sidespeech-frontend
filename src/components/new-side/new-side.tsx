@@ -137,9 +137,37 @@ export default function NewSide() {
     let current_data = { ...formData };
 
     // Checking if sideImage and name stored to continu to the other steps
-    if (!current_data["sideImage"] || !current_data["name"].trim().length) {
+    if (index === 0 && !current_data["sideImage"] || !current_data["name"].trim().length) {
       toast.error("Missing data", { toastId: 3 });
       return;
+    }
+
+    // Set conditions and checking if there is minimum one condition to continu to the other steps
+    if (index === 1) {
+      let current_divs = [...divCollections];
+      let conditions: any = {};
+      for (let div of current_divs) {
+        if (div["collection"].trim().length !== 0 && div["trait_selected"].trim().length !== 0 &&  div["value_selected"].trim().length !== 0) {
+          conditions[div["collection"]] = {};
+          conditions[div["collection"]][div["trait_selected"]] =
+            div["value_selected"];
+          conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
+        }
+      }
+      if (Object.keys(conditions).length === 0) {
+        toast.error("You need to enter miminum one condition", { toastId: 3 });
+        return;
+      }
+      setFormData({ ...formData, conditions: conditions });
+    }
+
+    // Checking if every channels have name to continu to the other steps
+    if (index === 2) {
+      let isWrongChannels = channels["added"].filter((c:Channel) => c['name'].trim().length === 0)
+      if (isWrongChannels.length) {
+        toast.error("You need to name every channels", { toastId: 3 });
+        return;
+      }
     }
 
     const currentStepsState = steps.map((item: any, map_i: number) => {
@@ -151,15 +179,7 @@ export default function NewSide() {
 
         // Set condition of Side
         if (item["label"] === "Admission" && map_i === index) {
-          let current_divs = [...divCollections];
-          let conditions: any = {};
-          for (let div of current_divs) {
-            conditions[div["collection"]] = {};
-            conditions[div["collection"]][div["trait_selected"]] =
-              div["value_selected"];
-            conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
-          }
-          setFormData({ ...formData, conditions: conditions });
+
         }
       } else {
         // Turn active or not for selected item
