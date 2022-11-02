@@ -34,7 +34,7 @@ export default function Polls() {
     const voteOnPoll = await apiService.voteOnPoll(window.ethereum.selectedAddress, callbackData.optionId, Date.now().toString());
 
     try {
-      toast.error("You have now voted", { toastId: 8 });
+      toast.success("You have now voted", { toastId: 8 });
     } catch (error) {
       toast.error("Error when voting", { toastId: 9 });
     }
