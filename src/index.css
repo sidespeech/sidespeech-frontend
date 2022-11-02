@@ -561,6 +561,31 @@ body {
 /*///////////////////////////////////////////////////////////*/
 /*////////////////////DESIGN SYSTEM//////////////////////////*/
 /*///////////////////////////////////////////////////////////*/
+* {
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar:hover {
+  width: 8px;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:active {
+  border-radius: 20px;
+}
+
 h1 {
   font-weight: 700;
   font-size: 30px;

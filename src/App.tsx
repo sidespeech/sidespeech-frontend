@@ -39,7 +39,7 @@ function App() {
       dispatch(connect({ account: account, user: user }));
       dispatch(fetchUserDatas(account));
     }
-    if (window.ethereum.selectedAddress !== null) {
+    if (!!window.ethereum?.selectedAddress) {
       account = window.ethereum.selectedAddress;
     }
 

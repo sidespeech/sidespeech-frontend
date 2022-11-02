@@ -16,6 +16,7 @@ const DashboardStyled = styled.header`
     background-repeat: no-repeat;
     width: 100%;
     height: 35vh;
+    flex-shrink: 0;
     border-radius: 10px;
 `;
 

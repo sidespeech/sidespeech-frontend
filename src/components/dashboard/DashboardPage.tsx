@@ -1,97 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Side } from "../../models/Side";
-import { RootState } from "../../redux/store/app.store";
-import { sideAPI } from "../../services/side.service";
-import _ from "lodash";
-import Button from "../ui-components/Button";
-import SideEligibilityModal from "../Modals/SideEligibilityModal";
+import React from "react";
+import styled from 'styled-components'
+import { useLocation } from "react-router-dom";
+
 import DashboardBanner from "./DashboardBanner";
+import DashboardExplore from "./DashboardExplore";
+import DashboardLeftMenu from "./DashboardLeftMenu";
+import Invitations from "./Invitations";
+import MySides from "./MySides";
+
 import "./DashboardPage.css";
 
+const DashboardPageStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  & > div {
+    flex-shrink: 1;
+    height: calc(100% - 35vh);
+    & .current-tab-wrapper {
+      overflow-y: scroll;
+      height: 100%;
+    }
+  }
+`;
+
+const tabKeys = {
+  explore: '/',
+  mySides: '/my-sides',
+  invitations: '/invitations'
+}
+
 export default function DashboardPage() {
-  const { account, user, userCollectionsData } = useSelector(
-    (state: RootState) => state.user
-  );
-  const [sides, setSides] = useState<Side[]>([]);
-  const [filteredSides, setfilteredSides] = useState<Side[]>([]);
-  const [selectedCollection, setSelectedCollection] = useState<any>(null);
-  const [userCollections, setUserCollections] = useState<any[]>([]);
-  const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
-  const [selectedSide, setSelectedSide] = useState<Side | null>(null);
-
-  useEffect(() => {
-    async function getAllSides() {
-      const sides = await sideAPI.getAllSides();
-      setSides(sides);
-      setfilteredSides(sides);
-    }
-    getAllSides();
-    if (userCollectionsData)
-      setUserCollections(_.orderBy(userCollectionsData, "name"));
-  }, [userCollectionsData]);
-
-  useEffect(() => {
-    if (selectedCollection && sides) {
-      const filteredSides = sides.filter(
-        (s) => s.NftTokenAddress === selectedCollection["token_address"]
-      );
-      setfilteredSides(filteredSides);
-    }
-  }, [selectedCollection, sides]);
-
-  const handleEligibilityCheck = (side: Side) => {
-    setSelectedSide(side);
-    setDisplayEligibility(true);
-    console.log(userCollectionsData);
-  };
+  const location = useLocation();
+  const currentTab = location.pathname;
 
   return (
-    <div className="dashboard-wrapper w-100 px-4 py-4">
+    <DashboardPageStyled className="w-100 px-4 py-4">
       <DashboardBanner />
-      <div className="flex w-100">
-        <div
-          style={{ flex: "1 0 0" }}
-          className="text-secondary-dark overflow-auto"
-        >
-          <div>MY NFT COLLECTIONS</div>
-          <div>
-            {userCollections.length > 0 &&
-              userCollections.map((c: any) => {
-                return (
-                  <div onClick={() => setSelectedCollection(c)}>{c.name}</div>
-                );
-              })}
-          </div>
-        </div>
-        <div style={{ flex: "5 0 0" }} className="f-column w-100 overflow-auto">
-          <div className=""></div>
-          <div className="sides-list-body">
-            {filteredSides.map((s: Side) => {
-              return (
-                <div style={{ width: 256, height: 320, background: "white" }}>
-                  <img src={s.sideImage} alt="side" />
-                  <div>Name: {s.name}</div>
-                  <div>Members: {s.profiles.length}</div>
-                  <div className="join-div">
-                    <Button
-                      children={"join"}
-                      onClick={() => handleEligibilityCheck(s)}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+      <div className="flex w-100 gap-20">
+        <DashboardLeftMenu currentTab={currentTab} tabKeys={tabKeys} />
+
+        <div className="current-tab-wrapper flex-5">
+          {currentTab === tabKeys.explore && <DashboardExplore />}
+          {currentTab === tabKeys.mySides && <MySides />}
+          {currentTab === tabKeys.invitations && <Invitations />}
         </div>
       </div>
-      
-      {displayEligibility && selectedSide && (
-        <SideEligibilityModal
-          setDisplayEligibility={setDisplayEligibility}
-          selectedSide={selectedSide}
-        />
-      )}
-    </div>
+    </DashboardPageStyled>
   );
 }
