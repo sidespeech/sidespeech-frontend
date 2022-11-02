@@ -471,8 +471,8 @@ export default function NewSide() {
           u['side'] = newSide
           return u
         })
-        let resInvite = await apiService.sendMultipleInvitations(users);
-        console.log('resInvite :', resInvite)
+        if (users.length)
+          await apiService.sendMultipleInvitations(users);
         if (user) {
           try {
             const profile = await apiService.joinSide(
@@ -487,6 +487,7 @@ export default function NewSide() {
         toast.success(formData.name + " has been created.", {
           toastId: 4,
         });
+        navigate(`/`);
       }
     } catch (error) {
       console.log(error);
