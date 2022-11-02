@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { updateChannel } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
 
+import { Poll } from "../../../models/Poll";
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
@@ -15,10 +16,13 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
   const [answerElements, setAnswerElements] = useState<any[]>([]);
   const [values, setValues] = useState<string[]>([]);
   const [question, setQuestion] = useState<string>("");
-  const [showModals, setShowModal] = useState<boolean>(true);
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
   const dispatch = useDispatch();
+
+    const [polls, setPolls] = useState<Poll[]>([]);
+
+  const newChannel = selectedChannel;
 
   useEffect(() => {
     const inits = [setAnswer, setAnswer];
@@ -29,8 +33,8 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
   }, []);
 
   const addChild = () => {
-    if(answerElements.length>= 10){
-      toast.error("You can not have more than 10 answers.")
+    if(answerElements.length>= 7){
+      toast.error("You can not have more than 7 answers.")
       return;
     }
     setAnswerElements([
@@ -49,19 +53,24 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
   };
 
   const handleSavePoll = async () => {
-    console.log('modal: ', showModal);
 
     // Grab values from Poll.
-    const createThePoll = apiService.createPoll('Test', 0, 'test answer');
+    const createThePoll = apiService.createPoll(window.ethereum.selectedAddress, question, false, values, Date.now().toString());
 
     try {
       if (selectedChannel) {
         
-        // Hide the modal after the admin has submitted.
+        // Hide the modal after the admin has submitted the poll.
         showModal(false)
 
+        // Show the success notification.
         toast.success("Poll has been created.", { toastId: 8 });
+        
+        // Send a dispatch event to update the channel that we are in with the latest data.
         dispatch(updateChannel(selectedChannel));
+
+        // Can't get it to update so have to use this for the moment.
+        window.location.reload();
         
       }
     } catch (error) {
