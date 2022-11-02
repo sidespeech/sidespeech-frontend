@@ -8,6 +8,7 @@ import twitter from "../../../../assets/twitter.svg";
 import linkedin from "../../../../assets/linkedin.svg";
 import "./invitation.css"
 import { apiService } from "../../../../services/api.service";
+import { toast } from "react-toastify";
 
 
 export default function Invitation({
@@ -23,6 +24,7 @@ export default function Invitation({
 }) {
 
   const dispatch = useDispatch();
+
   const socialsMedia = [{
     icon: facebook,
     label: "Facebook"
@@ -103,7 +105,7 @@ export default function Invitation({
       state: 3,
       sender: user.sender,
       recipient: user.recipient,
-      invitationLink : 'testInvitationLink'
+      invitationLink : sideLink
     }
 
     if (!currentsInvited.find(i => i.recipient === object.recipient)) {
@@ -113,6 +115,12 @@ export default function Invitation({
       setUsersInvite(users);
     }
   }  
+  const sideLink = `https://sidespeech.com/side/${currentSide.id}`;
+
+  const handleCopyWalletAddress = () => {
+    navigator.clipboard.writeText(sideLink);
+    toast.success("Link copied successfuly.", { toastId: 1 });
+  };
 
   return (
     <>
@@ -165,15 +173,17 @@ export default function Invitation({
         <div className="flex mt-2 align-center">
           <InputText
             height={40}
-            parentWidth={"43rem"}
-            width="50%"
+            parentWidth={"70%"}
+            width="100%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             placeholder="Invitation Link"
             onChange={undefined}
+            disabled
+            defaultValue={sideLink}
             radius="10px"
           />
-          <Button classes="btn-copy cursor-pointer" width={150} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
+          <Button classes="cursor-pointer ml-4" width={150} height={40} onClick={handleCopyWalletAddress} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
         </div>
 
         <label className="text-primary-light mt-4">Copy this link and share it with your friends to invite them in this side</label>
