@@ -9,7 +9,7 @@ import useDebounceValue from '../../hooks/useDebounceValue';
 
 interface GifsModulePropTypes {
     onCloseModal?: () => void;
-    onSubmit?: (gifUrl: string, gifTitle: string) => void;
+    onSubmit?: (gifUrl: string) => void;
     width?: number;
 }
 
@@ -38,7 +38,7 @@ const GifsModule = forwardRef((props: GifsModulePropTypes, ref: React.Ref<HTMLDi
                     hideAttribution
                     noLink
                     onGifClick={(gif) => {
-                        props.onSubmit?.(gif.id?.toString(), gif.title);
+                        props.onSubmit?.(gif.id?.toString());
                         props.onCloseModal?.();
                     }}
                     key={debounceValue}

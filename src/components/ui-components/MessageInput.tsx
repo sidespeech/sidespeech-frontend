@@ -1,4 +1,5 @@
 import React, { forwardRef, useState } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { Editor } from 'react-draft-wysiwyg';
 import { convertToRaw, EditorState, Modifier } from 'draft-js';
@@ -25,6 +26,7 @@ import GifsModule from "./GifsModule";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import './MessageInput.css';
+import { getBase64, getRandomId } from "../../helpers/utilities";
 
 interface MessageInputPropsType {
     bgColor?: string;
@@ -102,15 +104,23 @@ const EditorSyled = styled(Editor)<MessageInputProps>`
   }
 `;
 
+interface ImageToUpload {
+  file: string;
+  id: string;
+  uploading?: boolean;
+  url?: string;
+}
+
 const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Editor> | null) => {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const [isEmojiMenuOpen, setIsEmojiMenuOpen] = useState<boolean>(false);
     const [isGiphyOpen, setIsGiphyOpen] = useState<boolean>(false);
+    const [imagesToUpload, setImagesToUpload] = useState<ImageToUpload[]>([]);
     const [toolbarhidden, setToolbarHidden] = useState<boolean>(true);
 
     const toolbarOptions = ['inline', 'link', 'list', 'history'];
 
-    console.log(editorState.getCurrentContent())
+    const imageInputId = getRandomId();
 
     const handleAddEmoji = (emoji: string): void => {
       setIsEmojiMenuOpen(false);
@@ -131,166 +141,226 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
       if (gifId) props.onSubmit(gifMarkdown);
     }
 
+    // add size limit
     const handleUploadFile = async (image: File | undefined): Promise<void> => {
-      if (!image) return;
-      const formData = new FormData();
-      formData.append('file', image);
-      const uploadedUrl = await apiService.uploadImage(formData);
-      const imageMarkdown = `![${image.name}](${uploadedUrl})`
-      if (uploadedUrl) props.onSubmit(imageMarkdown);
-    }
+      try {        
+        if (!image) throw new Error('No file selected');
+        if (imagesToUpload.length >= 4) throw new Error('You can upload up to 4 images at a time');
+        const supportedImageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'svg', 'webp']
+        const fileExtension = image.name.split('.').pop() || '';
+        if(!supportedImageExtensions.includes(fileExtension)) throw new Error('The file should be an image');
+        if((Math.round(image.size/1024)/1000) > 2) throw new Error('Please insert an image up to 2Mb');
 
+        const imageBase64 = await getBase64(image);
+
+        setImagesToUpload(prevState => ([
+          ...prevState,
+          {
+            file: imageBase64,
+            id: imageBase64.substring(0, 256),
+            uploading: true,
+            url: '',
+          }
+        ]))
+
+        const formData = new FormData();
+        formData.append('file', image);
+        const uploadedUrl = await apiService.uploadImage(formData);
+        if (uploadedUrl) {
+          const imageMarkdown = `![${image.name}](${uploadedUrl} "${image.name}")`;
+
+          setImagesToUpload(previousState => ([
+            ...previousState.filter(img => img.id !== imageBase64.substring(0, 256)),
+            {
+              file: imageBase64,
+              id: imageBase64.substring(0, 256),
+              uploading: false,
+              url: imageMarkdown
+            }          
+          ]));
+        }
+    } catch (error: any) {
+      toast.error(error?.message || 'Error', { toastId: 3 });
+    }
+    }
+    
     const handleSubmit = (): void => {
       const stateContent = editorState.getCurrentContent();
       const rawState = convertToRaw(stateContent);
-      const message = draftToMarkdown(rawState);
+      let message = draftToMarkdown(rawState);
+
+      if (imagesToUpload?.length) {
+        const arrayOfImagesMarkdown = imagesToUpload.map(img => img.url).join('  ')
+        message = `${message} [IMAGES] ${arrayOfImagesMarkdown}`;
+      }
       
-      if (message) {
+      if (message.trim()) {
         props.onSubmit(message);
         setEditorState(EditorState.createEmpty());
+        setImagesToUpload([]);
       }
     }
 
   return (
-    <>
+    <div>
       <div
-        className="relative flex align-end"
+        className="relative"
         style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
-      >
-          <EditorSyled 
-              bgColor={props.bgColor}
-              border={props.border}
-              color={props.color}
-              disabled={props.disabled}
-              editorClassName="message-intput-editor"
-              editorState={editorState}
-              height={props.height}
-              id={props.id}
-              maxLength={props.maxLength}
-              onEditorStateChange={(state: EditorState) => {
-                if (isGiphyOpen) setIsGiphyOpen(false);
-                if (isEmojiMenuOpen) setIsEmojiMenuOpen(false);
-                setEditorState(state);
-              }}
-              placeholder={props.placeholder}
-              placeholderColor={props.placeholderColor}
-              placeholderSize={props.placeholderSize}
-              placeholderWeight={props.placeholderWeight}
-              radius={props.radius}
-              ref={ref}
-              size={props.size}
-              toolbarHidden={!props.toolbar}
-              toolbar={{
-                options: toolbarOptions,
-                inline: {
-                  options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
-                  bold: { icon: boldIcon, className: 'bordered-option-classname' },
-                  italic: { icon: italicIcon, className: 'bordered-option-classname' },
-                  underline: { icon: underlineIcon, className: 'bordered-option-classname' },
-                  strikethrough: { icon: strikeThroughIcon, className: 'bordered-option-classname' },
-                  monospace: { icon: codeIcon, className: 'bordered-option-classname' },
-                },
-                link: {
-                  popupClassName: 'toolbar-popup',
-                  showOpenOptionOnHover: true,
-                  options: ['link'],
-                  link: { icon: linkIcon, className: 'bordered-option-classname' }
-                },
-                list: {
-                  options: ['unordered', 'ordered', 'indent', 'outdent'],
-                  unordered: { icon: unorderedIcon, className: 'bordered-option-classname' },
-                  ordered: { icon: orderedIcon, className: 'bordered-option-classname' },
-                  indent: { icon: indentIcon, className: 'bordered-option-classname' },
-                  outdent: { icon: outdentIcon, className: 'bordered-option-classname' },
-                },
-                history: { 
-                  undo: { icon: undoIcon, className: 'bordered-option-classname' },
-                  redo: { icon: redoIcon, className: 'bordered-option-classname' },
-                },
-              }}
-              toolbarClassName="message-input-toolbar"
-              weight={props.weight}
-              width={props.width}
-              wrapperClassName="flex-1 message-input-wrapper"
-          />
-          <div className="absolute flex align-center ml-3 mr-3" style={{bottom: 10, right: 10, zIndex: 3}}>
+      >      
+        <EditorSyled 
+            bgColor={props.bgColor}
+            border={props.border}
+            color={props.color}
+            disabled={props.disabled}
+            editorClassName="message-intput-editor"
+            editorState={editorState}
+            height={props.height}
+            id={props.id}
+            maxLength={props.maxLength}
+            onEditorStateChange={(state: EditorState) => {
+              if (isGiphyOpen) setIsGiphyOpen(false);
+              if (isEmojiMenuOpen) setIsEmojiMenuOpen(false);
+              setEditorState(state);
+            }}
+            placeholder={props.placeholder}
+            placeholderColor={props.placeholderColor}
+            placeholderSize={props.placeholderSize}
+            placeholderWeight={props.placeholderWeight}
+            radius={props.radius}
+            ref={ref}
+            size={props.size}
+            toolbarHidden={!props.toolbar}
+            toolbar={{
+              options: toolbarOptions,
+              inline: {
+                options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
+                bold: { icon: boldIcon, className: 'bordered-option-classname' },
+                italic: { icon: italicIcon, className: 'bordered-option-classname' },
+                underline: { icon: underlineIcon, className: 'bordered-option-classname' },
+                strikethrough: { icon: strikeThroughIcon, className: 'bordered-option-classname' },
+                monospace: { icon: codeIcon, className: 'bordered-option-classname' },
+              },
+              link: {
+                popupClassName: 'toolbar-popup',
+                showOpenOptionOnHover: true,
+                options: ['link'],
+                link: { icon: linkIcon, className: 'bordered-option-classname' }
+              },
+              list: {
+                options: ['unordered', 'ordered', 'indent', 'outdent'],
+                unordered: { icon: unorderedIcon, className: 'bordered-option-classname' },
+                ordered: { icon: orderedIcon, className: 'bordered-option-classname' },
+                indent: { icon: indentIcon, className: 'bordered-option-classname' },
+                outdent: { icon: outdentIcon, className: 'bordered-option-classname' },
+              },
+              history: { 
+                undo: { icon: undoIcon, className: 'bordered-option-classname' },
+                redo: { icon: redoIcon, className: 'bordered-option-classname' },
+              },
+            }}
+            toolbarClassName="message-input-toolbar"
+            weight={props.weight}
+            width={props.width}
+            wrapperClassName={`flex-1 message-input-wrapper ${imagesToUpload?.length ? 'loading-images' : ''}`}
+        />
+
+        <div className="absolute flex align-center ml-3 mr-3" style={{bottom: 10, right: 10, zIndex: 3}}>
+          <button
+            className="pointer toolbar-button"
+            onClick={handleSubmit}
+            disabled={
+              (!editorState.getCurrentContent().getPlainText('\u0001') && !imagesToUpload?.length) 
+              || !!imagesToUpload?.filter(img => img.uploading)?.length
+            }
+          >
+            <img src={sendicon} alt="send-icon" />
+          </button>
+
+          {!!props.toolbar && (
             <button
-              className="pointer toolbar-button"
-              onClick={handleSubmit}
-              disabled={!editorState.getCurrentContent().getPlainText('\u0001')}
+              className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
+              onClick={() => setToolbarHidden(state => !state)}
+              style={toolbarhidden ? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
+              >
+              <i style={{fontSize: '1rem', color: 'var(--text-secondary)'}} className="fa-sharp fa-solid fa-font" />
+            </button>
+          )}
+
+          <div>
+            <button
+              onClick={() => {
+                setIsGiphyOpen(false);
+                setIsEmojiMenuOpen(state => !state);
+              }}
+              className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
             >
-              <img src={sendicon} alt="send-icon" />
+              <i style={{fontSize: '1rem', color: 'var(--text-secondary)'}} className="fa-solid fa-face-smile" />
             </button>
 
-            {!!props.toolbar && (
-              <button
-                className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
-                onClick={() => setToolbarHidden(state => !state)}
-                style={toolbarhidden ? {} : {borderBottom: '1px solid var(--text-secondary-dark)', backgroundColor: 'var(--bg-primary)'}}
-                >
-                <i style={{fontSize: '1rem', color: 'var(--text-secondary)'}} className="fa-sharp fa-solid fa-font" />
-              </button>
+            {isEmojiMenuOpen && (
+              <EmojisModule onAddEmoji={handleAddEmoji} />
             )}
-
-            <div>
-              <button
-                onClick={() => {
-                  setIsGiphyOpen(false);
-                  setIsEmojiMenuOpen(state => !state);
-                }}
-                className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
-              >
-                <i style={{fontSize: '1rem', color: 'var(--text-secondary)'}} className="fa-solid fa-face-smile" />
-              </button>
-
-              {isEmojiMenuOpen && (
-                <EmojisModule onAddEmoji={handleAddEmoji} />
-              )}
-            </div>
-
-            {!!props.imageUpload && (
-              <label htmlFor="upload-file">
-                <input 
-                  id="upload-file" 
-                  name="upload-file" 
-                  onChange={(ev) => handleUploadFile(ev.target.files?.[0])}
-                  style={{
-                    position: 'absolute', 
-                    pointerEvents: 'none', 
-                    opacity: '0', 
-                    zIndex: '-1'
-                  }} 
-                  type="file" 
-                />
-                <div
-                  className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
-                >
-                  <i style={{fontSize: '1.1rem', color: 'var(--text-secondary)'}} className="fa-solid fa-image" />
-                </div>
-              </label>
-            )}
-
-            <div>
-              <button
-                className="pointer flex align-center ml-2 pr-1 pl-1 pt-1 pb-1  toolbar-button"
-                onClick={() => {
-                  setIsEmojiMenuOpen(false);
-                  setIsGiphyOpen(state => !state)}}
-              >
-                <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
-
-              </button>
-              
-              {isGiphyOpen && (
-                <GifsModule 
-                  onCloseModal={() => setIsGiphyOpen(false)} 
-                  onSubmit={handleSubmitGif} 
-                />
-              )}
-            </div>
           </div>
+
+          {!!props.imageUpload && (
+            <label htmlFor={imageInputId}>
+              <input 
+                id={imageInputId} 
+                name={imageInputId} 
+                accept="image/*"
+                onChange={(ev) => handleUploadFile(ev.target.files?.[0])}
+                style={{
+                  position: 'absolute', 
+                  pointerEvents: 'none', 
+                  opacity: '0', 
+                  zIndex: '-1'
+                }} 
+                type="file" 
+              />
+              <div
+                className="pointer ml-2 pr-2 pl-2 pt-1 pb-1 toolbar-button"
+                onClick={() => {
+                  if(isGiphyOpen) setIsGiphyOpen(false);
+                  if(isEmojiMenuOpen) setIsEmojiMenuOpen(false);
+                }}
+              >
+                <i style={{fontSize: '1.1rem', color: 'var(--text-secondary)'}} className="fa-solid fa-image" />
+              </div>
+            </label>
+          )}
+
+          <div>
+            <button
+              className="pointer flex align-center ml-2 pr-1 pl-1 pt-1 pb-1  toolbar-button"
+              onClick={() => {
+                setIsEmojiMenuOpen(false);
+                setIsGiphyOpen(state => !state)}}
+            >
+              <img style={{height: '18px'}} src={gifIcon} alt="gif-icon" />
+
+            </button>
+            
+            {isGiphyOpen && (
+              <GifsModule 
+                onCloseModal={() => setIsGiphyOpen(false)} 
+                onSubmit={handleSubmitGif} 
+              />
+            )}
+          </div>
+        </div>
       </div>
-    </>
+
+      {!!imagesToUpload.length && (
+          <div className="images-to-upload-wrapper">
+          {imagesToUpload?.map(imageObject => (
+            <div className={`images-to-upload-item ${imageObject.uploading ? 'uploading' : ''}`}>
+              <img src={imageObject.file} alt="" />
+              {imageObject.uploading && <div className="spinner" />}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 });
 

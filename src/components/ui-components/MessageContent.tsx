@@ -3,12 +3,11 @@ import styled from "styled-components";
 import { Gif } from '@giphy/react-components';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import { Editor } from 'react-draft-wysiwyg';
-import { convertFromRaw, EditorState } from 'draft-js';
+import { ContentBlock, ContentState, convertFromRaw, EditorState } from 'draft-js';
 import { markdownToDraft } from 'markdown-draft-js';
 
-import GifsModule from "./GifsModule";
-
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import './MessageContent.css'
 
 interface MessageContentPropTypes {
     bgColor?: string;
@@ -48,7 +47,7 @@ interface MessageContentProps {
     width?: number | string;
 }
 
-const EditorSyled = styled(Editor)<MessageContentProps>`
+const EditorStyled = styled(Editor)<MessageContentProps>`
   max-width: ${(props) => (props.maxWidth ? props.maxWidth : "")}px;
   width: ${(props) => (props.width ? props.width : "100%")};
   border: ${(props) => (props.border ? props.border : "")};
@@ -71,9 +70,16 @@ interface CustomImagePropTypes {
 }
 
 const CustomImage = (props: CustomImagePropTypes) => {
+    const fileExtension = props.alt?.split('.').pop() || '';
+
     return (
-        <div style={{width: '400px'}}>
-            <img style={{width: '100%'}} src={props.src} alt={props.alt} />
+        <div className="image-item">
+            <img src={props.src} alt={props.alt} />
+            <div className="image-actions">
+                <a className="download-btn" href={props.src} download={`${props.src}.${fileExtension}`}>
+                    <i className="fa-solid fa-download" />
+                </a>
+            </div>
         </div>
     )
 }
@@ -103,23 +109,56 @@ const CustomGif = (props: CustomGifPropTypes) => {
     return <Gif gif={gif} hideAttribution noLink width={400} />
 }
 
+    const emojiRegex = /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu;
+
+    const emojiStrategy = (contentBlock: ContentBlock, callback: (start: number, end: number) => void, contentState: ContentState) => {
+        findWithRegex(emojiRegex, contentBlock, callback);
+    }
+
+    function findWithRegex(regex: RegExp, contentBlock: ContentBlock, callback: (start: number, end: number) => void) {
+        const text = contentBlock.getText();
+        let matchArr, start;
+        while ((matchArr = regex.exec(text)) !== null) {
+          start = matchArr.index;
+          callback(start, start + matchArr[0].length);
+        }
+      }
+
+    const compositeDecorators = [
+        {
+            strategy: emojiStrategy,
+            component: (props?: any | undefined) => (<span className="emoji-item">{props.children}</span>)
+        }
+    ];
+
 const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Ref<Editor> | null) => {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
+    const [imagesArray, setImagesArray] = useState<CustomImagePropTypes[]>([]);
 
     useEffect(() => {
-        const draftState = markdownToDraft(props.message || '');
+        const draftState = markdownToDraft(props.message?.split("[IMAGES]")[0] || '');
         const contentState = convertFromRaw(draftState);
-        const newEditorState = EditorState.createWithContent(contentState)
+        const newEditorState = EditorState.createWithContent(contentState);
         
         setEditorState(newEditorState);
     }, [props.message])
 
+    useEffect(() => {
+        const imagesMarker = /\[IMAGES\]/gi;
+        const imageRegex = /!\[(.*?)\]\((.*?)\)/gi;
+        const imagesMatch = imagesMarker.exec(props?.message || '');
+    
+        if (imagesMatch) {
+            const markdownArray = props?.message?.split("[IMAGES]")[1].match(imageRegex) || [];
+            const imagesObjectsArray = markdownArray.map(imgMd => ({
+                src: imgMd.trim().split('](')[1].split('"')[0].trim(),
+                alt: imgMd.trim().split('![')[1].split(']')[0]
+            }));
+            setImagesArray(imagesObjectsArray);
+        }
+    }, [props.message])
+
     if (!props.message) return null;
-
-    const imageRegex = /!\[(.*?)\]\((.*?)\)/gi;
-    const imageArray = imageRegex.exec(props.message);
-
-    if (imageArray) return <CustomImage src={imageArray[2]} alt={imageArray[1]} />
 
     const gifRegex = /\[GIPHY\]![a-zA-Z0-9^]/gi;
     const gifArray = gifRegex.exec(props.message);
@@ -127,33 +166,40 @@ const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Re
     if (gifArray) return <CustomGif gifId={props.message.split('!')[1]} />
 
     return (
-        <>
-        <div
-            className="relative flex align-end"
-            style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
-        >
-            <EditorSyled 
-                bgColor={props.bgColor}
-                border={props.border}
-                color={props.color}
-                disabled={props.disabled}
-                editorClassName="message-content-editor"
-                editorState={editorState}
-                height={props.height}
-                id={props.id}
-                maxLength={props.maxLength}
-                radius={props.radius}
-                readOnly
-                ref={ref}
-                size={props.size}
-                toolbarHidden
-                toolbarClassName="message-content-toolbar"
-                weight={props.weight}
-                width={props.width}
-                wrapperClassName="flex-1 message-content-wrapper"
-            />
+        <div>
+            <div
+                className="relative flex align-end"
+                style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
+            >
+                <EditorStyled 
+                    bgColor={props.bgColor}
+                    border={props.border}
+                    color={props.color}
+                    customDecorators={compositeDecorators}
+                    disabled={props.disabled}
+                    editorClassName="message-content-editor"
+                    editorState={editorState}
+                    height={props.height}
+                    id={props.id}
+                    maxLength={props.maxLength}
+                    radius={props.radius}
+                    readOnly
+                    ref={ref}
+                    size={props.size}
+                    toolbarHidden
+                    toolbarClassName="message-content-toolbar"
+                    weight={props.weight}
+                    width={props.width}
+                    wrapperClassName="flex-1 message-content-wrapper"
+                />
+            </div>
+
+            {!!imagesArray.length && (
+                <div className="images-wrapper flex gap-20">
+                    {imagesArray.map(imageObject => (<CustomImage src={imageObject.src} alt={imageObject.alt} />))}
+                </div>
+            )}
         </div>
-        </>
     );
 });
 
