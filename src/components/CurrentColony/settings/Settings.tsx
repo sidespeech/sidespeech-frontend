@@ -60,9 +60,6 @@ export default function Settings(
   };
 
   useEffect(() => {
-    console.log('currentSide settings :', currentSide)
-    console.log('userData settings :', userData)
-
     if (!currentSide) {
       navigate(`/`)
     } else {

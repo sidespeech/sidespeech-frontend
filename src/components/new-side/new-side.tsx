@@ -22,7 +22,7 @@ import { RootState } from "../../redux/store/app.store";
 import { Collection } from "../../models/interfaces/collection";
 import _, { valuesIn } from "lodash";
 import { Channel, ChannelType } from "../../models/Channel";
-import { Role } from "../../models/Profile";
+import { Profile, Role } from "../../models/Profile";
 
 const MAX_NUMBER_OF_COLLECTIONS = 5;
 
@@ -111,6 +111,7 @@ export default function NewSide() {
   const { userCollectionsData, user } = useSelector(
     (state: RootState) => state.user
   );
+
   const [steps, setSteps] = useState<any[]>(initialStateSteps);
 
   // Variables for Admission component
@@ -123,12 +124,40 @@ export default function NewSide() {
   // Variables for Channels component
   const [channels, setChannels] = useState<any>(initialChannelsState);
 
+  // Variables for Invitation component
+  const [invitationUsers, setInvitationUsers] = useState<any>([]);
+  const [userInvited, setUserInvited] = useState<any>([]);
+
+
   useEffect(() => {
     if (userCollectionsData) {
       let collections = Object.values(userCollectionsData);
       setCollectionHolder(collections);
     }
   }, [userCollectionsData]);
+
+  useEffect(() => {
+
+    if (user) {
+      const getInvitationUsers = async (user:any) => {
+        let userSides = user.profiles.map((p:Profile) => p.side);
+        let users = await apiService.getUserFromSides(userSides);
+        let invitationsUsersObject = []
+        delete user['profiles'];
+        for (let userInvite of users) {
+          if (user['id'] !== userInvite['id'])
+          invitationsUsersObject.push({
+            name : (userInvite['username']) ? `${userInvite['username']} (${userInvite['accounts']})` : userInvite['accounts'],
+            invited: false,
+            recipient : userInvite,
+            sender: user
+          })
+        }
+        setInvitationUsers(invitationsUsersObject)
+      }  
+      getInvitationUsers(user);
+    }
+  }, [user]);
 
   const newSideNextPreviousStep = (
     index: number,
@@ -208,7 +237,6 @@ export default function NewSide() {
   const validateName = async (name: string) => {
     const exist = await apiService.isSideNameExist(name);
     const inValidLength = !(name.length < 50 && name.length > 3);
-    console.log(inValidLength);
     setFormError({ ...formError, name: { exist, length: inValidLength } });
     return !(exist || inValidLength);
   };
@@ -389,7 +417,6 @@ export default function NewSide() {
     index: number,
     current = true
   ) => {
-    console.log(event);
     // Change name on existing channel
     if (current) {
       let current_channels = channels["currents"];
@@ -425,8 +452,6 @@ export default function NewSide() {
   // ----- Functions for Channels component **end
 
   const onSubmit = async () => {
-    console.log("formData from onClick :", formData);
-    console.log("channels from onClick :", channels);
     // Save file input to IPFS
     try {
       if (formData.sideImage) {
@@ -441,6 +466,13 @@ export default function NewSide() {
           });
           const addedChannels = await apiService.createManyChannels(added);
         }
+
+        let users = userInvited.map((u:any) => {
+          u['side'] = newSide
+          return u
+        })
+        let resInvite = await apiService.sendMultipleInvitations(users);
+        console.log('resInvite :', resInvite)
         if (user) {
           try {
             const profile = await apiService.joinSide(
@@ -448,7 +480,6 @@ export default function NewSide() {
               newSide.id,
               Role.Admin
             );
-            console.log("profile", profile);
             dispatch(updateProfiles(profile));
           } catch (error) {}
         }
@@ -548,7 +579,7 @@ export default function NewSide() {
                   </div>
                 ) : step["label"] === "Invitation" && step["active"] ? (
                   <>
-                    <Invitation currentSide={currentSide} />
+                    <Invitation currentSide={currentSide} invitationUsers={invitationUsers} setUserInvited={setUserInvited} userInvited={userInvited} />
                   </>
                 ) : null}
               </div>

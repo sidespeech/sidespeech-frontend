@@ -41,7 +41,6 @@ export default function Informations({
   const [isNewSide, setIsNewSide] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log("currentSide info :", currentSide);
     if (window.location.href.includes("settings")) setIsNewSide(false);
   }, []);
 
