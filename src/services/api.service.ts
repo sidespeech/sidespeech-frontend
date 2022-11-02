@@ -209,6 +209,12 @@ class apiService {
     return res.body;
   }
 
+  static async uploadImage(image: FormData): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/files`)
+      .send(image)
+    return res.text || '';
+  }
 
   // Fetch notification by channel id and user wallet address
   static async getNotification(address:string): Promise<any> {
