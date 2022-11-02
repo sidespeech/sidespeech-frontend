@@ -110,6 +110,32 @@
     object-fit: cover;
 }
 
+.images-to-upload-item .image-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: .2rem;
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 0;
+}
+
+.images-to-upload-item .image-actions button {
+    background-color: var(--bg-secondary-light);
+    border: none;
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+    outline: none;
+    box-shadow: none;
+}
+
+.images-to-upload-item .image-actions button > i {
+    color:  var(--text-secondary-dark);
+    font-size: .8rem;
+}
+
 .spinner {
     position: absolute;
     top: 50%;

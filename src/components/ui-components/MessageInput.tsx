@@ -141,7 +141,17 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
       if (gifId) props.onSubmit(gifMarkdown);
     }
 
-    // add size limit
+    // Iterate through files array and upload each file
+
+    const handleUploadFiles = (images: FileList | null): void => {
+      if (!images) return;
+      for (let i=0;i<images.length;i++) {
+        handleUploadFile(images[i]);
+      }
+    }
+
+    // Upload a single file and update state within the message input
+
     const handleUploadFile = async (image: File | undefined): Promise<void> => {
       try {        
         if (!image) throw new Error('No file selected');
@@ -179,9 +189,13 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
             }          
           ]));
         }
-    } catch (error: any) {
-      toast.error(error?.message || 'Error', { toastId: 3 });
+      } catch (error: any) {
+        toast.error(error?.message || 'Error', { toastId: 3 });
+      }
     }
+
+    const handleRemoveImageFromArray = (imageId: string): void => {
+      setImagesToUpload(prevState => (prevState.filter(img => img.id !== imageId)));
     }
     
     const handleSubmit = (): void => {
@@ -308,7 +322,8 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
                 id={imageInputId} 
                 name={imageInputId} 
                 accept="image/*"
-                onChange={(ev) => handleUploadFile(ev.target.files?.[0])}
+                multiple
+                onChange={(ev) => handleUploadFiles(ev.target.files)}
                 style={{
                   position: 'absolute', 
                   pointerEvents: 'none', 
@@ -356,6 +371,11 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
             <div className={`images-to-upload-item ${imageObject.uploading ? 'uploading' : ''}`}>
               <img src={imageObject.file} alt="" />
               {imageObject.uploading && <div className="spinner" />}
+              <div className="image-actions">
+                <button onClick={() => handleRemoveImageFromArray(imageObject.id)}>
+                  <i className="fa-solid fa-xmark" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
