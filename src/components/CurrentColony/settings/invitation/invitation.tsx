@@ -115,7 +115,7 @@ export default function Invitation({
       setUsersInvite(users);
     }
   }  
-  const sideLink = `https://sidespeech.com/side/${currentSide.id}`;
+  const sideLink = `https://sidespeech.com/side/${(Math.random() + 1).toString(36).substring(7)}`;
 
   const handleCopyWalletAddress = () => {
     navigator.clipboard.writeText(sideLink);

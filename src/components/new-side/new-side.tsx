@@ -53,6 +53,33 @@ const initialStateSteps = [
   },
 ];
 
+const initialSteps = [
+  {
+    label: "Informations",
+    icon: "fa-solid fa-1",
+    active: true,
+    completed: false,
+  },
+  {
+    label: "Admission",
+    icon: "fa-solid fa-2",
+    active: false,
+    completed: false,
+  },
+  {
+    label: "Channels",
+    icon: "fa-solid fa-3",
+    active: false,
+    completed: false,
+  },
+  {
+    label: "Invitation",
+    icon: "fa-solid fa-4",
+    active: false,
+    completed: false,
+  },
+];
+
 export interface InitialStateSide {
   sideImage: string | undefined;
   name: string;
@@ -138,7 +165,7 @@ export default function NewSide() {
 
   useEffect(() => {
 
-    if (user) {
+    if (user && user.profiles) {
       const getInvitationUsers = async (user:any) => {
         let userSides = user.profiles.map((p:Profile) => p.side);
         let users = await apiService.getUserFromSides(userSides);
@@ -164,6 +191,7 @@ export default function NewSide() {
     previous: boolean = false
   ) => {
     let current_data = { ...formData };
+    let current_steps = [ ...steps ];
 
     // Checking if sideImage and name stored to continu to the other steps
     if (index === 0 && !current_data["sideImage"] || !current_data["name"].trim().length) {
@@ -199,7 +227,7 @@ export default function NewSide() {
       }
     }
 
-    const currentStepsState = steps.map((item: any, map_i: number) => {
+    const currentStepsState = current_steps.map((item: any, map_i: number) => {
       if (!previous) {
         // Turn active or not for selected item
         item["active"] = map_i === index + 1 ? true : false;
@@ -487,6 +515,10 @@ export default function NewSide() {
         toast.success(formData.name + " has been created.", {
           toastId: 4,
         });
+
+        setSteps(initialStateSteps);
+        setFormData(initialStateSide);
+
         navigate(`/`);
       }
     } catch (error) {
