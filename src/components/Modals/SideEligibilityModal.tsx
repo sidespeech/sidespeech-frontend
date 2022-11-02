@@ -79,7 +79,7 @@ export default function SideEligibilityModal(
     }
   }, [userCollectionsData]);
 
-  if (!userCollectionsData) return;
+  if (!userCollectionsData) return null;
 
   return (
     <Modal
