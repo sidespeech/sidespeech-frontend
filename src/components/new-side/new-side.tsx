@@ -155,7 +155,8 @@ export default function NewSide() {
           let conditions: any = {};
           for (let div of current_divs) {
             conditions[div["collection"]] = {};
-            conditions[div["collection"]][div["trait_selected"]] =
+            conditions[div["collection"]]["trait_type"] = div["trait_selected"];
+            conditions[div["collection"]]["trait_value"] =
               div["value_selected"];
             conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
           }
@@ -410,9 +411,11 @@ export default function NewSide() {
     // Save file input to IPFS
     try {
       if (formData.sideImage) {
-        formData["conditions"] = JSON.stringify(formData["conditions"]);
-        formData["NftTokenAddress"] = formData["conditions"];
-        const newSide = await apiService.createSide(formData);
+        const data = _.cloneDeep(formData);
+        data["conditions"]["requiered"] = onlyOneRequired;
+        data["conditions"] = JSON.stringify(data["conditions"]);
+        data["NftTokenAddress"] = data["conditions"];
+        const newSide = await apiService.createSide(data);
 
         if (channels["added"].length) {
           let added = channels["added"].map((item: any) => {
@@ -433,7 +436,7 @@ export default function NewSide() {
           } catch (error) {}
         }
         dispatch(addColony(newSide));
-        toast.success(formData.name + " has been created.", {
+        toast.success(data.name + " has been created.", {
           toastId: 4,
         });
       }

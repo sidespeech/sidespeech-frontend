@@ -65,7 +65,7 @@ export default function SideEligibilityModal(
   );
 
   const [isEligible, setIsEligible] = useState<boolean>(false);
-  const [details, setDetails] = useState<any[]>([]);
+  const [details, setDetails] = useState<any>([]);
 
   const handleJoinSide = () => {
     if (user) apiService.joinSide(user.id, props.selectedSide.id, Role.User);
@@ -73,8 +73,11 @@ export default function SideEligibilityModal(
 
   useEffect(() => {
     if (userCollectionsData) {
-      const res = checkUserEligibility(userCollectionsData, props.selectedSide);
-      setIsEligible(!res.some((r) => r.type === "error") && res.length > 0);
+      const [res, isEligible] = checkUserEligibility(
+        userCollectionsData,
+        props.selectedSide
+      );
+      setIsEligible(isEligible);
       setDetails(res);
     }
   }, [userCollectionsData]);
@@ -104,44 +107,52 @@ export default function SideEligibilityModal(
           </EligibilityResult>
           <ConditionsContainer>
             <div>Conditions</div>
-            {details.map((d) => {
-              console.log(d);
-              return (
-                <>
-                  {d.type === "error" ? (
-                    <div>{d.message}</div>
-                  ) : (
-                    <div className="f-column">
-                      <div>{userCollectionsData[d.id].name}</div>
-                      <div className="flex">
-                        {d.usefulNfts.map((nft: NFT) => {
-                          const metadata = nft.metadata;
-                          return (
-                            <div>
-                              {userCollectionsData[d.id].name} #{nft.token_id}
+            {Object.values(details).map((d: any) => {
+              return d.map((v: any) => {
+                return (
+                  <>
+                    {v.type === "error" ? (
+                      <div>{v.message}</div>
+                    ) : (
+                      <div className="f-column">
+                        <div>{userCollectionsData[v.id].name}</div>
+                        <div className="flex">
+                          {v.usefulNfts.map((nft: NFT) => {
+                            const metadata = nft.metadata;
+                            return (
                               <div>
-                                <NftImage
-                                  src={fixURL(metadata.image)}
-                                  alt="nft visual"
-                                />
+                                {userCollectionsData[v.id].name} #{nft.token_id}
+                                <div>
+                                  <NftImage
+                                    src={fixURL(metadata.image)}
+                                    alt="nft visual"
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
-                        <div>
-                          <div>{d.property}</div>
-                          <div>{d.value}</div>
+                            );
+                          })}
+                          <div>
+                            <div>{v.property}</div>
+                            <div>{v.value}</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </>
-              );
+                    )}
+                  </>
+                );
+              });
             })}
           </ConditionsContainer>
         </>
       }
-      footer={<Button classes="mt-3" disabled={!isEligible} children={"Join now"} onClick={handleJoinSide} />}
+      footer={
+        <Button
+          classes="mt-3"
+          disabled={!isEligible}
+          children={"Join now"}
+          onClick={handleJoinSide}
+        />
+      }
       title={undefined}
       showModal={props.setDisplayEligibility}
     />
