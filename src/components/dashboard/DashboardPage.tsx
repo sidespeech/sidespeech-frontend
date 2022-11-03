@@ -8,18 +8,19 @@ import DashboardLeftMenu from "./DashboardLeftMenu";
 import Invitations from "./Invitations";
 import MySides from "./MySides";
 
-import "./DashboardPage.css";
-
 const DashboardPageStyled = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  overflow-y: scroll;
+  width: 100%;
+  min-height: 100vh;
   & > div {
     flex-shrink: 1;
-    height: calc(100% - 35vh);
+    width: 100%;
     & .current-tab-wrapper {
-      overflow-y: scroll;
+      width: 100%;
       height: 100%;
+      overflow-x: hidden;
     }
   }
 `;

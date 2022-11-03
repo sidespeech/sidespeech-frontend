@@ -13,7 +13,13 @@ export class sideAPI {
     const res = await superagent.get(`${BASE_URL}/side`);
     return dtoToSideList(res.body);
   }
+  // get all featured sides
+  static async getAllFeaturedSides(): Promise<Side[]> {
+    const res = await superagent.get(`${BASE_URL}/side/featured`);
+    return dtoToSideList(res.body);
+  }
 }
+  
 
 function dtoToSide(s: any): Side {
   return new Side(s);
