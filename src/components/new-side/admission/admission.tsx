@@ -185,7 +185,7 @@ export default function Admission({
                                     );
                                   }),
                                 ]
-                              : ["You don't hold any nfts"]
+                              : ["Choose collection"]
                           }
                           onChange={(address: string) =>
                             setSideTokenAddress(address, i)

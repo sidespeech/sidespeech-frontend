@@ -34,7 +34,7 @@ const initialState: UserData = {
 };
 
 export const flattenChannels = (array: any, key:string) => {
-  return array.reduce(function (flat: any, toFlatten: any) {
+  return array?.reduce(function (flat: any, toFlatten: any) {
     return flat.concat(Array.isArray(toFlatten[key]) ? flattenChannels(toFlatten[key], key) : toFlatten.id);
   }, []);
 };

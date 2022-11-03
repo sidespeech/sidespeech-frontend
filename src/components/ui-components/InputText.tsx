@@ -3,54 +3,57 @@ import styled from "styled-components";
 import sendicon from "../../assets/send-icon.svg";
 
 interface InputTextPropsType {
-  maxWidth?: number;
+  bgColor?: string;
+  border?: string;
+  className?: string;
+  color?: string;
+  defaultValue?: string;
   disabled?: any;
+  focus?: boolean;
+  glass?: boolean;
+  height?: number;
+  iconRightPos?: { top: number; right: number };
+  iconSize?: number;
   id?: any;
   maxLength?: number;
-  iconSize?: number;
-  width?: number | string;
-  parentWidth?: number | string;
-  height?: number;
-  bgColor?: string;
-  placeholderColor?: string;
-  placeholder?: string;
-  border?: string;
-  padding?: string;
-  radius?: string;
-  color?: string;
-  size?: number;
-  weight?: number;
-  placeholderWeight?: number;
-  placeholderSize?: number;
-  onChange?: any;
-  iconRightPos?: { top: number; right: number };
-  glass?: boolean;
+  maxWidth?: number;
   message?: boolean;
+  onChange?: any;
   onClick?: any;
   onKeyUp?: any;
-  defaultValue?: string;
+  onBlur?: any;
+  padding?: string;
+  parentWidth?: number | string;
+  placeholder?: string;
+  placeholderColor?: string;
+  placeholderSize?: number;
+  placeholderWeight?: number;
+  radius?: string;
+  size?: number;
+  weight?: number;
+  width?: number | string;
 }
 
 interface InputProps {
-  id?: any;
-  maxWidth?: number;
-  disabled?: any;
-  maxLength?: number;
-  width?: number | string;
-  parentWidth?: number | string;
-  height?: number | string;
   bgColor?: string;
   border?: string;
-  padding?: string;
-  radius?: string;
   color?: string;
-  size?: number;
-  weight?: number;
-  placeholderColor?: string;
-  placeholderWeight?: number;
-  placeholderSize?: number;
+  disabled?: any;
+  height?: number | string;
+  id?: any;
+  maxLength?: number;
+  maxWidth?: number;
   onChange: any;
+  padding?: string;
+  parentWidth?: number | string;
+  placeholderColor?: string;
+  placeholderSize?: number;
+  placeholderWeight?: number;
+  radius?: string;
+  size?: number;
   type: string;
+  weight?: number;
+  width?: number | string;
 }
 
 const Input = styled.input<InputProps>`
@@ -58,7 +61,7 @@ const Input = styled.input<InputProps>`
   width: ${(props) => (props.width ? props.width : "100%")};
   border: ${(props) => (props.border ? props.border : "")};
   background-color: ${(props) =>
-    props.bgColor ? props.bgColor : "var(--bg-secondary-dark)"};
+    props.bgColor ? props.bgColor : "var(--bg-secondary-light)"};
   border-radius: ${(props) => (props.radius ? props.radius : "40px")};
   height: ${(props) => (props.height ? props.height : 35)}px;
   color: ${(props) =>
@@ -85,26 +88,29 @@ const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
       style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
     >
       <Input
-        id={props.id}
-        ref={ref}
-        width={props.width}
-        maxLength={props.maxLength}
-        height={props.height}
-        radius={props.radius}
-        disabled={props.disabled}
-        size={props.size}
-        weight={props.weight}
-        color={props.color}
-        placeholderWeight={props.placeholderWeight}
-        placeholderSize={props.placeholderSize}
-        placeholderColor={props.placeholderColor}
-        border={props.border}
+        autoFocus={props.focus}
         bgColor={props.bgColor}
-        placeholder={props.placeholder}
-        type={"text"}
+        border={props.border}
+        className={props.className}
+        color={props.color}
+        defaultValue={props.defaultValue}
+        disabled={props.disabled}
+        height={props.height}
+        id={props.id}
+        maxLength={props.maxLength}
+        onBlur={props.onBlur}
         onChange={props.onChange}
         onKeyUp={props.onKeyUp}
-        defaultValue={props.defaultValue}
+        placeholder={props.placeholder}
+        placeholderColor={props.placeholderColor}
+        placeholderSize={props.placeholderSize}
+        placeholderWeight={props.placeholderWeight}
+        radius={props.radius}
+        ref={ref}
+        size={props.size}
+        type={"text"}
+        weight={props.weight}
+        width={props.width}
       />
       {props.glass && (
         <span

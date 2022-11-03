@@ -19,7 +19,7 @@
 }
 .annoucement-item {
   width: 100%;
-  min-height: 104px;
+  /* min-height: 104px; */
   border-bottom: 1px solid var(--bg-secondary-light);
   padding: 13px 16px 17px 16px;
   gap: 8px;

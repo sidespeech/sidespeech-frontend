@@ -45,11 +45,6 @@ export default function Channels({
   const [channels, setChannels] = useState<any>(initialChannelsState);
 
   useEffect(() => {
-    console.log("channelsNewSide :", channelsNewSide);
-    console.log("data :", {
-      ...initialChannelsState,
-      currents: currentSide["channels"] ? currentSide["channels"] : [],
-    });
     setChannels({
       ...channels,
       currents: currentSide["channels"] ? currentSide["channels"] : [],
@@ -189,7 +184,6 @@ export default function Channels({
   };
 
   const onSubmit = async () => {
-    console.log(channels);
     try {
       if (channels["added"].length) {
         const addedChannels = await apiService.createManyChannels(

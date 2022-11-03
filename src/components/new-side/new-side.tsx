@@ -22,11 +22,38 @@ import { RootState } from "../../redux/store/app.store";
 import { Collection } from "../../models/interfaces/collection";
 import _, { valuesIn } from "lodash";
 import { Channel, ChannelType } from "../../models/Channel";
-import { Role } from "../../models/Profile";
+import { Profile, Role } from "../../models/Profile";
 
 const MAX_NUMBER_OF_COLLECTIONS = 5;
 
 const initialStateSteps = [
+  {
+    label: "Informations",
+    icon: "fa-solid fa-1",
+    active: true,
+    completed: false,
+  },
+  {
+    label: "Admission",
+    icon: "fa-solid fa-2",
+    active: false,
+    completed: false,
+  },
+  {
+    label: "Channels",
+    icon: "fa-solid fa-3",
+    active: false,
+    completed: false,
+  },
+  {
+    label: "Invitation",
+    icon: "fa-solid fa-4",
+    active: false,
+    completed: false,
+  },
+];
+
+const initialSteps = [
   {
     label: "Informations",
     icon: "fa-solid fa-1",
@@ -111,6 +138,7 @@ export default function NewSide() {
   const { userCollectionsData, user } = useSelector(
     (state: RootState) => state.user
   );
+
   const [steps, setSteps] = useState<any[]>(initialStateSteps);
 
   // Variables for Admission component
@@ -123,6 +151,11 @@ export default function NewSide() {
   // Variables for Channels component
   const [channels, setChannels] = useState<any>(initialChannelsState);
 
+  // Variables for Invitation component
+  const [invitationUsers, setInvitationUsers] = useState<any>([]);
+  const [userInvited, setUserInvited] = useState<any>([]);
+
+
   useEffect(() => {
     if (userCollectionsData) {
       let collections = Object.values(userCollectionsData);
@@ -130,19 +163,71 @@ export default function NewSide() {
     }
   }, [userCollectionsData]);
 
+  useEffect(() => {
+
+    if (user && user.profiles) {
+      const getInvitationUsers = async (user:any) => {
+        let userSides = user.profiles.map((p:Profile) => p.side);
+        let users = await apiService.getUserFromSides(userSides);
+        let invitationsUsersObject = []
+        delete user['profiles'];
+        for (let userInvite of users) {
+          if (user['id'] !== userInvite['id'])
+          invitationsUsersObject.push({
+            name : (userInvite['username']) ? `${userInvite['username']} (${userInvite['accounts']})` : userInvite['accounts'],
+            invited: false,
+            recipient : userInvite,
+            sender: user
+          })
+        }
+        setInvitationUsers(invitationsUsersObject)
+      }  
+      getInvitationUsers(user);
+    }
+  }, [user]);
+
   const newSideNextPreviousStep = (
     index: number,
     previous: boolean = false
   ) => {
     let current_data = { ...formData };
+    let current_steps = [ ...steps ];
 
     // Checking if sideImage and name stored to continu to the other steps
-    if (!current_data["sideImage"] || !current_data["name"].trim().length) {
+    if (index === 0 && !current_data["sideImage"] || !current_data["name"].trim().length) {
       toast.error("Missing data", { toastId: 3 });
       return;
     }
 
-    const currentStepsState = steps.map((item: any, map_i: number) => {
+    // Set conditions and checking if there is minimum one condition to continu to the other steps
+    if (index === 1) {
+      let current_divs = [...divCollections];
+      let conditions: any = {};
+      for (let div of current_divs) {
+        if (div["collection"].trim().length !== 0 && div["trait_selected"].trim().length !== 0 &&  div["value_selected"].trim().length !== 0) {
+          conditions[div["collection"]] = {};
+          conditions[div["collection"]][div["trait_selected"]] =
+            div["value_selected"];
+          conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
+        }
+      }
+      if (Object.keys(conditions).length === 0) {
+        toast.error("You need to enter miminum one condition", { toastId: 3 });
+        return;
+      }
+      setFormData({ ...formData, conditions: conditions });
+    }
+
+    // Checking if every channels have name to continu to the other steps
+    if (index === 2) {
+      let isWrongChannels = channels["added"].filter((c:Channel) => c['name'].trim().length === 0)
+      if (isWrongChannels.length) {
+        toast.error("You need to name every channels", { toastId: 3 });
+        return;
+      }
+    }
+
+    const currentStepsState = current_steps.map((item: any, map_i: number) => {
       if (!previous) {
         // Turn active or not for selected item
         item["active"] = map_i === index + 1 ? true : false;
@@ -189,7 +274,6 @@ export default function NewSide() {
   const validateName = async (name: string) => {
     const exist = await apiService.isSideNameExist(name);
     const inValidLength = !(name.length < 50 && name.length > 3);
-    console.log(inValidLength);
     setFormError({ ...formError, name: { exist, length: inValidLength } });
     return !(exist || inValidLength);
   };
@@ -370,7 +454,6 @@ export default function NewSide() {
     index: number,
     current = true
   ) => {
-    console.log(event);
     // Change name on existing channel
     if (current) {
       let current_channels = channels["currents"];
@@ -406,8 +489,6 @@ export default function NewSide() {
   // ----- Functions for Channels component **end
 
   const onSubmit = async () => {
-    console.log("formData from onClick :", formData);
-    console.log("channels from onClick :", channels);
     // Save file input to IPFS
     try {
       if (formData.sideImage) {
@@ -424,6 +505,13 @@ export default function NewSide() {
           });
           const addedChannels = await apiService.createManyChannels(added);
         }
+
+        let users = userInvited.map((u:any) => {
+          u['side'] = newSide
+          return u
+        })
+        if (users.length)
+          await apiService.sendMultipleInvitations(users);
         if (user) {
           try {
             const profile = await apiService.joinSide(
@@ -431,7 +519,6 @@ export default function NewSide() {
               newSide.id,
               Role.Admin
             );
-            console.log("profile", profile);
             dispatch(updateProfiles(profile));
           } catch (error) {}
         }
@@ -439,6 +526,11 @@ export default function NewSide() {
         toast.success(data.name + " has been created.", {
           toastId: 4,
         });
+
+        setSteps(initialStateSteps);
+        setFormData(initialStateSide);
+
+        navigate(`/`);
       }
     } catch (error) {
       console.log(error);
@@ -531,7 +623,7 @@ export default function NewSide() {
                   </div>
                 ) : step["label"] === "Invitation" && step["active"] ? (
                   <>
-                    <Invitation currentSide={currentSide} />
+                    <Invitation currentSide={currentSide} invitationUsers={invitationUsers} setUserInvited={setUserInvited} userInvited={userInvited} />
                   </>
                 ) : null}
               </div>

@@ -1,24 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  getRoleColor,
-  getRoleColorForStyle,
-  reduceWalletAddress,
-} from "../../../helpers/utilities";
+// import {
+//   getRoleColor,
+//   getRoleColorForStyle,
+//   reduceWalletAddress,
+// } from "../../../helpers/utilities";
+import { Editor } from 'react-draft-wysiwyg';
 import { Announcement } from "../../../models/Announcement";
 import { Comment } from "../../../models/Comment";
-import check from "../../../assets/check.svg";
+// import check from "../../../assets/check.svg";
 import UserBadge from "../../ui-components/UserBadge";
 import "./AnnouncementItem.css";
-import InputText from "../../ui-components/InputText";
+import MessageInput from "../../ui-components/MessageInput";
 
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import _ from "lodash";
 import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
 import { apiService } from "../../../services/api.service";
-import { channel } from "diagnostics_channel";
+// import { channel } from "diagnostics_channel";
 import { ChannelType } from "../../../models/Channel";
+import MessageContent from "../../ui-components/MessageContent";
 
 export default function AnnouncementItem({
   announcement,
@@ -34,9 +36,8 @@ export default function AnnouncementItem({
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
   const { account } = useSelector((state: RootState) => state.user);
-  const [inputValue, setInputValue] = useState("");
 
-  const ref = useRef<HTMLInputElement>();
+  const ref = useRef<Editor>(null);
 
   useEffect(() => {
     setIsExtended(extend === announcement.id);
@@ -53,7 +54,6 @@ export default function AnnouncementItem({
       announcement.id
     );
     setComments([...comments, newComment]);
-    if (ref.current) ref.current.value = "";
   };
 
   return (
@@ -73,7 +73,7 @@ export default function AnnouncementItem({
           )}
         </div>
       </div>
-      <div>{announcement.content}</div>
+      <MessageContent message={announcement.content} />
       {selectedChannel && selectedChannel.type === ChannelType.Announcement && (
         <div className="pointer">
           <i className="fa-solid fa-comment-dots mr-2"></i>
@@ -118,32 +118,21 @@ export default function AnnouncementItem({
                       )}
                     </div>
                   </div>
-                  <div>{comment.content}</div>
+                  <MessageContent message={comment.content} />
                 </div>
               );
             })}
 
-            <InputText
-              ref={ref}
-              size={14}
-              weight={600}
-              glass={false}
-              message
-              id="sendmessage"
-              iconRightPos={{ top: 19, right: 18 }}
-              height={55}
-              radius="10px"
-              placeholder={"Type your message here"}
-              onChange={(event: any) => {
-                setInputValue(event.target.value);
-              }}
-              onKeyUp={(event: any) => {
-                if (event.key === "Enter") handleComment(inputValue);
-              }}
-              onClick={(e: any) => {
-                handleComment(inputValue);
-              }}
-            />
+          <MessageInput
+            id="sendmessage"
+            imageUpload
+            onSubmit={handleComment}
+            placeholder={"Type your message here"}
+            radius="10px"
+            ref={ref}
+            size={14}
+            weight={600}
+          />
           </div>
         </div>
       )}
