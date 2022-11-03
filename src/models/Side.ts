@@ -10,6 +10,7 @@ export class Side {
   NftTokenAddress: string;
   coverImage: string;
   sideImage: string;
+  priv: boolean;
   // this will be a json containing an object with the token related to a condition as key and
   // his value will be the property key and the property value related to this collection
   conditions: any;
@@ -24,6 +25,7 @@ export class Side {
     this.isCreatorOwner = _data.isCreatorOwner;
     this.NftTokenAddress = _data.NftTokenAddress;
     this.coverImage = _data.coverImage;
+    this.priv = _data.private;
     this.sideImage = _data.sideImage;
     this.conditions = _data.conditions ? JSON.parse(_data.conditions) : {};
     this.channels = _data.channels;

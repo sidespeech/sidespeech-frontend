@@ -11,17 +11,20 @@ import { apiService } from "../../../../services/api.service";
 import { addColony } from "../../../../redux/Slices/UserDataSlice";
 import { useSearchParams } from "react-router-dom";
 import { Side } from "../../../../models/Side";
+import Switch from "../../../ui-components/Switch";
 
 export interface InitialStateUpdateSide {
   sideImage: string | undefined;
   name: string;
   description: string;
+  priv: boolean;
 }
 
 const initialStateUpdateSide = {
   sideImage: undefined,
   name: "",
   description: "",
+  priv: false,
 };
 
 export default function Informations({
@@ -41,8 +44,11 @@ export default function Informations({
   const [isNewSide, setIsNewSide] = useState<boolean>(true);
 
   useEffect(() => {
-    if (window.location.href.includes("settings")) setIsNewSide(false);
-  }, []);
+    if (window.location.href.includes("settings")) {
+      setIsNewSide(false);
+      setFormData({sideImage : currentSide['sideImage'], name: currentSide['name'], description: currentSide['description'], private: currentSide['private']})
+    }
+  }, [currentSide]);
 
   const dispatch = useDispatch();
 
@@ -60,6 +66,11 @@ export default function Informations({
     const name = event.target.value;
     setFormData({ ...formData, name: name });
     if (isNewSide) onChangeNewSideName(event.target.value);
+  };
+
+  const onChangePrivate = (event: any) => {
+    setFormData({ ...formData, priv: event });
+    // if (isNewSide) onChangeNewSideName(event.target.value);
   };
 
   // If we are in settings on existing Side
@@ -192,6 +203,24 @@ export default function Informations({
         </div>
         <div className="size-10">Max number of characters: 500</div>
       </div>
+
+      {/* Private Side Section */}
+
+      {
+        !isNewSide ? (
+          <div className="f-column mt-5">
+          <div className="flex">
+            <div className="text-primary-light mb-3 text fw-600 mr-3">Private Side</div>
+            <Switch
+              onClick={onChangePrivate}
+              value={currentSide.private}
+            />
+          </div>
+          <div className="size-10">Only invited users will be able to join this Side. All invitations will be received as requests.</div>
+        </div>
+        ) : null
+      }
+
 
       {/* Submit Button */}
       {

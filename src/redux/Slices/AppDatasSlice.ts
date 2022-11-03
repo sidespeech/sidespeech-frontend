@@ -18,7 +18,6 @@ export const appDatasSlice = createSlice({
   initialState,
   reducers: {
     setCurrentColony: (state: AppDatas, action: PayloadAction<Side>) => {
-      console.log("set current side", action.payload)
       state.currentSide = {...action.payload};
     },
     setSelectedChannel: (
