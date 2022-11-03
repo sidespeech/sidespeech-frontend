@@ -10,6 +10,8 @@ import SideEligibilityModal from "../../Modals/SideEligibilityModal";
 import UserCollectionCard from './UserCollectionCard';
 import UserCollectionItemSmall from './UserCollectionItemSmall';
 import CustomCheckbox from '../../ui-components/CustomCheckbox';
+import PaginationControls from '../../ui-components/PaginationControls';
+import Spinner from '../../ui-components/Spinner';
 
 interface CollectionsStyledProps {
 
@@ -20,6 +22,16 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-gap: 1rem;
+        & .spinner, & .no-results {
+            grid-column: 1/4;
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
     }
     .toolbar-wrapper {
         display: flex;
@@ -58,6 +70,9 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
             }
         }
     }
+    .pagination-controls {
+        margin: 3rem 0 2rem 0;
+    }
 `;
 
 type UserCollectionsProps = {
@@ -65,20 +80,21 @@ type UserCollectionsProps = {
 };
 
 const UserCollections = (props: UserCollectionsProps) => {
-    const { account, user, userCollectionsData } = useSelector(
+    const { account, user, userCollectionsData, userCollectionsLoading } = useSelector(
         (state: RootState) => state.user
       );
-    const [sides, setSides] = useState<Side[]>([]);
+    const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
     const [filteredSides, setfilteredSides] = useState<Side[]>([]);
     const [selectedCollection, setSelectedCollection] = useState<any>(null);
-    const [userCollections, setUserCollections] = useState<any[]>([]);
-    const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
     const [selectedSide, setSelectedSide] = useState<Side | null>(null);
+    const [sides, setSides] = useState<Side[]>([]);
+    const [userCollections, setUserCollections] = useState<any[]>([]);
     const [viewMode, setViewMode] = useState<string>('card');
 
     useEffect(() => {
         async function getAllSides() {
             const sides = await sideAPI.getAllSides();
+            console.log(sides)
             setSides(sides);
             setfilteredSides(sides);
         }
@@ -99,7 +115,6 @@ const UserCollections = (props: UserCollectionsProps) => {
     const handleEligibilityCheck = (side: Side) => {
         setSelectedSide(side);
         setDisplayEligibility(true);
-        console.log(userCollectionsData);
     };
 
   return (
@@ -133,14 +148,29 @@ const UserCollections = (props: UserCollectionsProps) => {
             </div>
 
             <div className="collections-list-wrapper">
-                {!!userCollections.length &&
-                    userCollections.map((collection: any) => (
+                {userCollectionsLoading ? (
+                    <div className="spinner">
+                        <Spinner />
+                    </div>
+                ) : !!userCollections.length ?
+                        userCollections.map((collection: any) => (
                         <>
                             {viewMode === 'card' && <UserCollectionCard collection={collection} onClick={() => setSelectedCollection(collection)} />}
                             {viewMode === 'list' && <UserCollectionItemSmall collection={collection} onClick={() => setSelectedCollection(collection)} />}
                         </>
-                ))}
+                )) : (
+                    <div className="no-results">
+                        <p>No results</p>
+                    </div>
+                )}
             </div>
+
+            <PaginationControls 
+                className="pagination-controls" 
+                currentPage={1}
+                onChangePage={(page: number) => {}} 
+                totalPages={1}
+            />
         </div>
 
         {/* <div className="f-column w-100 overflow-auto">

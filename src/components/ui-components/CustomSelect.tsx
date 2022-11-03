@@ -24,6 +24,7 @@ const SelectCustom = styled.select<ISelectCustom>`
   border-radius: ${(props) => (props.radius ? props.radius : "20px")};
   background: ${(props) =>
     props.bgColor ? props.bgColor : "var(--bg-secondary-dark)"};
+  width: 100%;
 `;
 
 /**
@@ -45,6 +46,7 @@ export default function CustomSelect({
   arrowPosition,
   fontWeight,
   fontSize,
+  placeholder,
   radius,
   bgColor,
   classes,
@@ -52,6 +54,7 @@ export default function CustomSelect({
 }: {
   onChange: any;
   options: any[];
+  placeholder?: string;
   key?: string;
   values?: any[];
   defaut?: any;
@@ -103,6 +106,7 @@ export default function CustomSelect({
         className="select-custom"
         value={value}
       >
+        {placeholder && <option value="" disabled selected>{placeholder}</option>}
         {options.map((o, index) => {
           return (
             <option key={index} value={values ? values[index] : index}>

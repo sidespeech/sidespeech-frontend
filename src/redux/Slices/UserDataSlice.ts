@@ -20,6 +20,7 @@ export interface UserData {
   sides: Side[];
   currentProfile: Profile | undefined;
   userCollectionsData: UserCollectionsData | null;
+  userCollectionsLoading: boolean;
 }
 
 const initialState: UserData = {
@@ -31,6 +32,7 @@ const initialState: UserData = {
   sides: [],
   currentProfile: undefined,
   userCollectionsData: null,
+  userCollectionsLoading: false
 };
 
 export const flattenChannels = (array: any, key:string) => {
@@ -123,8 +125,15 @@ export const userDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
+    builder.addCase(fetchUserDatas.pending, (state, action) => {
+      state.userCollectionsLoading = true;
+    });
+    builder.addCase(fetchUserDatas.rejected, (state, action) => {
+      state.userCollectionsLoading = false;
+    });
     builder.addCase(fetchUserDatas.fulfilled, (state, action) => {
       state.userCollectionsData = { ...action.payload };
+      state.userCollectionsLoading = false;
     });
   },
 });

@@ -60,7 +60,15 @@ function App() {
     <div className="main-container relative">
       {!generalSettings ? (
         <div className="left-container">
-          <div>{userData.user && <UserColonies />}</div>
+          <div>
+            <Link to="/">
+                <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.4316 6.06323V0.0632324H18.4316V6.06323H10.4316ZM0.431641 10.0632V0.0632324H8.43164V10.0632H0.431641ZM10.4316 18.0632V8.06323H18.4316V18.0632H10.4316ZM0.431641 18.0632V12.0632H8.43164V18.0632H0.431641Z" fill="#705CE9"/>
+                </svg>
+            </Link>  
+            
+            {userData.user && <UserColonies />}
+          </div>
           <Link to={"/general-settings"}>
             {" "}
             <div>

@@ -1,8 +1,21 @@
-import React from 'react'
+import React from 'react';
+import styled from 'styled-components';
 
-const Invitations = () => {
+interface InvitationsStyledProps {}
+
+const InvitationsStyled = styled.main<InvitationsStyledProps>`
+  .title {
+    margin-top: 0;
+  }
+`;
+
+interface InvitationsProps {}
+
+const Invitations = ({}: InvitationsProps) => {
   return (
-    <div>Invitations</div>
+    <InvitationsStyled>
+       <h2 className="title">Invitations</h2>
+    </InvitationsStyled>
   )
 }
 

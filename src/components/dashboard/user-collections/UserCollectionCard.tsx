@@ -73,7 +73,7 @@ const UserCollectionCardStyled = styled.div<CollectionCardStyledProps>`
     }
 `;
 
-export type UserCollectionItemProps = {
+export interface UserCollectionItemProps {
     collection: any;
     onClick?: (collection: any) => void;
 };

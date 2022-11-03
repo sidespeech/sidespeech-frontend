@@ -20,6 +20,7 @@ const DashboardPageStyled = styled.div`
     & .current-tab-wrapper {
       width: 100%;
       height: 100%;
+      padding: 0 1rem;
       overflow-x: hidden;
     }
   }
