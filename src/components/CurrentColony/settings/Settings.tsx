@@ -7,6 +7,7 @@ import Invitation from "./invitation/invitation"
 import Informations from "./informations/informations"
 import Account from "./account/account"
 import Eligibility from "./eligibility/eligibility"
+import Requests from "./requests/requests"
 import "./Settings.css";
 import { RootState } from "../../../redux/store/app.store";
 import ContainerLeft from "../../ui-components/ContainerLeft";
@@ -21,6 +22,7 @@ const initialStateTabs = {
       items: [
         { active: true, icon: "fa-solid fa-gear", label: "Informations" },
         { active: false, icon: "fa-solid fa-user-group", label: "Members" },
+        { active: false, icon: "fa-solid fa-user-plus", label: "Requests" },
         { active: false, icon: "fa-solid fa-bullhorn", label: "Channels" },
         { active: false, icon: "fa-solid fa-circle-plus", label: "Invitation" },
       ]
@@ -126,6 +128,7 @@ export default function Settings(
                     return (
                       (subtitle['label'] == 'Informations' && subtitle['active']) ? <Informations currentSide={currentSide} /> :
                         (subtitle['label'] == 'Members' && subtitle['active']) ? <MembersList currentSide={currentSide} /> :
+                        (subtitle['label'] == 'Requests' && subtitle['active']) ? <Requests currentSide={currentSide} userData={userData} /> :
                           (subtitle['label'] == 'Channels' && subtitle['active']) ? <Channels currentSide={currentSide} /> :
                             (subtitle['label'] == 'Invitation' && subtitle['active']) ? <Invitation currentSide={currentSide} /> :
                               (subtitle['label'] == 'Account' && subtitle['active']) ? <Account currentSide={currentSide} userData={userData} /> :
