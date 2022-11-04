@@ -2,28 +2,33 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+
+// Redux Stuff
 import { updateChannel } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
 
-import { Poll } from "../../../models/Poll";
+// UI Components
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
 
+// Models
+import { Poll } from "../../models/Poll";
+
+// API Service
 import { apiService } from "../../services/api.service";
 
 export default function CreatePollModal({ showModal }: { showModal: any }) {
+
+  // Configuring all of the states.
   const [answerElements, setAnswerElements] = useState<any[]>([]);
   const [values, setValues] = useState<string[]>([]);
   const [question, setQuestion] = useState<string>("");
+  const [polls, setPolls] = useState<Poll[]>([]);
 
-  const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
   const dispatch = useDispatch();
-
-    const [polls, setPolls] = useState<Poll[]>([]);
-
-  const newChannel = selectedChannel;
-
+  const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+  
   useEffect(() => {
     const inits = [setAnswer, setAnswer];
     inits.forEach((element, index) => {
@@ -42,6 +47,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
       <NewAnswer value={answerElements.length + 1} onChange={setAnswer} />,
     ]);
   };
+  
   const setAnswer = (event: any, index: number) => {
     const val = event.target.value;
     values[index] = val;
@@ -65,7 +71,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
 
         // Show the success notification.
         toast.success("Poll has been created.", { toastId: 8 });
-        
+
         // Send a dispatch event to update the channel that we are in with the latest data.
         dispatch(updateChannel(selectedChannel));
 

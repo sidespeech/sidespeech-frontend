@@ -16,6 +16,7 @@ export class Poll {
     this.answers = _data.options;
     this.creator = _data.creatorId;
     this.pollOption = _data.pollOption;
+    this.votes = _data.vote;
   }
 
   async getVotes(votes: any) {

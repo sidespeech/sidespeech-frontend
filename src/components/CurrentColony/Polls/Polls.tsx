@@ -63,13 +63,16 @@ export default function Polls() {
     <div id="polls-list" className="text-secondary w-100">
       {polls.map((poll: Poll) => {
 
+        
         const thePollOptions = poll.pollOption.map((option: any, index: any) => {
           return { id: index, optionId: option.id, text: option.text, votes: option.votes };
         });
 
-        console.log(poll.votes.some((v) => v.user.id === walletAddress));
+        // We'll check if the user has voted.
+        const checkUserVoted = poll.votes.some((v) => v.voterId === walletAddress);
+
         return (
-          <div className="w-100 poll-item">
+          <div className="w-100 poll-item" key={poll.id}>
             <div key={poll.id} className="flex justify-between w-100">
               <UserBadge
                 check
@@ -92,7 +95,7 @@ export default function Polls() {
                   question={poll.question}
                   results= {thePollOptions}
                   theme={customTheme}
-                  isVoted={poll.votes.some((v) => v.user === walletAddress)}
+                  isVoted={checkUserVoted}
                   onVote={(callbackData: any) => handleVote(callbackData, poll.id)}
                 />
               }
