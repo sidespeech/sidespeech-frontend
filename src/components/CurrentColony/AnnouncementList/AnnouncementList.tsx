@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Editor } from 'react-draft-wysiwyg';
 import { Announcement } from "../../../models/Announcement";
 import AnnouncementItem from "./AnnouncementItem";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
 import _ from "lodash";
 import { apiService } from "../../../services/api.service";
-import InputText from "../../ui-components/InputText";
+import MessageInput from "../../ui-components/MessageInput";
 import websocketService from "../../../services/websocket.service";
 import {
   subscribeToEvent,
@@ -20,9 +21,8 @@ export default function AnnouncementList() {
     (state: RootState) => state.appDatas
   );
   const { account } = useSelector((state: RootState) => state.user);
-  const [inputValue, setInputValue] = useState("");
 
-  const ref = useRef<HTMLInputElement>();
+  const ref = useRef<Editor>(null);
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
     if (selectedChannel?.id === detail.channelId)
@@ -41,9 +41,9 @@ export default function AnnouncementList() {
 
   useEffect(() => {
     async function getChannelAnnouncements() {
-      const announcements = await apiService.getChannelAnnouncements(
-        selectedChannel.id
-      );
+      const announcements = selectedChannel ? await apiService.getChannelAnnouncements(
+        selectedChannel.id || ''
+      ) : [];
       setAnnouncements(announcements);
     }
     if (selectedChannel) getChannelAnnouncements();
@@ -60,11 +60,10 @@ export default function AnnouncementList() {
     const newAnnouncement = await apiService.createAnnouncement(
       value,
       creatorAddress,
-      selectedChannel.id
+      selectedChannel.id || ''
     );
     setAnnouncements([...announcements, newAnnouncement]);
     websocketService.sendAnnouncement(newAnnouncement);
-    if (ref.current) ref.current.value = "";
   };
 
   return (
@@ -92,26 +91,15 @@ export default function AnnouncementList() {
       {(selectedChannel?.type !== 0 ||
         currentSide?.creatorAddress === account) && (
         <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
-          <InputText
+          <MessageInput
+            id="sendmessage"
+            imageUpload
+            onSubmit={handleAnnouncement}
+            placeholder={"Type your message here"}
+            radius="10px"
             ref={ref}
             size={14}
             weight={600}
-            glass={false}
-            message
-            id="sendmessage"
-            iconRightPos={{ top: 19, right: 18 }}
-            height={55}
-            radius="10px"
-            placeholder={"Type your message here"}
-            onChange={(event: any) => {
-              setInputValue(event.target.value);
-            }}
-            onKeyUp={(event: any) => {
-              if (event.key === "Enter") handleAnnouncement(inputValue);
-            }}
-            onClick={(e: any) => {
-              handleAnnouncement(inputValue);
-            }}
           />
         </div>
       )}

@@ -199,3 +199,23 @@ export function alchemyNftModelToSideNftModel(nft: any) {
   };
   return sideNft;
 }
+
+export function getRandomId() {
+  return Math.random().toString(36).slice(2);
+}
+
+export async function getBase64(file: File): Promise<any> {
+	return new Promise((res, rej) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			if (reader.readyState === 2) {
+				res(reader.result);
+			}
+		};
+		reader.onerror = error => {
+			console.error('Error: ', error);
+			rej();
+		};
+	});
+}

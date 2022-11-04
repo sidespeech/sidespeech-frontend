@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../../../ui-components/Button";
 import InputText from "../../../ui-components/InputText";
 import { useDispatch } from "react-redux";
@@ -7,15 +7,24 @@ import facebook from "../../../../assets/facebook.svg";
 import twitter from "../../../../assets/twitter.svg";
 import linkedin from "../../../../assets/linkedin.svg";
 import "./invitation.css"
+import { apiService } from "../../../../services/api.service";
+import { toast } from "react-toastify";
 
 
 export default function Invitation({
   currentSide,
+  invitationUsers,
+  setUserInvited,
+  userInvited
 }: {
   currentSide: Side;
+  invitationUsers: any[];
+  setUserInvited:any;
+  userInvited:any;
 }) {
 
   const dispatch = useDispatch();
+
   const socialsMedia = [{
     icon: facebook,
     label: "Facebook"
@@ -78,6 +87,41 @@ export default function Invitation({
     invited: true
   }]
 
+  const [usersInvite, setUsersInvite] = useState<any>([]);
+
+
+  useEffect(() => {
+    if (invitationUsers) {
+      setUsersInvite(invitationUsers)
+    } else {
+      setUsersInvite(exampleUsers)
+    }
+  }, [invitationUsers]);
+
+
+  const addInvitationUsers = async (user:any, index:number) => {
+    let currentsInvited = [...userInvited];
+    let object = {
+      state: 3,
+      sender: user.sender,
+      recipient: user.recipient,
+      invitationLink : sideLink
+    }
+
+    if (!currentsInvited.find(i => i.recipient === object.recipient)) {
+      setUserInvited([...userInvited, object])
+      let users = [...usersInvite]
+      users[index]['invited'] = true
+      setUsersInvite(users);
+    }
+  }  
+  const sideLink = `https://sidespeech.com/side/${(Math.random() + 1).toString(36).substring(7)}`;
+
+  const handleCopyWalletAddress = () => {
+    navigator.clipboard.writeText(sideLink);
+    toast.success("Link copied successfuly.", { toastId: 1 });
+  };
+
   return (
     <>
 
@@ -99,7 +143,7 @@ export default function Invitation({
         />
         <div className="f-column user-list mt-3">
           {
-            exampleUsers.map(example =>
+            usersInvite.map((user:any, index:number) =>
               <div className="flex mt-4 justify-between">
                 <div className="flex">
                   <label className="profile-image-user f-column align-center justify-center">
@@ -108,14 +152,14 @@ export default function Invitation({
                       alt="file"
                     />
                   </label>
-                  <label className="align-center justify-center mt-1 ml-3">{example['name']}</label>
+                  <label className="align-center justify-center mt-1 ml-3">{user['name']}</label>
                 </div>
                 <div>
                   {
-                    (example['invited']) ? 
+                    (user['invited']) ? 
                     <label className="text-green"><i className="fa-solid fa-check mr-2"></i> Invited</label>
                     :
-                    <Button classes="size-12" width={70} height={27} radius={5} onClick={undefined} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
+                    <Button classes="size-12" width={70} height={27} radius={5} onClick={() => addInvitationUsers(user, index)} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
                   }
                 </div>
               </div>
@@ -129,15 +173,17 @@ export default function Invitation({
         <div className="flex mt-2 align-center">
           <InputText
             height={40}
-            parentWidth={"43rem"}
-            width="50%"
+            parentWidth={"70%"}
+            width="100%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             placeholder="Invitation Link"
             onChange={undefined}
+            disabled
+            defaultValue={sideLink}
             radius="10px"
           />
-          <Button classes="btn-copy cursor-pointer" width={150} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
+          <Button classes="cursor-pointer ml-4" width={150} height={40} onClick={handleCopyWalletAddress} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
         </div>
 
         <label className="text-primary-light mt-4">Copy this link and share it with your friends to invite them in this side</label>

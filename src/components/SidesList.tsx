@@ -44,7 +44,6 @@ export default function SidesList() {
   const handleEligibilityCheck = (side: Side) => {
     setSelectedSide(side);
     setDisplayEligibility(true);
-    console.log(userCollectionsData);
   };
 
   return (

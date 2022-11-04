@@ -16,6 +16,7 @@ import { User } from "../models/User";
 import { Notification } from "../models/Notification";
 import { Poll } from "../models/Poll";
 import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
+import { Invitation } from "../models/Invitation";
 
 // Create an API Service class
 class apiService {
@@ -101,7 +102,6 @@ class apiService {
     return res.body.exist;
   }
   static async createSide(side: InitialStateSide): Promise<Side> {
-    console.log("side :", side);
     const res = await superagent.post(`${BASE_URL}/side`).send(side);
     return new Side(res["body"]);
   }
@@ -212,6 +212,12 @@ class apiService {
     return res.body;
   }
 
+  static async uploadImage(image: FormData): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/files`)
+      .send(image)
+    return res.text || '';
+  }
   static async createPoll(
     creatorId: string,
     question: string,
@@ -254,6 +260,24 @@ class apiService {
     const res = await superagent.delete(`${BASE_URL}/notification/${id}/${address}`);
     return new User(res.body);
   }
+
+  static async getUserFromSides(sides:Side[]): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/user/side`).send({sides: sides});
+    return res.body.users;
+  }
+
+  static async sendInvitation(invitation:Invitation): Promise<any> {
+    console.log(invitation)
+    const res = await superagent.post(`${BASE_URL}/invitation`).send(invitation);
+    return res.body;
+  } 
+
+  static async sendMultipleInvitations(invitations:Invitation[]): Promise<any> {
+    console.log(invitations)
+    const res = await superagent.post(`${BASE_URL}/invitation/many`).send(invitations);
+    return res.body;
+  } 
+
 }
 
 
