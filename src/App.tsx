@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +22,7 @@ import { connect, fetchUserDatas } from "./redux/Slices/UserDataSlice";
 
 // API's
 import { apiService } from "./services/api.service";
+import { getRandomId } from "./helpers/utilities";
 
 function App() {
   const userData = useSelector((state: RootState) => state.user);
@@ -35,9 +37,14 @@ function App() {
 
     websocketService.connectToWebSocket();
     async function getUser(account: string) {
-      const user = await apiService.getUserByAddress(account);
-      dispatch(connect({ account: account, user: user }));
-      dispatch(fetchUserDatas(account));
+      try {
+        const user = await apiService.getUserByAddress(account);
+        dispatch(connect({ account: account, user: user }));
+        dispatch(fetchUserDatas(account));
+      } catch (error) {
+       console.error(error);
+       toast.error('Ooops! Something went wrong fetching your account data', { toastId: getRandomId() });
+      }
     }
     if (!!window.ethereum?.selectedAddress) {
       account = window.ethereum.selectedAddress;

@@ -43,6 +43,7 @@ class apiService {
 
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
+    if (!res.body) throw new Error('Error')
     return new User(res.body);
   }
 

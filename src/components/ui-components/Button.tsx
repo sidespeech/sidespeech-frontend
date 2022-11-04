@@ -41,6 +41,7 @@ export default function Button({
   background,
   color,
   border,
+  type = 'button'
 }: {
   children: any;
   onClick?: any;
@@ -52,6 +53,7 @@ export default function Button({
   background?: string;
   color?: string;
   border?: string;
+  type?: "button" | "submit" | "reset" | undefined
 }) {
   return (
     <CustomButton
@@ -64,6 +66,7 @@ export default function Button({
       radius={radius}
       background={background}
       color={color}
+      type={type}
     >
       {children}
     </CustomButton>

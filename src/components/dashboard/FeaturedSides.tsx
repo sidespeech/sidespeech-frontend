@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { FALLBACK_BG_IMG } from '../../constants/constants';
+import { getRandomId } from '../../helpers/utilities';
 import { Side } from '../../models/Side';
 import { sideAPI } from "../../services/side.service";
 import Spinner from '../ui-components/Spinner';
@@ -20,7 +23,9 @@ const FeatureSideCardStyled = styled.div<CardStyledProps>`
     height: ${CARD_HEIGHT}px;
     flex-shrink: 0;
     background-color: var(--bg-secondary);
-    background-image: url(${(props) => props.coverImage});
+    background-image: 
+        linear-gradient(180deg, rgba(24, 26, 43, 0) 0%, #181A2B 100%), 
+        url(${(props) => props.coverImage || FALLBACK_BG_IMG});
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -62,15 +67,15 @@ const FeatureSideCard = ({ side }: FeaturedSideCardProps) => {
     return <FeatureSideCardStyled coverImage={side.coverImage}>
         <div className="content">
             <h3>{side.name}</h3>
-            <div className="collections">
+            {side.collectionsCount > 0 && <div className="collections">
                 <span className="collection">
-                    {side.name}
+                    {side.firstCollection}
                     <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5.87273 16L4.40455 13.5619L1.62273 12.9524L1.89318 10.1333L0 8L1.89318 5.86667L1.62273 3.04762L4.40455 2.4381L5.87273 0L8.5 1.10476L11.1273 0L12.5955 2.4381L15.3773 3.04762L15.1068 5.86667L17 8L15.1068 10.1333L15.3773 12.9524L12.5955 13.5619L11.1273 16L8.5 14.8952L5.87273 16ZM7.68864 10.7048L12.0545 6.4L10.9727 5.29524L7.68864 8.53333L6.02727 6.93333L4.94545 8L7.68864 10.7048Z" />
                     </svg>
                 </span>
-                <span className="more-collections">+1</span>
-            </div>
+                {side.collectionsCount > 1 && <span className="more-collections">+{side.collectionsCount - 1}</span>}
+            </div>}
         </div>
     </FeatureSideCardStyled>
 }
@@ -122,8 +127,9 @@ const FeatureSidesStyled = styled.div<ListStyledProps>`
                 top: 0;
                 bottom: 0;
                 right: 0;
-                width: 25%;
-                background-color: linear-gradient(270deg, #242635 36.81%, rgba(36, 38, 53, 0) 100%);
+                width: 50%;
+                z-index: 2;
+                background: linear-gradient(270deg, #242635 36.81%, rgba(36, 38, 53, 0) 100%);
                 pointer-events: none;
                 opacity: .3;
             }
@@ -145,6 +151,11 @@ const FeatureSidesStyled = styled.div<ListStyledProps>`
         width: 100%;
         min-height: ${CARD_HEIGHT}px;
         color: var(--text-secondary);
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.4;
+        color: var(--text-secondary-dark);
     }
 `;
 
@@ -157,10 +168,16 @@ const FeaturedSides = (props: FeatureSidesProps) => {
 
     useEffect(() => {
         async function getAllFeaturedSides() {
-            setSidesLoading(true);
-            const response = await sideAPI.getAllFeaturedSides();
-            setFeaturedSides(response);
-            setSidesLoading(false);
+            try {
+                setSidesLoading(true);
+                const response = await sideAPI.getAllFeaturedSides();
+                setFeaturedSides(response);
+            } catch (error) {
+                console.error(error);
+                toast.error('Ooops! Something went wrong fetching the featured Sides', { toastId: getRandomId() });
+            } finally {
+                setSidesLoading(false);
+            }
         }
         getAllFeaturedSides();
     }, []);
@@ -201,7 +218,7 @@ const FeaturedSides = (props: FeatureSidesProps) => {
                 </div>
             : (
                 <div className="no-results">
-                    <p>No results</p>
+                    <p>Ooops!<br/>Nothing here</p>
                 </div>
             )} 
         </div>

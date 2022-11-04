@@ -10,6 +10,8 @@ import { Side } from "../../models/Side";
 import { UserCollectionsData } from "../../models/interfaces/UserCollectionsData";
 import { Collection } from "../../models/interfaces/collection";
 import alchemyService from "../../services/alchemy.service";
+import { sideAPI } from "../../services/side.service";
+import { RootState } from "../store/app.store";
 
 export interface UserData {
   user: User | null;
@@ -19,8 +21,9 @@ export interface UserData {
   redirectTo: null;
   sides: Side[];
   currentProfile: Profile | undefined;
-  userCollectionsData: UserCollectionsData | null;
+  userCollectionsData: UserCollectionsData | {};
   userCollectionsLoading: boolean;
+  userCollectionsLoadingSides: boolean;
 }
 
 const initialState: UserData = {
@@ -31,8 +34,9 @@ const initialState: UserData = {
   redirectTo: null,
   sides: [],
   currentProfile: undefined,
-  userCollectionsData: null,
-  userCollectionsLoading: false
+  userCollectionsData: {},
+  userCollectionsLoading: false,
+  userCollectionsLoadingSides: false
 };
 
 export const flattenChannels = (array: any, key:string) => {
@@ -43,7 +47,7 @@ export const flattenChannels = (array: any, key:string) => {
 
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
-  async (address: string) => {
+  async (address: string, { dispatch, getState }) => {
     const nfts = await alchemyService.getUserNfts(
       "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
     );
@@ -63,9 +67,19 @@ export const fetchUserDatas = createAsyncThunk(
         res[address].nfts.push(nft);
       }
     }
+    Object.values(res).forEach((coll: any) => {
+      dispatch(getSidesByCollection(coll?.address))
+    })
     return res;
   }
 );
+
+export const getSidesByCollection = createAsyncThunk(
+  'userData/getSidesByCollection', async (address: string, {dispatch, getState}
+    ) => {
+  const response = await sideAPI.getSidesByCollections([address]);
+  return response;
+})
 
 export const userDataSlice = createSlice({
   name: "userData",
@@ -82,7 +96,7 @@ export const userDataSlice = createSlice({
         })
         : [];
       state.redirectTo = action.payload.redirectTo;
-      rooms = rooms.concat(flattenChannels(state.sides, 'channels'));
+      rooms = rooms?.concat(flattenChannels(state.sides, 'channels'));
       websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {
@@ -134,6 +148,16 @@ export const userDataSlice = createSlice({
     builder.addCase(fetchUserDatas.fulfilled, (state, action) => {
       state.userCollectionsData = { ...action.payload };
       state.userCollectionsLoading = false;
+    });
+    builder.addCase(getSidesByCollection.pending, (state, action) => {
+      state.userCollectionsLoadingSides = true;
+    });
+    builder.addCase(getSidesByCollection.rejected, (state, action) => {
+      state.userCollectionsLoadingSides = false;
+    });
+    builder.addCase(getSidesByCollection.fulfilled, (state, action) => {
+      state.userCollectionsData[action.payload.contracts].sideCount = action.payload.count;
+      state.userCollectionsLoadingSides = false;
     });
   },
 });
