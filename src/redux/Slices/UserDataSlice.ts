@@ -80,7 +80,7 @@ export const userDataSlice = createSlice({
         })
         : [];
       state.redirectTo = action.payload.redirectTo;
-      rooms = rooms.concat(flattenChannels(state.sides, 'channels'));
+      rooms = rooms ? rooms.concat(flattenChannels(state.sides, 'channels')) : null;
       websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {
