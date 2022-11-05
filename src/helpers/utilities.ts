@@ -141,15 +141,7 @@ export function checkUserEligibility(
         const tab = [];
         const collection = nfts[token_address];
         if (!collection) {
-          tab.push(
-            createResponseObject(
-              false,
-              null,
-              `No nfts for the collection with address ${token_address}`,
-              token_address,
-              condition
-            )
-          );
+          return;
         } else {
           // get nfts from collection with needed attributes
           const filteredNfts = getNftsWithAttributes(
@@ -186,7 +178,8 @@ function validateNftsWithAttributes(
     nfts,
     `No nft in the collection ${collection.address} with property ${condition["trait_type"]} and value ${condition["trait_value"]}`,
     collection.address,
-    condition
+    condition,
+    "attributes"
   );
 }
 
@@ -205,21 +198,22 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
       number - collection.nfts.length
     } nfts more to meet the condition.`,
     collection.address,
-    condition
+    condition,
+    "number"
   );
 }
 
 function isEligible(result: ElligibilityResponse, conditions: any): boolean {
   console.log(conditions);
-  if (conditions["requiered"]) {
+  if (!conditions["requiered"]) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>
-      res.every((value) => value.type === "success")
+      res.every((value) => value.type.includes("success"))
     );
   } else {
     // verifying if one of the collection are fully success
     return Object.values(result).some((res) =>
-      res.every((value) => value.type === "success")
+      res.every((value) => value.type.includes("success"))
     );
   }
 }
@@ -246,12 +240,13 @@ function createResponseObject(
   nfts: any,
   message: string,
   id: string,
-  condition: any
+  condition: any,
+  type: string
 ) {
   if (valid) {
     return {
       id: id,
-      type: "success",
+      type: `success-${type}`,
       property: condition["trait_type"],
       value: condition["trait_value"],
       usefulNfts: nfts,
@@ -259,8 +254,10 @@ function createResponseObject(
   } else {
     return {
       id: id,
-      type: "error",
+      type: `error-${type}`,
       message: message,
+      property: condition["trait_type"],
+      value: condition["trait_value"],
     };
   }
 }

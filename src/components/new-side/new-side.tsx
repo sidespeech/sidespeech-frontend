@@ -246,7 +246,7 @@ export default function NewSide() {
             conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
           }
           setFormData({ ...formData, conditions: conditions });
-        }
+        } 
       } else {
         // Turn active or not for selected item
         item["active"] = map_i === index - 1 ? true : false;
