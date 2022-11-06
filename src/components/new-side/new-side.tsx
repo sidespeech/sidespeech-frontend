@@ -81,7 +81,7 @@ const initialSteps = [
 ];
 
 export interface InitialStateSide {
-  sideImage: string | undefined;
+  sideImage: File | string | undefined;
   name: string;
   description: string;
   NftTokenAddress: string;
@@ -284,7 +284,7 @@ export default function NewSide() {
       toast.error("The image size has to be smaller than 500ko.");
       return;
     }
-    setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
+    setFormData({ ...formData, sideImage: file });
   };
 
   // ----- Functions for Admission component **start
@@ -496,6 +496,9 @@ export default function NewSide() {
         data["conditions"]["requiered"] = onlyOneRequired;
         data["conditions"] = JSON.stringify(data["conditions"]);
         data["NftTokenAddress"] = data["conditions"];
+        const fd  = new FormData();
+        fd.append('file', formData["sideImage"]);
+        data["sideImage"] = await apiService.uploadImage(fd)
         const newSide = await apiService.createSide(data);
 
         if (channels["added"].length) {

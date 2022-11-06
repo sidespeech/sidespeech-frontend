@@ -209,7 +209,7 @@ class apiService {
     return res.body;
   }
 
-  static async uploadImage(image: FormData): Promise<any> {
+  static async uploadImage(image: FormData): Promise<string> {
     const res = await superagent
       .post(`${BASE_URL}/files`)
       .send(image)
