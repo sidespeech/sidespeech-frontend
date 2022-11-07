@@ -161,7 +161,7 @@ export default function Settings() {
             })}
           </ContainerLeft>
 
-          <div className="f-column w-100 pt-3 ml-5">
+          <div className="f-column w-100 pt-3 ml-5 container-tab">
             {tabs["menu"].map((submenu: any, index: number) => {
               return (
                 <div key={index}>

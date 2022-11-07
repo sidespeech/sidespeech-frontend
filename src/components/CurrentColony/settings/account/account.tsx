@@ -108,7 +108,7 @@ export default function Account({
   };
 
   return (
-    <div className="flex">
+    <div className="flex pr-2" style={{gap: 30}}>
       {/* Profile Picture Section */}
       <div className="f-column flex-1">
         <div className="text-primary-light mb-3 text fw-600">Account</div>
