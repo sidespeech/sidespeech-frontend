@@ -56,6 +56,7 @@ export default function NftsCollections({
       const array: boolean[] = new Array(collections.length).fill(true);
       setOpenCollection(array);
       setFilteredCollections(collections);
+      console.log(collections)
     }
   }, []);
 
