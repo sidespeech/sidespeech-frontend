@@ -202,7 +202,7 @@ const FeaturedSides = (props: FeatureSidesProps) => {
                     <div>
                         <div>
                             {featuredSides.map(side => (
-                                <Link to={`/${side.id}`}>
+                                <Link key={side.id} to={`/${side.id}`}>
                                     <FeatureSideCard side={side} />
                                 </Link>
                             ))}

@@ -70,6 +70,7 @@ const PaginationControls = ({ className, currentPage = 1, id, onChangePage, styl
             <button 
                 className={`page-number-btn ${currentPage === pageNumber + 1 ? 'active' : ''}`}
                 disabled={currentPage === pageNumber + 1}
+                key={pageNumber}
                 onClick={() => onChangePage(pageNumber)}
             >
                 {pageNumber + 1}

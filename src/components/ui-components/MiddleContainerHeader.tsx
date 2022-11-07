@@ -35,8 +35,8 @@ export default function MiddleContainerHeader({ room }: { room: Room | null }) {
         className="profile-round pointer"
         alt="profile"
         src={fixURL(
-          user?.profiles.find((a) => a.side?.id === currentSide?.id)
-            ?.profilePicture.token_uri || ""
+          user?.profiles?.find((a) => a.side?.id === currentSide?.id)
+            ?.profilePicture?.token_uri || ""
         )}
       />
     </div>

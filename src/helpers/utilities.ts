@@ -135,7 +135,6 @@ export function checkUserEligibility(
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
   if (selectedSide) {
-    console.log(selectedSide.conditions)
     Object.entries<any>(selectedSide.conditions).forEach(
       ([token_address, condition]) => {
         const tab = [];
@@ -163,7 +162,6 @@ export function checkUserEligibility(
     );
   }
   const eligible = isEligible(res, selectedSide.conditions);
-  console.log(res,eligible)
   return [res, eligible];
 }
 
@@ -204,7 +202,6 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
 }
 
 function isEligible(result: ElligibilityResponse, conditions: any): boolean {
-  console.log(conditions);
   if (!conditions["requiered"]) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>

@@ -14,6 +14,7 @@ import SideCardItem from './shared-components/SideCardItem';
 interface MySidesStyledProps {}
 
 const MySidesStyled = styled.main<MySidesStyledProps>`
+  width: 100%;
   .title {
     margin-top: 0;
   }
@@ -71,8 +72,9 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
   }
   .list-wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - (2rem / 3))));
+    grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
     grid-gap: 1rem;
+    width: 100%;
   }
 `;
 
@@ -126,7 +128,9 @@ const MySides = ({}: MySidesProps) => {
         ) : !!userSides?.length ? (
             <div className="list-wrapper">
               {userSides.map(side => (
-                <SideCardItem side={side} />
+                <Link key={side.id} to={`/${side.id}`}>
+                  <SideCardItem side={side} userSides />
+                </Link>
               ))}
             </div>
           ) : (

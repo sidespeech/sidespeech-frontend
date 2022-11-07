@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { toast } from "react-toastify";
 // import { Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
-import { Side } from "../../../models/Side";
 import { RootState } from "../../../redux/store/app.store";
-import { sideAPI } from "../../../services/side.service";
 import _ from "lodash";
 
-import SideEligibilityModal from "../../Modals/SideEligibilityModal";
+import { Collection } from '../../../models/interfaces/collection';
 import UserCollectionCard from './UserCollectionCard';
 import UserCollectionItemSmall from './UserCollectionItemSmall';
 import CustomCheckbox from '../../ui-components/CustomCheckbox';
 import PaginationControls from '../../ui-components/PaginationControls';
 import Spinner from '../../ui-components/Spinner';
 import { getRandomId } from '../../../helpers/utilities';
+import { searchFiltersProps } from '../DashboardPage';
 // import Button from '../../ui-components/Button';
 
 interface CollectionsStyledProps {
@@ -106,50 +104,21 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
 `;
 
 type UserCollectionsProps = {
-
+    setSearchFilters: React.Dispatch<React.SetStateAction<searchFiltersProps>>;
 };
 
-const UserCollections = (props: UserCollectionsProps) => {
-    const { account, user, userCollectionsData, userCollectionsLoading } = useSelector(
+const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
+    const { userCollectionsData, userCollectionsLoading } = useSelector(
         (state: RootState) => state.user
       );
-    const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
-    const [filteredSides, setfilteredSides] = useState<Side[]>([]);
-    const [selectedCollection, setSelectedCollection] = useState<any>(null);
-    const [selectedSide, setSelectedSide] = useState<Side | null>(null);
-    const [sides, setSides] = useState<Side[]>([]);
+
     const [userCollections, setUserCollections] = useState<any[]>([]);
     const [viewMode, setViewMode] = useState<string>('card');
 
     useEffect(() => {
-        async function getAllSides() {
-            try {                
-                const sides = await sideAPI.getAllSides();
-                setSides(sides);
-                setfilteredSides(sides);
-            } catch (error) {
-                console.log(error);
-                toast.error('Ooops! Something went wrong fetching the Sides', { toastId: getRandomId() });
-            }
-        }
-        getAllSides();
         if (userCollectionsData)
             setUserCollections(_.orderBy(userCollectionsData, "name"));
     }, [userCollectionsData]);
-
-    useEffect(() => {
-        if (selectedCollection && sides) {
-            const filteredSides = sides.filter(
-            (s) => s.NftTokenAddress === selectedCollection["token_address"]
-            );
-            setfilteredSides(filteredSides);
-        }
-    }, [selectedCollection, sides]);
-
-    const handleEligibilityCheck = (side: Side) => {
-        setSelectedSide(side);
-        setDisplayEligibility(true);
-    };
 
   return (
     <UserCollectionsStyled>
@@ -185,11 +154,29 @@ const UserCollections = (props: UserCollectionsProps) => {
                         <Spinner />
                     </div>
                 ) : !!userCollections.length ?
-                        userCollections.map((collection: any) => (
-                        <>
-                            {viewMode === 'card' && <UserCollectionCard collection={collection} onClick={() => setSelectedCollection(collection)} />}
-                            {viewMode === 'list' && <UserCollectionItemSmall collection={collection} onClick={() => setSelectedCollection(collection)} />}
-                        </>
+                        userCollections.map((collection: Collection) => (
+                        <React.Fragment key={collection.address}>
+                            {viewMode === 'card' && (
+                                <UserCollectionCard 
+                                    collection={collection} 
+                                    onClick={() => setSearchFilters(prevState => ({
+                                        ...prevState,
+                                        collections: collection.address,
+                                        selectedCollection: collection?.openseaData?.collectionName
+                                    }))} 
+                                />
+                            )}
+                            {viewMode === 'list' && (
+                                <UserCollectionItemSmall 
+                                    collection={collection} 
+                                    onClick={() => setSearchFilters(prevState => ({
+                                        ...prevState,
+                                        collections: collection.address,
+                                        selectedCollection: collection?.openseaData?.collectionName
+                                    }))}  
+                                />
+                            )}
+                        </React.Fragment>
                 )) : (
                     <div className="no-results">
                         <p>Ooops!<br/>Nothing here</p>
@@ -217,34 +204,6 @@ const UserCollections = (props: UserCollectionsProps) => {
                 totalPages={1}
             />
         </div>
-
-        {/* <div className="f-column w-100 overflow-auto">
-            <div className=""></div>
-            <div className="sides-list-body">
-                {filteredSides.map((s: Side) => {
-                return (
-                    <div style={{ width: 256, height: 320, background: "white" }}>
-                    <img src={s.sideImage} alt="side" />
-                    <div>Name: {s.name}</div>
-                    <div>Members: {s.profiles.length}</div>
-                    <div className="join-div">
-                        <Button
-                        children={"join"}
-                        onClick={() => handleEligibilityCheck(s)}
-                        />
-                    </div>
-                    </div>
-                );
-                })}
-            </div>
-        </div> */}
-
-        {displayEligibility && selectedSide && (
-            <SideEligibilityModal
-            setDisplayEligibility={setDisplayEligibility}
-            selectedSide={selectedSide}
-            />
-        )}
     </UserCollectionsStyled>
   );
 };
