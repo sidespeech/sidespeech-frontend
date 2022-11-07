@@ -16,6 +16,7 @@ export class Side {
   conditions: any;
   channels: Channel[];
   profiles: Profile[];
+  invitations: any[];
 
   constructor(_data: any) {
     this.id = _data.id;
@@ -27,8 +28,10 @@ export class Side {
     this.coverImage = _data.coverImage;
     this.priv = _data.private;
     this.sideImage = _data.sideImage;
+    // this.conditions = _data.conditions ? (_data.conditions instanceof String ? JSON.parse(_data.conditions) : _data.conditions) : {};
     this.conditions = _data.conditions ? JSON.parse(_data.conditions) : {};
     this.channels = _data.channels;
+    this.invitations = _data.invitations;
     this.profiles = _data.profiles
       ? _data.profiles.map((p: any) => new Profile(p))
       : [];

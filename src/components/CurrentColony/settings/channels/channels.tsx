@@ -291,6 +291,7 @@ export default function Channels({
             onClick={onSubmit}
             radius={10}
             color={"var(--text-primary-light)"}
+            classes={"mt-4"}
           >
             Save{" "}
           </Button>

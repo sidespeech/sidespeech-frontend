@@ -12,6 +12,9 @@ import "./Settings.css";
 import { RootState } from "../../../redux/store/app.store";
 import ContainerLeft from "../../ui-components/ContainerLeft";
 import TabItems from "../../ui-components/TabItems";
+import { apiService } from "../../../services/api.service";
+import { setCurrentColony, setSelectedChannel } from "../../../redux/Slices/AppDatasSlice";
+import { Dot } from "../../ui-components/styled-components/shared-styled-components";
 
 
 const initialStateTabs = {
@@ -32,7 +35,7 @@ const initialStateTabs = {
       admin: false,
       items: [
         { active: false, icon: "fa-solid fa-circle-user", label: "Account" },
-        { active: false, icon: "fa-solid fa-circle-check", label: "Eligibility" }
+        // { active: false, icon: "fa-solid fa-circle-check", label: "Eligibility" }
       ]
     }
   ]
@@ -40,7 +43,6 @@ const initialStateTabs = {
 };
 
 export default function Settings(
-  // { currentSide }: { currentSide: Colony;}
 ) {
 
   const dispatch = useDispatch();
@@ -51,7 +53,23 @@ export default function Settings(
 
   const [tabs, setTabs] = useState<any>(initialStateTabs);
 
+  // Requests notifications : 
+  const [requests, setRequests] = useState<any[]>([]);
+
   const handleTabs = (tabName: any) => {
+    async function getSide() {
+      if (currentSide) {
+        const res = await apiService.getSideById(currentSide['id']);
+        dispatch(setCurrentColony(res));
+        dispatch(
+          setSelectedChannel(
+            res.channels.find((c) => c.type === 0) || res.channels[0]
+          )
+        );
+      }
+    }
+    getSide();
+
     let currentTabState = { ...tabs }
     for (const submenu of tabs['menu']) {
       for (const data of submenu['items']) {
@@ -65,10 +83,43 @@ export default function Settings(
     if (!currentSide) {
       navigate(`/`)
     } else {
-      (currentSide && currentSide['creatorAddress'].toLowerCase() === (userData['account'] || "").toLowerCase()) ? 
-      handleTabs('Informations') : handleTabs('Account'); 
+      (userData && userData['currentProfile'] && userData['currentProfile']['role'] === 0) ?
+        handleTabs('Informations') : handleTabs('Account');
     }
-  }, []);
+  }, [userData]);
+
+
+  // Getting request for display notification :
+  const getRequestsUsers = async (requestsOrdered: any[]) => {
+    let ids = requestsOrdered.map((invitation: any) => invitation['senderId']);
+    const users = (await apiService.getUsersByIds(ids)).reduce((prev: any, current: any, index: number) => {
+
+      let obj = { accounts: '', created_at: '', image: '', id: '', user_id: '' };
+      const current_request = requestsOrdered.find(item => item['senderId'] === current['id']);
+
+      obj['accounts'] = current['accounts'];
+      obj['created_at'] = current_request['created_at'];
+      obj['id'] = current_request['id'];
+      obj['user_id'] = current['id'];
+      obj['image'] = 'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80';
+
+      prev.push(obj);
+
+      return prev
+    }, []);
+    setRequests(users);
+  };
+
+  useEffect(() => {
+    updateRequestNotifications();
+  }, [currentSide, userData]);
+
+  const updateRequestNotifications = async () => {
+    if (currentSide && userData && userData['user']) {
+      let requestsOrdered = currentSide['invitations'].filter((invitation: any) => invitation['recipientId'] === userData['user']!['id'] && invitation['state'] === 3);
+      getRequestsUsers(requestsOrdered);
+    }
+  }
 
   return (
     <>
@@ -97,13 +148,19 @@ export default function Settings(
               return (
                 // 
                 (submenu['admin'] === true) ?
-                  (currentSide['creatorAddress'].toLowerCase() === (userData['account'] || "").toLowerCase()) ?
+                  (userData && userData['currentProfile'] && userData['currentProfile']['role'] === 0) ?
                     <div key={index} className="mt-2">
                       <label className="pl-4 sidebar-title">{submenu['title']}</label>
 
                       {submenu['items'].map((subtitle: any, index: number) => {
                         return (
-                          <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                          <>
+                            <div>
+                              <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}
+                              {/* {(subtitle['label'] === 'Requests' && requests.length) ? <Dot>{requests.length}</Dot> : null} */}
+                              </TabItems>
+                            </div>
+                          </>
                         );
                       })}
                     </div> : null :
@@ -126,13 +183,13 @@ export default function Settings(
                 <div key={index}>
                   {submenu['items'].map((subtitle: any, index: number) => {
                     return (
-                      (subtitle['label'] == 'Informations' && subtitle['active']) ? <Informations currentSide={currentSide} /> :
+                      (subtitle['label'] == 'Informations' && subtitle['active']) ? <Informations currentSide={currentSide} userData={userData} /> :
                         (subtitle['label'] == 'Members' && subtitle['active']) ? <MembersList currentSide={currentSide} /> :
-                        (subtitle['label'] == 'Requests' && subtitle['active']) ? <Requests currentSide={currentSide} userData={userData} /> :
-                          (subtitle['label'] == 'Channels' && subtitle['active']) ? <Channels currentSide={currentSide} /> :
-                            (subtitle['label'] == 'Invitation' && subtitle['active']) ? <Invitation currentSide={currentSide} /> :
-                              (subtitle['label'] == 'Account' && subtitle['active']) ? <Account currentSide={currentSide} userData={userData} /> :
-                                (subtitle['label'] == 'Eligibility' && subtitle['active']) ? <Eligibility currentSide={currentSide} /> : null
+                          (subtitle['label'] == 'Requests' && subtitle['active']) ? <Requests currentSide={currentSide} userData={userData} updateRequestNotifications={updateRequestNotifications}/> :
+                            (subtitle['label'] == 'Channels' && subtitle['active']) ? <Channels currentSide={currentSide} /> :
+                              (subtitle['label'] == 'Invitation' && subtitle['active']) ? <Invitation currentSide={currentSide} userData={userData} /> :
+                                (subtitle['label'] == 'Account' && subtitle['active']) ? <Account currentSide={currentSide} userData={userData} /> :
+                                  (subtitle['label'] == 'Eligibility' && subtitle['active']) ? <Eligibility currentSide={currentSide} /> : null
                     );
                   })}
                 </div>

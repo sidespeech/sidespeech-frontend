@@ -36,6 +36,7 @@
     "ethers": "^5.7.1",
     "lodash": "^4.17.21",
     "markdown-draft-js": "^2.4.0",
+    "moment": "^2.29.4",
     "moralis": "^2.6.5",
     "moralis-v1": "^1.11.0",
     "qrcode.react": "^3.0.2",

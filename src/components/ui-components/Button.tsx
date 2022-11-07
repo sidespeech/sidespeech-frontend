@@ -9,6 +9,7 @@ interface ButtonProps {
   background?: string;
   color?: string;
   border?: string;
+  fontSize?:string;
 }
 
 const CustomButton = styled.div<ButtonProps>`
@@ -23,7 +24,7 @@ const CustomButton = styled.div<ButtonProps>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 14px;
+  font-size: ${(props) => (props.fontSize ? props.fontSize : "14px")};;
   font-weight: 700;
   pointer-events: ${(props) => (props.disabled ? "none" : "all")};
   filter: ${props => props.disabled && "grayscale(1)"};
@@ -41,6 +42,7 @@ export default function Button({
   background,
   color,
   border,
+  fontSize
 }: {
   children: any;
   onClick: any;
@@ -52,6 +54,7 @@ export default function Button({
   background?: string;
   color?: string;
   border?: string;
+  fontSize?:string;
 }) {
   return (
     <CustomButton
@@ -64,6 +67,7 @@ export default function Button({
       radius={radius}
       background={background}
       color={color}
+      fontSize={fontSize}
     >
       {children}
     </CustomButton>

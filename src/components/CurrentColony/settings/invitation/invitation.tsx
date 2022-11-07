@@ -9,18 +9,21 @@ import linkedin from "../../../../assets/linkedin.svg";
 import "./invitation.css"
 import { apiService } from "../../../../services/api.service";
 import { toast } from "react-toastify";
+import { Profile } from "../../../../models/Profile";
 
 
 export default function Invitation({
   currentSide,
+  userData,
   invitationUsers,
   setUserInvited,
   userInvited
 }: {
   currentSide: Side;
+  userData?: any;
   invitationUsers?: any[];
-  setUserInvited?:any;
-  userInvited?:any;
+  setUserInvited?: any;
+  userInvited?: any;
 }) {
 
   const dispatch = useDispatch();
@@ -88,33 +91,70 @@ export default function Invitation({
   }]
 
   const [usersInvite, setUsersInvite] = useState<any>([]);
+  const [invited, setInvited] = useState<any>([]);
 
 
   useEffect(() => {
     if (invitationUsers) {
       setUsersInvite(invitationUsers)
     } else {
-      setUsersInvite(exampleUsers)
+      if (userData && userData['user'] && userData['user']['profiles']) {
+        const getInvitationUsers = async (user: any) => {
+          let userSides = user.profiles.map((p: Profile) => p.side);
+          let users = await apiService.getUserFromSides(userSides);
+          let invitationsUsersObject = []
+          for (let userInvite of users) {
+            if (user['id'] !== userInvite['id'])
+              invitationsUsersObject.push({
+                name: (userInvite['username']) ? `${userInvite['username']} (${userInvite['accounts']})` : userInvite['accounts'],
+                invited: (userInvite['invitations'].find((item:any) => item['sideId'] === currentSide['id'])) ? true : false,
+                recipient: userInvite,
+                sender: user
+              })
+          }
+          setUsersInvite(invitationsUsersObject)
+        }
+        getInvitationUsers(userData['user']);
+      }
+
     }
-  }, [invitationUsers]);
+  }, [invitationUsers, userData, currentSide]);
 
 
-  const addInvitationUsers = async (user:any, index:number) => {
-    let currentsInvited = [...userInvited];
-    let object = {
-      state: 3,
-      sender: user.sender,
-      recipient: user.recipient,
-      invitationLink : sideLink
-    }
+  const addInvitationUsers = async (user: any, index: number) => {
+    if (userInvited) {
+      let currentsInvited = [...userInvited];
+      let object = {
+        state: 3,
+        sender: user.sender,
+        recipient: user.recipient,
+        invitationLink: sideLink
+      }
 
-    if (!currentsInvited.find(i => i.recipient === object.recipient)) {
-      setUserInvited([...userInvited, object])
+      if (!currentsInvited.find(i => i.recipient === object.recipient)) {
+        setUserInvited([...userInvited, object])
+        let users = [...usersInvite]
+        users[index]['invited'] = true
+        setUsersInvite(users);
+      }
+    } else {
+      delete user['sender']['profiles'];
+
+      let object = {
+        state: 3,
+        sender: { ...user.sender },
+        recipient: user.recipient,
+        invitationLink: sideLink,
+        side: currentSide
+      }
+      await apiService.sendSingleInvitation(object);
+
       let users = [...usersInvite]
       users[index]['invited'] = true
       setUsersInvite(users);
     }
-  }  
+
+  }
   const sideLink = `https://sidespeech.com/side/${(Math.random() + 1).toString(36).substring(7)}`;
 
   const handleCopyWalletAddress = () => {
@@ -126,7 +166,7 @@ export default function Invitation({
     <>
 
       {/* Search and Invite Section */}
-    <div>Search and invite</div>
+      <div className="text-primary-light mb-3 text fw-600">Search and invite</div>
       <div className="search-and-invite mb-3">
         <InputText
           placeholderColor="var(--placeholer)"
@@ -136,14 +176,14 @@ export default function Invitation({
           width="85%"
           bgColor="var(--bg-secondary-light)"
           glass={true}
-          iconRightPos={{ top: 12, right: 105 }}
+          iconRightPos={{ top: 12, right: 120 }}
           placeholder={"Search by username or wallet address "}
           onChange={undefined}
           radius="5px"
         />
         <div className="f-column user-list mt-3">
           {
-            usersInvite.map((user:any, index:number) =>
+            usersInvite.map((user: any, index: number) =>
               <div className="flex mt-4 justify-between">
                 <div className="flex">
                   <label className="profile-image-user f-column align-center justify-center">
@@ -156,10 +196,10 @@ export default function Invitation({
                 </div>
                 <div>
                   {
-                    (user['invited']) ? 
-                    <label className="text-green"><i className="fa-solid fa-check mr-2"></i> Invited</label>
-                    :
-                    <Button classes="size-12" width={70} height={27} radius={5} onClick={() => addInvitationUsers(user, index)} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
+                    (user['invited']) ?
+                      <label className="text-green"><i className="fa-solid fa-check mr-2"></i> Invited</label>
+                      :
+                      <Button classes="size-12" width={70} height={27} radius={5} onClick={() => addInvitationUsers(user, index)} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
                   }
                 </div>
               </div>
@@ -194,8 +234,8 @@ export default function Invitation({
         <div className="text-primary-light mb-3 text fw-600">Share on social networks</div>
         <div className="flex mt-2 align-center">
           {
-            socialsMedia.map((social,index) =>
-              <Button key={index} classes="cursor-pointer mr-2" width={100} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2"/>{social.label}</Button>
+            socialsMedia.map((social, index) =>
+              <Button key={index} classes="cursor-pointer mr-2" width={100} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2" />{social.label}</Button>
             )
           }
         </div>

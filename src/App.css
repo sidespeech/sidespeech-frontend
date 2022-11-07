@@ -65,8 +65,8 @@
 
 
 .upload-colony-image {
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   cursor: pointer;
   background: var(--bg-secondary-dark);
   border: 2px dashed var(--bg-primary-light);

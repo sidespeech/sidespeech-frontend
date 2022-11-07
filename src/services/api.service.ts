@@ -66,7 +66,6 @@ class apiService {
     const res = await superagent
       .patch(`${BASE_URL}/profile/${id}`)
       .send(profile);
-    console.log(res["body"]);
     return res["body"];
   }
   static async updateUser(
@@ -234,14 +233,48 @@ class apiService {
   }
 
   static async sendInvitation(invitation:Invitation): Promise<any> {
-    console.log(invitation)
     const res = await superagent.post(`${BASE_URL}/invitation`).send(invitation);
     return res.body;
   } 
 
   static async sendMultipleInvitations(invitations:Invitation[]): Promise<any> {
-    console.log(invitations)
     const res = await superagent.post(`${BASE_URL}/invitation/many`).send(invitations);
+    return res.body;
+  } 
+
+  static async sendSingleInvitation(invitation:any): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/invitation`).send(invitation);
+    return res.body;
+  } 
+
+  static async getRequestsFromInvitations(userId:string, sideId:string): Promise<any> {
+    const res = await superagent.get(`${BASE_URL}/invitation/${sideId}/${userId}`);
+    return res.body;
+  } 
+
+
+  static async updateInvitationState(id:string, state:number): Promise<any> {
+    const res = await superagent.patch(`${BASE_URL}/invitation/${id}`).send({state : state});
+    return res.body;
+  } 
+
+  static async getUsersByIds(ids:string[]): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/user/ids`).send({ids : ids});
+    return res.body;
+  }
+
+  static async updateSubAdmin(name:string, sideId:string): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/user/subadmin`).send({sideId: sideId, name:name});
+    return res.body;
+  } 
+
+  static async leaveSide(profile:Profile): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/profile/leave`).send(profile);
+    return res.body;
+  } 
+
+  static async removeProfile(id:string): Promise<any> {
+    const res = await superagent.delete(`${BASE_URL}/profile/${id}`);
     return res.body;
   } 
 
