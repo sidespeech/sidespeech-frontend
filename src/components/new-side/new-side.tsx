@@ -512,6 +512,7 @@ export default function NewSide() {
         const fd = new FormData();
         fd.append("file", formData["sideImage"]);
         data["sideImage"] = await apiService.uploadImage(fd);
+        data["creatorAddress"] = user?.accounts;
         const newSide = await apiService.createSide(data);
 
         if (channels["added"].length) {

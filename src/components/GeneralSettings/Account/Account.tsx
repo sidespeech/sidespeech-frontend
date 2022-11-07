@@ -11,6 +11,7 @@ import NftsCollections from "./NftsCollections";
 import UserGeneralInformations from "./UserGeneralInformations";
 import { NFT } from "../../../models/interfaces/nft";
 import _ from "lodash";
+import { Collection } from "../../../models/interfaces/collection";
 
 export default function GeneralSettingsAccount() {
   const { user, userCollectionsData } = useSelector(
@@ -20,6 +21,8 @@ export default function GeneralSettingsAccount() {
   const [checkedNfts, setCheckedNfts] = useState<{
     [key: string]: NFT[];
   } | null>(null);
+
+  const [collections, setCollections] = useState<Collection[]>([])
 
   useEffect(() => {
     if (userCollectionsData && user) {
@@ -31,6 +34,7 @@ export default function GeneralSettingsAccount() {
         initCheckedState[key] = [...nfts];
       });
       setCheckedNfts(initCheckedState);
+      setCollections(Object.values(userCollectionsData))
     }
   }, [userCollectionsData, user]);
   const handleNftChange = (selectedNft: NFT) => {
@@ -66,10 +70,10 @@ export default function GeneralSettingsAccount() {
         <div className="account">
           <UserGeneralInformations user={user} />
 
-          {checkedNfts && (
+          {checkedNfts && collections.length >0 && (
             <NftsCollections
               selectedNfts={checkedNfts}
-              collections={Object.values(userCollectionsData)}
+              collections={collections}
               user={user}
               handleNftChange={handleNftChange}
               handleSelectAll={handleSelectAll}
