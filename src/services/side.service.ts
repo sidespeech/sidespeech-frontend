@@ -33,7 +33,7 @@ export class sideAPI {
   // get all sides by search string
   static async getSidesBySearchValue(searchValue: string, collections?: string): Promise<Side[]> {
     const res = await superagent.get(
-      `${BASE_URL}/side/search?searchValue=${searchValue}&collections=${collections || ''}`
+      `${BASE_URL}/side/search?searchValue=${searchValue}&collections=${collections && collections !== 'all' ? collections : ''}`
     );
     const sidesListWithoutCollections = dtoToSideList(res.body);
     const sidesList: Side[] = await Promise.all(sidesListWithoutCollections.map(async (side) => {

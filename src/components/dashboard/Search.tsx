@@ -37,8 +37,9 @@ const SearchStyled = styled.main<SearchStyledProps>`
     .collection-select,
     .elegibility-select {
         justify-content: space-between;
-        background-color: var(--bg-secondary);
+        background-color: var(--bg-secondary-dark);
         padding: .5rem 1rem;
+        border-radius: 10px;
     }
     .collection-select {
         width: 30%;
@@ -157,9 +158,10 @@ const Search = ({ searchFilters, searchText, setSearchFilters }: SearchProps) =>
                 collections: ev.target.value,
                 selectedCollection: ''
             }))}
-            options={[]}
+            options={['All']}
             placeholder="Select a collection"
-            valueToSet={searchFilters.collections?.split(',')}
+            valueToSet={searchFilters.collections?.split(',')[0] || ''}
+            values={['all']}
             width="70%"
           />
         </div>

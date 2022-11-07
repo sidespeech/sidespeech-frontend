@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { getRandomId } from '../../helpers/utilities';
-import { Side } from '../../models/Side';
-import { sideAPI } from '../../services/side.service';
+import { RootState } from '../../redux/store/app.store';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import CustomSelect from '../ui-components/CustomSelect';
-import Spinner from '../ui-components/Spinner';
 import SideCardItem from './shared-components/SideCardItem';
 
 interface MySidesStyledProps {}
@@ -30,9 +26,10 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
     }
     .collection-select {
       justify-content: space-between;
-      background-color: var(--bg-secondary);
+      background-color: var(--bg-secondary-dark);
       padding: .5rem 1rem;
       width: 40%;
+      border-radius: 10px;
     }
   }
 
@@ -81,25 +78,9 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
 interface MySidesProps {};
 
 const MySides = ({}: MySidesProps) => {
-  const [sidesLoading, setSidesLoading] = useState<boolean>(false);
-  const [userSides, setUserSides] = useState<Side[]>([]);
-
-  useEffect(() => {
-    async function getUserSides() {
-      try {
-        setSidesLoading(true);
-        const response = await sideAPI.getAllSides();
-        setUserSides(response);
-      } catch (error) {
-        console.error(error);
-        toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
-      } finally {
-        setSidesLoading(false);
-      }
-    }
-
-    getUserSides();
-  }, [])
+  const { sides: userSides } = useSelector(
+    (state: RootState) => state.user
+);
 
   return (
     <MySidesStyled>
@@ -121,11 +102,7 @@ const MySides = ({}: MySidesProps) => {
         </div>
       </div>
 
-      {sidesLoading ? (
-        <div className="spinner-wrapper">
-            <Spinner />
-        </div>
-        ) : !!userSides?.length ? (
+      {!!userSides?.length ? (
             <div className="list-wrapper">
               {userSides.map(side => (
                 <Link key={side.id} to={`/${side.id}`}>
