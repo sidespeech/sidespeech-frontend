@@ -260,17 +260,17 @@ export default function Informations({
             </Button>
 
             <div className='yellowDiv mt-3'>
-              <button className='flex' onClick={onSubmitLeaveSide}>
+              <button className='flex mt-2' onClick={onSubmitLeaveSide}>
                 <i className="fa-solid fa-right-from-bracket"></i>
                 <p>Leave the side</p>
               </button>
 
-              <p className='sub-text mt-2'>To leave a side, you must define a sub-admin-user who will become the new administrator</p>
+              <p className='sub-text mt-5'>To leave a side, you must define a sub-admin-user who will become the new administrator</p>
 
               <div className='btm-div'>
-                <p className='btm-div-head mt-3'>Define a sub-admin User</p>
+                <p className='btm-div-head mt-5'>Define a sub-admin User</p>
                 <p className='btm-div-nor'>Search for a username or wallet address registered on<br /> SideSpeech</p>
-                <div className='typ-sm mt-3'>
+                <div className='typ-sm mt-5'>
                   {/* <input className='sideInput' placeholder='Type something' /> */}
                   <InputText
                     parentWidth="100%"
