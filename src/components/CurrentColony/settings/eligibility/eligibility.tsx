@@ -45,7 +45,7 @@ const Chip = styled.span`
   padding: 1px 8px;
 `;
 
-export default function Eligibility({side}: {side: Side}) {
+export default function Eligibility({ side }: { side: Side }) {
   const { userCollectionsData, user } = useSelector(
     (state: RootState) => state.user
   );
@@ -55,16 +55,13 @@ export default function Eligibility({side}: {side: Side}) {
 
   useEffect(() => {
     if (userCollectionsData && side) {
-      const [res, isEligible] = checkUserEligibility(
-        userCollectionsData,
-        side
-      );
+      const [res, isEligible] = checkUserEligibility(userCollectionsData, side);
       setIsEligible(isEligible);
       setDetails(res);
     }
   }, [userCollectionsData, side]);
 
-  if (!userCollectionsData) return<></>;
+  if (!userCollectionsData) return <></>;
 
   return (
     <ConditionsContainer>
@@ -99,7 +96,7 @@ export default function Eligibility({side}: {side: Side}) {
                       {" "}
                       <span className="mr-2">-</span>
                       {collection?.name}{" "}
-                      {collection?.openseaData.safelistRequestStatus ===
+                      {collection?.openseaData?.safelistRequestStatus ===
                         OpenSeaRequestStatus.verified && (
                         <img
                           alt="check"

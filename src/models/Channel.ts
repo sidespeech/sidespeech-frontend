@@ -8,7 +8,7 @@ export enum ChannelType {
   }
 
 export class Channel {
-  polls(polls: any, arg1: string) {
+  polls?(polls: any, arg1: string) {
     return []
   }
   id: string;
