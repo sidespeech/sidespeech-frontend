@@ -89,8 +89,8 @@ export default function Informations({
           Profile Picture
         </div>
 
-        <div className="flex">
-          <label className="upload-colony-image f-column align-center justify-center">
+        <label htmlFor="input-colony-picture" className="flex">
+          <div className="upload-colony-image f-column align-center justify-center">
             {formData.sideImage ? (
               <img
                 style={{
@@ -119,25 +119,24 @@ export default function Informations({
                 </span>
               </>
             )}
-          </label>
+          </div>
 
-          <label className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">
+          <div className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">
             Use square image (1:1 ratio) to have a better rendering.
-          </label>
+          </div>
 
           <div className="f-column align-center justify-center ml-3">
-            <input
-              accept=".png,.jpg,.jpeg,.webp"
-              style={{ display: "none" }}
-              id="input-colony-picture"
-              type={"file"}
-              onChange={onChangeSideImage}
-            />
-            <label htmlFor={"input-colony-picture"}>
+            <div>
+              <input
+                accept=".png,.jpg,.jpeg,.webp"
+                style={{ opacity: 0, position: 'absolute', pointerEvents: 'none' }}
+                id="input-colony-picture"
+                type={"file"}
+                onChange={onChangeSideImage}
+              />
               <Button
                 width={159}
                 height={46}
-                onClick={undefined}
                 radius={10}
                 background={"var(--bg-secondary-light)"}
                 color={"var(--text-primary-light)"}
@@ -145,9 +144,9 @@ export default function Informations({
                 {" "}
                 Upload a new image
               </Button>
-            </label>
+            </div>
           </div>
-        </div>
+        </label>
       </div>
 
       {/* Name Section */}
