@@ -1,3 +1,4 @@
+import { Vote } from './../models/Vote';
 import superagent from "superagent";
 import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
@@ -13,11 +14,13 @@ import { Message, Room } from "../models/Room";
 import { Side } from "../models/Side";
 import { User } from "../models/User";
 import { Notification } from "../models/Notification";
+import { Poll } from "../models/Poll";
 import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 import { Invitation } from "../models/Invitation";
 
 // Create an API Service class
 class apiService {
+
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
@@ -214,6 +217,36 @@ class apiService {
       .post(`${BASE_URL}/files`)
       .send(image)
     return res.text || '';
+  }
+  static async createPoll(
+    creatorId: string,
+    question: string,
+    isProposed: boolean,
+    options: any,
+    timestamp: string
+  ): Promise<Poll> {
+    const res = await superagent
+      .post(`${BASE_URL}/poll`)
+      .send({ creatorId, question, isProposed, options, timestamp });
+    return new Poll(res.body);
+  }
+
+  static async getChannelPolls(
+  ): Promise<Poll[]> {
+    const res = await superagent
+      .get(`${BASE_URL}/poll`);
+    return res.body.map((m: any) => new Poll(m));
+  }
+
+  static async voteOnPoll(
+    voterId: string,
+    option_id: string,
+    timestamp: string
+  ): Promise<Vote> {
+    const res = await superagent
+      .post(`${BASE_URL}/vote`)
+      .send({ voterId, option_id, timestamp });
+    return new Vote(res.body);
   }
 
   // Fetch notification by channel id and user wallet address
