@@ -21,7 +21,6 @@ import NewSide from "./components/new-side/new-side";
 import GeneralSettings from "./components/GeneralSettings/DefaultView";
 import GeneralSettingsAccount from "./components/GeneralSettings/Account/Account";
 
-import { MoralisProvider } from "react-moralis";
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
 
 ReactDOM.render(
@@ -42,14 +41,12 @@ ReactDOM.render(
       }}
     />
     <React.StrictMode>
-      <MoralisProvider
-        serverUrl="https://nyntqrq0zh4z.usemoralis.com:2053/server"
-        appId="UUQ8TnQNeOid3DJ5blkab3Jv2K9nsXDpFTasNs3f"
-      >
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<App />}>
               <Route index element={<DefaultView />} />
+              <Route path="/my-sides" element={<DefaultView />} />
+              <Route path="/invitations" element={<DefaultView />} />
               <Route
                 path="/CreateSideSpeechProfile"
                 element={<CreateSideSpeechProfile />}
@@ -70,7 +67,6 @@ ReactDOM.render(
             </Route>
           </Routes>
         </BrowserRouter>
-      </MoralisProvider>
     </React.StrictMode>
   </Provider>,
   document.getElementById("root")

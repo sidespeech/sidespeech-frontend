@@ -3,9 +3,9 @@ import InputText from "./InputText";
 import { disconnect } from "../../redux/Slices/UserDataSlice";
 
 import { useDispatch, useSelector } from "react-redux";
-import UserProfileModal from "../Modals/UserProfileModal";
 import { RootState } from "../../redux/store/app.store";
 import { Room } from "../../models/Room";
+import { fixURL } from "../../helpers/utilities";
 
 export default function MiddleContainerHeader({ room }: { room: Room | null }) {
   const [displayProfile, setDisplayProfile] = useState<boolean>(false);
@@ -34,14 +34,11 @@ export default function MiddleContainerHeader({ room }: { room: Room | null }) {
         onClick={() => setDisplayProfile(true)}
         className="profile-round pointer"
         alt="profile"
-        src={
+        src={fixURL(
           user?.profiles.find((a) => a.side?.id === currentSide?.id)
-            ?.profilePicture
-        }
+            ?.profilePicture.token_uri || ""
+        )}
       />
-      {displayProfile && currentSide && (
-        <UserProfileModal colony={currentSide} showModal={setDisplayProfile} />
-      )}
     </div>
   );
 }

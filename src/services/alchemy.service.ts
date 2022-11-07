@@ -50,7 +50,7 @@ class AlchemyService {
       AlchemyService.instance = new AlchemyService();
     }
 
-    (async function startMoralis() {
+    (async function startAlchemy() {
       // Optional Config object, but defaults to demo api-key and eth-mainnet.
       const settings = {
         apiKey: ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
@@ -58,7 +58,6 @@ class AlchemyService {
       };
 
       AlchemyService.alchemy = new Alchemy(settings);
-      //   await Moralis.start({ apiKey: MORALIS_API_KEY });
     })();
 
     return AlchemyService.instance;

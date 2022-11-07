@@ -6,11 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { FadeLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { Colony } from "../../models/Colony";
-import { addColony, updateUser } from "../../redux/Slices/UserDataSlice";
+import { Side } from "../../models/Side";
+import { addColony } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
 
-import { SeparatorHorizontal } from "../Login/DefaultView";
 import Button from "../ui-components/Button";
 import CustomCheckbox from "../ui-components/CustomCheckbox";
 import CustomSelect from "../ui-components/CustomSelect";
@@ -65,7 +64,7 @@ export default function Randoms({
   showModal,
   join = false,
 }: {
-  colony: Colony;
+  colony: Side;
   showModal: any;
   join?: boolean;
 }) {

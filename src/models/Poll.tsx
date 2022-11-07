@@ -4,19 +4,21 @@ export class Poll {
   public question: string;
   public answers: string[] = [];
   public id: string;
-  public createdAt: Date;
-  public updatedAt: Date;
+  public createdAt: string;
   public creator: any;
   public votes: Vote[] = [];
+  public pollOption: any;
 
   constructor(_data: any) {
     this.id = _data.id;
-    this.createdAt = _data.attributes.createdAt;
-    this.updatedAt = _data.attributes.updatedAt;
-    this.question = _data.attributes.question;
-    this.answers = _data.attributes.answers;
-    this.creator = _data.attributes.creator;
+    this.createdAt = _data.timestamp;
+    this.question = _data.question;
+    this.answers = _data.options;
+    this.creator = _data.creatorId;
+    this.pollOption = _data.pollOption;
+    this.votes = _data.vote;
   }
+
   async getVotes(votes: any) {
     if (!votes)
       return;
@@ -28,4 +30,5 @@ export class Poll {
       })
     );
   }
+
 }

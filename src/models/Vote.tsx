@@ -5,13 +5,12 @@ export class Vote {
   public poll: Poll;
   public selectedAnswer: number;
   public createdAt: Date;
-  public updatedAt: Date;
 
   constructor(_data: any) {
-    this.createdAt = _data.attributes.createdAt;
-    this.updatedAt = _data.attributes.updatedAt;
-    this.user = _data.attributes.user;
-    this.poll = _data.attributes.poll;
-    this.selectedAnswer = _data.attributes.selectedAnswer;
+    console.log('Vote Modal: ', _data);
+    this.createdAt = _data.timestamp;
+    this.user = _data.voterId;
+    this.poll = _data.poll;
+    this.selectedAnswer = _data.optionId;
   }
 }

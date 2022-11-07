@@ -1,8 +1,8 @@
+import { Vote } from './../models/Vote';
 import superagent from "superagent";
 import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialStateSide } from "../components/new-side/new-side";
-import { InitialState } from "../components/Modals/CreateColonyModal";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
 import { Channel, ChannelType } from "../models/Channel";
@@ -13,11 +13,13 @@ import { Message, Room } from "../models/Room";
 import { Side } from "../models/Side";
 import { User } from "../models/User";
 import { Notification } from "../models/Notification";
+import { Poll } from "../models/Poll";
 import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 import { Invitation } from "../models/Invitation";
 
 // Create an API Service class
 class apiService {
+
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
@@ -44,6 +46,7 @@ class apiService {
 
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
+    if (!res.body) throw new Error('Error')
     return new User(res.body);
   }
 
@@ -52,7 +55,11 @@ class apiService {
     return new Profile(res.body);
   }
 
-  static async joinSide(userId: string, sideId: string,role: number): Promise<Profile> {
+  static async joinSide(
+    userId: string,
+    sideId: string,
+    role: number
+  ): Promise<Profile> {
     const res = await superagent
       .post(`${BASE_URL}/profile/join`)
       .send({ userId, sideId, role });
@@ -67,6 +74,18 @@ class apiService {
       .patch(`${BASE_URL}/profile/${id}`)
       .send(profile);
     return res["body"];
+  }
+  static async updateProfilePicture(
+    id: string,
+    profilePicture: NFT
+  ): Promise<Profile> {
+    const res = await superagent
+      .put(`${BASE_URL}/profile/picture`)
+      .send({
+        profileId: id,
+        profileNftStringify: JSON.stringify(profilePicture),
+      });
+    return new Profile(res["body"]);
   }
   static async updateUser(
     id: string,
@@ -208,34 +227,71 @@ class apiService {
     return res.body;
   }
 
-  static async uploadImage(image: FormData): Promise<any> {
+  static async uploadImage(image: FormData): Promise<string> {
+    const res = await superagent.post(`${BASE_URL}/files`).send(image);
+    return res.text || "";
+  }
+  static async createPoll(
+    creatorId: string,
+    question: string,
+    isProposed: boolean,
+    options: any,
+    timestamp: string
+  ): Promise<Poll> {
     const res = await superagent
-      .post(`${BASE_URL}/files`)
-      .send(image)
-    return res.text || '';
+      .post(`${BASE_URL}/poll`)
+      .send({ creatorId, question, isProposed, options, timestamp });
+    return new Poll(res.body);
+  }
+
+  static async getChannelPolls(
+  ): Promise<Poll[]> {
+    const res = await superagent
+      .get(`${BASE_URL}/poll`);
+    return res.body.map((m: any) => new Poll(m));
+  }
+
+  static async voteOnPoll(
+    voterId: string,
+    option_id: string,
+    timestamp: string
+  ): Promise<Vote> {
+    const res = await superagent
+      .post(`${BASE_URL}/vote`)
+      .send({ voterId, option_id, timestamp });
+    return new Vote(res.body);
   }
 
   // Fetch notification by channel id and user wallet address
-  static async getNotification(address:string): Promise<any> {
-    const res = await superagent.get(`${BASE_URL}/notification/allNotifications/${address}`);
+  static async getNotification(address: string): Promise<any> {
+    const res = await superagent.get(
+      `${BASE_URL}/notification/allNotifications/${address}`
+    );
     return res.body.map((c: any) => new Notification(c));
   }
 
   // remove notification by channel id and user wallet address
-  static async deleteNotification(id:string, address:string): Promise<any> {
-    const res = await superagent.delete(`${BASE_URL}/notification/${id}/${address}`);
+  static async deleteNotification(id: string, address: string): Promise<any> {
+    const res = await superagent.delete(
+      `${BASE_URL}/notification/${id}/${address}`
+    );
     return new User(res.body);
   }
 
-  static async getUserFromSides(sides:Side[]): Promise<any> {
-    const res = await superagent.post(`${BASE_URL}/user/side`).send({sides: sides});
+  static async getUserFromSides(sides: Side[]): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/user/side`)
+      .send({ sides: sides });
     return res.body.users;
   }
 
-  static async sendInvitation(invitation:Invitation): Promise<any> {
-    const res = await superagent.post(`${BASE_URL}/invitation`).send(invitation);
+  static async sendInvitation(invitation: Invitation): Promise<any> {
+    console.log(invitation);
+    const res = await superagent
+      .post(`${BASE_URL}/invitation`)
+      .send(invitation);
     return res.body;
-  } 
+  }
 
   static async sendMultipleInvitations(invitations:Invitation[]): Promise<any> {
     const res = await superagent.post(`${BASE_URL}/invitation/many`).send(invitations);
@@ -279,6 +335,5 @@ class apiService {
   } 
 
 }
-
 
 export { apiService };

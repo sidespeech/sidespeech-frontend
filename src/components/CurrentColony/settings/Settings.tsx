@@ -16,11 +16,10 @@ import { apiService } from "../../../services/api.service";
 import { setCurrentColony, setSelectedChannel } from "../../../redux/Slices/AppDatasSlice";
 import { Dot } from "../../ui-components/styled-components/shared-styled-components";
 
-
 const initialStateTabs = {
   menu: [
     {
-      title: 'Settings',
+      title: "Settings",
       admin: true,
       items: [
         { active: true, icon: "fa-solid fa-gear", label: "Informations" },
@@ -28,10 +27,10 @@ const initialStateTabs = {
         { active: false, icon: "fa-solid fa-user-plus", label: "Requests" },
         { active: false, icon: "fa-solid fa-bullhorn", label: "Channels" },
         { active: false, icon: "fa-solid fa-circle-plus", label: "Invitation" },
-      ]
+      ],
     },
     {
-      title: 'Profile',
+      title: "Profile",
       admin: false,
       items: [
         { active: false, icon: "fa-solid fa-circle-user", label: "Account" },
@@ -81,7 +80,7 @@ export default function Settings(
 
   useEffect(() => {
     if (!currentSide) {
-      navigate(`/`)
+      navigate(`/`);
     } else {
       (userData && userData['currentProfile'] && userData['currentProfile']['role'] === 0) ?
         handleTabs('Informations') : handleTabs('Account');
@@ -123,36 +122,55 @@ export default function Settings(
 
   return (
     <>
-      {(currentSide) ?
+      {currentSide ? (
         <nav>
           <div className="menu-icon">
             <span className="fas fa-bars"></span>
           </div>
           <div className="nav-items text-primary-light">
-            <li><i className="fa fa-sliders mr-2"></i> <label className='navTitle'> {currentSide.name} </label><i className="ml-2 fa-solid fa-circle-check collection-icon-check"></i></li>
-            <li className='flex'><div className="vl"></div> <label>Preference</label></li>
+            <li>
+              <i className="fa fa-sliders mr-2"></i>{" "}
+              <label className="navTitle"> {currentSide.name} </label>
+              <i className="ml-2 fa-solid fa-circle-check collection-icon-check"></i>
+            </li>
+            <li className="flex">
+              <div className="vl"></div> <label>Preference</label>
+            </li>
           </div>
-          <div className='inputform'>
-            <input type="search" className="search-data" placeholder="Search" required />
-            <button><i className="fa fa-search" aria-hidden="true"></i></button>
+          <div className="inputform">
+            <input
+              type="search"
+              className="search-data"
+              placeholder="Search"
+              required
+            />
+            <button>
+              <i className="fa fa-search" aria-hidden="true"></i>
+            </button>
           </div>
-          <img className='avtr' src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar"></img>
-        </nav> : null}
+          <img
+            className="avtr"
+            src="https://www.w3schools.com/howto/img_avatar2.png"
+            alt="Avatar"
+          ></img>
+        </nav>
+      ) : null}
 
-
-      {(currentSide) ?
+      {currentSide ? (
         <div className="flex align-start w-100 text-left">
           <ContainerLeft>
             {/* <label className="pl-4 sidebar-title">Settings</label> */}
-            {tabs['menu'].map((submenu: any, index: number) => {
+            {tabs["menu"].map((submenu: any, index: number) => {
               return (
                 // 
                 (submenu['admin'] === true) ?
-                  (userData && userData['currentProfile'] && userData['currentProfile']['role'] === 0) ?
-                    <div key={index} className="mt-2">
-                      <label className="pl-4 sidebar-title">{submenu['title']}</label>
+                  ((userData && userData['currentProfile'] && userData['currentProfile']['role'] === 0) ?
+                    ( <div key={index} className="mt-2">
+                      <label className="pl-4 sidebar-title">
+                        {submenu["title"]}
+                      </label>
 
-                      {submenu['items'].map((subtitle: any, index: number) => {
+                      {submenu["items"].map((subtitle: any, index: number) => {
                         return (
                           <>
                             <div>
@@ -163,22 +181,37 @@ export default function Settings(
                           </>
                         );
                       })}
-                    </div> : null :
+                    </div>
+                  ) : null
+                ) : (
                   <div key={index} className="mt-2">
-                    <label className="pl-4 sidebar-title">{submenu['title']}</label>
+                    <label className="pl-4 sidebar-title">
+                      {submenu["title"]}
+                    </label>
 
-                    {submenu['items'].map((subtitle: any, index: number) => {
+                    {submenu["items"].map((subtitle: any, index: number) => {
                       return (
-                        <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}</TabItems>
+                        <TabItems
+                          cursor="pointeur"
+                          key={subtitle["label"]}
+                          className={`nav-link pl-5 pt-3 pb-3 ${
+                            subtitle["active"] ? "active" : ""
+                          } sidebar-item text-secondary-dark`}
+                          onClick={(e) => handleTabs(subtitle["label"])}
+                        >
+                          <i className={`${subtitle["icon"]} mr-2`}></i>
+                          {subtitle["label"]}
+                        </TabItems>
                       );
                     })}
                   </div>
+                )
               );
             })}
           </ContainerLeft>
 
           <div className="f-column w-100 pt-3 ml-5">
-            {tabs['menu'].map((submenu: any, index: number) => {
+            {tabs["menu"].map((submenu: any, index: number) => {
               return (
                 <div key={index}>
                   {submenu['items'].map((subtitle: any, index: number) => {
@@ -196,10 +229,8 @@ export default function Settings(
               );
             })}
           </div>
-
-        </div> : null
-      }
-
+        </div>
+      ) : null}
     </>
   );
 }

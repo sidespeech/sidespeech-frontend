@@ -7,7 +7,7 @@
   padding: 16px 17px 24px 27px;
   background: var(--bg-secondary-light);
   border-radius: 10px;
-  color: var(--text-secondary-light);
+  color: var(--text);
   display: flex;
   flex-direction: column;
 }

@@ -12,13 +12,13 @@ interface ButtonProps {
   fontSize?:string;
 }
 
-const CustomButton = styled.div<ButtonProps>`
+const CustomButton = styled.button<ButtonProps>`
   width: ${(props) => (props.width ? props.width : 251)}px;
   height: ${(props) => (props.height ? props.height : 48)}px;
   color: ${(props) => (props.background ? props.color : "white")};
   background: ${(props) =>
     props.background ? props.background : "var(--button-primary)"};
-  border-radius: ${(props) => (props.radius ? props.radius : 100)}px;
+  border-radius: ${(props) => (props.radius ? props.radius : 10)}px;
   border: ${(props) => (props.border ? props.border : "none")};
   display: flex;
   align-items: center;
@@ -42,10 +42,11 @@ export default function Button({
   background,
   color,
   border,
-  fontSize
+  fontSize,
+  type = 'button'
 }: {
   children: any;
-  onClick: any;
+  onClick?: any;
   width?: number;
   height?: number;
   classes?: string;
@@ -55,6 +56,7 @@ export default function Button({
   color?: string;
   border?: string;
   fontSize?:string;
+  type?: "button" | "submit" | "reset" | undefined
 }) {
   return (
     <CustomButton
@@ -68,6 +70,7 @@ export default function Button({
       background={background}
       color={color}
       fontSize={fontSize}
+      type={type}
     >
       {children}
     </CustomButton>

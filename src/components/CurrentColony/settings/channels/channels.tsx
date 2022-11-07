@@ -80,7 +80,7 @@ export default function Channels({
         let current_added: Channel[] = [];
         if (channels["added"].length) {
           current_added = [...channels["added"]];
-        }
+        } 
         current_added.splice(index, 1);
         setChannels({ ...channels, added: current_added });
       }
@@ -100,6 +100,7 @@ export default function Channels({
         isVisible: true,
         type: 2,
         side: currentSide,
+        id:""
       });
       setChannels({ ...channels, added: current_added });
     }

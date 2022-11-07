@@ -9,7 +9,7 @@
 }
 .middle-container {
   background-color: var(--bg-primary);
-  width: 100%;
+  width: calc(100% - 70px);
 }
 .main-container {
   height: 100vh;
