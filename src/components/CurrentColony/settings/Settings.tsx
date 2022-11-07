@@ -221,8 +221,8 @@ export default function Settings(
                           (subtitle['label'] == 'Requests' && subtitle['active']) ? <Requests currentSide={currentSide} userData={userData} updateRequestNotifications={updateRequestNotifications}/> :
                             (subtitle['label'] == 'Channels' && subtitle['active']) ? <Channels currentSide={currentSide} /> :
                               (subtitle['label'] == 'Invitation' && subtitle['active']) ? <Invitation currentSide={currentSide} userData={userData} /> :
-                                (subtitle['label'] == 'Account' && subtitle['active']) ? <Account currentSide={currentSide} userData={userData} /> :
-                                  (subtitle['label'] == 'Eligibility' && subtitle['active']) ? <Eligibility currentSide={currentSide} /> : null
+                                (subtitle['label'] == 'Account' && subtitle['active']) ? <Account currentSide={currentSide} userData={userData} /> : null
+                                  // (subtitle['label'] == 'Eligibility' && subtitle['active']) ? <Eligibility currentSide={currentSide} /> : null
                     );
                   })}
                 </div>

@@ -31,7 +31,7 @@ export default function Informations({
   formError,
 }: {
   userData?:any;
-  currentSide: Partial<Side>;
+  currentSide: any;
   onChangeNewSideName?: any;
   onChangeNewSideImage?: any;
   formError?: any;
@@ -45,7 +45,7 @@ export default function Informations({
   useEffect(() => {
     if (window.location.href.includes("settings")) {
       setIsNewSide(false);
-      setFormData({ sideImage: currentSide['sideImage'], name: currentSide['name'], description: currentSide['description'], private: currentSide['private'] })
+      setFormData({ sideImage: currentSide['sideImage'], name: currentSide['name'], description: currentSide['description'], priv: currentSide['priv'] })
     }
   }, [currentSide]);
 

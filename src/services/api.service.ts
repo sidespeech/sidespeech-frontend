@@ -23,7 +23,8 @@ class apiService {
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
-
+    console.log("accounts :", accounts)
+    console.log("signature :", signature)
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
       .send({
