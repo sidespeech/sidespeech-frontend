@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { getRoleColor, reduceWalletAddress } from "../../helpers/utilities";
 import CustomSelect from "./CustomSelect";
 import check from "../../assets/check.svg";
-import { Colony } from "../../models/Colony";
 import { first } from "lodash";
 import Button from "./Button";
+import { Side } from "../../models/Side";
 
 export default function TableRow({
   side,
   user,
 }: {
-  side: Colony;
+  side: Side;
   user: any;
 }) {
   const [isCreator, setIsCreator] = useState<boolean>(false);

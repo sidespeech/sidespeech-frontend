@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { InputHTMLAttributes, useRef } from "react";
 import styled from "styled-components";
 

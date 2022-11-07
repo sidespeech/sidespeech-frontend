@@ -2,6 +2,7 @@ import { NUMBER_OF_DECIMALS } from "../constants/constants";
 import { Duration } from "date-fns";
 import { Side } from "../models/Side";
 import { NFT } from "../models/interfaces/nft";
+import { Collection } from "../models/interfaces/collection";
 
 export function weiToDecimals(
   value: number,
@@ -124,58 +125,142 @@ export function timestampToLocalString(timestamp: string) {
   return new Date(Number.parseInt(timestamp)).toLocaleTimeString();
 }
 
-export function checkUserEligibility(nfts: any, selectedSide: Side): any[] {
-  const res: any[] = [];
+export interface ElligibilityResponse {
+  [key: string]: any[];
+}
+
+export function checkUserEligibility(
+  nfts: any,
+  selectedSide: Side
+): [ElligibilityResponse, boolean] {
+  const res: ElligibilityResponse = {};
   if (selectedSide) {
+    console.log(selectedSide.conditions)
     Object.entries<any>(selectedSide.conditions).forEach(
       ([token_address, condition]) => {
+        const tab = [];
         const collection = nfts[token_address];
         if (!collection) {
-          res.push({
-            message: `No nfts for the collection with address ${token_address}`,
-            id: token_address,
-            type: "error",
-          });
+          return;
         } else {
           // get nfts from collection with needed attributes
-          const filteredNfts: any[] = [];
-          collection.nfts.filter((nft: NFT) =>
-            nft.metadata.attributes.some((a) => {
-              const success =
-                condition.hasOwnProperty(a.trait_type) &&
-                a.value === condition[a.trait_type];
-              if (success) filteredNfts.push(nft);
-              return success;
-            })
+          const filteredNfts = getNftsWithAttributes(
+            collection.nfts,
+            condition
           );
-          if (!filteredNfts.length) {
-            // if no nfts corresponding to the condition returning error response
-            res.push({
-              id: token_address,
-              type: "error",
-              message: `No nft in the collection ${token_address} with property ${
-                Object.keys(condition)[0]
-              } and value ${Object.values(condition)[0]}`,
-            });
-          }
-          // if there is nfts with needed attributes returning success response
-          else {
-            res.push({
-              id: token_address,
-              type: "success",
-              property: Object.keys(condition)[0],
-              value: Object.values(condition)[0],
-              usefulNfts: filteredNfts,
-            });
-          }
+
+          // validate number
+          tab.push(validateNumberOfNfts(condition, collection));
+
+          // if no nfts corresponding to the condition returning error response
+
+          tab.push(
+            validateNftsWithAttributes(filteredNfts, condition, collection)
+          );
         }
+        res[token_address] = tab;
       }
     );
   }
-  return res;
+  const eligible = isEligible(res, selectedSide.conditions);
+  console.log(res,eligible)
+  return [res, eligible];
 }
 
+function validateNftsWithAttributes(
+  nfts: any[],
+  condition: any,
+  collection: Collection
+) {
+  const nftsNotEmpty = nfts.length > 0;
+  return createResponseObject(
+    nftsNotEmpty,
+    nfts,
+    `No nft in the collection ${collection.address} with property ${condition["trait_type"]} and value ${condition["trait_value"]}`,
+    collection.address,
+    condition,
+    "attributes"
+  );
+}
 
+function validateNumberOfNfts(condition: any, collection: Collection) {
+  // verifying number of needed NFTS from the collection
+  const number: number = Number.parseInt(condition["numberNeeded"]);
+  const numberValidation = validateNumberOfNftsForCollection(
+    number,
+    collection.nfts.length
+  );
+  // creating response
+  return createResponseObject(
+    numberValidation,
+    [],
+    `You need ${
+      number - collection.nfts.length
+    } nfts more to meet the condition.`,
+    collection.address,
+    condition,
+    "number"
+  );
+}
+
+function isEligible(result: ElligibilityResponse, conditions: any): boolean {
+  console.log(conditions);
+  if (!conditions["requiered"]) {
+    // verifying if all collection are fully success
+    return Object.values(result).every((res) =>
+      res.every((value) => value.type.includes("success"))
+    );
+  } else {
+    // verifying if one of the collection are fully success
+    return Object.values(result).some((res) =>
+      res.every((value) => value.type.includes("success"))
+    );
+  }
+}
+
+function getNftsWithAttributes(nfts: any, condition: any) {
+  return nfts.filter((nft: NFT) =>
+    nft.metadata.attributes.some(
+      (a) =>
+        condition["trait_type"] === a.trait_type &&
+        a.value === condition["trait_value"]
+    )
+  );
+}
+
+function validateNumberOfNftsForCollection(
+  numberRequired: number,
+  ownedNumber: number
+) {
+  return ownedNumber >= numberRequired;
+}
+
+function createResponseObject(
+  valid: boolean,
+  nfts: any,
+  message: string,
+  id: string,
+  condition: any,
+  type: string
+) {
+  if (valid) {
+    return {
+      id: id,
+      type: `success-${type}`,
+      property: condition["trait_type"],
+      value: condition["trait_value"],
+      usefulNfts: nfts,
+    };
+  } else {
+    return {
+      id: id,
+      type: `error-${type}`,
+      message: message,
+      property: condition["trait_type"],
+      value: condition["trait_value"],
+    };
+  }
+}
 
 export function fixURL(url: string) {
   if (url.startsWith("ipfs")) {
@@ -186,7 +271,7 @@ export function fixURL(url: string) {
 }
 
 export function alchemyNftModelToSideNftModel(nft: any) {
-  const sideNft  = {
+  const sideNft = {
     name: nft.title,
     metadata: nft.rawMetadata,
     token_address: nft.contract.address,

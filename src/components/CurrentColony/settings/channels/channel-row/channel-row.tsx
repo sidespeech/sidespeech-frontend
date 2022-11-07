@@ -99,7 +99,7 @@ export default function ChannelRow({
           <div className="flex">
             <CustomCheckbox
               isChecked={channel["authorizeComments"]}
-              onClick={(e) => {
+              onClick={(e: any) => {
                 onChangeAuthorizeComments(e, index, placeholder ? true : false);
               }}
             />{" "}

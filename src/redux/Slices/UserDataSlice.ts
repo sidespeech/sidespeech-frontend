@@ -21,7 +21,7 @@ export interface UserData {
   redirectTo: null;
   sides: Side[];
   currentProfile: Profile | undefined;
-  userCollectionsData: UserCollectionsData | {};
+  userCollectionsData: UserCollectionsData;
   userCollectionsLoading: boolean;
   userCollectionsLoadingSides: boolean;
 }

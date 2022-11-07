@@ -69,7 +69,7 @@ export default function Polls() {
         });
 
         // We'll check if the user has voted.
-        const checkUserVoted = poll.votes.some((v) => v.voterId === walletAddress);
+        const checkUserVoted = poll.votes.some((v) => v.user === walletAddress);
 
         return (
           <div className="w-100 poll-item" key={poll.id}>

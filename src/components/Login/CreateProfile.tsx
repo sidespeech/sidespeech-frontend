@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 
-import { Form, Button } from "semantic-ui-react";
 
 export default function CreateProfile() {
   return (
     <div>
-      <Form>
+      {/* <Form>
         <Form.Field>
           <label>First Name</label>
           <input placeholder="First Name" type="text" />
-        </Form.Field>
+        </Form.Field> 
         <Form.Field>
           <label>Last Name</label>
           <input placeholder="Last Name" type="text" />
@@ -23,7 +22,7 @@ export default function CreateProfile() {
           <input placeholder="Password" type="password" />
         </Form.Field>
         <Button type="submit">Submit</Button>
-      </Form>
+      </Form> */}
     </div>
   );
 }

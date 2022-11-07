@@ -41,7 +41,7 @@ export default function ChannelsList({ channels, dots, onChannelSelected }: { ch
 
               {c.name}
             </span>
-            {c && dots[c.id] > 0 && <Dot>{dots[c.id]}</Dot>}
+            {c && dots[c.id ] > 0 && <Dot>{dots[c.id]}</Dot>}
           </div>
         );
       })}

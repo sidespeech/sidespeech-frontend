@@ -6,15 +6,15 @@
   --green: #36da81;
   --green-opacity: #36da811a;
   --blue: #3db4e7;
-  --input: #1D1E2A; /* Black 20% */
-  --inactive: #5E6474; /* Light 40% */
+  --input: #1d1e2a; /* Black 20% */
+  --inactive: #5e6474; /* Light 40% */
   --white: #ffffff; /* Button Text*/
   --text: #b4c1d2; /* Text*/
-  --disable: #2D3346; /* Light 10% */
+  --disable: #2d3346; /* Light 10% */
   --background: #242635; /* Dark 1*/
   --panels: #2f3247; /* Dark 2 */
   --warning: #f09e22; /* Orange */
-  
+
   /* old styles */
   --bg-primary: #242635;
   --bg-secondary: #1b1d30;
@@ -55,7 +55,7 @@ body {
   color: var(--text);
 }
 .text-primary {
-  color: var(--primary)
+  color: var(--primary);
 }
 .text-secondary {
   color: var(--text-secondary);
@@ -197,7 +197,9 @@ body {
 .justify-start {
   justify-content: flex-start;
 }
-
+.justify-evenly {
+  justify-content: space-evenly;
+}
 .justify-between {
   justify-content: space-between;
 }

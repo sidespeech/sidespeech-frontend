@@ -1,0 +1,192 @@
+.my-nfts {
+    position: relative;
+    padding: 28px;
+    border-radius: 20px;
+    flex: 1.2;
+    background-color: var(--bg-secondary-dark);
+    max-height: calc(100vh - 56px);
+}
+
+.my-nfts .nfts.closed {
+    display: none;
+}
+
+.my-nfts .input-container {
+    margin-bottom: 20px;
+}
+
+.my-nfts span.selected {
+    color: var(--green);
+}
+.my-nfts span.selected-2 {
+    color: var(--primary);
+}
+
+.my-nfts .nftCollectionContainer {
+    overflow-y: auto;
+    height: 90%;
+    max-height: 90%;
+    padding-right: 10px;
+}
+
+.my-nfts .nftCollection .head {
+    border-bottom: 2px solid var(--bg-primary);
+    overflow: hidden;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.my-nfts .nftCollection .head div,
+.my-nfts .nftCollection .head a {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.my-nfts .nftCollection .head .float-left {
+    width: 50%;
+}
+
+.my-nfts .nftCollection .head .minus {
+    background: var(--text-primary-light);
+    height: 2px;
+    width: 15px;
+    margin-right: 20px;
+    margin-top: 10px;
+    float: left;
+    position: relative;
+}
+
+.my-nfts .nftCollection .head .minus.plus:after {
+    content: '';
+    background: var(--text-primary-light);
+    height: 15px;
+    width: 2px;
+    position: absolute;
+    left: 6px;
+    top: -6px;
+}
+.my-nfts .nftCollection .head .float-left .title {
+    width: 80%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+ }
+ .my-nfts .nftCollection .head .float-left {
+    cursor: pointer;
+}
+.my-nfts .nftCollection .head .selectAll {
+    color: var(--green)!important;
+    float: right;
+    cursor: pointer;
+}
+.my-nfts .nftCollection .the-nft{
+    display: inline-block;
+    vertical-align: top;
+    width: 25%;
+    padding: 0 4px;
+    margin-bottom: 10px;
+}
+.my-nfts .nftCollection .the-nft .inner {
+    border: 2px solid var(--bg-primary);
+    border-radius: 10px;
+    position: relative;
+}
+.my-nfts .nftCollection .the-nft.selected .inner {
+    border: 2px solid var(--green);
+    border-radius: 10px;
+    position: relative;
+}
+.my-nfts .nftCollection .the-nft.selected-2 .inner {
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    position: relative;
+}
+.my-nfts .nftCollection .the-nft.selected .inner .status{
+    position: absolute;
+    width: 70px;
+    background: var(--green);
+    border-radius: 0 0 10px 10px;
+    display: block;
+    margin: 0 auto;
+    left: 50%;
+    color: var(--bg-primary);
+    margin-left: -35px;
+    text-align: center;
+    padding: 1px;
+}
+.my-nfts .nftCollection .the-nft.selected-2 .inner .status{
+    position: absolute;
+    width: 70px;
+    background: var(--primary);
+    border-radius: 0 0 10px 10px;
+    display: block;
+    margin: 0 auto;
+    left: 50%;
+    color: var(--white);
+    margin-left: -35px;
+    text-align: center;
+    padding: 1px;
+}
+.my-nfts .nftCollection .the-nft img{
+    width: 100%;
+}
+.my-nfts .nftCollection .detail{
+    display: block;
+    background: var(--bg-primary);
+    margin: 0;
+    padding: 7px;
+    border-radius: 0px 0px 10px 10px;
+    margin-top: -10px;
+}
+.my-nfts .nftCollection .the-nft .public p,
+.my-nfts .nftCollection .the-nft .public .checkarea {
+    display: inline-block;
+    overflow: hidden;
+}
+.my-nfts .nftCollection .the-nft .public p {
+    margin: 4px 0px;
+}
+.my-nfts .nftCollection .the-nft .public .checkarea {
+    margin-left: 10px;
+}.my-nfts .nftCollection .the-nft input[type=checkbox]{
+	height: 0;
+	width: 0;
+	visibility: hidden;
+}.my-nfts .nftCollection .the-nft label {
+	cursor: pointer;
+	text-indent: -9999px;
+    width: 55px;
+    height: 25px;
+	background: var(--checkbox-dark);
+	display: block;
+	border-radius: 100px;
+	position: relative;
+}.my-nfts .nftCollection .the-nft label:after {
+	content: '';
+	position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+	background: #fff;
+	border-radius: 90px;
+	transition: 0.3s;
+}.my-nfts .nftCollection .the-nft input:checked + label {
+	background: var(--green);
+}.my-nfts .nftCollection .the-nft input:checked + label:after {
+	left: calc(100% - 2px);
+	transform: translateX(-100%);
+}.my-nfts .nftCollection .the-nft label:active:after {
+	width: 50px;
+}.my-nfts  .submitArea {
+    background: linear-gradient(180deg, rgba(29, 30, 42, 0) 0%, #1D1E2A 100%);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}

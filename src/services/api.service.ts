@@ -3,7 +3,6 @@ import superagent from "superagent";
 import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialStateSide } from "../components/new-side/new-side";
-import { InitialState } from "../components/Modals/CreateColonyModal";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
 import { Channel, ChannelType } from "../models/Channel";
@@ -56,7 +55,11 @@ class apiService {
     return new Profile(res.body);
   }
 
-  static async joinSide(userId: string, sideId: string,role: number): Promise<Profile> {
+  static async joinSide(
+    userId: string,
+    sideId: string,
+    role: number
+  ): Promise<Profile> {
     const res = await superagent
       .post(`${BASE_URL}/profile/join`)
       .send({ userId, sideId, role });
@@ -72,6 +75,18 @@ class apiService {
       .send(profile);
     console.log(res["body"]);
     return res["body"];
+  }
+  static async updateProfilePicture(
+    id: string,
+    profilePicture: NFT
+  ): Promise<Profile> {
+    const res = await superagent
+      .put(`${BASE_URL}/profile/picture`)
+      .send({
+        profileId: id,
+        profileNftStringify: JSON.stringify(profilePicture),
+      });
+    return new Profile(res["body"]);
   }
   static async updateUser(
     id: string,
@@ -213,11 +228,9 @@ class apiService {
     return res.body;
   }
 
-  static async uploadImage(image: FormData): Promise<any> {
-    const res = await superagent
-      .post(`${BASE_URL}/files`)
-      .send(image)
-    return res.text || '';
+  static async uploadImage(image: FormData): Promise<string> {
+    const res = await superagent.post(`${BASE_URL}/files`).send(image);
+    return res.text || "";
   }
   static async createPoll(
     creatorId: string,
@@ -251,35 +264,45 @@ class apiService {
   }
 
   // Fetch notification by channel id and user wallet address
-  static async getNotification(address:string): Promise<any> {
-    const res = await superagent.get(`${BASE_URL}/notification/allNotifications/${address}`);
+  static async getNotification(address: string): Promise<any> {
+    const res = await superagent.get(
+      `${BASE_URL}/notification/allNotifications/${address}`
+    );
     return res.body.map((c: any) => new Notification(c));
   }
 
   // remove notification by channel id and user wallet address
-  static async deleteNotification(id:string, address:string): Promise<any> {
-    const res = await superagent.delete(`${BASE_URL}/notification/${id}/${address}`);
+  static async deleteNotification(id: string, address: string): Promise<any> {
+    const res = await superagent.delete(
+      `${BASE_URL}/notification/${id}/${address}`
+    );
     return new User(res.body);
   }
 
-  static async getUserFromSides(sides:Side[]): Promise<any> {
-    const res = await superagent.post(`${BASE_URL}/user/side`).send({sides: sides});
+  static async getUserFromSides(sides: Side[]): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/user/side`)
+      .send({ sides: sides });
     return res.body.users;
   }
 
-  static async sendInvitation(invitation:Invitation): Promise<any> {
-    console.log(invitation)
-    const res = await superagent.post(`${BASE_URL}/invitation`).send(invitation);
+  static async sendInvitation(invitation: Invitation): Promise<any> {
+    console.log(invitation);
+    const res = await superagent
+      .post(`${BASE_URL}/invitation`)
+      .send(invitation);
     return res.body;
-  } 
+  }
 
-  static async sendMultipleInvitations(invitations:Invitation[]): Promise<any> {
-    console.log(invitations)
-    const res = await superagent.post(`${BASE_URL}/invitation/many`).send(invitations);
+  static async sendMultipleInvitations(
+    invitations: Invitation[]
+  ): Promise<any> {
+    console.log(invitations);
+    const res = await superagent
+      .post(`${BASE_URL}/invitation/many`)
+      .send(invitations);
     return res.body;
-  } 
-
+  }
 }
-
 
 export { apiService };
