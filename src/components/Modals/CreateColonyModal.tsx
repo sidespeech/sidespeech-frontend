@@ -37,7 +37,7 @@ const initialState = {
   NftTokenAddress: "",
   websiteUrl: "",
   conditions: {},
-  creatorAddress: localStorage.getItem("userAccount")
+  creatorAddress: ""
 };
 
 // Data to add collection in condition
@@ -147,6 +147,10 @@ export default function CreateColonyModal({ showModal, collections }: { showModa
   };
   const navigate = useNavigate();
   const saveSide = async () => {
+
+    console.log('ddd');
+    setFormData({ ...formData, creatorAddress: window.ethereum.selectedAddress });
+
     // Save file input to IPFS
     try {
       if (formData.sideImage) {
