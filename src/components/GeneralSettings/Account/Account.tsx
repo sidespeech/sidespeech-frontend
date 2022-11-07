@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 // CSS Import
@@ -9,20 +9,72 @@ import "./Account.css";
 import { RootState } from "../../../redux/store/app.store";
 import NftsCollections from "./NftsCollections";
 import UserGeneralInformations from "./UserGeneralInformations";
+import { NFT } from "../../../models/interfaces/nft";
+import _ from "lodash";
 
 export default function GeneralSettingsAccount() {
-  const userData = useSelector((state: RootState) => state.user);
+  const { user, userCollectionsData } = useSelector(
+    (state: RootState) => state.user
+  );
+
+  const [checkedNfts, setCheckedNfts] = useState<{
+    [key: string]: NFT[];
+  } | null>(null);
+
+  useEffect(() => {
+    if (userCollectionsData && user) {
+      const collections = Object.keys(userCollectionsData);
+      const initCheckedState: any = {};
+      collections.forEach((key) => {
+        const nfts =
+          user.publicNfts?.filter((nft) => nft.token_address === key) || [];
+        initCheckedState[key] = [...nfts];
+      });
+      setCheckedNfts(initCheckedState);
+    }
+  }, [userCollectionsData, user]);
+  const handleNftChange = (selectedNft: NFT) => {
+    if (!checkedNfts) return;
+    const index = checkedNfts[selectedNft.token_address].findIndex(
+      (nft) =>
+        nft.token_address === selectedNft.token_address &&
+        nft.token_id === selectedNft.token_id
+    );
+    if (index !== -1) {
+      const tmp = [...checkedNfts[selectedNft.token_address]];
+      tmp.splice(index, 1);
+      setCheckedNfts({ ...checkedNfts, [selectedNft.token_address]: tmp });
+    } else {
+      const tmp = checkedNfts[selectedNft.token_address];
+      setCheckedNfts({
+        ...checkedNfts,
+        [selectedNft.token_address]: [...tmp, selectedNft],
+      });
+    }
+  };
+
+  const handleSelectAll = (nfts: NFT[]) => {
+    if (!checkedNfts) return;
+    const values = checkedNfts[nfts[0].token_address];
+    const array = _.union(values, nfts);
+    setCheckedNfts({ ...checkedNfts, [nfts[0].token_address]: [...array] });
+  };
 
   return (
     <>
-      {userData && userData.user && (
+      {userCollectionsData && user && (
         <div className="account">
-          <UserGeneralInformations user={userData.user} />
+          <UserGeneralInformations user={user} />
 
-          <NftsCollections
-            user={userData.user}
-            userCollectionsData={userData.userCollectionsData}
-          />
+          {checkedNfts && (
+            <NftsCollections
+              selectedNfts={checkedNfts}
+              collections={Object.values(userCollectionsData)}
+              user={user}
+              handleNftChange={handleNftChange}
+              handleSelectAll={handleSelectAll}
+            />
+          )}
         </div>
       )}
     </>

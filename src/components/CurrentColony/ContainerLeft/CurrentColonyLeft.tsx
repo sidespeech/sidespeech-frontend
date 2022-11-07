@@ -10,9 +10,6 @@ import { setSelectedRoom } from "../../../redux/Slices/ChatSlice";
 import { RootState } from "../../../redux/store/app.store";
 import { apiService } from "../../../services/api.service";
 import websocketService from "../../../services/websocket.service";
-import ColonySettingsModal from "../../Modals/ColonySettingsModal";
-import CreateChannelModal from "../../Modals/CreateChannelModal";
-import ViewUserProfile from "../../Modals/ViewUserProfile";
 import UserBadge from "../../ui-components/UserBadge";
 import ChannelsList from "./ChannelsList/ChannelsList";
 import SideUserList from "./SideUserList/SideUserList";
@@ -206,23 +203,6 @@ export default function CurrentColonyLeft() {
           <SideUserList dots={dotsPrivateMessage} handleSelectedUser={handleSelectedUser} selectedUser={selectedUser} />
         </div>
       </div>
-
-      {currentSide && displayColonySettings && (
-        <ColonySettingsModal
-          showModal={setDisplayColonySettings}
-          currentColony={currentSide}
-        />
-      )}
-      {currentSide && selectedUser && displayUserProfile && (
-        <ViewUserProfile
-          profile={selectedUser}
-          colony={currentSide}
-          showModal={setDisplayUserProfile}
-        />
-      )}
-      {displayNewChannelModal && (
-        <CreateChannelModal showModal={setDisplayNewChannelModal} />
-      )}
     </ContainerLeft>
   );
 }

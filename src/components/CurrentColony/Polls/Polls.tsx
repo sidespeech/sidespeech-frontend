@@ -40,7 +40,7 @@ export default function Polls() {
 
   return (
     <div id="polls-list" className="text-secondary w-100">
-      {_.orderBy(selectedChannel.polls, "createdAt").map((poll: Poll) => {
+      {_.orderBy([], "createdAt").map((poll: Poll) => {
         return (
           <div className="w-100 poll-item">
             <div key={poll.id} className="flex justify-between w-100">
@@ -71,7 +71,7 @@ export default function Polls() {
                     return { id: index, text: a, votes: votes.length };
                   })}
                   theme={customTheme}
-                  isVoted={poll.votes.some((v) => v.user.id === user.id)}
+                  isVoted={poll.votes.some((v) => v.user.id === user?.id)}
                   onVote={(a: any) => handleVote(a, poll.id)}
                 />
               }

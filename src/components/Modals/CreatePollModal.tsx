@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { Channel } from "../../models/Channel";
 import { updateChannel } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
 
@@ -50,7 +51,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
       if (selectedChannel) {
         
         toast.success("Poll has been created.", { toastId: 8 });
-        dispatch(updateChannel(newChannel));
+        dispatch(updateChannel(new Channel({})));
       }
     } catch (error) {
       toast.error("Error when creating poll", { toastId: 9 });

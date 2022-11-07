@@ -81,12 +81,12 @@ const initialSteps = [
 ];
 
 export interface InitialStateSide {
-  sideImage: File | string | undefined;
+  sideImage: string | undefined;
   name: string;
   description: string;
   NftTokenAddress: string;
   conditions: any;
-  creatorAddress: string | null;
+  creatorAddress: string | undefined;
 }
 
 const initialStateSide = {
@@ -95,7 +95,7 @@ const initialStateSide = {
   description: "",
   NftTokenAddress: "",
   conditions: {},
-  creatorAddress: localStorage.getItem("userAccount"),
+  creatorAddress: localStorage.getItem("userAccount") || undefined,
 };
 
 // Data to add collection in condition
@@ -155,7 +155,6 @@ export default function NewSide() {
   const [invitationUsers, setInvitationUsers] = useState<any>([]);
   const [userInvited, setUserInvited] = useState<any>([]);
 
-
   useEffect(() => {
     if (userCollectionsData) {
       let collections = Object.values(userCollectionsData);
@@ -164,24 +163,25 @@ export default function NewSide() {
   }, [userCollectionsData]);
 
   useEffect(() => {
-
     if (user && user.profiles) {
-      const getInvitationUsers = async (user:any) => {
-        let userSides = user.profiles.map((p:Profile) => p.side);
+      const getInvitationUsers = async (user: any) => {
+        let userSides = user.profiles.map((p: Profile) => p.side);
         let users = await apiService.getUserFromSides(userSides);
-        let invitationsUsersObject = []
-        delete user['profiles'];
+        let invitationsUsersObject = [];
+        delete user["profiles"];
         for (let userInvite of users) {
-          if (user['id'] !== userInvite['id'])
-          invitationsUsersObject.push({
-            name : (userInvite['username']) ? `${userInvite['username']} (${userInvite['accounts']})` : userInvite['accounts'],
-            invited: false,
-            recipient : userInvite,
-            sender: user
-          })
+          if (user["id"] !== userInvite["id"])
+            invitationsUsersObject.push({
+              name: userInvite["username"]
+                ? `${userInvite["username"]} (${userInvite["accounts"]})`
+                : userInvite["accounts"],
+              invited: false,
+              recipient: userInvite,
+              sender: user,
+            });
         }
-        setInvitationUsers(invitationsUsersObject)
-      }  
+        setInvitationUsers(invitationsUsersObject);
+      };
       getInvitationUsers(user);
     }
   }, [user]);
@@ -191,10 +191,13 @@ export default function NewSide() {
     previous: boolean = false
   ) => {
     let current_data = { ...formData };
-    let current_steps = [ ...steps ];
+    let current_steps = [...steps];
 
     // Checking if sideImage and name stored to continu to the other steps
-    if (index === 0 && !current_data["sideImage"] || !current_data["name"].trim().length) {
+    if (
+      (index === 0 && !current_data["sideImage"]) ||
+      !current_data["name"].trim().length
+    ) {
       toast.error("Missing data", { toastId: 3 });
       return;
     }
@@ -204,7 +207,11 @@ export default function NewSide() {
       let current_divs = [...divCollections];
       let conditions: any = {};
       for (let div of current_divs) {
-        if (div["collection"].trim().length !== 0 && div["trait_selected"].trim().length !== 0 &&  div["value_selected"].trim().length !== 0) {
+        if (
+          div["collection"].trim().length !== 0 &&
+          div["trait_selected"].trim().length !== 0 &&
+          div["value_selected"].trim().length !== 0
+        ) {
           conditions[div["collection"]] = {};
           conditions[div["collection"]][div["trait_selected"]] =
             div["value_selected"];
@@ -220,7 +227,9 @@ export default function NewSide() {
 
     // Checking if every channels have name to continu to the other steps
     if (index === 2) {
-      let isWrongChannels = channels["added"].filter((c:Channel) => c['name'].trim().length === 0)
+      let isWrongChannels = channels["added"].filter(
+        (c: Channel) => c["name"].trim().length === 0
+      );
       if (isWrongChannels.length) {
         toast.error("You need to name every channels", { toastId: 3 });
         return;
@@ -246,7 +255,7 @@ export default function NewSide() {
             conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
           }
           setFormData({ ...formData, conditions: conditions });
-        } 
+        }
       } else {
         // Turn active or not for selected item
         item["active"] = map_i === index - 1 ? true : false;
@@ -300,6 +309,7 @@ export default function NewSide() {
 
   // Creation properties object to display in conditions
   function createPropertiesObject(address: string) {
+    if (!userCollectionsData) return;
     const properties = userCollectionsData[address].getCollectionProperties();
     return properties;
   }
@@ -413,6 +423,7 @@ export default function NewSide() {
       type: ChannelType.Announcement,
       side: formData,
       authorizeComments: false,
+      id:""
     });
     setChannels({ ...channels, added: current_added });
   };
@@ -496,9 +507,9 @@ export default function NewSide() {
         data["conditions"]["requiered"] = onlyOneRequired;
         data["conditions"] = JSON.stringify(data["conditions"]);
         data["NftTokenAddress"] = data["conditions"];
-        const fd  = new FormData();
-        fd.append('file', formData["sideImage"]);
-        data["sideImage"] = await apiService.uploadImage(fd)
+        const fd = new FormData();
+        fd.append("file", formData["sideImage"]);
+        data["sideImage"] = await apiService.uploadImage(fd);
         const newSide = await apiService.createSide(data);
 
         if (channels["added"].length) {
@@ -509,12 +520,11 @@ export default function NewSide() {
           const addedChannels = await apiService.createManyChannels(added);
         }
 
-        let users = userInvited.map((u:any) => {
-          u['side'] = newSide
-          return u
-        })
-        if (users.length)
-          await apiService.sendMultipleInvitations(users);
+        let users = userInvited.map((u: any) => {
+          u["side"] = newSide;
+          return u;
+        });
+        if (users.length) await apiService.sendMultipleInvitations(users);
         if (user) {
           try {
             const profile = await apiService.joinSide(
@@ -626,7 +636,12 @@ export default function NewSide() {
                   </div>
                 ) : step["label"] === "Invitation" && step["active"] ? (
                   <>
-                    <Invitation currentSide={currentSide} invitationUsers={invitationUsers} setUserInvited={setUserInvited} userInvited={userInvited} />
+                    <Invitation
+                      currentSide={currentSide}
+                      invitationUsers={invitationUsers}
+                      setUserInvited={setUserInvited}
+                      userInvited={userInvited}
+                    />
                   </>
                 ) : null}
               </div>

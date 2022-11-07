@@ -7,6 +7,7 @@ export class Collection {
   public symbol: string;
   public tokenType: string;
   public totalSupply: string;
+  // @ts-ignore
   public openseaData: OpenSeaData;
   public totalBalance: number;
   public isSpam: boolean;

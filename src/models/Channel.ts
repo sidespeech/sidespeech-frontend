@@ -8,12 +8,12 @@ export enum ChannelType {
   }
 
 export class Channel {
-  id?: string;
+  id: string;
   name: string;
   isVisible: boolean;
   type: ChannelType;
   announcements?: Announcement[];
-  side: Side;
+  side: Partial<Side>;
   authorizeComments?: boolean;
 
   constructor(_data: any){

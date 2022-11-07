@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { getRoleColor, reduceWalletAddress } from "../../helpers/utilities";
 import CustomSelect from "./CustomSelect";
 import check from "../../assets/check.svg";
-import { Colony } from "../../models/Colony";
 import { first } from "lodash";
 import Button from "./Button";
+import { Side } from "../../models/Side";
 
 export default function UserLine({
   colony,
   user,
 }: {
-  colony: Colony;
+  colony: Side;
   user: any;
 }) {
   const [isCreator, setIsCreator] = useState<boolean>(false);
@@ -23,7 +23,7 @@ export default function UserLine({
   };
 
   const handleSaveRole = async () => {};
-
+ 
   return (
     <div className="flex align-center my-2">
       <div className="flex flex-1 align-end">
