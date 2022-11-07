@@ -45,6 +45,8 @@ ReactDOM.render(
           <Routes>
             <Route path="/" element={<App />}>
               <Route index element={<DefaultView />} />
+              <Route path="/my-sides" element={<DefaultView />} />
+              <Route path="/invitations" element={<DefaultView />} />
               <Route
                 path="/CreateSideSpeechProfile"
                 element={<CreateSideSpeechProfile />}

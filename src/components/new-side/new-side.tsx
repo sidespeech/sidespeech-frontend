@@ -95,7 +95,7 @@ const initialStateSide = {
   description: "",
   NftTokenAddress: "",
   conditions: {},
-  creatorAddress: localStorage.getItem("userAccount") || undefined,
+  creatorAddress: window.ethereum.selectedAddress,
 };
 
 // Data to add collection in condition
@@ -249,8 +249,7 @@ export default function NewSide() {
           let conditions: any = {};
           for (let div of current_divs) {
             conditions[div["collection"]] = {};
-            conditions[div["collection"]]["trait_type"] = div["trait_selected"];
-            conditions[div["collection"]]["trait_value"] =
+            conditions[div["collection"]][div["trait_selected"]] =
               div["value_selected"];
             conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
           }
@@ -500,6 +499,9 @@ export default function NewSide() {
   // ----- Functions for Channels component **end
 
   const onSubmit = async () => {
+
+    setFormData({ ...formData, creatorAddress: window.ethereum.selectedAddress });
+
     // Save file input to IPFS
     try {
       if (formData.sideImage) {

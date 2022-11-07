@@ -2,22 +2,33 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { Channel } from "../../models/Channel";
+
+// Redux Stuff
 import { updateChannel } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
 
+// UI Components
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import Modal from "../ui-components/Modal";
 
+// Models
+import { Poll } from "../../models/Poll";
+
+// API Service
+import { apiService } from "../../services/api.service";
+
 export default function CreatePollModal({ showModal }: { showModal: any }) {
+
+  // Configuring all of the states.
   const [answerElements, setAnswerElements] = useState<any[]>([]);
   const [values, setValues] = useState<string[]>([]);
   const [question, setQuestion] = useState<string>("");
+  const [polls, setPolls] = useState<Poll[]>([]);
 
-  const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
   const dispatch = useDispatch();
-
+  const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+  
   useEffect(() => {
     const inits = [setAnswer, setAnswer];
     inits.forEach((element, index) => {
@@ -27,8 +38,8 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
   }, []);
 
   const addChild = () => {
-    if(answerElements.length>= 10){
-      toast.error("You can not have more than 10 answers.")
+    if(answerElements.length>= 7){
+      toast.error("You can not have more than 7 answers.")
       return;
     }
     setAnswerElements([
@@ -36,6 +47,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
       <NewAnswer value={answerElements.length + 1} onChange={setAnswer} />,
     ]);
   };
+  
   const setAnswer = (event: any, index: number) => {
     const val = event.target.value;
     values[index] = val;
@@ -47,11 +59,25 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
   };
 
   const handleSavePoll = async () => {
+
+    // Grab values from Poll.
+    const createThePoll = apiService.createPoll(window.ethereum.selectedAddress, question, false, values, Date.now().toString());
+
     try {
       if (selectedChannel) {
         
+        // Hide the modal after the admin has submitted the poll.
+        showModal(false)
+
+        // Show the success notification.
         toast.success("Poll has been created.", { toastId: 8 });
-        dispatch(updateChannel(new Channel({})));
+
+        // Send a dispatch event to update the channel that we are in with the latest data.
+        dispatch(updateChannel(selectedChannel));
+
+        // Can't get it to update so have to use this for the moment.
+        window.location.reload();
+        
       }
     } catch (error) {
       toast.error("Error when creating poll", { toastId: 9 });

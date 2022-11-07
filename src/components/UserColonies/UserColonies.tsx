@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./UserColonies.css";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { 
+  // Link, 
+  useNavigate } from "react-router-dom";
 import { EventType } from "../../constants/EventType";
 import {
   subscribeToEvent,
@@ -116,12 +118,12 @@ export default function UserColonies() {
             </div>
           );
         })}
-        <Link to={"/new-side"}>
+        {/* <Link to={"/new-side"}>
           <i
             className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark"
             // onClick={() => changeStateModal(true)}
           ></i>
-        </Link>
+        </Link> */}
       </div>
     </>
   );

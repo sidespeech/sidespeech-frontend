@@ -370,7 +370,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
           {imagesToUpload?.map(imageObject => (
             <div className={`images-to-upload-item ${imageObject.uploading ? 'uploading' : ''}`}>
               <img src={imageObject.file} alt="" />
-              {imageObject.uploading && <div className="spinner" />}
+              {imageObject.uploading && <div className="message-input-spinner" />}
               <div className="image-actions">
                 <button onClick={() => handleRemoveImageFromArray(imageObject.id)}>
                   <i className="fa-solid fa-xmark" />

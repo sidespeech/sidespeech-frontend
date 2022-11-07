@@ -13,6 +13,7 @@ interface InputTextPropsType {
   glass?: boolean;
   height?: number;
   iconRightPos?: { top: number; right: number };
+  iconColor?: string;
   iconSize?: number;
   id?: any;
   maxLength?: number;
@@ -119,7 +120,7 @@ const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
         >
           <i
             className="fa-solid fa-magnifying-glass"
-            style={{ fontSize: props.iconSize }}
+            style={{ fontSize: props.iconSize, color: props.iconColor }}
           ></i>
         </span>
       )}

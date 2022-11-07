@@ -7,14 +7,14 @@ export class Collection {
   public symbol: string;
   public tokenType: string;
   public totalSupply: string;
-  // @ts-ignore
-  public openseaData: OpenSeaData;
+  public openseaData?: OpenSeaData;
   public totalBalance: number;
   public isSpam: boolean;
   public nfts: NFT[] = [];
   public numDistinctTokensOwned: number;
   public ownedCount: number;
   public media: any[];
+  public sideCount: number;
   constructor(_data: any) {
     this.address = _data.address;
     this.name = _data.name;
@@ -26,6 +26,7 @@ export class Collection {
     this.numDistinctTokensOwned = _data.numDistinctTokensOwned;
     this.ownedCount = _data.ownedCount;
     this.media = _data.media;
+    this.sideCount = 0;
   }
 
   async getMetadata() {
