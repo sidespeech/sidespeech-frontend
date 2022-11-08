@@ -8,6 +8,12 @@ import DashboardLeftMenu from "./DashboardLeftMenu";
 import Invitations from "./Invitations";
 import MySides from "./MySides";
 import Search from "./Search";
+import { apiService } from "../../services/api.service";
+import { Collection } from "../../models/interfaces/collection";
+import { Side } from "../../models/Side";
+import { sideAPI } from "../../services/side.service";
+import { toast } from "react-toastify";
+import { getRandomId } from "../../helpers/utilities";
 
 const DashboardPageStyled = styled.div`
   display: flex;
@@ -53,12 +59,39 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const currentTab = location.pathname;
 
+  const [allCollections, setAllCollections] = useState<Collection[]>([]);
+  const [featuredSides, setFeaturedSides] = useState<Side[]>([]);
+  const [featureSidesLoading, setFeatureSidesLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>('');
   const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
 
   useEffect(() => {
     if (searchText || searchFilters.selectedCollection) navigate('/search');
   }, [searchFilters, searchText]);
+
+  useEffect(() => {
+    async function getAllFeaturedSides() {
+        try {
+            setFeatureSidesLoading(true);
+            const response = await sideAPI.getAllFeaturedSides();
+            setFeaturedSides(response);
+        } catch (error) {
+            console.error(error);
+            toast.error('Ooops! Something went wrong fetching the featured Sides', { toastId: getRandomId() });
+        } finally {
+            setFeatureSidesLoading(false);
+        }
+    }
+    getAllFeaturedSides();
+}, []);
+
+  useEffect(() => {
+    const getCollections = async () => {
+      const response = await apiService.getAllCollections()
+      setAllCollections(response);      
+    };
+    getCollections();
+  }, []);
 
   return (
     <DashboardPageStyled className="w-100 px-4 py-4">
@@ -69,6 +102,8 @@ export default function DashboardPage() {
         <div className="current-tab-wrapper flex-5">
           {currentTab === tabKeys.explore && (
             <DashboardExplore 
+              featureSides={featuredSides}
+              featureSidesLoading={featureSidesLoading}
               setSearchFilters={setSearchFilters} 
             />
           )}
@@ -76,6 +111,7 @@ export default function DashboardPage() {
           {currentTab === tabKeys.invitations && <Invitations />}
           {currentTab === tabKeys.search && (
             <Search 
+              collections={allCollections}
               searchFilters={searchFilters} 
               searchText={searchText} 
               setSearchFilters={setSearchFilters} 

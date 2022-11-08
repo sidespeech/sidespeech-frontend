@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../constants/constants';
-import { getRandomId } from '../../helpers/utilities';
 import { Side } from '../../models/Side';
-import { sideAPI } from "../../services/side.service";
+import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import Spinner from '../ui-components/Spinner';
 
 const CARD_HEIGHT = 191;
@@ -32,6 +29,7 @@ const FeatureSideCardStyled = styled.div<CardStyledProps>`
     color: var(--text-secondary);
     border-radius: 10px;
     padding: 1rem;
+    cursor: pointer;
     .collections {
         display: flex;
         gap: 5px;
@@ -60,11 +58,12 @@ const FeatureSideCardStyled = styled.div<CardStyledProps>`
 `;
 
 interface FeaturedSideCardProps {
+    onJoin: (side: Side) => void;
     side: Side;
 }
 
-const FeatureSideCard = ({ side }: FeaturedSideCardProps) => {
-    return <FeatureSideCardStyled coverImage={side.coverImage}>
+const FeatureSideCard = ({ onJoin, side }: FeaturedSideCardProps) => {
+    return <FeatureSideCardStyled coverImage={side.coverImage} onClick={() => onJoin(side)}>
         <div className="content">
             <h3>{side.name}</h3>
             {side.collectionsCount > 0 && <div className="collections">
@@ -159,28 +158,20 @@ const FeatureSidesStyled = styled.div<ListStyledProps>`
     }
 `;
 
-interface FeatureSidesProps {}
+interface FeatureSidesProps {
+    featuredSides: Side[];
+    sidesLoading?: boolean;
+}
 
-const FeaturedSides = (props: FeatureSidesProps) => {
-    const [featuredSides, setFeaturedSides] = useState<Side[]>([]);
+const FeaturedSides = ({ featuredSides, sidesLoading }: FeatureSidesProps) => {
+    const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
     const [firstSideShowing, setFirstSideShowing] = useState<number>(0);
-    const [sidesLoading, setSidesLoading] = useState<boolean>(false);
+    const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
-    useEffect(() => {
-        async function getAllFeaturedSides() {
-            try {
-                setSidesLoading(true);
-                const response = await sideAPI.getAllFeaturedSides();
-                setFeaturedSides(response);
-            } catch (error) {
-                console.error(error);
-                toast.error('Ooops! Something went wrong fetching the featured Sides', { toastId: getRandomId() });
-            } finally {
-                setSidesLoading(false);
-            }
-        }
-        getAllFeaturedSides();
-    }, []);
+    const handleEligibilityCheck = (side: Side) => {
+        setSelectedSide(side);
+        setDisplayEligibility(true);
+    };
 
   return (
     <FeatureSidesStyled totalSides={featuredSides.length} firstSide={firstSideShowing}>
@@ -202,9 +193,7 @@ const FeaturedSides = (props: FeatureSidesProps) => {
                     <div>
                         <div>
                             {featuredSides.map(side => (
-                                <Link key={side.id} to={`/${side.id}`}>
-                                    <FeatureSideCard side={side} />
-                                </Link>
+                                    <FeatureSideCard onJoin={handleEligibilityCheck} side={side} />
                             ))}
                         </div>
                     </div>
@@ -222,6 +211,13 @@ const FeaturedSides = (props: FeatureSidesProps) => {
                 </div>
             )} 
         </div>
+
+        {displayEligibility && selectedSide && (
+            <SideEligibilityModal
+                setDisplayEligibility={setDisplayEligibility}
+                selectedSide={selectedSide}
+            />
+        )}
     </FeatureSidesStyled>
   )
 }

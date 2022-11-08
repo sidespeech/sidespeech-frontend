@@ -133,11 +133,12 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
 interface SideCardItemProps {
     eligible?: boolean;
     joined?: boolean;
+    onJoin?: (side: Side) => void;
     side: Side;
     userSides?: boolean
 };
 
-const SideCardItem = ({ eligible, joined, side, userSides }: SideCardItemProps) => {
+const SideCardItem = ({ eligible, joined, onJoin, side, userSides }: SideCardItemProps) => {
   return (
     <SideCardItemStyled coverImage={side.coverImage}>
         <div className="cover-image">
@@ -173,7 +174,7 @@ const SideCardItem = ({ eligible, joined, side, userSides }: SideCardItemProps) 
                 {userSides ? (
                     <SideCardUserActions />
                     ) : (
-                    <SideCardJoinActions eligible={eligible} joined={joined} />
+                    <SideCardJoinActions eligible={eligible} joined={joined} onJoin={() => onJoin?.(side)} />
                 )}
             </div>
         </div>

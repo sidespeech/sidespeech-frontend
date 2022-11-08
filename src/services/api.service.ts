@@ -16,6 +16,7 @@ import { Notification } from "../models/Notification";
 import { Poll } from "../models/Poll";
 import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 import { Invitation } from "../models/Invitation";
+import { Collection } from '../models/interfaces/collection';
 
 // Create an API Service class
 class apiService {
@@ -301,6 +302,11 @@ class apiService {
     const res = await superagent
       .post(`${BASE_URL}/invitation/many`)
       .send(invitations);
+    return res.body;
+  }
+
+  static async getAllCollections(): Promise<Collection[]> {
+    const res = await superagent.get(`${BASE_URL}/collection`);
     return res.body;
   }
 }

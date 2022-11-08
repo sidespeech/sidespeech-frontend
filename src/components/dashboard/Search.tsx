@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { checkUserEligibility, getRandomId } from '../../helpers/utilities';
 import useDebounceValue from '../../hooks/useDebounceValue';
+import { Collection } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
 import { sideAPI } from '../../services/side.service';
@@ -91,17 +92,16 @@ const SearchStyled = styled.main<SearchStyledProps>`
 `;
 
 interface SearchProps {
+    collections: Collection[];
     searchFilters: searchFiltersProps;
     searchText: string;
     setSearchFilters: React.Dispatch<React.SetStateAction<searchFiltersProps>>;
 }
 
-const Search = ({ searchFilters, searchText, setSearchFilters }: SearchProps) => {
+const Search = ({ collections, searchFilters, searchText, setSearchFilters }: SearchProps) => {
     const [sidesLoading, setSidesLoading] = useState<boolean>(false);
     const [sidesList, setSidesList] = useState<Side[]>([]);
     const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
-    const [filteredSides, setfilteredSides] = useState<Side[]>([]);
-    const [selectedCollection, setSelectedCollection] = useState<any>(null);
     const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
     const { userCollectionsData } = useSelector(
@@ -137,7 +137,7 @@ const Search = ({ searchFilters, searchText, setSearchFilters }: SearchProps) =>
         }
       }
       if (Object.keys(userCollectionsData).length) getSearchSides();
-    }, [_searchText, searchFilters, userCollectionsData]);
+    }, [_searchText, searchFilters.collections, userCollectionsData]);
 
     const handleEligibilityCheck = (side: Side) => {
         setSelectedSide(side);
@@ -158,10 +158,10 @@ const Search = ({ searchFilters, searchText, setSearchFilters }: SearchProps) =>
                 collections: ev.target.value,
                 selectedCollection: ''
             }))}
-            options={['All']}
+            options={['All', ...collections.map(collection => collection.openseaData?.collectionName)]}
             placeholder="Select a collection"
             valueToSet={searchFilters.collections?.split(',')[0] || ''}
-            values={['all']}
+            values={['all', ...collections.map(collection => collection.address)]}
             width="70%"
           />
         </div>
@@ -205,12 +205,14 @@ const Search = ({ searchFilters, searchText, setSearchFilters }: SearchProps) =>
                             <Link to={`/${side.id}`}>
                                 <SideCardItem 
                                     joined 
+                                    onJoin={handleEligibilityCheck}
                                     side={side} 
                                 />
                             </Link>
                         ) : (
                             <SideCardItem 
                                 eligible={!!side.eligible} 
+                                onJoin={handleEligibilityCheck}
                                 side={side} 
                             />
                         )}
