@@ -19,20 +19,31 @@ import { User } from "../../../models/User";
 import { toast } from "react-toastify";
 import _ from "lodash";
 import { FadeLoader } from "react-spinners";
+import "./NftsCollections.css";
+import { Profile } from "../../../models/Profile";
 
 interface IUserNftsCollectionsProps {
+  selectedNfts: {
+    [key: string]: NFT[];
+  };
+  collections: Collection[];
   user: User;
-  userCollectionsData: UserCollectionsData;
+  handleNftChange: any;
+  profile?: Profile;
+  saveNftsProfilePicture?: any;
+  handleSelectAll?: any;
 }
 
 export default function NftsCollections({
+  selectedNfts,
+  collections,
+  profile,
   user,
-  userCollectionsData,
+  saveNftsProfilePicture,
+  handleNftChange,
+  handleSelectAll,
 }: IUserNftsCollectionsProps) {
   const [openCollection, setOpenCollection] = useState<boolean[]>([]);
-  const [checkedState, setCheckedState] = useState<{
-    [key: string]: NFT[];
-  } | null>(null);
   const [filteredCollections, setFilteredCollections] = useState<
     Collection[] | null
   >(null);
@@ -41,26 +52,19 @@ export default function NftsCollections({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (userCollectionsData && user) {
-      const collections = Object.keys(userCollectionsData);
+    if (collections) {
       const array: boolean[] = new Array(collections.length).fill(true);
       setOpenCollection(array);
-      const initCheckedState: any = {};
-      collections.forEach((key) => {
-        const nfts =
-          user?.publicNfts?.filter((nft) => nft.token_address === key) || [];
-        initCheckedState[key] = [...nfts];
-      });
-      setCheckedState(initCheckedState);
-      setFilteredCollections(Object.values(userCollectionsData));
+      setFilteredCollections(collections);
+      console.log(collections)
     }
-  }, [userCollectionsData, user]);
+  }, []);
 
   useEffect(() => {
-    if (checkedState && Object.values(checkedState).length > 0) {
+    if (selectedNfts && Object.values(selectedNfts).length > 0) {
       setLoading(false);
     }
-  }, [checkedState]);
+  }, [selectedNfts]);
 
   //#region NFTS handlers
   const handleCollectionShowing = (position: any) => {
@@ -70,36 +74,10 @@ export default function NftsCollections({
     setOpenCollection(updatedCollectionShowing);
   };
 
-  const handleNftChange = (selectedNft: NFT) => {
-    if (!checkedState) return;
-    const index = checkedState[selectedNft.token_address].findIndex(
-      (nft) =>
-        nft.token_address === selectedNft.token_address &&
-        nft.token_id === selectedNft.token_id
-    );
-    if (index !== -1) {
-      const tmp = [...checkedState[selectedNft.token_address]];
-      tmp.splice(index, 1);
-      setCheckedState({ ...checkedState, [selectedNft.token_address]: tmp });
-    } else {
-      const tmp = checkedState[selectedNft.token_address];
-      setCheckedState({
-        ...checkedState,
-        [selectedNft.token_address]: [...tmp, selectedNft],
-      });
-    }
-  };
-  const handleSelectAll = (nfts: NFT[]) => {
-    if (!checkedState) return;
-    const values = checkedState[nfts[0].token_address];
-    const array = _.union(values, nfts);
-    setCheckedState({ ...checkedState, [nfts[0].token_address]: [...array] });
-  };
-
   const handleFilterCollection = (e: any) => {
     const filter: string = e.target.value;
 
-    const filteredData = Object.values(userCollectionsData).filter((value) =>
+    const filteredData = collections.filter((value) =>
       value.name?.toLowerCase().includes(filter.toLowerCase())
     );
     setFilteredCollections(filteredData);
@@ -108,8 +86,8 @@ export default function NftsCollections({
 
   const onSubmitNfts = async () => {
     try {
-      if (checkedState) {
-        const nftsList = _.flatten(Object.values(checkedState));
+      if (selectedNfts) {
+        const nftsList = _.flatten(Object.values(selectedNfts));
         await apiService.updateUserPublicNfts(user.id, nftsList);
         dispatch(updateUser({ publicNfts: nftsList }));
         toast.success("Settings have been updated.", {
@@ -123,18 +101,54 @@ export default function NftsCollections({
     }
   };
 
+  const Header = () => {
+    if (profile) {
+      return <p>Select your profile avatar</p>;
+    } else {
+      return (
+        <p>
+          My public NFTS (
+          <span className="selected">
+            {" "}
+            {selectedNfts
+              ? _.sum(Object.values(selectedNfts).map((c) => c.length))
+              : 0}
+          </span>
+          /{_.sum(filteredCollections?.map((c) => c.nfts.length))})
+        </p>
+      );
+    }
+  };
+
+  const renderNumberSelection = (collection: Collection) => {
+    return (
+      <div className="float-right">
+        <div className="selected mr-3">
+          {!profile && (
+            <>
+              Public :{" "}
+              <span className="selected">
+                {selectedNfts[collection.address]?.length}/
+              </span>
+            </>
+          )}
+          {collection.nfts.length}
+        </div>
+        {!profile && (
+          <a
+            className="selectAll"
+            onClick={() => handleSelectAll(collection.nfts)}
+          >
+            Select All
+          </a>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <div className="f-row my-nfts relative">
-      <p>
-        My public NFTS (
-        <span className="selected">
-          {" "}
-          {checkedState
-            ? _.sum(Object.values(checkedState).map((c) => c.length))
-            : 0}
-        </span>
-        /{_.sum(filteredCollections?.map((c) => c.nfts.length))})
-      </p>
+    <div className="f-row my-nfts relative text-main">
+      <Header />
       <InputText
         height={40}
         width="100%"
@@ -156,7 +170,7 @@ export default function NftsCollections({
           </div>
         )}
         {filteredCollections &&
-          checkedState &&
+          selectedNfts &&
           filteredCollections.map((collection, index) => {
             return (
               <div className={`nftCollection`} key={index}>
@@ -175,21 +189,7 @@ export default function NftsCollections({
                       {collection.name || collection.address}
                     </div>
                   </div>
-                  <div className="float-right">
-                    <div className="selected">
-                      Public :{" "}
-                      <span className="selected">
-                        {checkedState[collection.address]?.length}
-                      </span>
-                      /{collection.nfts.length}
-                    </div>
-                    <a
-                      className="selectAll"
-                      onClick={() => handleSelectAll(collection.nfts)}
-                    >
-                      Select All
-                    </a>
-                  </div>
+                  {renderNumberSelection(collection)}
                 </div>
 
                 <div
@@ -199,29 +199,28 @@ export default function NftsCollections({
                 >
                   {collection.nfts.map((nft: NFT, index: number) => {
                     const metadata = nft.metadata;
+                    const isSelected = selectedNfts[collection.address]?.some(
+                      (c) =>
+                        c.token_id === nft.token_id &&
+                        c.token_address === nft.token_address
+                    );
                     return (
                       <div
                         onClick={() => handleNftChange(nft)}
                         className={`the-nft ${
-                          checkedState[collection.address]?.some(
-                            (c) =>
-                              c.token_id === nft.token_id &&
-                              c.token_address === nft.token_address
-                          )
-                            ? "selected"
+                          isSelected
+                            ? !profile
+                              ? "selected"
+                              : "selected-2"
                             : ""
                         }`}
                         key={index}
                       >
                         <div className="inner">
-                          {checkedState[collection.address]?.some(
-                            (c) =>
-                              c.token_id === nft.token_id &&
-                              c.token_address === nft.token_address
-                          ) ? (
-                            <div className="status">Public</div>
-                          ) : (
-                            ""
+                          {isSelected && (
+                            <div className="status">
+                              {!profile ? "Public" : "Avatar"}
+                            </div>
                           )}
                           <img
                             src={
@@ -229,7 +228,7 @@ export default function NftsCollections({
                                 ? fixURL(metadata.image)
                                 : nftIcon
                             }
-                            onError={(e) => (e.target.src = nftIcon)}
+                            onError={(e: any) => (e.target.src = nftIcon)}
                             alt="nft"
                           />
                           <div className="detail text-center">
@@ -253,16 +252,29 @@ export default function NftsCollections({
       </div>
       <div className="submitArea">
         {/* Submit Button */}
-        <Button
-          classes={"mb-3"}
-          width={164}
-          height={44}
-          radius={10}
-          color={"var(--text-primary-light)"}
-          onClick={onSubmitNfts}
-        >
-          Save this selection
-        </Button>
+        {!profile ? (
+          <Button
+            classes={"mb-3"}
+            width={164}
+            height={44}
+            radius={10}
+            color={"var(--text-primary-light)"}
+            onClick={onSubmitNfts}
+          >
+            Save this selection
+          </Button>
+        ) : (
+          <Button
+            classes={"mb-3"}
+            width={164}
+            height={44}
+            radius={10}
+            color={"var(--text-primary-light)"}
+            onClick={saveNftsProfilePicture}
+          >
+            Use this NFT
+          </Button>
+        )}
       </div>
     </div>
   );

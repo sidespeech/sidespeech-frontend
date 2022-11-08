@@ -80,7 +80,7 @@ export default function Channels({
         let current_added: Channel[] = [];
         if (channels["added"].length) {
           current_added = [...channels["added"]];
-        }
+        } 
         current_added.splice(index, 1);
         setChannels({ ...channels, added: current_added });
       }
@@ -91,7 +91,7 @@ export default function Channels({
     if (channelsNewSide) {
       handleAddNewChannel();
     } else {
-      let current_added: Channel[] = [];
+      let current_added: Partial<Channel>[] = [];
       if (channels["added"].length) {
         current_added = [...channels["added"]];
       }

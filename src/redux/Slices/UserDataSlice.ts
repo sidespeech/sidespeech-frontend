@@ -10,6 +10,9 @@ import { Side } from "../../models/Side";
 import { UserCollectionsData } from "../../models/interfaces/UserCollectionsData";
 import { Collection } from "../../models/interfaces/collection";
 import alchemyService from "../../services/alchemy.service";
+import { sideAPI } from "../../services/side.service";
+import { RootState } from "../store/app.store";
+import { apiService } from "../../services/api.service";
 
 export interface UserData {
   user: User | null;
@@ -19,7 +22,9 @@ export interface UserData {
   redirectTo: null;
   sides: Side[];
   currentProfile: Profile | undefined;
-  userCollectionsData: UserCollectionsData | null;
+  userCollectionsData: UserCollectionsData;
+  userCollectionsLoading: boolean;
+  userCollectionsLoadingSides: boolean;
 }
 
 const initialState: UserData = {
@@ -30,24 +35,31 @@ const initialState: UserData = {
   redirectTo: null,
   sides: [],
   currentProfile: undefined,
-  userCollectionsData: null,
+  userCollectionsData: {},
+  userCollectionsLoading: false,
+  userCollectionsLoadingSides: false,
 };
 
-export const flattenChannels = (array: any, key:string) => {
+export const flattenChannels = (array: any, key: string) => {
   return array?.reduce(function (flat: any, toFlatten: any) {
-    return flat.concat(Array.isArray(toFlatten[key]) ? flattenChannels(toFlatten[key], key) : toFlatten.id);
+    return flat.concat(
+      Array.isArray(toFlatten[key])
+        ? flattenChannels(toFlatten[key], key)
+        : toFlatten.id
+    );
   }, []);
 };
 
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
-  async (address: string) => {
+  async (address: string, { dispatch, getState }) => {
     const nfts = await alchemyService.getUserNfts(
       "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
     );
     const collections = await alchemyService.getUserCollections(
       "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
     );
+    await apiService.savedCollections(collections);
     let res: any = {};
     for (let nft of nfts) {
       const address = nft["token_address"];
@@ -61,7 +73,18 @@ export const fetchUserDatas = createAsyncThunk(
         res[address].nfts.push(nft);
       }
     }
+    Object.values(res).forEach((coll: any) => {
+      dispatch(getSidesByCollection(coll?.address));
+    });
     return res;
+  }
+);
+
+export const getSidesByCollection = createAsyncThunk(
+  "userData/getSidesByCollection",
+  async (address: string, { dispatch, getState }) => {
+    const response = await sideAPI.getSidesByCollections([address]);
+    return response;
   }
 );
 
@@ -72,15 +95,15 @@ export const userDataSlice = createSlice({
     connect: (state: UserData, action: PayloadAction<any>) => {
       state.user = action.payload.user;
       state.account = action.payload.account;
-      let rooms = flattenChannels(state.user?.profiles, 'rooms');
+      let rooms = flattenChannels(state.user?.profiles, "rooms");
       state.sides = action.payload.user.profiles
         ? action.payload.user.profiles.map((p: Profile) => {
-          p.side['profiles'] = [p]
-          return p.side
-        })
+            p.side["profiles"] = [p];
+            return p.side;
+          })
         : [];
       state.redirectTo = action.payload.redirectTo;
-      rooms = rooms ? rooms.concat(flattenChannels(state.sides, 'channels')) : null;
+      rooms = rooms?.concat(flattenChannels(state.sides, "channels"));
       websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {
@@ -123,8 +146,26 @@ export const userDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
+    builder.addCase(fetchUserDatas.pending, (state, action) => {
+      state.userCollectionsLoading = true;
+    });
+    builder.addCase(fetchUserDatas.rejected, (state, action) => {
+      state.userCollectionsLoading = false;
+    });
     builder.addCase(fetchUserDatas.fulfilled, (state, action) => {
       state.userCollectionsData = { ...action.payload };
+      state.userCollectionsLoading = false;
+    });
+    builder.addCase(getSidesByCollection.pending, (state, action) => {
+      state.userCollectionsLoadingSides = true;
+    });
+    builder.addCase(getSidesByCollection.rejected, (state, action) => {
+      state.userCollectionsLoadingSides = false;
+    });
+    builder.addCase(getSidesByCollection.fulfilled, (state, action) => {
+      state.userCollectionsData[action.payload.contracts].sideCount =
+        action.payload.count;
+      state.userCollectionsLoadingSides = false;
     });
   },
 });

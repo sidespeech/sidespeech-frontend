@@ -10,11 +10,14 @@ export class Side {
   NftTokenAddress: string;
   coverImage: string;
   sideImage: string;
+  firstCollection: string;
+  collectionsCount: number;
   // this will be a json containing an object with the token related to a condition as key and
   // his value will be the property key and the property value related to this collection
   conditions: any;
   channels: Channel[];
   profiles: Profile[];
+  collections: any[];
 
   constructor(_data: any) {
     this.id = _data.id;
@@ -25,10 +28,13 @@ export class Side {
     this.NftTokenAddress = _data.NftTokenAddress;
     this.coverImage = _data.coverImage;
     this.sideImage = _data.sideImage;
+    this.firstCollection = "";
+    this.collectionsCount = 0;
     this.conditions = _data.conditions ? JSON.parse(_data.conditions) : {};
     this.channels = _data.channels;
     this.profiles = _data.profiles
       ? _data.profiles.map((p: any) => new Profile(p))
       : [];
+    this.collections = _data.collections;
   }
 }

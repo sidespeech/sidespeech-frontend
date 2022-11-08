@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./CurrentColony.css";
-import ChannelSettingsModal from "../Modals/ChannelSettingsModal";
 import "./AnnouncementList/AnnouncementItem.css";
 import AnnouncementList from "./AnnouncementList/AnnouncementList";
 import MiddleContainerHeader from "../ui-components/MiddleContainerHeader";
@@ -132,13 +131,6 @@ export default function CurrentColony() {
           )}
         </div>
       </div>
-      {displayEditChannelModal && selectedChannel && currentSide && (
-        <ChannelSettingsModal
-          showModal={setDisplayEditChannelModal}
-          selectedChannel={selectedChannel}
-          currentColony={currentSide}
-        />
-      )}
       {createPollModal && selectedChannel && currentSide && (
         <CreatePollModal showModal={setCreatePollModal} />
       )}

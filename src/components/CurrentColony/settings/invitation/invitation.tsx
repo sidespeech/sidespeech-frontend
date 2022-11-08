@@ -18,9 +18,9 @@ export default function Invitation({
   userInvited
 }: {
   currentSide: Side;
-  invitationUsers: any[];
-  setUserInvited:any;
-  userInvited:any;
+  invitationUsers?: any[];
+  setUserInvited?:any;
+  userInvited?:any;
 }) {
 
   const dispatch = useDispatch();

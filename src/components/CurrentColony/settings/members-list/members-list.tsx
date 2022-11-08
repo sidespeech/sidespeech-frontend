@@ -1,20 +1,14 @@
 import React, { useEffect } from "react";
-import { Channel, Colony } from "../../../models/Colony";
-import Button from "../../../ui-components/Button";
-import InputText from "../../../ui-components/InputText";
-import { format } from "date-fns";
-import UserLine from "../../../ui-components/UserLine";
 import TableRow from "../../../ui-components/TableRow";
 import _ from "lodash";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 import "./members-list.css"
-import styled from "styled-components";
+import { Side } from "../../../../models/Side";
 
 export default function MembersList({
   currentSide,
 }: {
-  currentSide: Colony;
+  currentSide: Side;
 }) {
 
   const dispatch = useDispatch();

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { RootState } from "../../redux/store/app.store";
 import Login from "./Login";
 import { useNavigate } from "react-router";
-import SidesList from "../SidesList";
+import DashboardPage from "../dashboard/DashboardPage";
 import { Side } from "../../models/Side";
 import "./DefaultView.css";
 
@@ -42,7 +42,7 @@ export default function DefaultView() {
       {userData.account === null && userStorage == null ? (
         <Login />
       ) : (
-          <SidesList />
+          <DashboardPage />
       )}
     </>
   );

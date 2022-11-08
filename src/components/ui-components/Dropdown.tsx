@@ -73,7 +73,7 @@ export default function Dropdown({
       </button>
       {isOpen && (
         <div role="list" className="dd-list">
-          {options.map((item, index) => (
+          {options.map((item: any, index: any) => (
             <button
               type="button"
               key={index}

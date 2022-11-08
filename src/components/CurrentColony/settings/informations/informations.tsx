@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Channel, Colony } from "../../../models/Colony";
 import Button from "../../../ui-components/Button";
 import InputText from "../../../ui-components/InputText";
 import TextArea from "../../../ui-components/TextArea";
-import UserLine from "../../../ui-components/UserLine";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import "./informations.css";
 import { apiService } from "../../../../services/api.service";
-import { addColony } from "../../../../redux/Slices/UserDataSlice";
-import { useSearchParams } from "react-router-dom";
 import { Side } from "../../../../models/Side";
 
 export interface InitialStateUpdateSide {
@@ -30,7 +26,7 @@ export default function Informations({
   onChangeNewSideImage,
   formError,
 }: {
-  currentSide: Side;
+  currentSide: Partial<Side>;
   onChangeNewSideName?: any;
   onChangeNewSideImage?: any;
   formError?: any;
@@ -68,6 +64,7 @@ export default function Informations({
       if (!formData.sideImage) {
         delete formData["sideImage"];
       }
+      if (!currentSide["id"]) return;
       const updatedSide = await apiService.updateSide(
         formData,
         currentSide["id"]
@@ -89,8 +86,8 @@ export default function Informations({
           Profile Picture
         </div>
 
-        <div className="flex">
-          <label className="upload-colony-image f-column align-center justify-center">
+        <label htmlFor="input-colony-picture" className="flex">
+          <div className="upload-colony-image f-column align-center justify-center">
             {formData.sideImage ? (
               <img
                 style={{
@@ -119,25 +116,24 @@ export default function Informations({
                 </span>
               </>
             )}
-          </label>
+          </div>
 
-          <label className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">
+          <div className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">
             Use square image (1:1 ratio) to have a better rendering.
-          </label>
+          </div>
 
           <div className="f-column align-center justify-center ml-3">
-            <input
-              accept=".png,.jpg,.jpeg,.webp"
-              style={{ display: "none" }}
-              id="input-colony-picture"
-              type={"file"}
-              onChange={onChangeSideImage}
-            />
-            <label htmlFor={"input-colony-picture"}>
+            <div>
+              <input
+                accept=".png,.jpg,.jpeg,.webp"
+                style={{ opacity: 0, position: 'absolute', pointerEvents: 'none' }}
+                id="input-colony-picture"
+                type={"file"}
+                onChange={onChangeSideImage}
+              />
               <Button
                 width={159}
                 height={46}
-                onClick={undefined}
                 radius={10}
                 background={"var(--bg-secondary-light)"}
                 color={"var(--text-primary-light)"}
@@ -145,9 +141,9 @@ export default function Informations({
                 {" "}
                 Upload a new image
               </Button>
-            </label>
+            </div>
           </div>
-        </div>
+        </label>
       </div>
 
       {/* Name Section */}
