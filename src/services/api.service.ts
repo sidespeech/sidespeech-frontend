@@ -17,6 +17,7 @@ import { Poll } from "../models/Poll";
 import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
+import _ from "lodash";
 
 // Create an API Service class
 class apiService {
@@ -301,7 +302,8 @@ class apiService {
   }
 
   static async savedCollections(collections: Collection[]) {
-    const data = collections.map((c: any) => {
+    const copy = _.cloneDeep(collections);
+    const data = copy.map((c: any) => {
       c.opensea = JSON.stringify(c.opensea);
       return c;
     });

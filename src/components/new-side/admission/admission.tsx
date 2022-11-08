@@ -176,8 +176,7 @@ export default function Admission({
                                         <span className="ml-2 mr-3">
                                           {c.name}
                                         </span>
-                                        {c.opensea
-                                          ?.safelistRequestStatus ===
+                                        {c.opensea?.safelistRequestStatus ===
                                           OpenSeaRequestStatus.verified && (
                                           <img alt="check" src={check} />
                                         )}
