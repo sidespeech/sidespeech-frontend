@@ -7,26 +7,31 @@ import { toast } from "react-toastify";
 import "./informations.css";
 import { apiService } from "../../../../services/api.service";
 import { Side } from "../../../../models/Side";
+import Switch from "../../../ui-components/Switch";
 
 export interface InitialStateUpdateSide {
   sideImage: string | undefined;
   name: string;
   description: string;
+  priv: boolean;
 }
 
 const initialStateUpdateSide = {
   sideImage: undefined,
   name: "",
   description: "",
+  priv: false,
 };
 
 export default function Informations({
   currentSide,
+  userData,
   onChangeNewSideName,
   onChangeNewSideImage,
   formError,
 }: {
-  currentSide: Partial<Side>;
+  userData?:any;
+  currentSide: any;
   onChangeNewSideName?: any;
   onChangeNewSideImage?: any;
   formError?: any;
@@ -35,10 +40,14 @@ export default function Informations({
     initialStateUpdateSide
   );
   const [isNewSide, setIsNewSide] = useState<boolean>(true);
+  const [subAdmin, setSubAdmin] = useState<string>('');
 
   useEffect(() => {
-    if (window.location.href.includes("settings")) setIsNewSide(false);
-  }, []);
+    if (window.location.href.includes("settings")) {
+      setIsNewSide(false);
+      setFormData({ sideImage: currentSide['sideImage'], name: currentSide['name'], description: currentSide['description'], priv: currentSide['priv'] })
+    }
+  }, [currentSide]);
 
   const dispatch = useDispatch();
 
@@ -56,6 +65,11 @@ export default function Informations({
     const name = event.target.value;
     setFormData({ ...formData, name: name });
     if (isNewSide) onChangeNewSideName(event.target.value);
+  };
+
+  const onChangePrivate = (event: any) => {
+    setFormData({ ...formData, priv: event });
+    // if (isNewSide) onChangeNewSideName(event.target.value);
   };
 
   // If we are in settings on existing Side
@@ -78,11 +92,32 @@ export default function Informations({
     }
   };
 
+  const onChangeSubAdmin = (event:any) => {
+    if (event.target.value.length) {
+      setSubAdmin(event.target.value)
+    }
+  };
+
+  const onSubmitSubAdmin = async () => {
+    let result = await apiService.updateSubAdmin(subAdmin, currentSide['id']);
+    (result['error']) ? toast.error(result['message'], { toastId: 3 }) : toast.success(result['message'], { toastId: 4 });
+  };
+
+  const onSubmitLeaveSide = async () => {
+    let result = await apiService.leaveSide(userData['currentProfile']);
+    if (result['error'])
+      toast.error(result['message'], { toastId: 3 })
+    else {
+      toast.success(result['message'], { toastId: 4 });
+      window.location.reload();
+    }
+  };
+
   return (
     <>
       {/* Profile Picture Section */}
       <div className="f-column">
-        <div className="text-primary-light mb-3 text fw-600">
+        <div className="text-primary-light mb-2 text fw-600 size-13">
           Profile Picture
         </div>
 
@@ -118,7 +153,7 @@ export default function Informations({
             )}
           </div>
 
-          <div className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">
+          <div className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3 size-11">
             Use square image (1:1 ratio) to have a better rendering.
           </div>
 
@@ -132,11 +167,13 @@ export default function Informations({
                 onChange={onChangeSideImage}
               />
               <Button
-                width={159}
-                height={46}
+                width={129}
+                height={36}
+                onClick={undefined}
                 radius={10}
                 background={"var(--bg-secondary-light)"}
                 color={"var(--text-primary-light)"}
+                fontSize={"11px"}
               >
                 {" "}
                 Upload a new image
@@ -147,12 +184,12 @@ export default function Informations({
       </div>
 
       {/* Name Section */}
-      <div className="f-column mt-5">
-        <div className="text-primary-light mb-3 text fw-600">Side Name</div>
+      <div className="f-column mt-3">
+        <div className="text-primary-light mb-2 text fw-600 size-13">Side Name</div>
         <div className="flex">
           <InputText
-            parentWidth="70%"
-            height={40}
+            parentWidth="30%"
+            height={35}
             width="70%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
@@ -172,12 +209,12 @@ export default function Informations({
       </div>
 
       {/* Description Section */}
-      <div className="f-column mt-5">
-        <div className="text-primary-light mb-3 text fw-600">Description</div>
+      <div className="f-column mt-3">
+        <div className="text-primary-light mb-2 text fw-600 size-13">Description</div>
         <div className="flex">
           <TextArea
-            height={120}
-            width="90%"
+            height={100}
+            width="68%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             placeholder={"Describe your Side"}
@@ -186,29 +223,86 @@ export default function Informations({
             maxLength={500}
           />
         </div>
-        <div className="size-10">Max number of characters: 500</div>
+        <div className="size-8">Max number of characters: 500</div>
       </div>
+
+      {/* Private Side Section */}
+
+      {
+        !isNewSide ? (
+          <div className="f-column mt-3">
+            <div className="flex">
+              <div className="text-primary-light mb-1 text fw-600 mr-3">Private Side</div>
+              <Switch
+                onClick={onChangePrivate}
+                value={currentSide.priv}
+              />
+            </div>
+            <div className="size-8">Only invited users will be able to join this Side. All invitations will be received as requests.</div>
+          </div>
+        ) : null
+      }
+
 
       {/* Submit Button */}
       {
         !isNewSide ? (
-          // If we are in settings on existing Side
-          <Button
-            classes={"mt-3"}
-            width={159}
-            height={46}
-            onClick={updateSide}
-            radius={10}
-            color={"var(--text-primary-light)"}
-          >
-            Save{" "}
-          </Button>
+          <>
+            <Button
+              classes={"mt-1"}
+              width={159}
+              height={46}
+              onClick={updateSide}
+              radius={10}
+              color={"var(--text-primary-light)"}
+            >
+              Save{" "}
+            </Button>
+
+            <div className='yellowDiv mt-3'>
+              <button className='flex mt-2' onClick={onSubmitLeaveSide}>
+                <i className="fa-solid fa-right-from-bracket"></i>
+                <p>Leave the side</p>
+              </button>
+
+              <p className='sub-text mt-5'>To leave a side, you must define a sub-admin-user who will become the new administrator</p>
+
+              <div className='btm-div'>
+                <p className='btm-div-head mt-5'>Define a sub-admin User</p>
+                <p className='btm-div-nor'>Search for a username or wallet address registered on<br /> SideSpeech</p>
+                <div className='typ-sm mt-5'>
+                  {/* <input className='sideInput' placeholder='Type something' /> */}
+                  <InputText
+                    parentWidth="100%"
+                    height={35}
+                    width="100%"
+                    bgColor="rgba(19, 19, 16, 0.55)"
+                    glass={false}
+                    placeholder={"Type something"}
+                    onChange={onChangeSubAdmin}
+                    radius="10px"
+                  />
+                  <Button
+                    width={149}
+                    height={36}
+                    onClick={onSubmitSubAdmin}
+                    radius={10}
+                    background={"rgba(19, 19, 16, 0.55)"}
+                    color={"var(--text-primary-light)"}
+                    fontSize={"11px"}
+                    classes={"ml-3"}
+                  >
+                    {" "}
+                    Update Sub-admin
+                  </Button>
+                </div>
+
+              </div>
+            </div>
+          </>
         ) : null
-        // (
-        //   // If we are on Create Side
-        //   <Button classes={"mt-3"} width={159} height={46} onClick={newSideNextStep} radius={10} color={'var(--text-primary-light)'}>Continue</Button>
-        // )
       }
+
     </>
   );
 }

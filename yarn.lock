@@ -10069,6 +10069,42 @@ mock-fs@^4.1.0:
   resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-4.14.0.tgz#ce5124d2c601421255985e6e94da80a7357b1b18"
   integrity sha512-qYvlv/exQ4+svI3UOvPUpLDF0OMX5euvUH0Ny4N5QyRyhNdgAgUrVH3iUINSzEPLvx0kbo/Bp28GJKIqvE7URw==
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
+moralis-v1@^1.11.0:
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/moralis-v1/-/moralis-v1-1.11.0.tgz#fc8f5055d14b91c8301337ab58b331fa6e4b4f60"
+  integrity sha512-6FxKTdh1kOLme+R5Z6kIT++MHwZzTrYGhiS/E7hRnapomY423RThrxsnYgs7XnLEe8g2TLvA4Sx0+DIgwYWTjg==
+  dependencies:
+    "@babel/runtime" "7.16.7"
+    "@babel/runtime-corejs3" "7.16.8"
+    "@metamask/detect-provider" "^1.2.0"
+    axios "0.26.1"
+    ethers "5.6.0"
+    react-native-crypto-js "1.0.0"
+    uuid "^8.3.2"
+    ws "^8.3.0"
+    xmlhttprequest "1.8.0"
+  optionalDependencies:
+    crypto-js "4.1.1"
+
+moralis@^2.6.5:
+  version "2.6.5"
+  resolved "https://registry.yarnpkg.com/moralis/-/moralis-2.6.5.tgz#65651e486f28ee0db0c1af69e87ae104800a6c30"
+  integrity sha512-GN6u+GnyL2I/+mrPo0KQ92a1H4FlgSsN77XQOB+I3GHMrJGg9jqAukjfYCHZhHx8Jb4ygzle0iGd5+r+gPRbxQ==
+  dependencies:
+    "@moralisweb3/api-utils" "^2.6.5"
+    "@moralisweb3/auth" "^2.6.5"
+    "@moralisweb3/core" "^2.6.5"
+    "@moralisweb3/evm-api" "^2.6.5"
+    "@moralisweb3/evm-utils" "^2.6.5"
+    "@moralisweb3/sol-api" "^2.6.5"
+    "@moralisweb3/sol-utils" "^2.6.5"
+    "@moralisweb3/streams" "^2.6.5"
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"

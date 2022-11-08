@@ -9,6 +9,7 @@ interface ButtonProps {
   background?: string;
   color?: string;
   border?: string;
+  fontSize?:string;
 }
 
 const CustomButton = styled.button<ButtonProps>`
@@ -23,7 +24,7 @@ const CustomButton = styled.button<ButtonProps>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 14px;
+  font-size: ${(props) => (props.fontSize ? props.fontSize : "14px")};;
   font-weight: 700;
   pointer-events: ${(props) => (props.disabled ? "none" : "all")};
   filter: ${props => props.disabled && "grayscale(1)"};
@@ -41,6 +42,7 @@ export default function Button({
   background,
   color,
   border,
+  fontSize,
   type = 'button'
 }: {
   children: any;
@@ -53,6 +55,7 @@ export default function Button({
   background?: string;
   color?: string;
   border?: string;
+  fontSize?:string;
   type?: "button" | "submit" | "reset" | undefined
 }) {
   return (
@@ -66,6 +69,7 @@ export default function Button({
       radius={radius}
       background={background}
       color={color}
+      fontSize={fontSize}
       type={type}
     >
       {children}
