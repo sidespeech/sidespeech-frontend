@@ -133,7 +133,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
         if (userCollectionsData) {
             let filteredArray = _.orderBy(userCollectionsData, "name")
             if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
-            if (isOnlyVerifiedCollectionsChecked) filteredArray = filteredArray.filter(collection => collection.openseaData?.safelistRequestStatus === 'verified');
+            if (isOnlyVerifiedCollectionsChecked) filteredArray = filteredArray.filter(collection => collection.opensea?.safelistRequestStatus === 'verified');
             setFilteredCollections(filteredArray);
         }
     }, [isOnlyVerifiedCollectionsChecked, isWithSidesChecked, userCollectionsData]);
@@ -220,7 +220,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                                     onClick={() => setSearchFilters(prevState => ({
                                         ...prevState,
                                         collections: collection.address,
-                                        selectedCollection: collection?.openseaData?.collectionName
+                                        selectedCollection: collection?.opensea?.collectionName
                                     }))} 
                                 />
                             )}
@@ -230,7 +230,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                                     onClick={() => setSearchFilters(prevState => ({
                                         ...prevState,
                                         collections: collection.address,
-                                        selectedCollection: collection?.openseaData?.collectionName
+                                        selectedCollection: collection?.opensea?.collectionName
                                     }))}  
                                 />
                             )}

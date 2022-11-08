@@ -32,7 +32,6 @@ const DashboardBanner = ({searchText, setSearchText}: DashboardBannerProps) => {
         <InputText 
             bgColor="rgba(0, 0, 0, 0.2)"
             color="var(--white)"
-            defaultValue={searchText}
             glass
             height={43}
             iconColor="#B4C1D2"
@@ -42,6 +41,7 @@ const DashboardBanner = ({searchText, setSearchText}: DashboardBannerProps) => {
             placeholder='Search by name or collection'
             placeholderColor="var(--white)"
             radius="10px"
+            value={searchText}
         />
     </DashboardStyled>
   )

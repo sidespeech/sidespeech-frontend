@@ -181,7 +181,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
                 collections: ev.target.value,
                 selectedCollection: ''
             }))}
-            options={['All', ...collections.map(collection => collection.openseaData?.collectionName)]}
+            options={['All', ...collections.map(collection => collection.opensea?.collectionName)]}
             placeholder="Select a collection"
             valueToSet={searchFilters.collections?.split(',')[0] || ''}
             values={['all', ...collections.map(collection => collection.address)]}

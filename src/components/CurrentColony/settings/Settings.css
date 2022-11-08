@@ -151,3 +151,7 @@ nav .search-icon {
 .collection-icon-check {
     color: #0d6efd;
 }
+.container-tab {
+    overflow: auto;
+    max-height: calc(100vh - 88px);
+}

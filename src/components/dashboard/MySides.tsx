@@ -107,7 +107,7 @@ useEffect(() => {
           <label>Collection</label>
           <CustomSelect 
             onChange={()=> {}}
-            options={['All', ...collections.map(collection => collection.openseaData?.collectionName)]}
+            options={['All', ...collections.map(collection => collection.opensea?.collectionName)]}
             placeholder="Select a collection"
             valueToSet={''}
             values={['all', ...collections.map(collection => collection.address)]}

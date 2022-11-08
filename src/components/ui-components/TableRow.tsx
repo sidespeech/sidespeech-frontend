@@ -5,6 +5,7 @@ import check from "../../assets/check.svg";
 import { first } from "lodash";
 import Button from "./Button";
 import { Side } from "../../models/Side";
+import { apiService } from "../../services/api.service";
 
 export default function TableRow({
   side,
@@ -22,12 +23,21 @@ export default function TableRow({
     setNewRole(event.target.value);
   };
 
-  const getRole = (address:string) => {
-    return (address === side['creatorAddress']) ? 'Administrator' : 'User'
+  const getRole = (role:number) => {
+    if (role === 0)
+      return 'Administrator'
+    else if (role === 2)
+      return 'Sub-Admin'
+    else return 'User'
   };
 
   useEffect(() => {
   }, []);
+
+  const onClickEject = async (user:any) => {
+    await apiService.removeProfile(user['id']);
+    window.location.reload();
+  };
 
   const handleSaveRole = async () => { };
 
@@ -46,7 +56,7 @@ export default function TableRow({
           </span>
           {/* <span className="fw-400 size-12 ml-2">{user.get("username")}</span> */}
           {/* <span className="fw-400 size-12 ml-2 text-primary-light">{(user["username"].length > 25) ? user["username"].slice(0, 20) + '...' : user["username"]}</span> */}
-          <span className="fw-400 size-12 ml-2 text-primary-light">{(user["username"].length > 25) ? user["username"].slice(0, 20) + '...' : user["username"]}</span>
+          <span className="fw-400 size-12 ml-2 text-primary-light">{(user["username"].length > 25) ? user['username'].replace(user['username'].substring(4,34), "...") : user["username"]}</span>
         </div>
       </td>
       <td>
@@ -57,7 +67,7 @@ export default function TableRow({
                 options={["User", "Moderator1", "Moderator2", "Moderator3"]}
                 values={["User", "Moderator1", "Moderator2", "Moderator3"]}
                 // valueToSet={user.get("role").get("name")}
-                valueToSet={getRole(user['username'])}
+                valueToSet={getRole(user['role'])}
                 onChange={handleRoleChange}
               />
               <i
@@ -70,18 +80,18 @@ export default function TableRow({
           )
         ) : (
           // <span className={getRoleColor(user.attributes.role.get("name"))}>
-          <span className={getRoleColor(getRole(user['username'])) + ' flex-1 ml-5 align-center text-center'}>
+          <span className={getRoleColor(getRole(user['role'])) + ' flex-1 ml-5 align-center text-center'}>
             {/* {user.get("role").get("name")} */}
-            {getRole(user['username'])}
+            {getRole(user['role'])}
           </span>
         )}
       </td>
       <td className="flex-1 ml-5 align-center text-center">
-        {(getRole(user['username']) !== "Administrator") ? 
+        {(getRole(user['role']) !== "Administrator") ? 
         <Button
           width={70}
           height={35}
-          onClick={undefined}
+          onClick={() => onClickEject(user)}
           radius={10}
           background={'var(--bg-secondary-light)'}
           color={'red'}

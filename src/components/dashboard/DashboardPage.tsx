@@ -97,7 +97,7 @@ export default function DashboardPage() {
     <DashboardPageStyled className="w-100 px-4 py-4">
       <DashboardBanner searchText={searchText} setSearchText={setSearchText} />
       <div className="flex w-100 gap-20">
-        <DashboardLeftMenu currentTab={currentTab} tabKeys={tabKeys} />
+        <DashboardLeftMenu currentTab={currentTab} setSearchText={setSearchText} tabKeys={tabKeys} />
 
         <div className="current-tab-wrapper flex-5">
           {currentTab === tabKeys.explore && (

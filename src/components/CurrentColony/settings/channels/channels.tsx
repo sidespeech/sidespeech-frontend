@@ -91,7 +91,7 @@ export default function Channels({
     if (channelsNewSide) {
       handleAddNewChannel();
     } else {
-      let current_added: Channel[] = [];
+      let current_added: Partial<Channel>[] = [];
       if (channels["added"].length) {
         current_added = [...channels["added"]];
       }
@@ -100,7 +100,6 @@ export default function Channels({
         isVisible: true,
         type: 2,
         side: currentSide,
-        id:""
       });
       setChannels({ ...channels, added: current_added });
     }
@@ -292,6 +291,7 @@ export default function Channels({
             onClick={onSubmit}
             radius={10}
             color={"var(--text-primary-light)"}
+            classes={"mt-4"}
           >
             Save{" "}
           </Button>

@@ -44,9 +44,9 @@ export function getRoleColor(role: string | number) {
       return "text-blue";
     case 2:
       return "text-blue";
+    case "Sub-Admin":
     case "Moderator1":
     case "Moderator2":
-    case "Moderator3":
       return "text-green";
     case "Administrator":
       return "text-red";
@@ -267,6 +267,9 @@ export function fixURL(url: string) {
   }
 }
 
+export function alchemyNftsModelToSideNftsModel(nfts: any[]) {
+  return nfts.map((nft) => alchemyNftModelToSideNftModel(nft));
+}
 export function alchemyNftModelToSideNftModel(nft: any) {
   const sideNft = {
     name: nft.title,
