@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { checkUserEligibility, getRandomId } from '../../helpers/utilities';
+import { checkUserEligibility, getRandomId, paginateArray } from '../../helpers/utilities';
 import useDebounceValue from '../../hooks/useDebounceValue';
 import { Collection } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
@@ -13,6 +13,7 @@ import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import CustomSelect from '../ui-components/CustomSelect';
+import PaginationControls from '../ui-components/PaginationControls';
 import Spinner from '../ui-components/Spinner';
 import { searchFiltersInitialState, searchFiltersProps } from './DashboardPage';
 import SideCardItem from './shared-components/SideCardItem';
@@ -89,6 +90,9 @@ const SearchStyled = styled.main<SearchStyledProps>`
     grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - (2rem / 3))));
     grid-gap: 1rem;
   }
+  .pagination-controls {
+    margin: 3rem 0 2rem 0;
+  }
 `;
 
 interface SearchProps {
@@ -96,12 +100,24 @@ interface SearchProps {
     searchFilters: searchFiltersProps;
     searchText: string;
     setSearchFilters: React.Dispatch<React.SetStateAction<searchFiltersProps>>;
-}
+};
+
+interface paginationProps {
+  currentPage: number;
+  pageSize: number;
+};
+
+const paginationInitialState = {
+  currentPage: 1,
+  pageSize: 9
+};
 
 const Search = ({ collections, searchFilters, searchText, setSearchFilters }: SearchProps) => {
     const [sidesLoading, setSidesLoading] = useState<boolean>(false);
     const [sidesList, setSidesList] = useState<Side[]>([]);
+    const [filteredSides, setFilteredSides] = useState<Side[]>([]);
     const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
+    const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
     const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
     const { userCollectionsData } = useSelector(
@@ -122,13 +138,13 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
               _searchText, 
               searchFilters.collections
             );
-            const sidesWithElegibility = response.map(side => {
+            const sidesWithElegibility = response.map((side: Side) => {
               const [_, eligible] = checkUserEligibility(userCollectionsData, side);
               return({
               ...side,
               eligible
             })})
-            setSidesList(sidesWithElegibility);
+            setFilteredSides(sidesWithElegibility);
         } catch (error) {
             console.error(error);
             toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
@@ -138,6 +154,13 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
       }
       if (Object.keys(userCollectionsData).length) getSearchSides();
     }, [_searchText, searchFilters.collections, userCollectionsData]);
+
+    useEffect(() => {
+      if (filteredSides.length) {
+          const { array } = paginateArray({array: filteredSides, currentPage: pagination.currentPage, pageSize: pagination.pageSize});
+          setSidesList(array);
+      }
+  }, [filteredSides, pagination]);
 
     const handleEligibilityCheck = (side: Side) => {
         setSelectedSide(side);
@@ -238,6 +261,18 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
               </div>
             )
       }
+
+            <PaginationControls 
+                className="pagination-controls" 
+                currentPage={pagination.currentPage}
+                onChangePage={(page: number) => {
+                    setPagination(prevState => ({
+                        ...prevState,
+                        currentPage: page
+                    }))}
+                } 
+                totalPages={paginateArray({array: filteredSides, currentPage: pagination.currentPage, pageSize: pagination.pageSize}).pages}
+            />
 
         {displayEligibility && selectedSide && (
             <SideEligibilityModal

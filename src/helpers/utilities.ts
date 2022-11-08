@@ -301,3 +301,27 @@ export async function getBase64(file: File): Promise<any> {
 		};
 	});
 }
+
+export function paginateArray({
+  array,
+  currentPage = 1,
+  pageSize = 10
+}: {
+  array: any[];
+  currentPage?: number;
+  pageSize?: number;
+}): {
+  array: any[];
+  pages: number;
+} {
+  const pages = currentPage <= 0 ? 1 : Math.ceil(array.length / pageSize);
+  const slicedArray = currentPage <= 0 ? 
+    array : currentPage > pages ? 
+      array.slice(pages, pageSize * pages) : 
+        array.slice(pageSize * (currentPage - 1), pageSize * currentPage);
+  
+  return {
+    array: slicedArray,
+    pages
+  }
+};

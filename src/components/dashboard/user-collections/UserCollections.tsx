@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 // import { Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
@@ -11,7 +11,7 @@ import UserCollectionItemSmall from './UserCollectionItemSmall';
 import CustomCheckbox from '../../ui-components/CustomCheckbox';
 import PaginationControls from '../../ui-components/PaginationControls';
 import Spinner from '../../ui-components/Spinner';
-import { getRandomId } from '../../../helpers/utilities';
+import { paginateArray } from '../../../helpers/utilities';
 import { searchFiltersProps } from '../DashboardPage';
 // import Button from '../../ui-components/Button';
 
@@ -22,8 +22,8 @@ interface CollectionsStyledProps {
 const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
     .collections-list-wrapper {
         display: grid;
-        justify-content: center;
-        grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - (2rem / 3))));
+        justify-items: center;
+        grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
         grid-gap: 1rem;
         & .spinner, & .no-results {
             grid-column: 1/4;
@@ -107,18 +107,50 @@ type UserCollectionsProps = {
     setSearchFilters: React.Dispatch<React.SetStateAction<searchFiltersProps>>;
 };
 
+interface paginationProps {
+    currentPage: number;
+    pageSize: number;
+}
+
+const paginationInitialState = {
+    currentPage: 1,
+    pageSize: 9
+}
+
 const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
     const { userCollectionsData, userCollectionsLoading } = useSelector(
         (state: RootState) => state.user
       );
 
-    const [userCollections, setUserCollections] = useState<any[]>([]);
+    const [userCollections, setUserCollections] = useState<Collection[]>([]);
+    const [filteredCollections, setFilteredCollections] = useState<Collection[]>([]);
+    const [isOnlyVerifiedCollectionsChecked, setIsOnlyVerifiedCollectionsChecked] = useState<boolean>(false);
+    const [isWithSidesChecked, setIsWithSidesChecked] = useState<boolean>(false);
+    const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
     const [viewMode, setViewMode] = useState<string>('card');
 
     useEffect(() => {
-        if (userCollectionsData)
-            setUserCollections(_.orderBy(userCollectionsData, "name"));
-    }, [userCollectionsData]);
+        if (userCollectionsData) {
+            let filteredArray = _.orderBy(userCollectionsData, "name")
+            if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
+            if (isOnlyVerifiedCollectionsChecked) filteredArray = filteredArray.filter(collection => collection.openseaData?.safelistRequestStatus === 'verified');
+            setFilteredCollections(filteredArray);
+        }
+    }, [isOnlyVerifiedCollectionsChecked, isWithSidesChecked, userCollectionsData]);
+
+    useEffect(() => {
+        setPagination((prevState) => ({
+            ...prevState,
+            currentPage: 1
+        }))
+    }, [isOnlyVerifiedCollectionsChecked, isWithSidesChecked])
+    
+    useEffect(() => {
+        if (filteredCollections.length) {
+            const { array } = paginateArray({array: filteredCollections, currentPage: pagination.currentPage, pageSize: pagination.pageSize});
+            setUserCollections(array);
+        }
+    }, [filteredCollections, pagination]);
 
   return (
     <UserCollectionsStyled>
@@ -128,22 +160,48 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                 <div className="toolbar">
                     <div className="view-mode">
                         Show
-                        <button className={viewMode === 'list' ? 'active' : ''} onClick={() => setViewMode('list')}>
+                        <button 
+                            className={viewMode === 'list' ? 'active' : ''} 
+                            onClick={() => {
+                                setViewMode('list');
+                                setPagination(prevState => ({
+                                    ...prevState,
+                                    pageSize: 21
+                                }))
+                            }}
+                        >
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2 20C1.45 20 0.979333 19.8043 0.588 19.413C0.196 19.021 0 18.55 0 18V2C0 1.45 0.196 0.979 0.588 0.587C0.979333 0.195667 1.45 0 2 0H18C18.55 0 19.021 0.195667 19.413 0.587C19.8043 0.979 20 1.45 20 2V18C20 18.55 19.8043 19.021 19.413 19.413C19.021 19.8043 18.55 20 18 20H2ZM2 14V18H6V14H2ZM8 14V18H12V14H8ZM14 18H18V14H14V18ZM2 12H6V8H2V12ZM8 12H12V8H8V12ZM14 12H18V8H14V12ZM6 2H2V6H6V2ZM8 6H12V2H8V6ZM14 6H18V2H14V6Z" />
                             </svg>
                         </button>
-                        <button className={viewMode === 'card' ? 'active' : ''} onClick={() => setViewMode('card')}>
+                        <button 
+                            className={viewMode === 'card' ? 'active' : ''} 
+                            onClick={() => {
+                                setViewMode('card');
+                                setPagination(prevState => ({
+                                    ...prevState,
+                                    pageSize: 9
+                                }))
+                            }}
+                        >
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2 18C1.45 18 0.979 17.8043 0.587 17.413C0.195667 17.021 0 16.55 0 16V2C0 1.45 0.195667 0.979 0.587 0.587C0.979 0.195667 1.45 0 2 0H16C16.55 0 17.021 0.195667 17.413 0.587C17.8043 0.979 18 1.45 18 2V16C18 16.55 17.8043 17.021 17.413 17.413C17.021 17.8043 16.55 18 16 18H2ZM10 10V16H16V10H10ZM10 8H16V2H10V8ZM8 8V2H2V8H8ZM8 10H2V16H8V10Z" />
                             </svg>
                         </button>
                     </div>
                     <div className="checkbox-wrapper">
-                        <CustomCheckbox label="With Sides" />
+                        <CustomCheckbox 
+                            isChecked={isWithSidesChecked} 
+                            label="With Sides" 
+                            onClick={() => setIsWithSidesChecked(!isWithSidesChecked)} 
+                            />
                     </div>
                     <div className="checkbox-wrapper">
-                        <CustomCheckbox label="Only verified collections" />
+                        <CustomCheckbox 
+                            isChecked={isOnlyVerifiedCollectionsChecked}
+                            label="Only verified collections" 
+                            onClick={() => setIsOnlyVerifiedCollectionsChecked(!isOnlyVerifiedCollectionsChecked)} 
+                        />
                     </div>
                 </div>
             </div>
@@ -199,9 +257,14 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
 
             <PaginationControls 
                 className="pagination-controls" 
-                currentPage={1}
-                onChangePage={(page: number) => {}} 
-                totalPages={1}
+                currentPage={pagination.currentPage}
+                onChangePage={(page: number) => {
+                    setPagination(prevState => ({
+                        ...prevState,
+                        currentPage: page
+                    }))}
+                } 
+                totalPages={paginateArray({array: filteredCollections, currentPage: pagination.currentPage, pageSize: pagination.pageSize}).pages}
             />
         </div>
     </UserCollectionsStyled>

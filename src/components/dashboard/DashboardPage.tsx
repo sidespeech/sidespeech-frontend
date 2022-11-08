@@ -87,7 +87,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const getCollections = async () => {
-      const response = await apiService.getAllCollections()
+      const response = await apiService.getAllCollections();
       setAllCollections(response);      
     };
     getCollections();
@@ -107,7 +107,7 @@ export default function DashboardPage() {
               setSearchFilters={setSearchFilters} 
             />
           )}
-          {currentTab === tabKeys.mySides && <MySides />}
+          {currentTab === tabKeys.mySides && <MySides collections={allCollections} />}
           {currentTab === tabKeys.invitations && <Invitations />}
           {currentTab === tabKeys.search && (
             <Search 

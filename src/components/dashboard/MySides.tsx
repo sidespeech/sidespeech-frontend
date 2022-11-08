@@ -1,6 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { Collection } from '../../models/interfaces/collection';
+import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
@@ -75,12 +78,25 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
   }
 `;
 
-interface MySidesProps {};
+interface MySidesProps {
+  collections: Collection[];
+};
 
-const MySides = ({}: MySidesProps) => {
-  const { sides: userSides } = useSelector(
+const MySides = ({ collections }: MySidesProps) => {
+  const [isOnlyVerifiedCollectionsChecked, setIsOnlyVerifiedCollectionsChecked] = useState<boolean>(false);
+  const [userSides, setUserSides] = useState<Side[]>([])
+
+  const { sides } = useSelector(
     (state: RootState) => state.user
 );
+
+useEffect(() => {
+  if (sides) {
+    let filteredSides = sides;
+    // if (isOnlyVerifiedCollectionsChecked) filteredSides = filteredSides.filter(side => side);
+    setUserSides(filteredSides);
+  }
+}, [isOnlyVerifiedCollectionsChecked, sides])
 
   return (
     <MySidesStyled>
@@ -91,14 +107,20 @@ const MySides = ({}: MySidesProps) => {
           <label>Collection</label>
           <CustomSelect 
             onChange={()=> {}}
-            options={[]}
+            options={['All', ...collections.map(collection => collection.openseaData?.collectionName)]}
             placeholder="Select a collection"
+            valueToSet={''}
+            values={['all', ...collections.map(collection => collection.address)]}
             width="70%"
           />
         </div>
 
         <div className="verified-checkbox">
-          <CustomCheckbox label='Only with verified collections' />
+          <CustomCheckbox 
+            isChecked={isOnlyVerifiedCollectionsChecked}
+            label='Only with verified collections' 
+            onClick={() => setIsOnlyVerifiedCollectionsChecked(!isOnlyVerifiedCollectionsChecked)} 
+          />
         </div>
       </div>
 
