@@ -170,13 +170,13 @@ export default function Admission({
                                         <Thumbnail
                                           width={27}
                                           height={27}
-                                          src={c.openseaData?.imageUrl}
+                                          src={c.opensea?.imageUrl}
                                           alt="thumbnail"
                                         />
                                         <span className="ml-2 mr-3">
                                           {c.name}
                                         </span>
-                                        {c.openseaData
+                                        {c.opensea
                                           ?.safelistRequestStatus ===
                                           OpenSeaRequestStatus.verified && (
                                           <img alt="check" src={check} />
