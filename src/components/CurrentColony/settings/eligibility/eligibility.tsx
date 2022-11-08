@@ -96,7 +96,7 @@ export default function Eligibility({ side }: { side: Side }) {
                       {" "}
                       <span className="mr-2">-</span>
                       {collection?.name}{" "}
-                      {collection?.openseaData?.safelistRequestStatus ===
+                      {collection?.opensea?.safelistRequestStatus ===
                         OpenSeaRequestStatus.verified && (
                         <img
                           alt="check"

@@ -7,6 +7,7 @@ export class User {
   bio: string;
   accounts: string;
   publicNfts: NFT[] | null;
+  ownedNfts: NFT[];
   profiles: Profile[];
   token: string;
   invitations: any[];
@@ -17,8 +18,11 @@ export class User {
     this.bio = _data.bio;
     this.accounts = _data.accounts;
     this.publicNfts = _data.publicNfts ? JSON.parse(_data.publicNfts) : null;
-    this.profiles = _data.profiles ? _data.profiles.map((p: any) => new Profile(p)) : _data.profiles;
+    this.profiles = _data.profiles
+      ? _data.profiles.map((p: any) => new Profile(p))
+      : _data.profiles;
     this.token = _data.token;
     this.invitations = _data.invitations;
+    this.ownedNfts = _data.ownedNfts ? JSON.parse(_data.ownedNfts) : [];
   }
 }
