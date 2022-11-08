@@ -13,6 +13,10 @@ import { toast } from "react-toastify";
 import _ from "lodash";
 import { format } from "date-fns";
 
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import Web3Modal from "web3modal";
+import { ethers } from "ethers";
+
 export default function Polls() {
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
@@ -31,15 +35,67 @@ export default function Polls() {
 
   const handleVote = async (callbackData: any, pollId: string) => {
 
-    const voteOnPoll = await apiService.voteOnPoll(window.ethereum.selectedAddress, callbackData.optionId, Date.now().toString());
+     // This is the all of the providers that are needed...
+     const providerOptions = {
+      walletconnect: {
+        package: WalletConnectProvider,
+        options: {
+          infuraId: "b49e48dbbec944eea653e7a44ca67500",
+        },
+      },
+    };
 
-    try {
-      toast.success("You have now voted", { toastId: 8 });
-    } catch (error) {
-      toast.error("Error when voting", { toastId: 9 });
-    }
-   
-    return voteOnPoll;
+    const web3Modal = new Web3Modal({
+      network: "mainnet", // optional
+      cacheProvider: true, // optional
+      providerOptions, // required
+    });
+
+     // Open the connector
+     const provider = await web3Modal.connect();
+
+     // Set the provider.
+     const library = new ethers.providers.Web3Provider(provider);
+
+     let signature;
+ 
+      // Get Signer
+      const signer = library.getSigner();
+
+      // Create the signer message
+      const signerMessage = "SideSpeech DAO Vote";
+
+      // Create the signature signing message.
+      signature = await signer.signMessage(signerMessage);
+
+      // Grab the wallet address
+      const address = await signer.getAddress();
+
+      // Get the signer address.
+      const signerAddr = ethers.utils.verifyMessage(
+        signerMessage,
+        signature
+      );
+
+      // Check if the signer address is the same as the connected address.
+      if (signerAddr !== address) {
+
+        toast.error("Error when voting", { toastId: 9 });
+
+        return false;
+      
+      } else {
+
+        const voteOnPoll = await apiService.voteOnPoll(window.ethereum.selectedAddress, callbackData.optionId, Date.now().toString());
+
+        try {
+          toast.success("You have now voted", { toastId: 8 });
+        } catch (error) {
+          toast.error("Error when voting", { toastId: 9 });
+        }
+
+        return voteOnPoll;
+      }
   };
 
   // Get all of the channels polls.
@@ -47,6 +103,7 @@ export default function Polls() {
     const polls = await apiService.getChannelPolls();
     setPolls(polls);
   }
+  
 
   useEffect(() => {
     function updateScroll() {
@@ -65,11 +122,16 @@ export default function Polls() {
 
         
         const thePollOptions = poll.pollOption.map((option: any, index: any) => {
-          return { id: index, optionId: option.id, text: option.text, votes: option.votes };
+          return { id: index, optionId: option.id, text: option.text, votes: option.votes};
         });
 
         // We'll check if the user has voted.
-        const checkUserVoted = poll.votes.some((v) => v.user === walletAddress);
+        const checkUserVoted = poll.votes.some((v) => v.user == walletAddress);
+
+        console.log('The poll votes object is: ', poll.votes);
+        console.log('The userId is: ', poll.votes[0].user);
+        console.log('The wallet address is: ', walletAddress);
+        //console.log(checkUserVoted);
 
         return (
           <div className="w-100 poll-item" key={poll.id}>
@@ -95,7 +157,7 @@ export default function Polls() {
                   question={poll.question}
                   results= {thePollOptions}
                   theme={customTheme}
-                  isVoted={checkUserVoted}
+                  isVoted={true}
                   onVote={(callbackData: any) => handleVote(callbackData, poll.id)}
                 />
               }
