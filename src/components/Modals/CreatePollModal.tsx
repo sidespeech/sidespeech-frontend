@@ -96,6 +96,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
             height={62}
             placeholder={""}
             onChange={handleQuestion}
+            bgColor={"#242635"}
             color={"var(--text-secondary)"}
           />
           <div className="mt-3">
