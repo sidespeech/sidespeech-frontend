@@ -1,4 +1,5 @@
 import alchemyService from "../../services/alchemy.service";
+import { Side } from "../Side";
 import { NFT } from "./nft";
 
 export class Collection {
@@ -7,7 +8,7 @@ export class Collection {
   public symbol: string;
   public tokenType: string;
   public totalSupply: string;
-  public openseaData?: OpenSeaData;
+  public opensea?: OpenSeaData;
   public totalBalance: number;
   public isSpam: boolean;
   public nfts: NFT[] = [];
@@ -15,6 +16,7 @@ export class Collection {
   public ownedCount: number;
   public media: any[];
   public sideCount: number;
+  sides: Side[] = [];
   constructor(_data: any) {
     this.address = _data.address;
     this.name = _data.name;
@@ -27,13 +29,8 @@ export class Collection {
     this.ownedCount = _data.ownedCount;
     this.media = _data.media;
     this.sideCount = 0;
-  }
-
-  async getMetadata() {
-    if (!this.openseaData) {
-      const data = await alchemyService.getContractMetadata(this.address);
-      this.openseaData = data;
-    }
+    this.opensea = _data.opensea
+    this.sides = _data.sides || []
   }
 
   getCollectionProperties() {

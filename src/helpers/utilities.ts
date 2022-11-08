@@ -135,7 +135,7 @@ export function checkUserEligibility(
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
   if (selectedSide) {
-    console.log(selectedSide.conditions)
+    console.log(selectedSide.conditions);
     Object.entries<any>(selectedSide.conditions).forEach(
       ([token_address, condition]) => {
         const tab = [];
@@ -163,7 +163,7 @@ export function checkUserEligibility(
     );
   }
   const eligible = isEligible(res, selectedSide.conditions);
-  console.log(res,eligible)
+  console.log(res, eligible);
   return [res, eligible];
 }
 
@@ -270,6 +270,9 @@ export function fixURL(url: string) {
   }
 }
 
+export function alchemyNftsModelToSideNftsModel(nfts: any[]) {
+  return nfts.map((nft) => alchemyNftModelToSideNftModel(nft));
+}
 export function alchemyNftModelToSideNftModel(nft: any) {
   const sideNft = {
     name: nft.title,
@@ -290,17 +293,17 @@ export function getRandomId() {
 }
 
 export async function getBase64(file: File): Promise<any> {
-	return new Promise((res, rej) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = () => {
-			if (reader.readyState === 2) {
-				res(reader.result);
-			}
-		};
-		reader.onerror = error => {
-			console.error('Error: ', error);
-			rej();
-		};
-	});
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        res(reader.result);
+      }
+    };
+    reader.onerror = (error) => {
+      console.error("Error: ", error);
+      rej();
+    };
+  });
 }

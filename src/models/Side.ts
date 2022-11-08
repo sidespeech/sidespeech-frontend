@@ -19,6 +19,7 @@ export class Side {
   channels: Channel[];
   profiles: Profile[];
   invitations: any[];
+  collections: any[];
 
   constructor(_data: any) {
     this.id = _data.id;
@@ -39,5 +40,6 @@ export class Side {
     this.profiles = _data.profiles
       ? _data.profiles.map((p: any) => new Profile(p))
       : [];
+    this.collections = _data.collections;
   }
 }

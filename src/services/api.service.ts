@@ -1,4 +1,4 @@
-import { Vote } from './../models/Vote';
+import { Vote } from "./../models/Vote";
 import superagent from "superagent";
 import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
@@ -16,10 +16,11 @@ import { Notification } from "../models/Notification";
 import { Poll } from "../models/Poll";
 import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 import { Invitation } from "../models/Invitation";
+import { Collection } from "../models/interfaces/collection";
+import _ from "lodash";
 
 // Create an API Service class
 class apiService {
-
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
@@ -47,7 +48,7 @@ class apiService {
 
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
-    if (!res.body) throw new Error('Error')
+    if (!res.body) throw new Error("Error");
     return new User(res.body);
   }
 
@@ -80,12 +81,10 @@ class apiService {
     id: string,
     profilePicture: NFT
   ): Promise<Profile> {
-    const res = await superagent
-      .put(`${BASE_URL}/profile/picture`)
-      .send({
-        profileId: id,
-        profileNftStringify: JSON.stringify(profilePicture),
-      });
+    const res = await superagent.put(`${BASE_URL}/profile/picture`).send({
+      profileId: id,
+      profileNftStringify: JSON.stringify(profilePicture),
+    });
     return new Profile(res["body"]);
   }
   static async updateUser(
@@ -245,10 +244,8 @@ class apiService {
     return new Poll(res.body);
   }
 
-  static async getChannelPolls(
-  ): Promise<Poll[]> {
-    const res = await superagent
-      .get(`${BASE_URL}/poll`);
+  static async getChannelPolls(): Promise<Poll[]> {
+    const res = await superagent.get(`${BASE_URL}/poll`);
     return res.body.map((m: any) => new Poll(m));
   }
 
@@ -335,6 +332,14 @@ class apiService {
     return res.body;
   } 
 
+  static async savedCollections(collections: Collection[]) {
+    const copy = _.cloneDeep(collections);
+    const data = copy.map((c: any) => {
+      c.opensea = JSON.stringify(c.opensea);
+      return c;
+    });
+    const res = await superagent.post(`${BASE_URL}/collection/many`).send(data);
+  }
 }
 
 export { apiService };

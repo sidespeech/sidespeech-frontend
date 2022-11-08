@@ -412,7 +412,7 @@ export default function NewSide() {
   };
 
   const handleAddNewChannel = () => {
-    let current_added: Channel[] = [];
+    let current_added: Partial<Channel>[] = [];
     if (channels["added"].length) {
       current_added = [...channels["added"]];
     }
@@ -422,7 +422,6 @@ export default function NewSide() {
       type: ChannelType.Announcement,
       side: formData,
       authorizeComments: false,
-      id:""
     });
     setChannels({ ...channels, added: current_added });
   };
@@ -499,8 +498,10 @@ export default function NewSide() {
   // ----- Functions for Channels component **end
 
   const onSubmit = async () => {
-
-    setFormData({ ...formData, creatorAddress: window.ethereum.selectedAddress });
+    setFormData({
+      ...formData,
+      creatorAddress: window.ethereum.selectedAddress,
+    });
 
     // Save file input to IPFS
     try {
