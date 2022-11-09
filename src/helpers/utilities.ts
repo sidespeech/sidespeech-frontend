@@ -220,7 +220,7 @@ function isEligible(result: ElligibilityResponse, conditions: any): boolean {
 
 function getNftsWithAttributes(nfts: any, condition: any) {
   return nfts.filter((nft: NFT) =>
-    nft.metadata.attributes.some(
+    nft.metadata.attributes?.some(
       (a) =>
         condition["trait_type"] === a.trait_type &&
         a.value === condition["trait_value"]

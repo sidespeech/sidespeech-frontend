@@ -249,7 +249,8 @@ export default function NewSide() {
           let conditions: any = {};
           for (let div of current_divs) {
             conditions[div["collection"]] = {};
-            conditions[div["collection"]][div["trait_selected"]] =
+            conditions[div["collection"]]["trait_type"] = div["trait_selected"];
+            conditions[div["collection"]]["trait_value"] =
               div["value_selected"];
             conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
           }
