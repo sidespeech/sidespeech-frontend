@@ -42,7 +42,7 @@ export interface searchFiltersProps {
 
 export const searchFiltersInitialState = {
   collections: '',
-  elegibility: '',
+  elegibility: 'all',
   selectedCollection: '',
   verifiedCollections: false
 }
