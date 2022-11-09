@@ -111,7 +111,31 @@ const Invitations = ({ }: InvitationsProps) => {
                       {/* <label className="align-center justify-center mt-2 ml-3">{request['accounts'].replace(request['accounts'].substring(4, 30), "...")}</label> */}
                       <div className='flex f-column justify-center'>
                         <label className="align-center justify-center mt-2 ml-3 text-primary-light">{invitation['side']['name']}</label>
-                        <label className="align-center justify-center mt-2 ml-3">{'Collection name'}</label>
+                        <label className="align-center justify-center mt-2 ml-3 flex">
+                          <Button
+                            width={100}
+                            height={25}
+                            onClick={undefined}
+                            radius={3}
+                            background={"var(--bg-secondary-light)"}
+                            fontSize={"12px"}
+                            classes={"mr-2"}
+                          >
+                            {invitation['side']['collections'][0]['name']} <i className="fa-solid fa-circle-check ml-2 text-blue"></i>
+                          </Button>
+                          {(invitation['side']['collections'].length > 1) ?
+                            <Button
+                              width={50}
+                              height={25}
+                              onClick={undefined}
+                              radius={3}
+                              background={"var(--bg-secondary-light)"}
+                              fontSize={"12px"}
+                            >
+                              + {invitation['side']['collections'].length - 1}
+                            </Button>
+                            : null}
+                        </label>
                         {invitation['eligibility'][1] ?
                           <label className="align-center justify-center mt-2 ml-3">
                             <i className="fa-solid fa-circle-check mr-2 text-green"></i>Eligible
