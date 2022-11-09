@@ -79,7 +79,9 @@
     display: block;
     margin-top: 10px;
 }
-
+.globalSettingsMenu .smaller-links .active a{
+    opacity: 1;
+}
 
 .innerPage {
     padding: 30px;
