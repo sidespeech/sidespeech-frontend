@@ -31,6 +31,7 @@ interface InputTextPropsType {
   placeholderWeight?: number;
   radius?: string;
   size?: number;
+  value?: string;
   weight?: number;
   width?: number | string;
 }
@@ -53,6 +54,7 @@ interface InputProps {
   radius?: string;
   size?: number;
   type: string;
+  value?: string;
   weight?: number;
   width?: number | string;
 }
@@ -110,6 +112,7 @@ const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
         ref={ref}
         size={props.size}
         type={"text"}
+        value={props.value}
         weight={props.weight}
         width={props.width}
       />

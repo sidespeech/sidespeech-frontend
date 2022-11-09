@@ -135,7 +135,6 @@ export function checkUserEligibility(
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
   if (selectedSide) {
-    console.log(selectedSide.conditions);
     Object.entries<any>(selectedSide.conditions).forEach(
       ([token_address, condition]) => {
         const tab = [];
@@ -163,7 +162,6 @@ export function checkUserEligibility(
     );
   }
   const eligible = isEligible(res, selectedSide.conditions);
-  console.log(res, eligible);
   return [res, eligible];
 }
 
@@ -204,7 +202,6 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
 }
 
 function isEligible(result: ElligibilityResponse, conditions: any): boolean {
-  console.log(conditions);
   if (!conditions["requiered"]) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>
@@ -293,17 +290,41 @@ export function getRandomId() {
 }
 
 export async function getBase64(file: File): Promise<any> {
-  return new Promise((res, rej) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        res(reader.result);
-      }
-    };
-    reader.onerror = (error) => {
-      console.error("Error: ", error);
-      rej();
-    };
-  });
+	return new Promise((res, rej) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			if (reader.readyState === 2) {
+				res(reader.result);
+			}
+		};
+		reader.onerror = error => {
+			console.error('Error: ', error);
+			rej();
+		};
+	});
 }
+
+export function paginateArray({
+  array,
+  currentPage = 1,
+  pageSize = 10
+}: {
+  array: any[];
+  currentPage?: number;
+  pageSize?: number;
+}): {
+  array: any[];
+  pages: number;
+} {
+  const pages = currentPage <= 0 ? 1 : Math.ceil(array.length / pageSize);
+  const slicedArray = currentPage <= 0 ? 
+    array : currentPage > pages ? 
+      array.slice(pages, pageSize * pages) : 
+        array.slice(pageSize * (currentPage - 1), pageSize * currentPage);
+  
+  return {
+    array: slicedArray,
+    pages
+  }
+};

@@ -14,40 +14,61 @@ export class sideAPI {
   static async getAllSides(): Promise<Side[]> {
     const res = await superagent.get(`${BASE_URL}/side`);
     const sidesListWithoutCollections = dtoToSideList(res.body);
-    const sidesList: Side[] = [];
-    sidesListWithoutCollections.forEach(async (side) => {
-      const conditions = Object.keys(side.conditions)
+    const sidesList: Side[] = await Promise.all(sidesListWithoutCollections.map(async (side) => {
+      const conditions = Object.keys(side.conditions);
       const count = conditions.length;
       const firstCollectionAddress = conditions[0]
       let firstCollection;
       if (firstCollectionAddress) firstCollection = await alchemyService.getContractMetadata(firstCollectionAddress);
       const parsedSide = {
         ...side,
-        firstCollection: firstCollection.collectionName,
+        firstCollection: firstCollection?.collectionName || '',
         collectionsCount: count
       }
-      sidesList.push(parsedSide);
-    })
+      return parsedSide;
+    }))
     return sidesList;
   }
+  
+  // get all sides by search string
+  static async getSidesBySearchValue(searchValue: string, collections?: string): Promise<Side[]> {
+    const res = await superagent.get(
+      `${BASE_URL}/side/search?searchValue=${searchValue}&collections=${collections && collections !== 'all' ? collections : ''}`
+    );
+    const sidesListWithoutCollections = dtoToSideList(res.body);
+    const sidesList: Side[] = await Promise.all(sidesListWithoutCollections.map(async (side) => {
+      const conditions = Object.keys(side.conditions);
+      const count = conditions.length;
+      const firstCollectionAddress = conditions[0]
+      let firstCollection;
+      if (firstCollectionAddress) firstCollection = await alchemyService.getContractMetadata(firstCollectionAddress);
+      const parsedSide = {
+        ...side,
+        firstCollection: firstCollection?.collectionName || '',
+        collectionsCount: count
+      }
+      return parsedSide;
+    }))
+    return sidesList;
+  }
+
   // get all featured sides
   static async getAllFeaturedSides(): Promise<Side[]> {
     const res = await superagent.get(`${BASE_URL}/side/featured`);
     const sidesListWithoutCollections = dtoToSideList(res.body);
-    const sidesList: Side[] = [];
-    sidesListWithoutCollections.forEach(async (side) => {
-      const conditions = Object.keys(side.conditions)
+    const sidesList: Side[] = await Promise.all(sidesListWithoutCollections.map(async (side) => {
+      const conditions = Object.keys(side.conditions);
       const count = conditions.length;
       const firstCollectionAddress = conditions[0]
       let firstCollection;
       if (firstCollectionAddress) firstCollection = await alchemyService.getContractMetadata(firstCollectionAddress);
       const parsedSide = {
         ...side,
-        firstCollection: firstCollection.collectionName,
+        firstCollection: firstCollection?.collectionName || '',
         collectionsCount: count
       }
-      sidesList.push(parsedSide);
-    })
+      return parsedSide;
+    }))
     return sidesList;
   }
 

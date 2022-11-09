@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import InputText from "../ui-components/InputText";
-import bannerImage from '../../assets/images/dashboard-banner.png'
+import bannerImage from '../../assets/images/dashboard-banner.png';
 
 const DashboardStyled = styled.header`
     display: flex;
@@ -20,7 +20,12 @@ const DashboardStyled = styled.header`
     border-radius: 10px;
 `;
 
-const DashboardBanner = () => {
+interface DashboardBannerProps {
+  searchText: string;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const DashboardBanner = ({searchText, setSearchText}: DashboardBannerProps) => {
   return (
     <DashboardStyled className="mb-4">
         <h1>Search and Join a Side</h1>
@@ -31,10 +36,12 @@ const DashboardBanner = () => {
             height={43}
             iconColor="#B4C1D2"
             iconRightPos={{right: 16, top: 12}}
+            onChange={(ev: any) => setSearchText(ev.target.value)}
             parentWidth="435px"
             placeholder='Search by name or collection'
             placeholderColor="var(--white)"
             radius="10px"
+            value={searchText}
         />
     </DashboardStyled>
   )

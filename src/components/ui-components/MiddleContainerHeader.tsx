@@ -36,7 +36,7 @@ export default function MiddleContainerHeader({ room }: { room: Room | null }) {
         alt="profile"
         src={fixURL(
           user?.profiles?.find((a) => a.side?.id === currentSide?.id)
-            ?.profilePicture.token_uri || ""
+            ?.profilePicture?.token_uri || ""
         )}
       />
     </div>
