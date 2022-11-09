@@ -336,7 +336,7 @@ class apiService {
       c.opensea = JSON.stringify(c.opensea);
       return c;
     });
-    const res = await superagent.post(`${BASE_URL}/collection/many`).send(data);
+    const res = await superagent.post(`${BASE_URL}/collection/many`).send({collections: data});
   }
 }
 

@@ -1,10 +1,10 @@
 .my-nfts {
     position: relative;
-    padding: 28px;
+    padding: 28px 28px 0px 28px;
     border-radius: 20px;
     flex: 1.2;
-    background-color: var(--bg-secondary-dark);
-    max-height: calc(100vh - 56px);
+    background-color: var(--input);
+    max-height: calc(100vh - 110px);
 }
 
 .my-nfts .nfts.closed {
@@ -189,4 +189,5 @@
     justify-content: center;
     align-items: center;
     pointer-events: none;
+    border-radius: 0px 0px 20px 20px;
 }

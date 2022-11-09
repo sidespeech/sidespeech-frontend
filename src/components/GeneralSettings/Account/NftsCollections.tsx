@@ -21,6 +21,7 @@ import _ from "lodash";
 import { FadeLoader } from "react-spinners";
 import "./NftsCollections.css";
 import { Profile } from "../../../models/Profile";
+import Switch from "../../ui-components/Switch";
 
 interface IUserNftsCollectionsProps {
   selectedNfts: {
@@ -56,7 +57,7 @@ export default function NftsCollections({
       const array: boolean[] = new Array(collections.length).fill(true);
       setOpenCollection(array);
       setFilteredCollections(collections);
-      console.log(collections)
+      console.log(collections);
     }
   }, []);
 
@@ -103,7 +104,19 @@ export default function NftsCollections({
 
   const Header = () => {
     if (profile) {
-      return <p>Select your profile avatar</p>;
+      return (
+        <div className="flex justify-between align-center">
+          <p>Select your profile avatar</p>
+          <span className="flex align-center">
+            <span className="mr-2">Hide all NFTs</span>
+            <Switch
+              right={"NO"}
+              left={"YES"}
+              onClick={(value: any) => console.log(value)}
+            />
+          </span>
+        </div>
+      );
     } else {
       return (
         <p>

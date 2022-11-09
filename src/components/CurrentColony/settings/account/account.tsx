@@ -15,6 +15,8 @@ import { NFT } from "../../../../models/interfaces/nft";
 import { fixURL } from "../../../../helpers/utilities";
 import { Side } from "../../../../models/Side";
 import { toast } from "react-toastify";
+import defaultPP from "../../../../assets/default-pp.webp";
+import hexagon from "../../../../assets/hexagon.svg";
 
 export interface InitialStateProfile {
   profilePicture: NFT | undefined;
@@ -42,6 +44,16 @@ const ProfileLabel = styled.label`
   overflow: hidden;
 `;
 
+const ProfilePictureData = styled.div`
+  height: 39px;
+  width: 245px;
+  border-radius: 7px;
+  border: 1px solid var(--disable);
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+`;
+
 export default function Account({
   currentSide,
   userData,
@@ -58,17 +70,25 @@ export default function Account({
   const [checkedNfts, setCheckedNfts] = useState<{
     [key: string]: NFT[];
   } | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | undefined>(
+    undefined
+  );
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (currentProfile)
+    if (currentProfile) {
       setCheckedNfts({
         ...checkedNfts,
         [currentProfile.profilePicture.token_address]: [
           currentProfile.profilePicture,
         ],
       });
+      if (currentProfile.profilePicture.metadata) {
+        const url = fixURL(currentProfile.profilePicture.metadata.image);
+        setProfilePicture(url);
+      }
+    }
   }, [currentProfile]);
 
   const saveNftsProfilePicture = async () => {
@@ -79,9 +99,11 @@ export default function Account({
           Object.values(checkedNfts)[0][0]
         );
         dispatch(updateCurrentProfile(profile));
-        toast.success("Profile Nft saved")
+        toast.success("Profile Nft saved");
+        setDisplayNftsCollection(false);
       } catch (error) {
-        toast.error("error saving your profile picture")
+        toast.error("error saving your profile picture");
+        setDisplayNftsCollection(false);
       }
     }
   };
@@ -103,15 +125,14 @@ export default function Account({
         [selectedNft.token_address]: [selectedNft],
       });
     }
-    console.log(selectedNft)
-    setFormData({...formData, profilePicture: selectedNft });
+    setFormData({ ...formData, profilePicture: selectedNft });
   };
 
   return (
-    <div className="flex pr-2" style={{gap: 30}}>
+    <div className="flex pr-2 text-main" style={{ gap: 30 }}>
       {/* Profile Picture Section */}
-      <div className="f-column flex-1">
-        <div className="text-primary-light mb-3 text fw-600">Account</div>
+      <div className="f-column flex-1" style={{ maxWidth: "45%" }}>
+        <div className="text-primary-light mb-3 text fw-600">Profile</div>
 
         <div className="flex">
           <ProfileLabel className="f-column align-center justify-center">
@@ -122,7 +143,9 @@ export default function Account({
                   width: "100%",
                   objectFit: "cover",
                 }}
-                src={fixURL(formData.profilePicture.metadata.image || "")}
+                src={
+                  fixURL(formData.profilePicture.metadata.image) || defaultPP
+                }
                 alt="file-form"
               />
             ) : (
@@ -132,48 +155,85 @@ export default function Account({
                   width: "100%",
                   objectFit: "cover",
                 }}
-                src={fixURL(currentProfile?.profilePicture.metadata?.image || "")}
+                src={profilePicture || defaultPP}
                 alt="file"
               />
             )}
           </ProfileLabel>
-          <label className="text-primary-light fw-600 f-column align-center justify-center text-center ml-3">
-            Choose an NFT from your wallet as your profile avatar
-          </label>
-
-          <div className="f-column align-center justify-center ml-3">
-            <label htmlFor={"input-profile-picture"}>
-              <Button
-                width={159}
-                height={46}
-                onClick={() => setDisplayNftsCollection(true)}
-                radius={10}
-                background={"var(--bg-secondary-light)"}
-                color={"var(--text-primary-light)"}
-              >
-                {" "}
-                Select an NFT
-              </Button>
+          <div className="f-column ml-3 mb-4">
+            <label className="text-primary-light fw-600 f-column align-center justify-center mb-3">
+              Choose an NFT from your wallet as your profile avatar
             </label>
+            <ProfilePictureData>
+              <img src={hexagon}  className="mr-3"/>
+              {formData && formData.profilePicture ? (
+                <>
+                  <span className="mr-2 size-12">
+                    #{formData.profilePicture.token_id}
+                  </span>
+                  <span className="size-12">
+                    {
+                      userData.userCollectionsData[
+                        formData.profilePicture.token_address
+                      ].name
+                    }
+                  </span>
+                </>
+              ) : (
+                currentProfile &&
+                currentProfile.profilePicture && (
+                  <>
+                    <span className="mr-2 size-12">
+                      #{currentProfile.profilePicture.token_id}
+                    </span>
+                    <span className="size-12">
+                      {
+                        userData.userCollectionsData[
+                          currentProfile.profilePicture.token_address
+                        ].name
+                      }
+                    </span>
+                  </>
+                )
+              )}
+            </ProfilePictureData>
           </div>
+
+          {!displayNftsCollection && (
+            <div className="f-column align-center justify-center ml-3">
+              <label htmlFor={"input-profile-picture"}>
+                <Button
+                  width={159}
+                  height={46}
+                  onClick={() => setDisplayNftsCollection(true)}
+                  radius={10}
+                  background={"var(--bg-secondary-light)"}
+                  color={"var(--text-primary-light)"}
+                >
+                  {" "}
+                  Select an NFT
+                </Button>
+              </label>
+            </div>
+          )}
         </div>
         <Eligibility side={currentSide} />
+        {/*TODO: Add function to leave a side */}
+        <div onClick={undefined} className="text-red mt-4">Leave the side</div>
       </div>
-      <div className="flex-1">
-        {displayNftsCollection &&
-          checkedNfts &&
-          userData.userCollectionsData &&
-          userData.user && (
-            <NftsCollections
-              selectedNfts={checkedNfts}
-              handleNftChange={handleNftChange}
-              collections={Object.values(userData.userCollectionsData)}
-              user={userData.user}
-              profile={currentProfile}
-              saveNftsProfilePicture={saveNftsProfilePicture}
-            />
-          )}
-      </div>
+      {displayNftsCollection &&
+        checkedNfts &&
+        userData.userCollectionsData &&
+        userData.user && (
+          <NftsCollections
+            selectedNfts={checkedNfts}
+            handleNftChange={handleNftChange}
+            collections={Object.values(userData.userCollectionsData)}
+            user={userData.user}
+            profile={currentProfile}
+            saveNftsProfilePicture={saveNftsProfilePicture}
+          />
+        )}
     </div>
   );
 }
