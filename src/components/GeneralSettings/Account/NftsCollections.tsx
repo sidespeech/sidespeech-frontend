@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // redux
-import { useDispatch } from "react-redux";
-import { updateUser } from "../../../redux/Slices/UserDataSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentProfile, updateCurrentProfile, updateUser } from "../../../redux/Slices/UserDataSlice";
 // service / utilities
 import { fixURL } from "../../../helpers/utilities";
 import { apiService } from "../../../services/api.service";
@@ -22,6 +22,7 @@ import { FadeLoader } from "react-spinners";
 import "./NftsCollections.css";
 import { Profile } from "../../../models/Profile";
 import Switch from "../../ui-components/Switch";
+import { RootState } from "../../../redux/store/app.store";
 
 interface IUserNftsCollectionsProps {
   selectedNfts: {
@@ -102,6 +103,16 @@ export default function NftsCollections({
     }
   };
 
+  const handleShowNfts = async (value: boolean) => {
+    if (profile) {
+      const updatedProfile = await apiService.updateProfile(profile.id, {
+        ...profile,
+        showNfts: value,
+      });
+      dispatch(updateCurrentProfile(updatedProfile))
+    }
+  };
+
   const Header = () => {
     if (profile) {
       return (
@@ -109,11 +120,7 @@ export default function NftsCollections({
           <p>Select your profile avatar</p>
           <span className="flex align-center">
             <span className="mr-2">Hide all NFTs</span>
-            <Switch
-              right={"NO"}
-              left={"YES"}
-              onClick={(value: any) => console.log(value)}
-            />
+            <Switch value={profile.showNfts} right={"NO"} left={"YES"} onClick={handleShowNfts} />
           </span>
         </div>
       );

@@ -85,7 +85,7 @@ export default function Settings(
       (userData && userData['currentProfile'] && userData['currentProfile']['role'] === 0) ?
         handleTabs('Informations') : handleTabs('Account');
     }
-  }, [userData]);
+  }, []);
 
 
   // Getting request for display notification :

@@ -70,7 +70,7 @@ class apiService {
 
   static async updateProfile(
     id: string,
-    profile: InitialStateProfile
+    profile: Partial<Profile>
   ): Promise<Profile> {
     const res = await superagent
       .patch(`${BASE_URL}/profile/${id}`)

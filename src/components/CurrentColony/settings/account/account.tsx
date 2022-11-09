@@ -22,12 +22,14 @@ export interface InitialStateProfile {
   profilePicture: NFT | undefined;
   username: string;
   bio: string;
+  showNfts: boolean;
 }
 
 const initialStateProfile = {
   profilePicture: undefined,
   username: "",
   bio: "",
+  showNfts: false
 };
 
 const ProfileLabel = styled.label`
@@ -134,7 +136,7 @@ export default function Account({
       <div className="f-column flex-1" style={{ maxWidth: "45%" }}>
         <div className="text-primary-light mb-3 text fw-600">Profile</div>
 
-        <div className="flex">
+        <div className="flex mb-4">
           <ProfileLabel className="f-column align-center justify-center">
             {formData.profilePicture ? (
               <img
@@ -160,43 +162,46 @@ export default function Account({
               />
             )}
           </ProfileLabel>
-          <div className="f-column ml-3 mb-4">
-            <label className="text-primary-light fw-600 f-column align-center justify-center mb-3">
+          <div className="f-column ml-3">
+            <label className="text-primary-light fw-600 f-column align-center justify-center ">
               Choose an NFT from your wallet as your profile avatar
             </label>
-            <ProfilePictureData>
-              <img src={hexagon}  className="mr-3"/>
-              {formData && formData.profilePicture ? (
-                <>
-                  <span className="mr-2 size-12">
-                    #{formData.profilePicture.token_id}
-                  </span>
-                  <span className="size-12">
-                    {
-                      userData.userCollectionsData[
-                        formData.profilePicture.token_address
-                      ].name
-                    }
-                  </span>
-                </>
-              ) : (
-                currentProfile &&
-                currentProfile.profilePicture && (
-                  <>
-                    <span className="mr-2 size-12">
-                      #{currentProfile.profilePicture.token_id}
-                    </span>
-                    <span className="size-12">
-                      {
-                        userData.userCollectionsData[
-                          currentProfile.profilePicture.token_address
-                        ].name
-                      }
-                    </span>
-                  </>
-                )
+            {(profilePicture ||
+              formData?.profilePicture) && (
+                <ProfilePictureData className="mt-3">
+                  <img src={hexagon} className="mr-3" />
+                  {formData && formData.profilePicture ? (
+                    <>
+                      <span className="mr-2 size-12">
+                        #{formData.profilePicture.token_id}
+                      </span>
+                      <span className="size-12">
+                        {
+                          userData.userCollectionsData[
+                            formData.profilePicture.token_address
+                          ]?.name
+                        }
+                      </span>
+                    </>
+                  ) : (
+                    currentProfile &&
+                    currentProfile.profilePicture && (
+                      <>
+                        <span className="mr-2 size-12">
+                          #{currentProfile.profilePicture.token_id}
+                        </span>
+                        <span className="size-12">
+                          {
+                            userData.userCollectionsData[
+                              currentProfile.profilePicture.token_address
+                            ]?.name
+                          }
+                        </span>
+                      </>
+                    )
+                  )}
+                </ProfilePictureData>
               )}
-            </ProfilePictureData>
           </div>
 
           {!displayNftsCollection && (
@@ -219,7 +224,9 @@ export default function Account({
         </div>
         <Eligibility side={currentSide} />
         {/*TODO: Add function to leave a side */}
-        <div onClick={undefined} className="text-red mt-4">Leave the side</div>
+        <div onClick={undefined} className="text-red mt-4">
+          Leave the side
+        </div>
       </div>
       {displayNftsCollection &&
         checkedNfts &&
