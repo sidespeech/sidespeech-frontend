@@ -5,8 +5,8 @@ export class Invitation {
   id?:string;
   createdAt?: string;
   state: number;
-  sender: any;
-  recipient: any;
+  sender: User;
+  recipient: User;
   invitationLink: string;
   side: Side;
 

@@ -1,0 +1,24 @@
+.requests-list {
+    position: relative;
+    padding: 20px;
+    border-radius: 10px;
+    flex: 1.2;
+    background-color: var(--bg-secondary-dark);
+    width: 96%;
+    height: 6rem;
+}
+
+.image-collection {
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    background: var(--bg-secondary-dark);
+    border-radius: 5px;
+    text-align: center;
+    color: var(--bg-primary-light);
+    overflow: hidden;
+}
+
+.date-label {
+    color: var(--placeholer);
+}
