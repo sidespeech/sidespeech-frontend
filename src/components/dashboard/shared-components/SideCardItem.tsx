@@ -140,11 +140,11 @@ interface SideCardItemProps {
 
 const SideCardItem = ({ eligible, joined, onJoin, side, userSides }: SideCardItemProps) => {
   return (
-    <SideCardItemStyled coverImage={side.coverImage}>
+    <SideCardItemStyled coverImage={side.coverImage || side.firstCollection?.imageUrl}>
         <div className="cover-image">
             <div className="flex align-center title-wrapper">
                 <div className="avatar">
-                    <img src={side.coverImage || FALLBACK_BG_IMG} alt={`${side?.name} avatar`} />
+                    <img src={side.firstCollection?.imageUrl || FALLBACK_BG_IMG} alt={`${side?.name} avatar`} />
                 </div>
                 <div className="f-column">
                     <h3 className="title">{side?.name || "{No Name}"}</h3>

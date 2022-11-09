@@ -63,7 +63,7 @@ interface FeaturedSideCardProps {
 }
 
 const FeatureSideCard = ({ onJoin, side }: FeaturedSideCardProps) => {
-    return <FeatureSideCardStyled coverImage={side.coverImage} onClick={() => onJoin(side)}>
+    return <FeatureSideCardStyled coverImage={side.coverImage || side.firstCollection?.imageUrl} onClick={() => onJoin(side)}>
         <div className="content">
             <h3>{side.name}</h3>
             {side.collectionsCount > 0 && <div className="collections">
