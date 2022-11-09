@@ -47,3 +47,91 @@
 .globalSettingsMenu .tile a{
     color: #fff!important;
 }
+
+.globalSettingsMenu .smaller-links {
+    text-align: left;
+    border-top: 1px solid rgba(125, 166, 220, 0.1);
+    width: 77%;
+    margin: 20px auto;
+    padding-top: 20px;
+}
+
+.globalSettingsMenu .smaller-links a {
+    color: #fff;
+    opacity: 0.4;
+    line-height: 20px;
+}
+.globalSettingsMenu .smaller-links a.active {
+    opacity: 1;
+}
+
+.globalSettingsMenu .smaller-links img {
+    top: 5px;
+    position: relative;
+    margin-right: 10px;
+}
+
+.globalSettingsMenu + .nav-footer {
+    width: 77%;
+    margin: 20px auto;
+}
+.globalSettingsMenu + .nav-footer img {
+    display: block;
+    margin-top: 10px;
+}
+
+
+.innerPage {
+    padding: 30px;
+}
+
+.innerPage .header{
+    margin-top: 20px;
+}
+.innerPage .header img,
+.innerPage .header h2 {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.innerPage .header h2 {
+    margin: 5px 10px;
+}
+
+.innerPage img {
+    margin: 0 auto;
+    display: block;
+}
+
+.innerPage.privacy .content,
+.innerPage.terms .content {
+    width: 50%;
+    position: relative;
+    flex: 1.2 1;
+    max-height: calc(100vh - 56px);
+    height: calc(85vh - 26px);
+    margin-top: 30px;
+
+}
+
+.innerPage .content .inner {
+   height: 100%;
+   overflow-y: scroll;
+}
+
+.innerPage .content .inner  p {
+    margin-bottom: 30px;
+}
+
+.innerPage .content .fader {
+    background: linear-gradient(180deg,rgba(36, 38, 53, 0) 0%, #1f212c 100%);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
