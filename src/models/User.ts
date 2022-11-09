@@ -10,6 +10,7 @@ export class User {
   ownedNfts: NFT[];
   profiles: Profile[];
   token: string;
+  invitations: any[];
 
   constructor(_data: any) {
     this.id = _data.id;
@@ -21,6 +22,7 @@ export class User {
       ? _data.profiles.map((p: any) => new Profile(p))
       : _data.profiles;
     this.token = _data.token;
+    this.invitations = _data.invitations;
     this.ownedNfts = _data.ownedNfts ? JSON.parse(_data.ownedNfts) : [];
   }
 }

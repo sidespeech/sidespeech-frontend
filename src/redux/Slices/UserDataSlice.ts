@@ -126,7 +126,6 @@ export const userDataSlice = createSlice({
     setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
       const userprofiles = state.user?.profiles;
       if (state.user && userprofiles) {
-        console.log("payload", action.payload);
         const profile = userprofiles.find((p) => {
           return p.side.id === action.payload.id;
         });

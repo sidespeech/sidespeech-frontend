@@ -44,9 +44,9 @@ export function getRoleColor(role: string | number) {
       return "text-blue";
     case 2:
       return "text-blue";
+    case "Sub-Admin":
     case "Moderator1":
     case "Moderator2":
-    case "Moderator3":
       return "text-green";
     case "Administrator":
       return "text-red";
@@ -220,7 +220,7 @@ function isEligible(result: ElligibilityResponse, conditions: any): boolean {
 
 function getNftsWithAttributes(nfts: any, condition: any) {
   return nfts.filter((nft: NFT) =>
-    nft.metadata.attributes.some(
+    nft.metadata.attributes?.some(
       (a) =>
         condition["trait_type"] === a.trait_type &&
         a.value === condition["trait_value"]

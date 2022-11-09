@@ -4,3 +4,70 @@
     font-family : "Inter", sans-serif;
     color: white;
 }
+
+/* Yellow Div CSS start */
+
+.yellowDiv {
+    border: 2px solid #D29B52;
+    border-radius: 5px;
+    max-width: 600px;
+    min-height: 300px;
+    background-color: #383232;
+    padding: 10px 28px;
+  }
+  
+  .fa-sign-out {
+    color: #D29B52;
+    margin-top: 18px;
+  }
+  
+  .flex {
+    display: flex;
+    cursor: pointer;
+  }
+  .yellowDiv button{
+    background-color: transparent;
+    border: none;
+    color: #D29B52;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .yellowDiv .flex p {
+    margin-left: 7px;
+  }
+  
+  .sub-text {
+    margin-top: 0px;
+    font-size: 17px;
+    font-weight: 400;
+    color: #b9b9b9;
+  }
+  
+  .btm-div-head {
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+  }
+  
+  .btm-div-nor {
+    margin-top: 0px;
+    font-size: 15px;
+    color: #848a9b;
+    font-weight: 500;
+   
+  }
+  
+  .typ-sm {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .typ-sm button{
+  cursor: pointer;
+  color: #ddd9d98c;
+  font-size: 16px;
+  font-weight: 600;
+  }
+  
+  /* Yellow Div CSS end */
