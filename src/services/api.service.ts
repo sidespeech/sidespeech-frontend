@@ -24,8 +24,6 @@ class apiService {
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
-    console.log("accounts :", accounts)
-    console.log("signature :", signature)
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
       .send({
@@ -284,7 +282,6 @@ class apiService {
   }
 
   static async sendInvitation(invitation: Invitation): Promise<any> {
-    console.log(invitation);
     const res = await superagent
       .post(`${BASE_URL}/invitation`)
       .send(invitation);
@@ -344,11 +341,12 @@ class apiService {
 
   static async savedCollections(collections: Collection[]) {
     const copy = _.cloneDeep(collections);
+
     const data = copy.map((c: any) => {
       c.opensea = JSON.stringify(c.opensea);
       return c;
     });
-    const res = await superagent.post(`${BASE_URL}/collection/many`).send(data);
+    const res = await superagent.post(`${BASE_URL}/collection/many`).send({collections: data});
   }
 
   static async getAllCollections(): Promise<Collection[]> {

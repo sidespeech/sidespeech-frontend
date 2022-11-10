@@ -41,55 +41,6 @@ export default function Invitation({
     label: "LinkedIn"
   }]
 
-  const exampleUsers = [{
-    name: 'User 1',
-    invited: false
-  },
-  {
-    name: 'User 2',
-    invited: true
-  },
-  {
-    name: 'User 3',
-    invited: true
-  },
-  {
-    name: 'User 4',
-    invited: false
-  },
-  {
-    name: 'User 5',
-    invited: false
-  },
-  {
-    name: 'User 6',
-    invited: true
-  },
-  {
-    name: 'User 7',
-    invited: false
-  },
-  {
-    name: 'User 8',
-    invited: true
-  },
-  {
-    name: 'User 9',
-    invited: true
-  },
-  {
-    name: 'User 10',
-    invited: false
-  },
-  {
-    name: 'User 11',
-    invited: false
-  },
-  {
-    name: 'User 12',
-    invited: true
-  }]
-
   const [usersInvite, setUsersInvite] = useState<any>([]);
   const [invited, setInvited] = useState<any>([]);
 
@@ -127,6 +78,7 @@ export default function Invitation({
       let currentsInvited = [...userInvited];
       let object = {
         state: 3,
+        type: 1,
         sender: user.sender,
         recipient: user.recipient,
         invitationLink: sideLink

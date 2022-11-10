@@ -38,5 +38,48 @@
 }
 
 .override-width {
-    width: fit-content!important;
+    width: fit-content !important;
+}
+
+.no-results {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    width: 100%;
+    min-height: 400px;
+    color: var(--text-secondary);
+    flex-direction: column;
+    background-image: url('../../assets/dashboard/invitations_empty_screen_shape.svg');
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+
+.no-results p {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text-secondary-dark);
+}
+
+.no-results .buttons-wrapper {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+
+
+}
+
+.no-results .buttons-wrapper a {
+    color: inherit;
+}
+
+.list-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
+    grid-gap: 1rem;
+    width: 100%;
 }

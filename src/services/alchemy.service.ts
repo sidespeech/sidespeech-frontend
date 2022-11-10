@@ -82,6 +82,7 @@ class AlchemyService {
   }
 
   async getContractMetadata(address: string): Promise<any> {
+    console.log('address :', address)
     const res = await fetch(
       `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getContractMetadata?contractAddress=${address}`
     );

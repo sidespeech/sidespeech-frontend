@@ -135,20 +135,13 @@ export function checkUserEligibility(
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
   if (selectedSide) {
-    console.log('selectedSide.conditions) :', JSON.parse(selectedSide.conditions));
-    console.log('nfts :', nfts)
     Object.entries<any>(JSON.parse(selectedSide.conditions)).forEach(
       ([token_address, condition]) => {
-        console.log('token_address :', token_address)
-        console.log('condition :', condition)
         const tab = [];
         const collection = nfts[token_address];
-        console.log('collection :', collection)
         if (!collection) {
-          console.log('collection  if :', collection)
           return;
         } else {
-          console.log('collection  else :', collection)
           // get nfts from collection with needed attributes
           const filteredNfts = getNftsWithAttributes(
             collection.nfts,
@@ -167,10 +160,8 @@ export function checkUserEligibility(
         res[token_address] = tab;
       }
     );
-    console.log('res :', res)
   }
   const eligible = isEligible(res, selectedSide.conditions);
-  console.log('eligible :', eligible)
   return [res, eligible];
 }
 
