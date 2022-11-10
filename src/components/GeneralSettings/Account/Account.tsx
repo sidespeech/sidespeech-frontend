@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // CSS Import
 import "./../DefaultView.css";
@@ -28,8 +28,10 @@ export default function GeneralSettingsAccount() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [displayNftsCollection, setDisplayNftsCollection] =
     useState<boolean>(false);
+    const [selectedAvatar, setSelectedAvatar] = useState<NFT | null>(null)
 
   const { currentProfile } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (userCollectionsData && user) {
@@ -44,11 +46,8 @@ export default function GeneralSettingsAccount() {
       setCollections(Object.values(userCollectionsData));
     }
   }, [userCollectionsData, user]);
-  const handleNftChange = (e: any, selectedNft: NFT) => {
-    if (e.type === "contextmenu") {
-      e.preventDefault();
-      return;
-    }
+  
+  const handleNftChange = (selectedNft: NFT) => {
     if (!checkedNfts) return;
     const index = checkedNfts[selectedNft.token_address].findIndex(
       (nft) =>
@@ -106,13 +105,12 @@ export default function GeneralSettingsAccount() {
               handleNftChange={handleNftChange}
               handleSelectAll={handleSelectAll}
               saveNftsProfilePicture={saveNftsProfilePicture}
+              setSelectedAvatar={setSelectedAvatar}
+              selectedAvatar={selectedAvatar}
             />
           )}
         </div>
       )}
     </>
   );
-}
-function dispatch(arg0: any) {
-  throw new Error("Function not implemented.");
 }

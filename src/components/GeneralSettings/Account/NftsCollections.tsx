@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 // redux
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentProfile, updateCurrentProfile, updateUser } from "../../../redux/Slices/UserDataSlice";
+import {
+  setCurrentProfile,
+  updateCurrentProfile,
+  updateUser,
+} from "../../../redux/Slices/UserDataSlice";
 // service / utilities
 import { fixURL } from "../../../helpers/utilities";
 import { apiService } from "../../../services/api.service";
@@ -34,6 +38,8 @@ interface IUserNftsCollectionsProps {
   profile?: Profile;
   saveNftsProfilePicture?: any;
   handleSelectAll?: any;
+  setSelectedAvatar?: any;
+  selectedAvatar?: NFT | null;
 }
 
 export default function NftsCollections({
@@ -44,6 +50,8 @@ export default function NftsCollections({
   saveNftsProfilePicture,
   handleNftChange,
   handleSelectAll,
+  setSelectedAvatar,
+  selectedAvatar,
 }: IUserNftsCollectionsProps) {
   const [openCollection, setOpenCollection] = useState<boolean[]>([]);
   const [filteredCollections, setFilteredCollections] = useState<
@@ -109,7 +117,7 @@ export default function NftsCollections({
         ...profile,
         showNfts: value,
       });
-      dispatch(updateCurrentProfile(updatedProfile))
+      dispatch(updateCurrentProfile(updatedProfile));
     }
   };
 
@@ -120,7 +128,12 @@ export default function NftsCollections({
           <p>Select your profile avatar</p>
           <span className="flex align-center">
             <span className="mr-2">Hide all NFTs</span>
-            <Switch value={profile.showNfts} right={"NO"} left={"YES"} onClick={handleShowNfts} />
+            <Switch
+              value={profile.showNfts}
+              right={"NO"}
+              left={"YES"}
+              onClick={handleShowNfts}
+            />
           </span>
         </div>
       );
@@ -224,16 +237,15 @@ export default function NftsCollections({
                         c.token_id === nft.token_id &&
                         c.token_address === nft.token_address
                     );
+                    const isAvatar =
+                      selectedAvatar?.token_address === nft.token_address &&
+                      selectedAvatar.token_id === nft.token_id;
                     return (
                       <div
-                        onClick={(e:any) => handleNftChange(e,nft)}
-                        onContextMenu={(e:any) => handleNftChange(e,nft)}
-                        className={`the-nft ${
-                          isSelected
-                            ? !profile
-                              ? "selected"
-                              : "selected-2"
-                            : ""
+                        onClick={(e: any) => handleNftChange(nft)}
+                        onContextMenu={(e: any) => setSelectedAvatar(nft)}
+                        className={`the-nft ${isSelected && "selected"} ${
+                          isAvatar && " selected-2"
                         }`}
                         key={index}
                       >
