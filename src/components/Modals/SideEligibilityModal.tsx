@@ -59,19 +59,24 @@ export default function SideEligibilityModal(
   const [isEligible, setIsEligible] = useState<boolean>(false);
   const [details, setDetails] = useState<any>([]);
 
-  const handleJoinSide = () => {
+  const handleJoinSide = async () => {
     if (user) {
-      const object = {
-        state: State.Pending,
-        type: Type.Request,
-        sender: user,
-        recipient: props.selectedSide['creatorAddress'],
-        side: new Side(props.selectedSide)
-      }
-      apiService.sendRequestPrivateSide(object);
-      // if (props.selectedSide['private'] === true) {
+      if (props.selectedSide['private'] === true) {
 
-      // } else apiService.joinSide(user.id, props.selectedSide.id, Role.User);
+        let sender:any = {...user}
+        delete sender['profiles'];
+        const object = {
+          state: State.Pending,
+          type: Type.Request,
+          sender: sender,
+          recipient: props.selectedSide['creatorAddress'],
+          side: props.selectedSide
+        }
+        await apiService.sendRequestPrivateSide(object);
+
+      } else apiService.joinSide(user.id, props.selectedSide.id, Role.User);
+
+      window.location.reload();
     }
   };
 
