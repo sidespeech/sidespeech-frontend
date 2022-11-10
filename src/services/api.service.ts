@@ -18,6 +18,7 @@ import { InitialStateUser } from "../components/GeneralSettings/Account/UserGene
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
 import _ from "lodash";
+import { getSidesMetadata } from "./side.service";
 
 // Create an API Service class
 class apiService {
@@ -49,6 +50,13 @@ class apiService {
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
     if (!res.body) throw new Error("Error");
+    const responseWithParsedSides: any = await Promise.all(res.body.profiles?.map(async (profile: any) => {
+      const parsedSide = await getSidesMetadata([profile.side]);
+      return {
+        ...profile,
+        side: parsedSide[0]
+      }
+    }))
     return new User(res.body);
   }
 
@@ -336,7 +344,7 @@ class apiService {
       c.opensea = JSON.stringify(c.opensea);
       return c;
     });
-    const res = await superagent.post(`${BASE_URL}/collection/many`).send(data);
+    const res = await superagent.post(`${BASE_URL}/collection/many`).send({collections: data});
     return res;
   }
 

@@ -17,6 +17,7 @@ import PaginationControls from '../ui-components/PaginationControls';
 import Spinner from '../ui-components/Spinner';
 import { searchFiltersInitialState, searchFiltersProps } from './DashboardPage';
 import SideCardItem from './shared-components/SideCardItem';
+import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg'
 
 interface SearchStyledProps {}
 
@@ -62,10 +63,11 @@ const SearchStyled = styled.main<SearchStyledProps>`
   }
   .no-results {
     flex-direction: column;
-    background-image: url();
+    background-image: url(${noResultsImg});
     background-position: center center;
     backgound-size: contain;
     background-repeat: no-repeat;
+    margin: 80px 0;
     & p {
       text-align: center;
       font-size: 1.5rem;
@@ -152,7 +154,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
             setSidesLoading(false);
         }
       }
-      if (Object.keys(userCollectionsData).length) getSearchSides();
+      getSearchSides();
     }, [_searchText, searchFilters.collections, userCollectionsData]);
 
     useEffect(() => {

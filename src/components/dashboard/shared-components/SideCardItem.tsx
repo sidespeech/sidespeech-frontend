@@ -139,6 +139,7 @@ interface SideCardItemProps {
 };
 
 const SideCardItem = ({ eligible, joined, onJoin, side, userSides }: SideCardItemProps) => {
+    console.log(side)
   return (
     <SideCardItemStyled coverImage={side.coverImage || side.firstCollection?.imageUrl}>
         <div className="cover-image">
@@ -173,7 +174,7 @@ const SideCardItem = ({ eligible, joined, onJoin, side, userSides }: SideCardIte
                 </ClampLines>
             </div>
             <div className="side-actions">
-                {userSides ? (
+                {userSides && joined ? (
                     <SideCardUserActions />
                     ) : (
                     <SideCardJoinActions eligible={eligible} joined={joined} onJoin={() => onJoin?.(side)} />

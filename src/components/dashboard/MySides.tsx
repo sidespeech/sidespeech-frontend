@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { checkUserEligibility, getRandomId, paginateArray } from '../../helpers/utilities';
 import { Collection } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
+import { sideAPI } from '../../services/side.service';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import CustomSelect from '../ui-components/CustomSelect';
+import Spinner from '../ui-components/Spinner';
 import SideCardItem from './shared-components/SideCardItem';
+import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg'
 
 interface MySidesStyledProps {}
 
@@ -47,10 +52,11 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
   }
   .no-results {
     flex-direction: column;
-    background-image: url();
+    background-image: url(${noResultsImg});
     background-position: center center;
     backgound-size: contain;
     background-repeat: no-repeat;
+    margin: 80px 0;
     & p {
       text-align: center;
       font-size: 1.5rem;
@@ -82,25 +88,67 @@ interface MySidesProps {
   collections: Collection[];
 };
 
+interface paginationProps {
+  currentPage: number;
+  pageSize: number;
+};
+
+const paginationInitialState = {
+  currentPage: 1,
+  pageSize: 9
+};
+
 const MySides = ({ collections }: MySidesProps) => {
   const [isOnlyVerifiedCollectionsChecked, setIsOnlyVerifiedCollectionsChecked] = useState<boolean>(false);
-  const [userSides, setUserSides] = useState<Side[]>([])
+  const [sidesLoading, setSidesLoading] = useState<boolean>(false);
+  const [sidesList, setSidesList] = useState<Side[]>([]);
+  const [filteredSides, setFilteredSides] = useState<Side[]>([]);
+  const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
+  const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
+  const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
-  const { sides } = useSelector(
+  const { account, userCollectionsData } = useSelector(
     (state: RootState) => state.user
 );
 
 useEffect(() => {
-  if (sides) {
-    let filteredSides = sides;
-    // if (isOnlyVerifiedCollectionsChecked) filteredSides = filteredSides.filter(side => side);
-    setUserSides(filteredSides);
+  async function getSearchSides() {
+    try {
+        setSidesLoading(true);
+        const response = await sideAPI.getSidesByOwner(
+          account || '',
+        );
+        const sidesWithElegibility = response.map((side: Side) => {
+          const [_, eligible] = checkUserEligibility(userCollectionsData, side);
+          return({
+          ...side,
+          eligible
+        })})
+        setFilteredSides(sidesWithElegibility);
+    } catch (error) {
+        console.error(error);
+        toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
+    } finally {
+        setSidesLoading(false);
+    }
   }
-}, [isOnlyVerifiedCollectionsChecked, sides])
+  if (account) getSearchSides();
+}, [account, userCollectionsData]);
+
+useEffect(() => {
+  const parsedArray = filteredSides;
+  const { array } = paginateArray({array: parsedArray, currentPage: pagination.currentPage, pageSize: pagination.pageSize});
+  setSidesList(array);
+}, [filteredSides, pagination]);
+
+const handleEligibilityCheck = (side: Side) => {
+    setSelectedSide(side);
+    setDisplayEligibility(true);
+};
 
   return (
     <MySidesStyled>
-      <h2 className="title">My sides ({userSides.length})</h2>
+      <h2 className="title">My sides ({sidesList.length})</h2>
 
       <div className="my-sides-toolbar">
         <div className="collection-select">
@@ -124,9 +172,13 @@ useEffect(() => {
         </div>
       </div>
 
-      {!!userSides?.length ? (
+      {sidesLoading ? (
+        <div className="spinner-wrapper">
+            <Spinner />
+        </div>
+        ) : !!sidesList?.length ? (
             <div className="list-wrapper">
-              {userSides.map(side => (
+              {sidesList.map(side => (
                 <Link key={side.id} to={`/${side.id}`}>
                   <SideCardItem side={side} userSides />
                 </Link>
