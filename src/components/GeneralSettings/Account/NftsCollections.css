@@ -2,7 +2,7 @@
     position: relative;
     padding: 28px 28px 0px 28px;
     border-radius: 20px;
-    flex: 1.2;
+    flex: 1;
     background-color: var(--input);
     max-height: calc(100vh - 110px);
 }

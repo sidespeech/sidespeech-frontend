@@ -12,6 +12,9 @@ import UserGeneralInformations from "./UserGeneralInformations";
 import { NFT } from "../../../models/interfaces/nft";
 import _ from "lodash";
 import { Collection } from "../../../models/interfaces/collection";
+import { updateCurrentProfile } from "../../../redux/Slices/UserDataSlice";
+import { toast } from "react-toastify";
+import { apiService } from "../../../services/api.service";
 
 export default function GeneralSettingsAccount() {
   const { user, userCollectionsData } = useSelector(
@@ -22,7 +25,11 @@ export default function GeneralSettingsAccount() {
     [key: string]: NFT[];
   } | null>(null);
 
-  const [collections, setCollections] = useState<Collection[]>([])
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [displayNftsCollection, setDisplayNftsCollection] =
+    useState<boolean>(false);
+
+  const { currentProfile } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     if (userCollectionsData && user) {
@@ -34,10 +41,14 @@ export default function GeneralSettingsAccount() {
         initCheckedState[key] = [...nfts];
       });
       setCheckedNfts(initCheckedState);
-      setCollections(Object.values(userCollectionsData))
+      setCollections(Object.values(userCollectionsData));
     }
   }, [userCollectionsData, user]);
-  const handleNftChange = (selectedNft: NFT) => {
+  const handleNftChange = (e: any, selectedNft: NFT) => {
+    if (e.type === "contextmenu") {
+      e.preventDefault();
+      return;
+    }
     if (!checkedNfts) return;
     const index = checkedNfts[selectedNft.token_address].findIndex(
       (nft) =>
@@ -64,23 +75,44 @@ export default function GeneralSettingsAccount() {
     setCheckedNfts({ ...checkedNfts, [nfts[0].token_address]: [...array] });
   };
 
+  const saveNftsProfilePicture = async () => {
+    if (currentProfile && checkedNfts) {
+      try {
+        const profile = await apiService.updateProfilePicture(
+          currentProfile?.id,
+          Object.values(checkedNfts)[0][0]
+        );
+        dispatch(updateCurrentProfile(profile));
+        toast.success("Profile Nft saved");
+        setDisplayNftsCollection(false);
+      } catch (error) {
+        toast.error("error saving your profile picture");
+        setDisplayNftsCollection(false);
+      }
+    }
+  };
+
   return (
     <>
       {userCollectionsData && user && (
         <div className="account">
           <UserGeneralInformations user={user} />
 
-          {checkedNfts && collections.length >0 && (
+          {checkedNfts && collections.length > 0 && (
             <NftsCollections
               selectedNfts={checkedNfts}
               collections={collections}
               user={user}
               handleNftChange={handleNftChange}
               handleSelectAll={handleSelectAll}
+              saveNftsProfilePicture={saveNftsProfilePicture}
             />
           )}
         </div>
       )}
     </>
   );
+}
+function dispatch(arg0: any) {
+  throw new Error("Function not implemented.");
 }

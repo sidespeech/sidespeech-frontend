@@ -226,7 +226,8 @@ export default function NftsCollections({
                     );
                     return (
                       <div
-                        onClick={() => handleNftChange(nft)}
+                        onClick={(e:any) => handleNftChange(e,nft)}
+                        onContextMenu={(e:any) => handleNftChange(e,nft)}
                         className={`the-nft ${
                           isSelected
                             ? !profile

@@ -268,6 +268,9 @@ export function fixURL(url: string) {
   } else if (url.startsWith("https://")) {
     return url;
   }
+  else {
+    return url;
+  }
 }
 
 export function alchemyNftsModelToSideNftsModel(nfts: any[]) {

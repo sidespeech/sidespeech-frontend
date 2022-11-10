@@ -3,16 +3,18 @@
     display: flex;
     flex: 1;
     padding: 28px;
+    gap: 47px;
 }
 
 .general-settings .form-area{
-    flex: 1.3;
+    flex: 1;
 }
 
 .general-settings .copy {
-    margin-left: -70px;
     cursor: pointer;
-    position: relative;
+    position: absolute;
+    right: 10px;
+    bottom: 12px;
 }
 .general-settings .copy p,
 .general-settings .copy img{
