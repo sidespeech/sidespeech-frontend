@@ -22,3 +22,21 @@
 .date-label {
     color: var(--placeholer);
 }
+
+.spinner-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    width: 100%;
+    color: var(--text-secondary);
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text-secondary-dark);
+}
+
+.override-width {
+    width: fit-content!important;
+}

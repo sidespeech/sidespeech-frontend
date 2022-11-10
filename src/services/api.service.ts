@@ -313,8 +313,12 @@ class apiService {
   } 
 
   static async getPendingInvitationsByRecipient(id:string): Promise<Invitation[]> {
-    console.log('id :', id)
     const res = await superagent.get(`${BASE_URL}/invitation/pending/recipient/${id}`);
+    return res.body;
+  } 
+
+  static async acceptInvitation(invitation:any): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/invitation/accepted`).send(invitation);
     return res.body;
   } 
 

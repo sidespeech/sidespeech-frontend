@@ -11,6 +11,9 @@ import InputText from '../ui-components/InputText';
 import moment from 'moment'
 import './invitations.css'
 import { checkUserEligibility } from '../../helpers/utilities';
+import Spinner from '../ui-components/Spinner';
+import { Side } from '../../models/Side';
+import SideEligibilityModal from '../Modals/SideEligibilityModal';
 
 interface InvitationsStyledProps { }
 
@@ -26,37 +29,97 @@ const Invitations = ({ }: InvitationsProps) => {
 
   const userData = useSelector((state: RootState) => state.user);
   const [invitations, setInvitations] = useState<any[]>([]);
+  const [filteredInvitations, setFilteredInvitations] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCheckedVerified, setIsCheckedVerified] = useState<boolean>(false);
+  const [isCheckedEligible, setIsCheckedEligible] = useState<boolean>(false);
+
+  // Variable for modal eligibility
+  const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
+  const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
 
   const getInvitations = async (user: User) => {
+    console.log("userData['userCollectionsData'] :", userData['userCollectionsData'])
     let invitations = (await apiService.getPendingInvitationsByRecipient(user['id'])).map((item: any) => {
       item['eligibility'] = checkUserEligibility(userData['userCollectionsData'], item['side']);
       return item
     })
-
-
-    console.log('invitations :', invitations);
     setInvitations(invitations);
+    setFilteredInvitations(invitations);
   };
 
   useEffect(() => {
-    console.log('userData :', userData)
-
     if (userData && userData['user'])
       getInvitations(userData['user']);
   }, [userData]);
 
   const onDecline = async (invitation: Invitation, index: number) => {
-    console.log(invitation);
+    setIsLoading(true);
+    await apiService.updateInvitationState(invitation['id']!, 2);
+    if (userData && userData['user']) await getInvitations(userData['user']);
+    setIsLoading(false);
   };
 
   const onAccept = async (invitation: Invitation, index: number) => {
-    console.log(invitation);
+    setIsLoading(true);
+    await apiService.acceptInvitation(invitation);
+    if (userData && userData['user']) await getInvitations(userData['user']);
+    setIsLoading(false);
   };
 
+  const onFilterByVerifiedcollection = async () => {
+    setIsCheckedVerified(!isCheckedVerified);
+    if (!isCheckedVerified) {
+      setIsLoading(true);
+      let filtered = [...filteredInvitations].filter((invitation:Invitation)=> {
+        if (invitation['side']['collections'].length) {
+          let isVerified = invitation['side']['collections'].find(collection => {
+            let opensea = JSON.parse(collection['opensea'])
+            if (opensea['safelistRequestStatus'] === 'verified') return collection
+          })
+  
+          if (isVerified) return invitation
+        }
+      });
+      setFilteredInvitations(filtered);
+      setIsLoading(false);
+    } else setFilteredInvitations([...invitations])
+  };
+
+  const onFilterByEligibleSide = async () => {
+    setIsCheckedEligible(!isCheckedEligible);
+    if (!isCheckedEligible) {
+      setIsLoading(true);
+      let filtered = [...filteredInvitations].filter((invitation:any)=> {
+        if (invitation['eligibility'][1]) return invitation
+      });
+      setFilteredInvitations(filtered);
+      setIsLoading(false);
+    } else setFilteredInvitations([...invitations])
+  };
+
+  const onFilterBySearchInput = async (e:any) => {
+    const text = e.target.value;
+    if (text.length) {
+      setIsLoading(true);
+      let filtered = [...invitations].filter((invitation:Invitation)=> {
+        const invitationStringify  = JSON.stringify(invitation).toLowerCase();
+        if (invitationStringify.includes(text)) return invitation
+      });
+      setFilteredInvitations(filtered);
+      setIsLoading(false);
+    } else setFilteredInvitations([...invitations])
+  };
+
+  const handleEligibilityCheck = (side:Side) => {
+    setSelectedSide(side);
+    setDisplayEligibility(true);
+  };
+  
   return (
     <InvitationsStyled>
-      <h2 className="title">Invitations {(invitations.length) ? '(' + invitations.length + ')' : null}</h2>
+      <h2 className="title">Invitations {(filteredInvitations.length) ? '(' + filteredInvitations.length + ')' : null}</h2>
 
       {/* Search Section */}
       <div className="f-column">
@@ -71,20 +134,20 @@ const Invitations = ({ }: InvitationsProps) => {
             glass={true}
             iconRightPos={{ top: 12, right: 80 }}
             placeholder={"Search"}
-            onChange={undefined}
+            onChange={onFilterBySearchInput}
             radius="5px"
           />
           <div className="flex align-center ">
             <span className="">Only verified collections</span>{" "}
             <CustomCheckbox
-              isChecked={false}
-              onClick={undefined}
+              isChecked={isCheckedVerified}
+              onClick={onFilterByVerifiedcollection}
             />
 
             <span className="ml-4">Only eligible sides</span>{" "}
             <CustomCheckbox
-              isChecked={false}
-              onClick={undefined}
+              isChecked={isCheckedEligible}
+              onClick={onFilterByEligibleSide}
             />
           </div>
         </div>
@@ -92,8 +155,8 @@ const Invitations = ({ }: InvitationsProps) => {
 
       {/* Invitations List **start */}
       {
-
-        invitations.map(
+        (!isLoading) ? 
+        filteredInvitations.map(
           (invitation, index) => {
             return (
               <div className="f-column mt-3 requests-list justify-center" key={index}>
@@ -119,9 +182,9 @@ const Invitations = ({ }: InvitationsProps) => {
                             radius={3}
                             background={"var(--bg-secondary-light)"}
                             fontSize={"12px"}
-                            classes={"mr-2"}
+                            classes={"mr-2 override-width"}
                           >
-                            {invitation['side']['collections'][0]['name']} <i className="fa-solid fa-circle-check ml-2 text-blue"></i>
+                            {invitation['side']['collections'].length ? invitation['side']['collections'][0]['name'] : 'Collection Name'} <i className="fa-solid fa-circle-check ml-2 text-blue"></i>
                           </Button>
                           {(invitation['side']['collections'].length > 1) ?
                             <Button
@@ -191,7 +254,7 @@ const Invitations = ({ }: InvitationsProps) => {
                         <Button
                           width={159}
                           height={46}
-                          onClick={undefined}
+                          onClick={() => handleEligibilityCheck(invitation['side'])}
                           radius={10}
                           background={"var(--bg-secondary-light)"}
                         >
@@ -205,9 +268,16 @@ const Invitations = ({ }: InvitationsProps) => {
               </div>
             )
           }
-        )
+        ) : <div className="spinner-wrapper"><Spinner /></div>
       }
       {/* Invitations List **end */}
+
+      {displayEligibility && selectedSide && (
+        <SideEligibilityModal
+          setDisplayEligibility={setDisplayEligibility}
+          selectedSide={selectedSide}
+        />
+      )}
 
     </InvitationsStyled>
   )

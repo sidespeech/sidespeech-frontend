@@ -95,6 +95,7 @@ export default function Invitation({
 
 
   useEffect(() => {
+    console.log('invitationUsers :', invitationUsers)
     if (invitationUsers) {
       setUsersInvite(invitationUsers)
     } else {
@@ -142,6 +143,7 @@ export default function Invitation({
 
       let object = {
         state: 3,
+        type: 1,
         sender: { ...user.sender },
         recipient: user.recipient,
         invitationLink: sideLink,
