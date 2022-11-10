@@ -13,7 +13,7 @@ export class Side {
   coverImage: string;
   sideImage: string;
   priv: boolean;
-  firstCollection: string;
+  firstCollection: any;
   collectionsCount: number;
   // this will be a json containing an object with the token related to a condition as key and
   // his value will be the property key and the property value related to this collection
@@ -33,7 +33,7 @@ export class Side {
     this.creatorAddress = _data.creatorAddress;
     this.description = _data.description;
     this.eligible = false;
-    this.firstCollection = '';
+    this.firstCollection = {};
     this.id = _data.id;
     this.invitations = _data.invitations;
     this.isCreatorOwner = _data.isCreatorOwner;

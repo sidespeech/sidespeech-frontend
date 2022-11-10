@@ -23,7 +23,7 @@ export class sideAPI {
       if (firstCollectionAddress) firstCollection = await alchemyService.getContractMetadata(firstCollectionAddress);
       const parsedSide = {
         ...side,
-        firstCollection: firstCollection?.collectionName || '',
+        firstCollection,
         collectionsCount: count
       }
       return parsedSide;
@@ -45,7 +45,7 @@ export class sideAPI {
       if (firstCollectionAddress) firstCollection = await alchemyService.getContractMetadata(firstCollectionAddress);
       const parsedSide = {
         ...side,
-        firstCollection: firstCollection?.collectionName || '',
+        firstCollection,
         collectionsCount: count
       }
       return parsedSide;
@@ -65,7 +65,7 @@ export class sideAPI {
       if (firstCollectionAddress) firstCollection = await alchemyService.getContractMetadata(firstCollectionAddress);
       const parsedSide = {
         ...side,
-        firstCollection: firstCollection?.collectionName || '',
+        firstCollection,
         collectionsCount: count
       }
       return parsedSide;

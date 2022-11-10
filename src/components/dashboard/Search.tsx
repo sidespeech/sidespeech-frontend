@@ -119,6 +119,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
     const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
     const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
     const [selectedSide, setSelectedSide] = useState<Side | null>(null);
+    const [totalResults, setTotalResults] = useState<number>(0);
 
     const { userCollectionsData } = useSelector(
         (state: RootState) => state.user
@@ -156,11 +157,18 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
     }, [_searchText, searchFilters.collections, userCollectionsData]);
 
     useEffect(() => {
-      if (filteredSides.length) {
-          const { array } = paginateArray({array: filteredSides, currentPage: pagination.currentPage, pageSize: pagination.pageSize});
-          setSidesList(array);
+      let parsedArray = searchFilters.elegibility === 'eligible' ?
+        filteredSides.filter(side => side.eligible) :
+          searchFilters.elegibility === 'non-eligible' ?
+            filteredSides.filter(side => !side.eligible)
+              : filteredSides;
+      if (searchFilters.verifiedCollections) {
+        parsedArray = parsedArray.filter(side => side.firstCollection?.safelistRequestStatus === 'verified');
       }
-  }, [filteredSides, pagination]);
+      setTotalResults(parsedArray.length);
+      const { array } = paginateArray({array: parsedArray, currentPage: pagination.currentPage, pageSize: pagination.pageSize});
+      setSidesList(array);
+  }, [filteredSides, pagination, searchFilters]);
 
     const handleEligibilityCheck = (side: Side) => {
         setSelectedSide(side);
@@ -169,7 +177,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 
   return (
     <SearchStyled>
-       <h2 className="title">{sidesList?.length} Sides found for "{searchText || searchFilters.selectedCollection || ''}"</h2>
+       <h2 className="title">{totalResults} Sides found for "{searchText || searchFilters.selectedCollection || ''}"</h2>
 
        <div className="search-toolbar">
         <div className="collection-select">
@@ -181,7 +189,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
                 collections: ev.target.value,
                 selectedCollection: ''
             }))}
-            options={['All', ...collections.map(collection => collection.opensea?.collectionName)]}
+            options={['All', ...collections.map(collection => collection.name)]}
             placeholder="Select a collection"
             valueToSet={searchFilters.collections?.split(',')[0] || ''}
             values={['all', ...collections.map(collection => collection.address)]}
@@ -197,9 +205,9 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
                 ...prevState,
                 elegibility: ev.target.value
             }))}
-            options={[]}
-            placeholder="All"
+            options={['All', 'Eligible', 'Non eligible']}
             valueToSet={searchFilters.elegibility}
+            values={['all', 'eligible', 'non-eligible']}
             width="70%"
           />
         </div>
@@ -271,7 +279,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
                         currentPage: page
                     }))}
                 } 
-                totalPages={paginateArray({array: filteredSides, currentPage: pagination.currentPage, pageSize: pagination.pageSize}).pages}
+                totalPages={paginateArray({array: sidesList, currentPage: pagination.currentPage, pageSize: pagination.pageSize}).pages}
             />
 
         {displayEligibility && selectedSide && (
