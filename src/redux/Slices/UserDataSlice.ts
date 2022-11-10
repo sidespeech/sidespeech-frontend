@@ -74,12 +74,21 @@ export const fetchUserDatas = createAsyncThunk(
         res[address].nfts.push(nft);
       }
     }
-    Object.values(res).forEach((coll: any) => {
-      dispatch(getSidesByCollection(coll?.address));
-    });
+    dispatch(updateSidesByUserCollections(res));
     return res;
   }
 );
+
+export const updateSidesByUserCollections = createAsyncThunk(
+  "userData/updateSidesByUserCollections",
+  async (collections: Collection[] | null, { dispatch, getState }) => {
+    const state: any = getState();
+    const currentUserCollection = state.user.userCollectionsData;
+    Object.values(collections || currentUserCollection).forEach((coll: any) => {
+      dispatch(getSidesByCollection(coll?.address));
+    });
+  }
+)
 
 export const getSidesByCollection = createAsyncThunk(
   "userData/getSidesByCollection",

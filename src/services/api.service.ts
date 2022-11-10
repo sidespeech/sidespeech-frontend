@@ -357,17 +357,11 @@ class apiService {
       return c;
     });
     const res = await superagent.post(`${BASE_URL}/collection/many`).send({collections: data});
+    return res;
   }
 
   static async getAllCollections(): Promise<Collection[]> {
     const res = await superagent.get(`${BASE_URL}/collection`);
-    return res.body;
-  }
-
-  static async saveManyCollections(collections: Collection[]): Promise<any> {
-    const res = await superagent
-      .post(`${BASE_URL}/many`)
-      .send(collections)
     return res.body;
   }
 }
