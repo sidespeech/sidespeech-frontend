@@ -299,17 +299,41 @@ export function getRandomId() {
 }
 
 export async function getBase64(file: File): Promise<any> {
-  return new Promise((res, rej) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        res(reader.result);
-      }
-    };
-    reader.onerror = (error) => {
-      console.error("Error: ", error);
-      rej();
-    };
-  });
+	return new Promise((res, rej) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			if (reader.readyState === 2) {
+				res(reader.result);
+			}
+		};
+		reader.onerror = error => {
+			console.error('Error: ', error);
+			rej();
+		};
+	});
 }
+
+export function paginateArray({
+  array,
+  currentPage = 1,
+  pageSize = 10
+}: {
+  array: any[];
+  currentPage?: number;
+  pageSize?: number;
+}): {
+  array: any[];
+  pages: number;
+} {
+  const pages = currentPage <= 0 ? 1 : Math.ceil(array.length / pageSize);
+  const slicedArray = currentPage <= 0 ? 
+    array : currentPage > pages ? 
+      array.slice(pages, pageSize * pages) : 
+        array.slice(pageSize * (currentPage - 1), pageSize * currentPage);
+  
+  return {
+    array: slicedArray,
+    pages
+  }
+};
