@@ -16,6 +16,7 @@ import { apiService } from "../../services/api.service";
 import {
   addColony,
   updateProfiles,
+  updateSidesByUserCollections,
   updateUser,
 } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
@@ -541,6 +542,7 @@ export default function NewSide() {
           } catch (error) {}
         }
         dispatch(addColony(newSide));
+        dispatch(updateSidesByUserCollections(null));
         toast.success(data.name + " has been created.", {
           toastId: 4,
         });
