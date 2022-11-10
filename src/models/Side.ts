@@ -13,6 +13,7 @@ export class Side {
   coverImage: string;
   sideImage: string;
   priv: boolean;
+  private?: boolean;
   firstCollection: string;
   collectionsCount: number;
   // this will be a json containing an object with the token related to a condition as key and
@@ -44,6 +45,7 @@ export class Side {
       ? _data.profiles.map((p: any) => new Profile(p))
       : [];
     this.priv = _data.private;
+    this.private = _data.private;
     this.sideImage = _data.sideImage;
   }
 }

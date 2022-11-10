@@ -135,7 +135,8 @@ export function checkUserEligibility(
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
   if (selectedSide) {
-    Object.entries<any>(JSON.parse(selectedSide.conditions)).forEach(
+    if (typeof selectedSide['conditions'] === 'string') selectedSide['conditions'] = JSON.parse(selectedSide['conditions'])
+    Object.entries<any>(selectedSide.conditions).forEach(
       ([token_address, condition]) => {
         const tab = [];
         const collection = nfts[token_address];

@@ -15,6 +15,8 @@ import TabItems from "../../ui-components/TabItems";
 import { apiService } from "../../../services/api.service";
 import { setCurrentColony, setSelectedChannel } from "../../../redux/Slices/AppDatasSlice";
 import { Dot } from "../../ui-components/styled-components/shared-styled-components";
+import { Role } from "../../../models/Profile";
+import { State, Type } from "../../../models/Invitation";
 
 const initialStateTabs = {
   menu: [
@@ -82,7 +84,7 @@ export default function Settings(
     if (!currentSide) {
       navigate(`/`);
     } else {
-      (userData && userData['currentProfile'] && userData['currentProfile']['role'] === 0) ?
+      (userData && userData['currentProfile'] && userData['currentProfile']['role'] === Role.Admin) ?
         handleTabs('Informations') : handleTabs('Account');
     }
   }, [userData]);
@@ -115,7 +117,7 @@ export default function Settings(
 
   const updateRequestNotifications = async () => {
     if (currentSide && userData && userData['user']) {
-      let requestsOrdered = currentSide['invitations'].filter((invitation: any) => invitation['recipientId'] === userData['user']!['id'] && invitation['state'] === 3);
+      let requestsOrdered = currentSide['invitations'].filter((invitation: any) => invitation['type'] === Type.Request && invitation['state'] === State.Pending);
       getRequestsUsers(requestsOrdered);
     }
   }
@@ -174,8 +176,8 @@ export default function Settings(
                         return (
                           <>
                             <div>
-                              <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}
-                              {/* {(subtitle['label'] === 'Requests' && requests.length) ? <Dot>{requests.length}</Dot> : null} */}
+                              <TabItems cursor="pointeur" key={subtitle['label']} className={`nav-link pl-5 pt-3 pb-3 flex ${subtitle['active'] ? 'active' : ''} sidebar-item text-secondary-dark`} onClick={(e) => handleTabs(subtitle['label'])}><i className={`${subtitle['icon']} mr-2`}></i>{subtitle['label']}
+                              {(subtitle['label'] === 'Requests' && requests.length) ? <Dot className="ml-4">{requests.length}</Dot> : null}
                               </TabItems>
                             </div>
                           </>

@@ -12,6 +12,7 @@ import Modal from "../ui-components/Modal";
 import { RoundedImageContainer } from "../ui-components/styled-components/shared-styled-components";
 import { OpenSeaRequestStatus } from "../../models/interfaces/collection";
 import Eligibility from "../CurrentColony/settings/eligibility/eligibility";
+import { State, Type } from "../../models/Invitation";
 
 const eligibilityTexts = {
   success: {
@@ -45,7 +46,7 @@ const EligibilityResult = styled.div<IEligibilityResultProps>`
 `;
 interface ISideEligibilityModalProps {
   selectedSide: Side;
-  setDisplayEligibility: any;
+  setDisplayEligibility?: any;
 }
 
 export default function SideEligibilityModal(
@@ -59,7 +60,19 @@ export default function SideEligibilityModal(
   const [details, setDetails] = useState<any>([]);
 
   const handleJoinSide = () => {
-    if (user) apiService.joinSide(user.id, props.selectedSide.id, Role.User);
+    if (user) {
+      const object = {
+        state: State.Pending,
+        type: Type.Request,
+        sender: user,
+        recipient: props.selectedSide['creatorAddress'],
+        side: new Side(props.selectedSide)
+      }
+      apiService.sendRequestPrivateSide(object);
+      // if (props.selectedSide['private'] === true) {
+
+      // } else apiService.joinSide(user.id, props.selectedSide.id, Role.User);
+    }
   };
 
   useEffect(() => {
@@ -108,7 +121,7 @@ export default function SideEligibilityModal(
         <Button
           classes="mt-3"
           disabled={!isEligible}
-          children={"Join now"}
+          children={(props.selectedSide['private'] === true) ? "Send Request" : "Join now"}
           onClick={handleJoinSide}
         />
       }

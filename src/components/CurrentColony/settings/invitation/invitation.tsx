@@ -10,6 +10,7 @@ import "./invitation.css"
 import { apiService } from "../../../../services/api.service";
 import { toast } from "react-toastify";
 import { Profile } from "../../../../models/Profile";
+import { State, Type } from "../../../../models/Invitation";
 
 
 export default function Invitation({
@@ -46,7 +47,6 @@ export default function Invitation({
 
 
   useEffect(() => {
-    console.log('invitationUsers :', invitationUsers)
     if (invitationUsers) {
       setUsersInvite(invitationUsers)
     } else {
@@ -77,8 +77,8 @@ export default function Invitation({
     if (userInvited) {
       let currentsInvited = [...userInvited];
       let object = {
-        state: 3,
-        type: 1,
+        state: State.Pending,
+        type: Type.Invitation,
         sender: user.sender,
         recipient: user.recipient,
         invitationLink: sideLink
@@ -94,8 +94,8 @@ export default function Invitation({
       delete user['sender']['profiles'];
 
       let object = {
-        state: 3,
-        type: 1,
+        state: State.Pending,
+        type: Type.Invitation,
         sender: { ...user.sender },
         recipient: user.recipient,
         invitationLink: sideLink,
