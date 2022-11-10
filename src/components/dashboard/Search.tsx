@@ -122,7 +122,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
     const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
     const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
-    const { userCollectionsData } = useSelector(
+    const { sides, userCollectionsData } = useSelector(
         (state: RootState) => state.user
     );
 
@@ -138,15 +138,11 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
             setSidesLoading(true);
             const response = await sideAPI.getSidesBySearchValue(
               _searchText, 
-              searchFilters.collections
+              searchFilters.collections,
+              userCollectionsData,
+              sides
             );
-            const sidesWithElegibility = response.map((side: Side) => {
-              const [_, eligible] = checkUserEligibility(userCollectionsData, side);
-              return({
-              ...side,
-              eligible
-            })})
-            setFilteredSides(sidesWithElegibility);
+            setFilteredSides(response);
         } catch (error) {
             console.error(error);
             toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
@@ -234,15 +230,13 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
                     <React.Fragment key={side.id}>
                         {side.joined ? (
                             <Link to={`/${side.id}`}>
-                                <SideCardItem 
-                                    joined 
+                                <SideCardItem
                                     onJoin={handleEligibilityCheck}
                                     side={side} 
                                 />
                             </Link>
                         ) : (
-                            <SideCardItem 
-                                eligible={!!side.eligible} 
+                            <SideCardItem
                                 onJoin={handleEligibilityCheck}
                                 side={side} 
                             />

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Side } from '../../../models/Side';
 
 interface SideCardUserActionsStyledProps {
 
@@ -35,10 +36,11 @@ const SideCardUserActionsStyled = styled.div<SideCardUserActionsStyledProps>`
 `;
 
 interface SideCardUserActionsProps {
+    side: Side;
 
 };
 
-const SideCardUserActions = ({}: SideCardUserActionsProps) => {
+const SideCardUserActions = ({ side }: SideCardUserActionsProps) => {
     return (
         <SideCardUserActionsStyled>
             <button className="action-btn">

@@ -14,7 +14,7 @@ import Channels from "../CurrentColony/settings/channels/channels";
 import Invitation from "../CurrentColony/settings/invitation/invitation";
 import { apiService } from "../../services/api.service";
 import {
-  addColony,
+  addUserParsedSide,
   updateProfiles,
   updateUser,
 } from "../../redux/Slices/UserDataSlice";
@@ -540,7 +540,7 @@ export default function NewSide() {
             dispatch(updateProfiles(profile));
           } catch (error) {}
         }
-        dispatch(addColony(newSide));
+        dispatch(addUserParsedSide(newSide));
         toast.success(data.name + " has been created.", {
           toastId: 4,
         });

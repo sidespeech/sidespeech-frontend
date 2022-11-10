@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../constants/constants';
 import { Side } from '../../models/Side';
@@ -58,12 +59,12 @@ const FeatureSideCardStyled = styled.div<CardStyledProps>`
 `;
 
 interface FeaturedSideCardProps {
-    onJoin: (side: Side) => void;
+    onJoin?: (side: Side) => void;
     side: Side;
 }
 
 const FeatureSideCard = ({ onJoin, side }: FeaturedSideCardProps) => {
-    return <FeatureSideCardStyled coverImage={side.coverImage || side.firstCollection?.imageUrl} onClick={() => onJoin(side)}>
+    return <FeatureSideCardStyled coverImage={side.coverImage || side.firstCollection?.imageUrl} onClick={() => onJoin?.(side)}>
         <div className="content">
             <h3>{side.name}</h3>
             {side.collectionsCount > 0 && <div className="collections">
@@ -195,7 +196,15 @@ const FeaturedSides = ({ featuredSides, sidesLoading }: FeatureSidesProps) => {
                     <div>
                         <div>
                             {featuredSides.map(side => (
-                                    <FeatureSideCard onJoin={handleEligibilityCheck} side={side} />
+                                <React.Fragment key={side.id}>
+                                    {side.joined ? (
+                                        <Link to={`/${side.id}`}>
+                                            <FeatureSideCard side={side} />
+                                        </Link>
+                                    ) : (
+                                        <FeatureSideCard onJoin={handleEligibilityCheck} side={side} />
+                                    )}
+                                </React.Fragment>
                             ))}
                         </div>
                     </div>

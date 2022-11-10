@@ -14,6 +14,8 @@ import { Side } from "../../models/Side";
 import { sideAPI } from "../../services/side.service";
 import { toast } from "react-toastify";
 import { getRandomId } from "../../helpers/utilities";
+import { RootState } from "../../redux/store/app.store";
+import { useSelector } from "react-redux";
 
 const DashboardPageStyled = styled.div`
   display: flex;
@@ -65,6 +67,10 @@ export default function DashboardPage() {
   const [searchText, setSearchText] = useState<string>('');
   const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
 
+  const { sides } = useSelector(
+    (state: RootState) => state.user
+);
+
   useEffect(() => {
     if (searchText || searchFilters.selectedCollection) navigate('/search');
   }, [searchFilters, searchText]);
@@ -73,7 +79,7 @@ export default function DashboardPage() {
     async function getAllFeaturedSides() {
         try {
             setFeatureSidesLoading(true);
-            const response = await sideAPI.getAllFeaturedSides();
+            const response = await sideAPI.getAllFeaturedSides(null, sides);
             setFeaturedSides(response);
         } catch (error) {
             console.error(error);

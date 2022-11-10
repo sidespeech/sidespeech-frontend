@@ -7,7 +7,7 @@ import { checkUserEligibility, getRandomId, paginateArray } from '../../helpers/
 import { Collection } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
-import { sideAPI } from '../../services/side.service';
+import { getSidesMetadata, sideAPI } from '../../services/side.service';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import CustomSelect from '../ui-components/CustomSelect';
@@ -107,7 +107,7 @@ const MySides = ({ collections }: MySidesProps) => {
   const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
   const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
-  const { account, userCollectionsData } = useSelector(
+  const { sides, userCollectionsData } = useSelector(
     (state: RootState) => state.user
 );
 
@@ -115,16 +115,8 @@ useEffect(() => {
   async function getSearchSides() {
     try {
         setSidesLoading(true);
-        const response = await sideAPI.getSidesByOwner(
-          account || '',
-        );
-        const sidesWithElegibility = response.map((side: Side) => {
-          const [_, eligible] = checkUserEligibility(userCollectionsData, side);
-          return({
-          ...side,
-          eligible
-        })})
-        setFilteredSides(sidesWithElegibility);
+        const response = await getSidesMetadata(sides, userCollectionsData, sides);
+        setFilteredSides(response);
     } catch (error) {
         console.error(error);
         toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
@@ -132,8 +124,8 @@ useEffect(() => {
         setSidesLoading(false);
     }
   }
-  if (account) getSearchSides();
-}, [account, userCollectionsData]);
+  getSearchSides();
+}, [sides, userCollectionsData]);
 
 useEffect(() => {
   const parsedArray = filteredSides;
