@@ -17,6 +17,9 @@ import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile"
 import Settings from "./components/CurrentColony/settings/Settings";
 import NewSide from "./components/new-side/new-side";
 
+// Onboarding
+import OnBoarding from "./components/OnBoarding/DefaultView";
+
 // General Settings
 import GeneralSettings from "./components/GeneralSettings/DefaultView";
 import GeneralSettingsAccount from "./components/GeneralSettings/Account/Account";
@@ -57,6 +60,10 @@ ReactDOM.render(
                 <Route path="profile/:id" element={<UserProfile />} />
               </Route>
               <Route path=":id/settings" element={<Settings />} />
+              <Route
+                path="/onboarding"
+                element={<OnBoarding />}
+              />
               <Route
                 path="/general-settings"
                 element={<GeneralSettingsAccount />}

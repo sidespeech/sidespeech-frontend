@@ -30,6 +30,7 @@ interface IUserNftsCollectionsProps {
   user: User;
   handleNftChange: any;
   profile?: Profile;
+  onBoarding?: any;
   saveNftsProfilePicture?: any;
   handleSelectAll?: any;
 }
@@ -38,6 +39,7 @@ export default function NftsCollections({
   selectedNfts,
   collections,
   profile,
+  onBoarding,
   user,
   saveNftsProfilePicture,
   handleNftChange,
@@ -50,6 +52,8 @@ export default function NftsCollections({
   const [loading, setLoading] = useState<boolean>(true);
 
   const dispatch = useDispatch();
+
+  let submitButton;
 
   useEffect(() => {
     if (collections) {
@@ -145,6 +149,31 @@ export default function NftsCollections({
       </div>
     );
   };
+
+
+  if (!profile) {
+    submitButton =  <Button
+                      classes={"mb-3"}
+                      width={164}
+                      height={44}
+                      radius={10}
+                      color={"var(--text-primary-light)"}
+                      onClick={onSubmitNfts}
+                    >
+                      Save this selection
+                    </Button>
+  } else {
+    submitButton =  <Button
+                      classes={"mb-3"}
+                      width={164}
+                      height={44}
+                      radius={10}
+                      color={"var(--text-primary-light)"}
+                      onClick={saveNftsProfilePicture}
+                    >
+                      Use this NFT
+                    </Button>
+  }
 
   return (
     <div className="f-row my-nfts relative text-main">
@@ -250,32 +279,9 @@ export default function NftsCollections({
             );
           })}
       </div>
-      <div className="submitArea">
-        {/* Submit Button */}
-        {!profile ? (
-          <Button
-            classes={"mb-3"}
-            width={164}
-            height={44}
-            radius={10}
-            color={"var(--text-primary-light)"}
-            onClick={onSubmitNfts}
-          >
-            Save this selection
-          </Button>
-        ) : (
-          <Button
-            classes={"mb-3"}
-            width={164}
-            height={44}
-            radius={10}
-            color={"var(--text-primary-light)"}
-            onClick={saveNftsProfilePicture}
-          >
-            Use this NFT
-          </Button>
-        )}
-      </div>
+      {!onBoarding  && (
+        <div className="submitArea">{submitButton}</div>
+      )}
     </div>
   );
 }

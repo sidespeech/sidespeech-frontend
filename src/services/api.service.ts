@@ -24,8 +24,7 @@ class apiService {
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
-    console.log("accounts :", accounts)
-    console.log("signature :", signature)
+
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
       .send({
@@ -45,6 +44,22 @@ class apiService {
 
     return checkUser.body;
   }
+
+   static async findOnBoarding(accounts: string) {
+    const checkUser = await superagent.get(
+      `${BASE_URL}/user/onboarding/${accounts}`
+    );
+
+    return checkUser.body;
+  }
+
+  static async findExistingUsername(username: string) {
+    const checkUser = await superagent.get(
+      `${BASE_URL}/user/username/${username}`
+    );
+    return checkUser.body;
+  }
+
 
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);

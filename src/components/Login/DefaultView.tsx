@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../redux/store/app.store";
 import Login from "./Login";
 import { useNavigate } from "react-router";
+import { apiService } from "../../services/api.service";
 import DashboardPage from "../dashboard/DashboardPage";
+import OnBoarding from "./../OnBoarding/DefaultView";
 import { Side } from "../../models/Side";
 import "./DefaultView.css";
 
@@ -29,21 +31,37 @@ export default function DefaultView() {
   const [selectedColony, setSelectedColony] = useState<Side | null>(null);
   const userData = useSelector((state: RootState) => state.user);
   const redirect = useSelector((state: RootState) => state.redirect);
-  const userStorage = localStorage.getItem("userAccount");
-
+  const walletAddress = window.ethereum.selectedAddress;
   const navigate = useNavigate();
 
+  let initialPage;
+
+  if(userData.account === null || walletAddress == null) {
+    initialPage = <Login />
+  } else if(walletAddress) {
+
+    const checkOnBoarding = async () => {
+      const onBoarding = await apiService.findOnBoarding(walletAddress);
+
+      if (onBoarding) {
+        //Redirect the user to the onboarding area.
+        navigate("/onboarding");
+      } 
+    }
+    checkOnBoarding();
+    initialPage = <DashboardPage />
+    
+  } else {
+    initialPage = <DashboardPage />
+  }
+        
   const showProfile = () => {
     setShowProfileModal(true);
   };
   
   return (
     <>
-      {userData.account === null && userStorage == null ? (
-        <Login />
-      ) : (
-          <DashboardPage />
-      )}
+      {initialPage}
     </>
   );
 }
