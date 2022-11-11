@@ -46,11 +46,11 @@ export default function DefaultView() {
       if (onBoarding) {
         //Redirect the user to the onboarding area.
         navigate("/onboarding");
-      } 
+      } else {
+        initialPage = <DashboardPage />
+      }
     }
     checkOnBoarding();
-    initialPage = <DashboardPage />
-    
   } else {
     initialPage = <DashboardPage />
   }

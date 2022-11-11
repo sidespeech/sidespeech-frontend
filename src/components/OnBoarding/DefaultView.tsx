@@ -3,8 +3,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../redux/store/app.store";
 import { useNavigate } from "react-router";
-import DashboardPage from "../dashboard/DashboardPage";
-
+import { apiService } from "../../services/api.service";
 import Welcome from "./Steps/Welcome";
 import Bio from "./Steps/Bio";
 import PublicNFTs from "./Steps/PublicNFTs";
@@ -31,18 +30,25 @@ export default function OnBoarding() {
 
   const connectedWallet = window.ethereum.selectedAddress;
 
-
   // Sort out if they refresh issue.
   // localStorage.setItem("currentOnboardingStep", currentStep);
-
   // console.log(localStorage.getItem("currentOnboardingStep"));
 
   const navigate = useNavigate();
 
-  if(connectedWallet == null) {
-    navigate('/');
+  const checkOnBoarding = async () => {
+    if(connectedWallet == null) {
+      navigate('/');
+    } else {
+      const onBoarding = await apiService.findOnBoarding(connectedWallet);
+      if (!onBoarding) {
+        //Redirect the user to the onboarding area.
+        navigate("/");
+      } 
+    }
   }
-  
+  checkOnBoarding();
+
   return (
     <>
       <ul className="steps">
