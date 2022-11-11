@@ -6,6 +6,7 @@ import { User } from "./User";
 export enum Role {
   Admin,
   User,
+  subadmin,
 }
 
 export class Profile {

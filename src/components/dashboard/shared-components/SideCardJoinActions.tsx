@@ -12,6 +12,7 @@ const SideCardJoinActionsStyled = styled.div<SideCardJoinActionsStyledProps>`
     justify-content: space-between;
     gap: 2rem;
     width: 100%;
+    height: 100%;
     .side-actions_eligibility {
         width: 50%;
         & span {
@@ -32,11 +33,12 @@ interface SideCardJoinActionsProps {
     eligible?: boolean;
     joined?: boolean;
     onJoin?: () => void;
+    onNavigate?: () => void;
 };
 
-const SideCardJoinActions = ({ eligible, joined, onJoin }: SideCardJoinActionsProps) => {
+const SideCardJoinActions = ({ eligible, joined, onJoin, onNavigate }: SideCardJoinActionsProps) => {
     return (
-        <SideCardJoinActionsStyled>
+        <SideCardJoinActionsStyled className={`${joined ? 'pointer' : ''}`} onClick={onNavigate}>
             <div className="side-actions_eligibility">
                 {eligible || joined ? (
                     <span>

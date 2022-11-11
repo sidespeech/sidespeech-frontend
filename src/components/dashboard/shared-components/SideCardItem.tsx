@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
 import { Side } from '../../../models/Side';
@@ -123,23 +124,48 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
             }
         }
         .side-actions {
-            display: grid;
-            align-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             height: 50%;
         }
     }
 `;
 
 interface SideCardItemProps {
+    alerts?: any;
+    messages?: any;
     onJoin?: (side: Side) => void;
     side: Side;
+    userProfiles: any[];
     userSides?: boolean
 };
 
-const SideCardItem = ({ onJoin, side, userSides }: SideCardItemProps) => {
+const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides }: SideCardItemProps) => {
+    const navigate = useNavigate();
+
+    const handleNavigate = () => {
+        if (!side.joined) return;
+        navigate(`/${side.id}`)
+    }
+
+    let alertsCount = 0;
+    side.profiles.forEach(profile => {
+        const count = profile?.rooms?.filter(room => !alerts?.[room.id])?.reduce((prevCount, room) => {
+            return prevCount + alerts?.[room.id] || 0;
+        }, 0);
+        alertsCount = count;
+    });
+    
+    const messagesCount = side.channels.filter(channel => !messages?.[channel.id])?.reduce((prevCount, channel) => {
+        return prevCount + alerts?.[channel.id] || 0;
+    }, 0);
+
+    console.log(alertsCount, messagesCount)
+
   return (
     <SideCardItemStyled coverImage={side.coverImage || side.firstCollection?.imageUrl}>
-        <div className="cover-image">
+        <div className={`cover-image ${side.joined ? 'pointer' : ''}`} onClick={handleNavigate}>
             <div className="flex align-center title-wrapper">
                 <div className="avatar">
                     <img src={side.firstCollection?.imageUrl || FALLBACK_BG_IMG} alt={`${side?.name} avatar`} />
@@ -165,16 +191,16 @@ const SideCardItem = ({ onJoin, side, userSides }: SideCardItemProps) => {
             </div>
         </div>
         <div className="side-content">
-            <div className="side-description">
+            <div className={`side-description ${side.joined ? 'pointer' : ''}`} onClick={handleNavigate}>
                 <ClampLines>
                     {side.description}
                 </ClampLines>
             </div>
             <div className="side-actions">
-                {userSides && side.joined ? (
-                    <SideCardUserActions side={side} />
+                {userSides && side.joined && side.eligible ? (
+                    <SideCardUserActions alertsCount={alertsCount} messagesCount={messagesCount} side={side} userProfiles={userProfiles} />
                     ) : (
-                    <SideCardJoinActions eligible={side.eligible} joined={side.joined} onJoin={() => onJoin?.(side)} />
+                    <SideCardJoinActions eligible={side.eligible} onNavigate={handleNavigate} joined={side.joined} onJoin={() => onJoin?.(side)} />
                 )}
             </div>
         </div>

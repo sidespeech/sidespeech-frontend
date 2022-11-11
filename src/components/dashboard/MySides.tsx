@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -14,6 +14,13 @@ import CustomSelect from '../ui-components/CustomSelect';
 import Spinner from '../ui-components/Spinner';
 import SideCardItem from './shared-components/SideCardItem';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg'
+import { searchFiltersProps } from './DashboardPage';
+import PaginationControls from '../ui-components/PaginationControls';
+import { apiService } from '../../services/api.service';
+import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
+import { EventType } from '../../constants/EventType';
+import { Announcement } from '../../models/Announcement';
+import { NotificationType } from '../../models/Notification';
 
 interface MySidesStyledProps {}
 
@@ -82,6 +89,9 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
     grid-gap: 1rem;
     width: 100%;
   }
+  .pagination-controls {
+    margin: 3rem 0 2rem 0;
+  }
 `;
 
 interface MySidesProps {
@@ -98,18 +108,32 @@ const paginationInitialState = {
   pageSize: 9
 };
 
+const searchFiltersInitialState = {
+  collections: 'all',
+  elegibility: 'all',
+  selectedCollection: '',
+  verifiedCollections: false
+}
+
+
 const MySides = ({ collections }: MySidesProps) => {
-  const [isOnlyVerifiedCollectionsChecked, setIsOnlyVerifiedCollectionsChecked] = useState<boolean>(false);
+  const [alertsBySide, setAlertsBySide] = useState<any>({});
+  const [messagesBySide, setMessagesBySide] = useState<any>({});
   const [sidesLoading, setSidesLoading] = useState<boolean>(false);
   const [sidesList, setSidesList] = useState<Side[]>([]);
   const [filteredSides, setFilteredSides] = useState<Side[]>([]);
-  const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
+  // const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
   const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
-  const [selectedSide, setSelectedSide] = useState<Side | null>(null);
+  const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
+  // const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
-  const { sides, userCollectionsData } = useSelector(
+  const { sides, user, userCollectionsData } = useSelector(
     (state: RootState) => state.user
 );
+
+useEffect(() => {
+  setSearchFilters(searchFiltersInitialState)
+}, []);
 
 useEffect(() => {
   async function getSearchSides() {
@@ -128,28 +152,88 @@ useEffect(() => {
 }, [sides, userCollectionsData]);
 
 useEffect(() => {
-  const parsedArray = filteredSides;
+  let parsedArray = searchFilters.verifiedCollections ? 
+    filteredSides.filter(side => side.firstCollection?.safelistRequestStatus === 'verified') : filteredSides;
+  if (searchFilters.collections?.split(',')?.length && searchFilters.collections?.split(',')[0] !== 'all') {
+    parsedArray = parsedArray.filter(side => Object.keys(side.conditions).includes(searchFilters.collections?.split?.(',')?.[0] || ''))
+  }
   const { array } = paginateArray({array: parsedArray, currentPage: pagination.currentPage, pageSize: pagination.pageSize});
   setSidesList(array);
-}, [filteredSides, pagination]);
+}, [filteredSides, pagination, searchFilters]);
 
-const handleEligibilityCheck = (side: Side) => {
-    setSelectedSide(side);
-    setDisplayEligibility(true);
-};
+const getAndSetRoomNotifications = useCallback(async (account: string) => {
+  try {
+    const notifications = await apiService.getNotification(account);
+    let alertsBySideCopy:any = {...alertsBySide}
+    let messagesBySideCopy:any = {...messagesBySide}
+    for (let notification of notifications) {
+      if (notification['type'] === NotificationType.Channel) {
+        if (notification['name'] in alertsBySideCopy) alertsBySideCopy[notification.name] += 1;
+        else alertsBySideCopy[notification.name] = 1;
+      } else {
+        if (notification['name'] in messagesBySideCopy) messagesBySideCopy[notification.name] += 1;
+        else messagesBySideCopy[notification.name] = 1;
+      }
+    }
+    if (JSON.stringify(messagesBySideCopy) !== JSON.stringify(messagesBySide)) setMessagesBySide(messagesBySideCopy);
+    if (JSON.stringify(alertsBySideCopy) !== JSON.stringify(alertsBySide)) setAlertsBySide(alertsBySideCopy);
+  } catch (error) {
+    console.error(error)     
+  }
+}, []);
+
+useEffect(() => {
+  const account = localStorage.getItem("userAccount");
+  if (account) getAndSetRoomNotifications(account)
+}, []);
+
+const handleReceiveAnnouncement = useCallback(({ detail }: { detail: Announcement }) => {
+  const account = localStorage.getItem("userAccount");
+  console.log(detail);
+  if (detail && account) getAndSetRoomNotifications(account);
+}, []);
+
+const handleReceiveMessage = useCallback(async ({ detail }: {detail: any}) => {
+  const account = localStorage.getItem("userAccount");
+  console.log(detail);
+  if (detail && account) getAndSetRoomNotifications(account);
+}, []);
+
+useEffect(() => {
+  subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
+  return () => {
+    unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
+  };
+}, [handleReceiveAnnouncement]);
+
+useEffect(() => {
+  subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
+  return () => {
+    unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
+  };
+}, [handleReceiveMessage]);
+
+// const handleEligibilityCheck = (side: Side) => {
+  //     setSelectedSide(side);
+  //     setDisplayEligibility(true);
+  // };
 
   return (
     <MySidesStyled>
-      <h2 className="title">My sides ({sidesList.length})</h2>
+      <h2 className="title">My sides ({filteredSides.length})</h2>
 
       <div className="my-sides-toolbar">
         <div className="collection-select">
           <label>Collection</label>
           <CustomSelect 
-            onChange={()=> {}}
-            options={['All', ...collections.map(collection => collection.opensea?.collectionName)]}
+            onChange={(ev: any) => setSearchFilters(prevState => ({
+              ...prevState,
+              collections: ev.target.value,
+              selectedCollection: ''
+          }))}
+            options={['All', ...collections.map(collection => collection.name)]}
             placeholder="Select a collection"
-            valueToSet={''}
+            valueToSet={searchFilters.collections?.split(',')[0] || ''}
             values={['all', ...collections.map(collection => collection.address)]}
             width="70%"
           />
@@ -157,9 +241,12 @@ const handleEligibilityCheck = (side: Side) => {
 
         <div className="verified-checkbox">
           <CustomCheckbox 
-            isChecked={isOnlyVerifiedCollectionsChecked}
+            isChecked={searchFilters.verifiedCollections}
             label='Only with verified collections' 
-            onClick={() => setIsOnlyVerifiedCollectionsChecked(!isOnlyVerifiedCollectionsChecked)} 
+            onClick={(ev: any) => setSearchFilters(prevState => ({
+                ...prevState,
+                verifiedCollections: ev.target.checked
+            }))}
           />
         </div>
       </div>
@@ -171,9 +258,7 @@ const handleEligibilityCheck = (side: Side) => {
         ) : !!sidesList?.length ? (
             <div className="list-wrapper">
               {sidesList.map(side => (
-                <Link key={side.id} to={`/${side.id}`}>
-                  <SideCardItem side={side} userSides />
-                </Link>
+                <SideCardItem key={side.id} alerts={alertsBySide} messages={messagesBySide} side={side} userProfiles={user?.profiles || []} userSides />
               ))}
             </div>
           ) : (
@@ -195,6 +280,18 @@ const handleEligibilityCheck = (side: Side) => {
               </div>
             )
       }
+
+            <PaginationControls 
+                className="pagination-controls" 
+                currentPage={pagination.currentPage}
+                onChangePage={(page: number) => {
+                    setPagination(prevState => ({
+                        ...prevState,
+                        currentPage: page
+                    }))}
+                } 
+                totalPages={paginateArray({array: filteredSides, currentPage: pagination.currentPage, pageSize: pagination.pageSize}).pages}
+            />
     </MySidesStyled>
   )
 }

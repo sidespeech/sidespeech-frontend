@@ -123,7 +123,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
     const [selectedSide, setSelectedSide] = useState<Side | null>(null);
     const [totalResults, setTotalResults] = useState<number>(0);
 
-    const { sides, userCollectionsData } = useSelector(
+    const { sides, user, userCollectionsData } = useSelector(
         (state: RootState) => state.user
     );
 
@@ -228,22 +228,13 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
         </div>
         ) : !!sidesList?.length ? (
             <div className="list-wrapper">
-              {sidesList.map(side => (
-                    <React.Fragment key={side.id}>
-                        {side.joined ? (
-                            <Link to={`/${side.id}`}>
-                                <SideCardItem
-                                    onJoin={handleEligibilityCheck}
-                                    side={side} 
-                                />
-                            </Link>
-                        ) : (
-                            <SideCardItem
-                                onJoin={handleEligibilityCheck}
-                                side={side} 
-                            />
-                        )}
-                    </React.Fragment>
+              {sidesList.map(side => (                        
+                <SideCardItem
+                    key={side.id}
+                    onJoin={handleEligibilityCheck}
+                    side={side} 
+                    userProfiles={user?.profiles || []}
+                />
               ))}
             </div>
           ) : (

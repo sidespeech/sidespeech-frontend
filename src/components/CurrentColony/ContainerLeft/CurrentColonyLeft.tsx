@@ -18,6 +18,8 @@ import { subscribeToEvent, unSubscribeToEvent } from "../../../helpers/CustomEve
 import { EventType } from "../../../constants/EventType";
 import { Announcement } from "../../../models/Announcement";
 import { addRoomToProfile } from "../../../redux/Slices/UserDataSlice";
+import { toast } from "react-toastify";
+import { getRandomId } from "../../../helpers/utilities";
 
 const CoverImg = styled.img`
   height: 130px;
@@ -71,6 +73,7 @@ export default function CurrentColonyLeft() {
   };
 
   const handleSelectedUser = async (profile: Profile, currentProfile:Profile) => {
+    try {
     // set selected user
     setSelectedUser(profile);
     // getting account
@@ -81,15 +84,19 @@ export default function CurrentColonyLeft() {
     // if room not exist in profile
     if (!room) {
       // creating the room
-      room = await apiService.createRoom(currentProfile.id, profile.id);
-      // add this room in the user websocket
-      websocketService.addRoomToUsers(room.id, [currentProfile.id, profile.id]);
-      // add the room to profile
-      dispatch(addRoomToProfile(room));
+        room = await apiService.createRoom(currentProfile.id, profile.id);
+        // add this room in the user websocket
+        websocketService.addRoomToUsers(room.id, [currentProfile.id, profile.id]);
+        // add the room to profile
+        dispatch(addRoomToProfile(room));
+      }
+      // selecting the room
+      dispatch(setSelectedRoom(room));
+      dispatch(setSelectedChannel(null));
+    } catch (error) {
+      console.error(error);
+      toast.error('There has been an error opening the room', {toastId: getRandomId()})
     }
-    // selecting the room
-    dispatch(setSelectedRoom(room));
-    dispatch(setSelectedChannel(null));
   };
 
   const handleDisplayColonySettings = () => {

@@ -96,7 +96,7 @@ const initialStateSide = {
   description: "",
   NftTokenAddress: "",
   conditions: {},
-  creatorAddress: window.ethereum.selectedAddress,
+  creatorAddress: window.ethereum?.selectedAddress,
 };
 
 // Data to add collection in condition

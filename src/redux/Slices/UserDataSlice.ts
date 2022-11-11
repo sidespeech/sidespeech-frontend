@@ -143,6 +143,9 @@ export const userDataSlice = createSlice({
     addColony: (state: UserData, action: PayloadAction<any>) => {
       state.sides = [...state.sides, action.payload];
     },
+    removeSide: (state: UserData, action: PayloadAction<any>) => {
+      state.sides = state.sides.filter(side => side.id !== action.payload);
+    },
     setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
       const userprofiles = state.user?.profiles;
       if (state.user && userprofiles) {
@@ -195,6 +198,7 @@ export const {
   disconnect,
   updateUser,
   addColony,
+  removeSide,
   setCurrentProfile,
   updateCurrentProfile,
   addRoomToProfile,
