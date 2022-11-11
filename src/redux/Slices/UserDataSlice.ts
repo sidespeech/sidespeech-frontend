@@ -13,6 +13,7 @@ import alchemyService from "../../services/alchemy.service";
 import { sideAPI } from "../../services/side.service";
 import { RootState } from "../store/app.store";
 import { apiService } from "../../services/api.service";
+import { Metadata } from "../../models/Metadata";
 
 export interface UserData {
   user: User | null;
@@ -50,6 +51,32 @@ export const flattenChannels = (array: any, key: string) => {
   }, []);
 };
 
+export const filterMetadata = (collection: Collection) => {
+  console.log(`collection :`, collection);
+
+  const allMetadata = collection.nfts.reduce(function (prev: any, current: any) {
+    console.log('current :', current)
+    console.log("Array.isArray(current['metadata']['attributes']) :", Array.isArray(current['metadata']['attributes']))
+    if (Array.isArray(current['metadata']['attributes'])) {
+      let metadata = current['metadata']['attributes'].map((attribute: any) => {
+        let object: Metadata = { address: current['token_address'], traitProperty: attribute['trait_type'], traitValue: attribute['value'] }
+        if (!prev.includes(object)) return object
+      })
+
+      prev = prev.concat(metadata)
+    }
+    return prev
+  }, []);
+
+  console.log('allMetadata result :', allMetadata)
+  return allMetadata
+
+};
+
+function uniqByFilter<T>(array: T[]) {
+  return array.filter((value, index) => array.indexOf(value) === index);
+}
+
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string, { dispatch, getState }) => {
@@ -60,6 +87,7 @@ export const fetchUserDatas = createAsyncThunk(
       "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
     );
     await apiService.savedCollections(collections);
+
     let res: any = {};
     for (let nft of nfts) {
       const address = nft["token_address"];
@@ -73,6 +101,20 @@ export const fetchUserDatas = createAsyncThunk(
         res[address].nfts.push(nft);
       }
     }
+
+
+    // TEST
+    let allMetadata: Metadata[] = [];
+    for (let i = 0; i < collections.length; i++) {
+      allMetadata = allMetadata.concat(filterMetadata(collections[i]));
+    }
+
+    console.log('allMetadata finished :', allMetadata)
+
+    await apiService.savedMetadata(allMetadata);
+
+    // TEST
+
     dispatch(updateSidesByUserCollections(res));
     return res;
   }
@@ -107,9 +149,9 @@ export const userDataSlice = createSlice({
       let rooms = flattenChannels(state.user?.profiles, "rooms");
       state.sides = action.payload.user.profiles
         ? action.payload.user.profiles.map((p: Profile) => {
-            p.side["profiles"] = [p];
-            return p.side;
-          })
+          p.side["profiles"] = [p];
+          return p.side;
+        })
         : [];
       state.redirectTo = action.payload.redirectTo;
       rooms = rooms?.concat(flattenChannels(state.sides, "channels"));

@@ -18,6 +18,7 @@ import { InitialStateUser } from "../components/GeneralSettings/Account/UserGene
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
 import _ from "lodash";
+import { Metadata } from "../models/Metadata";
 
 // Create an API Service class
 class apiService {
@@ -331,12 +332,19 @@ class apiService {
     return res.body;
   } 
   static async savedCollections(collections: Collection[]) {
+    console.log('collections :', collections)
     const copy = _.cloneDeep(collections);
     const data = copy.map((c: any) => {
       c.opensea = JSON.stringify(c.opensea);
       return c;
     });
     const res = await superagent.post(`${BASE_URL}/collection/many`).send({collections: data});
+    return res;
+  }
+
+  static async savedMetadata(metadata: Metadata[]) {
+    console.log('metadata :', metadata)
+    const res = await superagent.post(`${BASE_URL}/metadata/many`).send({metadata: metadata});
     return res;
   }
 
