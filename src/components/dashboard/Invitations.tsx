@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Invitation } from '../../models/Invitation';
+import { Invitation, State } from '../../models/Invitation';
 import { User } from '../../models/User';
 import { RootState } from '../../redux/store/app.store';
 import { apiService } from '../../services/api.service';
@@ -56,7 +56,7 @@ const Invitations = ({ }: InvitationsProps) => {
 
   const onDecline = async (invitation: Invitation, index: number) => {
     setIsLoading(true);
-    await apiService.updateInvitationState(invitation['id']!, 2);
+    await apiService.updateInvitationState(invitation['id']!, State.Declined);
     if (userData && userData['user']) await getInvitations(userData['user']);
     setIsLoading(false);
     window.location.reload();

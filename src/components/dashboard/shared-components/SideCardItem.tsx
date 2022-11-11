@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
 import { Side } from '../../../models/Side';
+import SideEligibilityModal from '../../Modals/SideEligibilityModal';
 import ClampLines from '../../ui-components/ClampLines';
 import SideCardJoinActions from './SideCardJoinActions';
 import SideCardUserActions from './SideCardUserActions';
@@ -139,49 +140,49 @@ interface SideCardItemProps {
 };
 
 const SideCardItem = ({ eligible, joined, onJoin, side, userSides }: SideCardItemProps) => {
-  return (
-    <SideCardItemStyled coverImage={side.coverImage || side.firstCollection?.imageUrl}>
-        <div className="cover-image">
-            <div className="flex align-center title-wrapper">
-                <div className="avatar">
-                    <img src={side.firstCollection?.imageUrl || FALLBACK_BG_IMG} alt={`${side?.name} avatar`} />
-                </div>
-                <div className="f-column">
-                    <h3 className="title">{side?.name || "{No Name}"}</h3>
-                    {side.collectionsCount > 0 && (
-                        <div className="collections">
-                            <span className="collection">
-                                <span>
-                                    {side.firstCollection?.collectionName}
-                                </span>
-                                {side.firstCollection?.safelistRequestStatus === 'verified' && (
-                                    <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M5.87273 16L4.40455 13.5619L1.62273 12.9524L1.89318 10.1333L0 8L1.89318 5.86667L1.62273 3.04762L4.40455 2.4381L5.87273 0L8.5 1.10476L11.1273 0L12.5955 2.4381L15.3773 3.04762L15.1068 5.86667L17 8L15.1068 10.1333L15.3773 12.9524L12.5955 13.5619L11.1273 16L8.5 14.8952L5.87273 16ZM7.68864 10.7048L12.0545 6.4L10.9727 5.29524L7.68864 8.53333L6.02727 6.93333L4.94545 8L7.68864 10.7048Z" />
-                                    </svg>
-                                )}
-                            </span>
-                            {side.collectionsCount > 1 && <span className="more-collections">+{side.collectionsCount - 1}</span>}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-        <div className="side-content">
-            <div className="side-description">
-                <ClampLines>
-                    {side.description}
-                </ClampLines>
-            </div>
-            <div className="side-actions">
-                {userSides ? (
-                    <SideCardUserActions />
-                    ) : (
-                    <SideCardJoinActions eligible={eligible} joined={joined} onJoin={() => onJoin?.(side)} />
-                )}
-            </div>
-        </div>
-    </SideCardItemStyled>
-  )
-}
+    return (
+      <SideCardItemStyled coverImage={side.coverImage || side.firstCollection?.imageUrl}>
+          <div className="cover-image">
+              <div className="flex align-center title-wrapper">
+                  <div className="avatar">
+                      <img src={side.firstCollection?.imageUrl || FALLBACK_BG_IMG} alt={`${side?.name} avatar`} />
+                  </div>
+                  <div className="f-column">
+                      <h3 className="title">{side?.name || "{No Name}"}</h3>
+                      {side.collectionsCount > 0 && (
+                          <div className="collections">
+                              <span className="collection">
+                                  <span>
+                                      {side.firstCollection?.collectionName}
+                                  </span>
+                                  {side.firstCollection?.safelistRequestStatus === 'verified' && (
+                                      <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M5.87273 16L4.40455 13.5619L1.62273 12.9524L1.89318 10.1333L0 8L1.89318 5.86667L1.62273 3.04762L4.40455 2.4381L5.87273 0L8.5 1.10476L11.1273 0L12.5955 2.4381L15.3773 3.04762L15.1068 5.86667L17 8L15.1068 10.1333L15.3773 12.9524L12.5955 13.5619L11.1273 16L8.5 14.8952L5.87273 16ZM7.68864 10.7048L12.0545 6.4L10.9727 5.29524L7.68864 8.53333L6.02727 6.93333L4.94545 8L7.68864 10.7048Z" />
+                                      </svg>
+                                  )}
+                              </span>
+                              {side.collectionsCount > 1 && <span className="more-collections">+{side.collectionsCount - 1}</span>}
+                          </div>
+                      )}
+                  </div>
+              </div>
+          </div>
+          <div className="side-content">
+              <div className="side-description">
+                  <ClampLines>
+                      {side.description}
+                  </ClampLines>
+              </div>
+              <div className="side-actions">
+                  {userSides ? (
+                      <SideCardUserActions />
+                      ) : (
+                      <SideCardJoinActions eligible={eligible} joined={joined} priv={side['private']} onJoin={() => onJoin?.(side)} />
+                  )}
+              </div>
+          </div>
+      </SideCardItemStyled>
+    )
+  }
 
 export default SideCardItem

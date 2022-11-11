@@ -103,7 +103,6 @@ export default function Account({
         [selectedNft.token_address]: [selectedNft],
       });
     }
-    console.log(selectedNft)
     setFormData({...formData, profilePicture: selectedNft });
   };
 
@@ -157,7 +156,9 @@ export default function Account({
             </label>
           </div>
         </div>
+        <div className="mt-5">
         <Eligibility side={currentSide} />
+        </div>
       </div>
       <div className="flex-1">
         {displayNftsCollection &&

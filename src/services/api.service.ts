@@ -298,6 +298,12 @@ class apiService {
     return res.body;
   } 
 
+  static async sendRequestPrivateSide(data:any): Promise<any> {
+    console.log('data :', data)
+    const res = await superagent.post(`${BASE_URL}/invitation/request`).send(data);
+    return res.body;
+  } 
+
   static async getRequestsFromInvitations(userId:string, sideId:string): Promise<any> {
     const res = await superagent.get(`${BASE_URL}/invitation/${sideId}/${userId}`);
     return res.body;
@@ -313,9 +319,14 @@ class apiService {
     const res = await superagent.get(`${BASE_URL}/invitation/pending/recipient/${id}`);
     return res.body;
   } 
-
+ 
   static async acceptInvitation(invitation:any): Promise<any> {
     const res = await superagent.post(`${BASE_URL}/invitation/accepted`).send(invitation);
+    return res.body;
+  } 
+
+  static async acceptRequest(invitation:any): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/invitation/request/accepted`).send(invitation);
     return res.body;
   } 
 
