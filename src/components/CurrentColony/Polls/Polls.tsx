@@ -129,9 +129,9 @@ export default function Polls() {
         const checkUserVoted = poll.votes.some((v) => v.user == walletAddress);
 
         console.log('The poll votes object is: ', poll.votes);
-        console.log('The userId is: ', poll.votes[0].user);
+       // console.log('The userId is: ', poll.votes[0].user);
         console.log('The wallet address is: ', walletAddress);
-        //console.log(checkUserVoted);
+        console.log(checkUserVoted);
 
         return (
           <div className="w-100 poll-item" key={poll.id}>
@@ -157,7 +157,7 @@ export default function Polls() {
                   question={poll.question}
                   results= {thePollOptions}
                   theme={customTheme}
-                  isVoted={true}
+                  isVoted={checkUserVoted}
                   onVote={(callbackData: any) => handleVote(callbackData, poll.id)}
                 />
               }
