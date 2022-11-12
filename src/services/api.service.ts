@@ -14,10 +14,10 @@ import { Side } from "../models/Side";
 import { User } from "../models/User";
 import { Notification } from "../models/Notification";
 import { Poll } from "../models/Poll";
-import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
 import _ from "lodash";
+import { InitialStateUser } from "../components/GeneralSettings/Account/Account";
 
 // Create an API Service class
 class apiService {
@@ -94,7 +94,7 @@ class apiService {
     const res = await superagent
       .patch(`${BASE_URL}/user/${id}`)
       .send(updatedInfo);
-    return res["body"];
+    return new User(res["body"]);
   }
   static async updateUserPublicNfts(
     id: string,

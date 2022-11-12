@@ -95,11 +95,13 @@
     border: 2px solid var(--green);
     border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 .my-nfts .nftCollection .the-nft.selected-2 .inner {
     border: 2px solid var(--primary);
     border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 .my-nfts .nftCollection .the-nft.selected .inner .status{
     position: absolute;

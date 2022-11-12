@@ -16,7 +16,12 @@ import copyIcon from "./../../../assets/copy-icon.svg";
 import closeWalletIcon from "./../../../assets/close-wallet.svg";
 // other
 import { toast } from "react-toastify";
-import { fixURL, reduceWalletAddress } from "../../../helpers/utilities";
+import {
+  fixURL,
+  reduceWalletAddress,
+  validateBio,
+  validateUsername,
+} from "../../../helpers/utilities";
 import Eligibility from "../../CurrentColony/settings/eligibility/eligibility";
 import styled from "styled-components";
 import { NFT } from "../../../models/interfaces/nft";
@@ -24,13 +29,7 @@ import { RootState } from "../../../redux/store/app.store";
 import { Side } from "../../../models/Side";
 import { Profile } from "../../../models/Profile";
 import Avatar from "./Avatar";
-
-export interface InitialStateUser {
-  username: string;
-  bio: string;
-  profilePicture: NFT | undefined;
-  showNfts: boolean;
-}
+import { InitialStateUser } from "./Account";
 interface InitialErrorState {
   username: boolean;
   bio: boolean;
@@ -40,27 +39,22 @@ const initialStateError = {
   username: true,
   bio: true,
 };
-const initialStateUser = {
-  username: "",
-  bio: "",
-  showNfts: false,
-  profilePicture: undefined,
-};
 
 interface IUserGeneralInformationsProps {
   user?: User;
   currentSide?: Side;
-  currentProfile?: Profile;
   userCollectionsData?: any;
+  formData: InitialStateUser;
+  setFormData: any;
 }
 
 export default function UserGeneralInformations({
   user,
   currentSide,
-  currentProfile,
   userCollectionsData,
+  formData,
+  setFormData,
 }: IUserGeneralInformationsProps) {
-  const [formData, setFormData] = useState<InitialStateUser>(initialStateUser);
   const [errorData, setErrorData] =
     useState<InitialErrorState>(initialStateError);
   const [displayNftsCollection, setDisplayNftsCollection] =
@@ -68,7 +62,8 @@ export default function UserGeneralInformations({
   const [checkedNfts, setCheckedNfts] = useState<{
     [key: string]: NFT[];
   } | null>(null);
-  const [profilePicture, setProfilePicture] = useState<NFT | undefined>(
+
+  const [collectionName, setCollectionName] = useState<string | undefined>(
     undefined
   );
 
@@ -78,102 +73,46 @@ export default function UserGeneralInformations({
   const walletAddress = window.ethereum.selectedAddress;
 
   useEffect(() => {
-    if (user)
-      setFormData({ ...formData, bio: user.bio, username: user.username });
-  }, [user]);
-
-  useEffect(() => {
-    if (currentProfile) {
-      setCheckedNfts({
-        ...checkedNfts,
-        [currentProfile.profilePicture.token_address]: [
-          currentProfile.profilePicture,
-        ],
-      });
-      if (currentProfile.profilePicture.metadata) {
-        setProfilePicture(currentProfile.profilePicture);
-      }
+    if (formData.userAvatar) {
+      setCollectionName(
+        userCollectionsData[formData.userAvatar.token_address]?.name
+      );
     }
-  }, [currentProfile]);
+  }, [formData]);
 
   //#region Form handlers
 
   const onChangeUsername = (event: any) => {
     const username = event.target.value;
-    validateUsername(username);
+    const isValid = validateUsername(username);
+    setErrorData({ ...errorData, username: isValid });
+
     setFormData({ ...formData, username: username });
   };
+
   const onChangeBio = (event: any) => {
     const bio = event.target.value;
-    validateBio(bio);
+    const validLength = validateBio(bio);
+    setErrorData({ ...errorData, bio: validLength });
     setFormData({ ...formData, bio: bio });
   };
+
   const handleCopyWalletAddress = () => {
     navigator.clipboard.writeText(walletAddress);
     toast.success("Address copied successfuly.", { toastId: 1 });
   };
+
   const logout = () => {
     dispatch(disconnect());
     localStorage.clear();
     navigate("/");
   };
-  //#endregion
-
-  //#region Submit functions
-
-  const onSubmit = async () => {
-    if (!user) return;
-    if (!validateForm()) {
-      return toast.error("Form data are invalid", { toastId: 7 });
-    }
-    try {
-      await apiService.updateUser(user.id, formData);
-      dispatch(updateUser({ ...formData }));
-      toast.success(formData.username + " has been updated.", {
-        toastId: 4,
-      });
-    } catch (error) {
-      toast.error("There has been an issue updating your account.", {
-        toastId: 3,
-      });
-      console.log(error);
-    }
-  };
-  //#endregion
-
-  //#region Form validation
-
-  const validateForm = () => {
-    return validateUsername(formData.username) && validateBio(formData.bio);
-  };
-
-  const validateUsername = (username: string) => {
-    const re = new RegExp("^[a-zA-Z0-9]*$");
-    const isValid = re.test(username);
-    setErrorData({ ...errorData, username: isValid });
-    return isValid;
-  };
-
-  const validateBio = (bio: string) => {
-    const length = bio.length;
-    const validLength = length <= 500;
-    setErrorData({ ...errorData, bio: validLength });
-    return validLength;
-  };
-  //#endregion
 
   const renderAvatar = () => {
     return (
       <>
-        {profilePicture && (
-          <Avatar
-            nft={profilePicture}
-            collectionName={
-              userCollectionsData[profilePicture.token_address].name
-            }
-          />
-        )}
-        {!displayNftsCollection && (
+        <Avatar nft={formData.userAvatar} collectionName={collectionName} />
+        {!displayNftsCollection && !user && (
           <div className="f-column align-center justify-center ml-3">
             <label htmlFor={"input-profile-picture"}>
               <Button
@@ -184,7 +123,6 @@ export default function UserGeneralInformations({
                 background={"var(--bg-secondary-light)"}
                 color={"var(--text-primary-light)"}
               >
-                {" "}
                 Select an NFT
               </Button>
             </label>
@@ -273,24 +211,13 @@ export default function UserGeneralInformations({
 
   const renderLeave = () => {
     return (
-      <div onClick={undefined} className="text-red mt-4">
-        Leave the side
-      </div>
-    );
-  };
-
-  const SubmitButton = () => {
-    return (
-      <Button
-        classes={"mt-3"}
-        width={121}
-        height={44}
-        onClick={onSubmit}
-        radius={10}
-        color={"var(--text-primary-light)"}
-      >
-        Save{" "}
-      </Button>
+      <>
+        {currentSide && (
+          <div onClick={undefined} className="text-red mt-4">
+            Leave the side
+          </div>
+        )}
+      </>
     );
   };
 
@@ -308,9 +235,6 @@ export default function UserGeneralInformations({
       {/* Wallet Section */}
       {renderConnectedWallet()}
       {renderLeave()}
-
-      {/* Submit Button */}
-      <SubmitButton />
     </div>
   );
 }

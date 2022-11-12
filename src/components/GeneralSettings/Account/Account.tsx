@@ -12,104 +12,157 @@ import UserGeneralInformations from "./UserGeneralInformations";
 import { NFT } from "../../../models/interfaces/nft";
 import _ from "lodash";
 import { Collection } from "../../../models/interfaces/collection";
-import { updateCurrentProfile } from "../../../redux/Slices/UserDataSlice";
+import {
+  updateCurrentProfile,
+  updateUser,
+} from "../../../redux/Slices/UserDataSlice";
 import { toast } from "react-toastify";
 import { apiService } from "../../../services/api.service";
+import Button from "../../ui-components/Button";
+
+export interface InitialStateUser {
+  username?: string;
+  bio?: string;
+  userAvatar: NFT | null;
+  showNfts?: boolean;
+  publicNfts: NFT[] | null;
+}
+const initialStateUser = {
+  username: "",
+  bio: "",
+  showNfts: false,
+  userAvatar: null,
+  publicNfts: null,
+};
 
 export default function GeneralSettingsAccount() {
   const { user, userCollectionsData } = useSelector(
     (state: RootState) => state.user
   );
-
-  const [checkedNfts, setCheckedNfts] = useState<{
-    [key: string]: NFT[];
-  } | null>(null);
-
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [formData, setFormData] = useState<InitialStateUser>(initialStateUser);
+
   const [displayNftsCollection, setDisplayNftsCollection] =
     useState<boolean>(false);
-    const [selectedAvatar, setSelectedAvatar] = useState<NFT | null>(null)
+  const [selectedAvatar, setSelectedAvatar] = useState<NFT | null>(null);
 
   const { currentProfile } = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (userCollectionsData && user) {
-      const collections = Object.keys(userCollectionsData);
-      const initCheckedState: any = {};
-      collections.forEach((key) => {
-        const nfts =
-          user.publicNfts?.filter((nft) => nft.token_address === key) || [];
-        initCheckedState[key] = [...nfts];
-      });
-      setCheckedNfts(initCheckedState);
+      const collections = Object.values(userCollectionsData);
+      if (user.publicNfts) {
+        setFormData({
+          ...formData,
+          publicNfts: user.publicNfts,
+          bio: user.bio,
+          userAvatar: user.userAvatar,
+          username: user.username,
+        });
+      }
       setCollections(Object.values(userCollectionsData));
+      setSelectedAvatar(user.userAvatar);
     }
   }, [userCollectionsData, user]);
-  
+
   const handleNftChange = (selectedNft: NFT) => {
+    const checkedNfts = formData.publicNfts;
+    if (
+      selectedAvatar?.token_address === selectedNft.token_address &&
+      selectedAvatar?.token_id === selectedNft.token_id
+    )
+      return;
     if (!checkedNfts) return;
-    const index = checkedNfts[selectedNft.token_address].findIndex(
+    const index = checkedNfts.findIndex(
       (nft) =>
         nft.token_address === selectedNft.token_address &&
         nft.token_id === selectedNft.token_id
     );
     if (index !== -1) {
-      const tmp = [...checkedNfts[selectedNft.token_address]];
+      const tmp = [...checkedNfts];
       tmp.splice(index, 1);
-      setCheckedNfts({ ...checkedNfts, [selectedNft.token_address]: tmp });
+      const nfts = [...tmp];
+      setFormData({ ...formData, publicNfts: nfts });
     } else {
-      const tmp = checkedNfts[selectedNft.token_address];
-      setCheckedNfts({
-        ...checkedNfts,
-        [selectedNft.token_address]: [...tmp, selectedNft],
+      const nfts = [...checkedNfts, selectedNft];
+      setFormData({ ...formData, publicNfts: nfts });
+    }
+  };
+
+  const handleSelectAll = (nfts: NFT[], isAllSelected: boolean) => {
+    const publicNfts = formData.publicNfts;
+    if (!publicNfts) return;
+    const address = nfts[0].token_address;
+    if (isAllSelected) {
+      const tmp = publicNfts.filter((nft) => nft.token_address !== address);
+      setFormData({
+        ...formData,
+        publicNfts: [...tmp],
+      });
+    } else {
+      const values = publicNfts;
+      const array = _.union(values, nfts);
+      setFormData({
+        ...formData,
+        publicNfts: [...array],
       });
     }
   };
 
-  const handleSelectAll = (nfts: NFT[]) => {
-    if (!checkedNfts) return;
-    const values = checkedNfts[nfts[0].token_address];
-    const array = _.union(values, nfts);
-    setCheckedNfts({ ...checkedNfts, [nfts[0].token_address]: [...array] });
-  };
-
-  const saveNftsProfilePicture = async () => {
-    if (currentProfile && checkedNfts) {
-      try {
-        const profile = await apiService.updateProfilePicture(
-          currentProfile?.id,
-          Object.values(checkedNfts)[0][0]
-        );
-        dispatch(updateCurrentProfile(profile));
-        toast.success("Profile Nft saved");
-        setDisplayNftsCollection(false);
-      } catch (error) {
-        toast.error("error saving your profile picture");
-        setDisplayNftsCollection(false);
-      }
+  const onSubmit = async () => {
+    if (!user) return;
+    try {
+      const updatedUser = await apiService.updateUser(user.id, formData);
+      dispatch(updateUser(updatedUser));
+      toast.success(updatedUser.username + " has been updated.", {
+        toastId: 4,
+      });
+    } catch (error) {
+      toast.error("There has been an issue updating your account.", {
+        toastId: 3,
+      });
     }
   };
 
   return (
     <>
       {userCollectionsData && user && (
-        <div className="account">
-          <UserGeneralInformations user={user} />
-
-          {checkedNfts && collections.length > 0 && (
-            <NftsCollections
-              selectedNfts={checkedNfts}
-              collections={collections}
+        <>
+          <div className="account">
+            <UserGeneralInformations
               user={user}
-              handleNftChange={handleNftChange}
-              handleSelectAll={handleSelectAll}
-              saveNftsProfilePicture={saveNftsProfilePicture}
-              setSelectedAvatar={setSelectedAvatar}
-              selectedAvatar={selectedAvatar}
+              userCollectionsData={userCollectionsData}
+              formData={formData}
+              setFormData={setFormData}
             />
-          )}
-        </div>
+
+            {formData.publicNfts && collections.length > 0 && (
+              <NftsCollections
+                selectedNfts={formData.publicNfts}
+                collections={collections}
+                handleNftChange={handleNftChange}
+                handleSelectAll={handleSelectAll}
+                setSelectedAvatar={(data: NFT) =>
+                  setFormData({ ...formData, userAvatar: data })
+                }
+                selectedAvatar={selectedAvatar}
+              />
+            )}
+          </div>
+          <div className="submitArea">
+            <Button
+              classes={"mb-3"}
+              width={164}
+              height={44}
+              radius={10}
+              color={"var(--text-primary-light)"}
+              onClick={onSubmit}
+            >
+              Save
+            </Button>
+          </div>
+        </>
       )}
     </>
   );

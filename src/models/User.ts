@@ -11,6 +11,7 @@ export class User {
   profiles: Profile[];
   token: string;
   invitations: any[];
+  userAvatar: NFT | null;
 
   constructor(_data: any) {
     this.id = _data.id;
@@ -24,5 +25,6 @@ export class User {
     this.token = _data.token;
     this.invitations = _data.invitations;
     this.ownedNfts = _data.ownedNfts ? JSON.parse(_data.ownedNfts) : [];
+    this.userAvatar = _data.userAvatar ? JSON.parse(_data.userAvatar) : null;
   }
 }

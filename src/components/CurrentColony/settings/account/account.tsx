@@ -228,7 +228,7 @@ export default function Account({
           Leave the side
         </div>
       </div>
-      {displayNftsCollection &&
+      {/* {displayNftsCollection &&
         checkedNfts &&
         userData.userCollectionsData &&
         userData.user && (
@@ -236,11 +236,9 @@ export default function Account({
             selectedNfts={checkedNfts}
             handleNftChange={handleNftChange}
             collections={Object.values(userData.userCollectionsData)}
-            user={userData.user}
             profile={currentProfile}
-            saveNftsProfilePicture={saveNftsProfilePicture}
           />
-        )}
+        )} */}
     </div>
   );
 }

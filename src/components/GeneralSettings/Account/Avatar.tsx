@@ -34,19 +34,20 @@ export default function Avatar({
   nft,
   collectionName,
 }: {
-  nft: NFT;
-  collectionName: string;
+  nft: NFT | null;
+  collectionName: string | undefined;
 }) {
   const [url, setUrl] = useState<string>(defaultPP);
 
   useEffect(() => {
-    if (nft.metadata && nft.metadata.image) {
+    if (nft && nft.metadata && nft.metadata.image) {
+      console.log(nft)
       setUrl(fixURL(nft.metadata.image));
     }
   }, [nft]);
 
   return (
-    <div className="flex mb-4">
+    <div className="flex mb-4 align-center">
       <ProfileLabel className="f-column align-center justify-center">
         <img
           style={{
@@ -54,7 +55,7 @@ export default function Avatar({
             width: "100%",
             objectFit: "cover",
           }}
-          src={fixURL(nft.metadata.image) || defaultPP}
+          src={url}
           alt="file-form"
         />
       </ProfileLabel>
@@ -62,7 +63,7 @@ export default function Avatar({
         <label className="text-primary-light fw-600 f-column align-center justify-center ">
           Choose an NFT from your wallet as your profile avatar
         </label>
-        {nft && (
+        {collectionName && nft && (
           <ProfilePictureData className="mt-3">
             <img src={hexagon} className="mr-3" />
             <>

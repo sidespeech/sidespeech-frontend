@@ -29,14 +29,10 @@ import Switch from "../../ui-components/Switch";
 import { RootState } from "../../../redux/store/app.store";
 
 interface IUserNftsCollectionsProps {
-  selectedNfts: {
-    [key: string]: NFT[];
-  };
+  selectedNfts: NFT[];
   collections: Collection[];
-  user: User;
   handleNftChange: any;
   profile?: Profile;
-  saveNftsProfilePicture?: any;
   handleSelectAll?: any;
   setSelectedAvatar?: any;
   selectedAvatar?: NFT | null;
@@ -46,8 +42,6 @@ export default function NftsCollections({
   selectedNfts,
   collections,
   profile,
-  user,
-  saveNftsProfilePicture,
   handleNftChange,
   handleSelectAll,
   setSelectedAvatar,
@@ -58,6 +52,7 @@ export default function NftsCollections({
     Collection[] | null
   >(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [groupedNfts, setGroupedNfts] = useState<{ [key: string]: NFT[] }>({});
 
   const dispatch = useDispatch();
 
@@ -66,12 +61,15 @@ export default function NftsCollections({
       const array: boolean[] = new Array(collections.length).fill(true);
       setOpenCollection(array);
       setFilteredCollections(collections);
-      console.log(collections);
     }
-  }, []);
+  }, [collections]);
 
   useEffect(() => {
-    if (selectedNfts && Object.values(selectedNfts).length > 0) {
+    setGroupedNfts(_.groupBy(selectedNfts, "token_address"));
+  }, [selectedNfts]);
+
+  useEffect(() => {
+    if (selectedNfts && selectedNfts.length > 0) {
       setLoading(false);
     }
   }, [selectedNfts]);
@@ -93,23 +91,6 @@ export default function NftsCollections({
     setFilteredCollections(filteredData);
   };
   //#endregion
-
-  const onSubmitNfts = async () => {
-    try {
-      if (selectedNfts) {
-        const nftsList = _.flatten(Object.values(selectedNfts));
-        await apiService.updateUserPublicNfts(user.id, nftsList);
-        dispatch(updateUser({ publicNfts: nftsList }));
-        toast.success("Settings have been updated.", {
-          toastId: 5,
-        });
-      }
-    } catch (error) {
-      toast.error("There has been an issue updating your public nfts.", {
-        toastId: 6,
-      });
-    }
-  };
 
   const handleShowNfts = async (value: boolean) => {
     if (profile) {
@@ -144,7 +125,7 @@ export default function NftsCollections({
           <span className="selected">
             {" "}
             {selectedNfts
-              ? _.sum(Object.values(selectedNfts).map((c) => c.length))
+              ? _.sum(Object.values(groupedNfts).map((c) => c.length))
               : 0}
           </span>
           /{_.sum(filteredCollections?.map((c) => c.nfts.length))})
@@ -154,6 +135,9 @@ export default function NftsCollections({
   };
 
   const renderNumberSelection = (collection: Collection) => {
+    const isAllSelected =
+      groupedNfts[collection.address]?.length === collection.nfts.length;
+
     return (
       <div className="float-right">
         <div className="selected mr-3">
@@ -161,7 +145,7 @@ export default function NftsCollections({
             <>
               Public :{" "}
               <span className="selected">
-                {selectedNfts[collection.address]?.length}/
+                {groupedNfts[collection.address]?.length | 0}/
               </span>
             </>
           )}
@@ -170,9 +154,9 @@ export default function NftsCollections({
         {!profile && (
           <a
             className="selectAll"
-            onClick={() => handleSelectAll(collection.nfts)}
+            onClick={() => handleSelectAll(collection.nfts, isAllSelected)}
           >
-            Select All
+            {isAllSelected ? "Deselect All" : "Select All"}
           </a>
         )}
       </div>
@@ -202,8 +186,8 @@ export default function NftsCollections({
             <FadeLoader loading={loading} color="var(--text-secondary)" />
           </div>
         )}
-        {filteredCollections &&
-          selectedNfts &&
+        {(filteredCollections &&
+          Object.keys(groupedNfts).length > 0) &&
           filteredCollections.map((collection, index) => {
             return (
               <div className={`nftCollection`} key={index}>
@@ -232,7 +216,7 @@ export default function NftsCollections({
                 >
                   {collection.nfts.map((nft: NFT, index: number) => {
                     const metadata = nft.metadata;
-                    const isSelected = selectedNfts[collection.address]?.some(
+                    const isSelected = groupedNfts[collection.address]?.some(
                       (c) =>
                         c.token_id === nft.token_id &&
                         c.token_address === nft.token_address
@@ -243,16 +227,19 @@ export default function NftsCollections({
                     return (
                       <div
                         onClick={(e: any) => handleNftChange(nft)}
-                        onContextMenu={(e: any) => setSelectedAvatar(nft)}
+                        onContextMenu={(e: any) => {
+                          e.preventDefault();
+                          setSelectedAvatar(nft);
+                        }}
                         className={`the-nft ${isSelected && "selected"} ${
                           isAvatar && " selected-2"
                         }`}
                         key={index}
                       >
                         <div className="inner">
-                          {isSelected && (
+                          {(isSelected || isAvatar) && (
                             <div className="status">
-                              {!profile ? "Public" : "Avatar"}
+                              {!isAvatar ? "Public" : "Avatar"}
                             </div>
                           )}
                           <img
@@ -282,32 +269,6 @@ export default function NftsCollections({
               </div>
             );
           })}
-      </div>
-      <div className="submitArea">
-        {/* Submit Button */}
-        {!profile ? (
-          <Button
-            classes={"mb-3"}
-            width={164}
-            height={44}
-            radius={10}
-            color={"var(--text-primary-light)"}
-            onClick={onSubmitNfts}
-          >
-            Save this selection
-          </Button>
-        ) : (
-          <Button
-            classes={"mb-3"}
-            width={164}
-            height={44}
-            radius={10}
-            color={"var(--text-primary-light)"}
-            onClick={saveNftsProfilePicture}
-          >
-            Use this NFT
-          </Button>
-        )}
       </div>
     </div>
   );
