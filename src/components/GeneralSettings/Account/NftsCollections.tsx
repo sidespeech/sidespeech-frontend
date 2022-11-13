@@ -63,14 +63,11 @@ export default function NftsCollections({
       setFilteredCollections(collections);
     }
   }, [collections]);
-
-  useEffect(() => {
-    setGroupedNfts(_.groupBy(selectedNfts, "token_address"));
-  }, [selectedNfts]);
-
+  
   useEffect(() => {
     if (selectedNfts && selectedNfts.length > 0) {
       setLoading(false);
+      setGroupedNfts(_.groupBy(selectedNfts, "token_address"));
     }
   }, [selectedNfts]);
 

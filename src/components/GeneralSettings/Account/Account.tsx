@@ -135,6 +135,7 @@ export default function GeneralSettingsAccount() {
               userCollectionsData={userCollectionsData}
               formData={formData}
               setFormData={setFormData}
+              onSubmit={onSubmit}
             />
 
             {formData.publicNfts && collections.length > 0 && (
@@ -146,21 +147,9 @@ export default function GeneralSettingsAccount() {
                 setSelectedAvatar={(data: NFT) =>
                   setFormData({ ...formData, userAvatar: data })
                 }
-                selectedAvatar={selectedAvatar}
+                selectedAvatar={formData.userAvatar}
               />
             )}
-          </div>
-          <div className="submitArea">
-            <Button
-              classes={"mb-3"}
-              width={164}
-              height={44}
-              radius={10}
-              color={"var(--text-primary-light)"}
-              onClick={onSubmit}
-            >
-              Save
-            </Button>
           </div>
         </>
       )}

@@ -46,6 +46,7 @@ interface IUserGeneralInformationsProps {
   userCollectionsData?: any;
   formData: InitialStateUser;
   setFormData: any;
+  onSubmit: any;
 }
 
 export default function UserGeneralInformations({
@@ -54,6 +55,7 @@ export default function UserGeneralInformations({
   userCollectionsData,
   formData,
   setFormData,
+  onSubmit,
 }: IUserGeneralInformationsProps) {
   const [errorData, setErrorData] =
     useState<InitialErrorState>(initialStateError);
@@ -235,6 +237,21 @@ export default function UserGeneralInformations({
       {/* Wallet Section */}
       {renderConnectedWallet()}
       {renderLeave()}
+
+      {
+        <div className="submitArea mt-5">
+          <Button
+            classes={"mb-3"}
+            width={164}
+            height={44}
+            radius={10}
+            color={"var(--text-primary-light)"}
+            onClick={onSubmit}
+          >
+            Save
+          </Button>
+        </div>
+      }
     </div>
   );
 }
