@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 //redux
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { disconnect, updateUser } from "../../../redux/Slices/UserDataSlice";
+import { disconnect, updateUser } from "../../redux/Slices/UserDataSlice";
 // service
-import { apiService } from "../../../services/api.service";
+import { apiService } from "../../services/api.service";
 // models
-import { User } from "../../../models/User";
+import { User } from "../../models/User";
 // ui component
-import Button from "../../ui-components/Button";
-import InputText from "../../ui-components/InputText";
-import TextArea from "../../ui-components/TextArea";
+import Button from "../ui-components/Button";
+import InputText from "../ui-components/InputText";
+import TextArea from "../ui-components/TextArea";
 // icons
-import copyIcon from "./../../../assets/copy-icon.svg";
-import closeWalletIcon from "./../../../assets/close-wallet.svg";
+import copyIcon from "./../../assets/copy-icon.svg";
+import closeWalletIcon from "./../../assets/close-wallet.svg";
 // other
 import { toast } from "react-toastify";
 import {
@@ -21,15 +21,15 @@ import {
   reduceWalletAddress,
   validateBio,
   validateUsername,
-} from "../../../helpers/utilities";
-import Eligibility from "../../CurrentColony/settings/eligibility/eligibility";
+} from "../../helpers/utilities";
+import Eligibility from "../CurrentColony/settings/eligibility/eligibility";
 import styled from "styled-components";
-import { NFT } from "../../../models/interfaces/nft";
-import { RootState } from "../../../redux/store/app.store";
-import { Side } from "../../../models/Side";
-import { Profile } from "../../../models/Profile";
-import Avatar from "./Avatar";
-import { InitialStateUser } from "./Account";
+import { NFT } from "../../models/interfaces/nft";
+import { RootState } from "../../redux/store/app.store";
+import { Side } from "../../models/Side";
+import { Profile } from "../../models/Profile";
+import { InitialStateUser } from "../GeneralSettings/Account/GeneralSettingsAccount";
+import Avatar from "../GeneralSettings/Account/Avatar";
 interface InitialErrorState {
   username: boolean;
   bio: boolean;
@@ -47,6 +47,8 @@ interface IUserGeneralInformationsProps {
   formData: InitialStateUser;
   setFormData: any;
   onSubmit: any;
+  displayNftsCollection?: boolean;
+  setDisplayNftsCollection?: any;
 }
 
 export default function UserGeneralInformations({
@@ -56,14 +58,11 @@ export default function UserGeneralInformations({
   formData,
   setFormData,
   onSubmit,
+  displayNftsCollection,
+  setDisplayNftsCollection,
 }: IUserGeneralInformationsProps) {
   const [errorData, setErrorData] =
     useState<InitialErrorState>(initialStateError);
-  const [displayNftsCollection, setDisplayNftsCollection] =
-    useState<boolean>(false);
-  const [checkedNfts, setCheckedNfts] = useState<{
-    [key: string]: NFT[];
-  } | null>(null);
 
   const [collectionName, setCollectionName] = useState<string | undefined>(
     undefined
@@ -75,9 +74,9 @@ export default function UserGeneralInformations({
   const walletAddress = window.ethereum.selectedAddress;
 
   useEffect(() => {
-    if (formData.userAvatar) {
+    if (formData.avatar) {
       setCollectionName(
-        userCollectionsData[formData.userAvatar.token_address]?.name
+        userCollectionsData[formData.avatar.token_address]?.name
       );
     }
   }, [formData]);
@@ -112,25 +111,21 @@ export default function UserGeneralInformations({
 
   const renderAvatar = () => {
     return (
-      <>
-        <Avatar nft={formData.userAvatar} collectionName={collectionName} />
+      <div className="flex mb-4 align-center gap-20">
+        <Avatar nft={formData.avatar} collectionName={collectionName} />
         {!displayNftsCollection && !user && (
-          <div className="f-column align-center justify-center ml-3">
-            <label htmlFor={"input-profile-picture"}>
-              <Button
-                width={159}
-                height={46}
-                onClick={() => setDisplayNftsCollection(true)}
-                radius={10}
-                background={"var(--bg-secondary-light)"}
-                color={"var(--text-primary-light)"}
-              >
-                Select an NFT
-              </Button>
-            </label>
-          </div>
+          <Button
+            width={159}
+            height={46}
+            onClick={() => setDisplayNftsCollection(true)}
+            radius={10}
+            background={"var(--bg-secondary-light)"}
+            color={"var(--text-primary-light)"}
+          >
+            Select an NFT
+          </Button>
         )}
-      </>
+      </div>
     );
   };
 
@@ -224,19 +219,23 @@ export default function UserGeneralInformations({
   };
 
   return (
-    <div className="f-row form-area">
+    <div className="f-row flex-1" style={{maxWidth: "50%"}}>
       {renderAvatar()}
-      {/* Username Section */}
-      {renderUsername()}
+      {!currentSide && (
+        <>
+          {/* Username Section */}
+          {renderUsername()}
+          {/* Description Section */}
+          {renderBio()}
+        </>
+      )}
 
-      {/* Description Section */}
-      {renderBio()}
       {/* Eligibility Section */}
       {currentSide && <Eligibility side={currentSide} />}
 
       {/* Wallet Section */}
-      {renderConnectedWallet()}
-      {renderLeave()}
+      {!currentSide && renderConnectedWallet()}
+      {currentSide && renderLeave()}
 
       {
         <div className="submitArea mt-5">

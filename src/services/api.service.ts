@@ -1,6 +1,5 @@
 import { Vote } from "./../models/Vote";
 import superagent from "superagent";
-import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialStateSide } from "../components/new-side/new-side";
 import { BASE_URL } from "../constants/constants";
@@ -17,7 +16,7 @@ import { Poll } from "../models/Poll";
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
 import _ from "lodash";
-import { InitialStateUser } from "../components/GeneralSettings/Account/Account";
+import { InitialStateUser } from "../components/GeneralSettings/Account/GeneralSettingsAccount";
 
 // Create an API Service class
 class apiService {

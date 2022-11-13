@@ -3,12 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 // CSS Import
 import "./../DefaultView.css";
-import "./Account.css";
+import "./GeneralSettingsAccount.css";
 
 // Example NFT icon.
 import { RootState } from "../../../redux/store/app.store";
-import NftsCollections from "./NftsCollections";
-import UserGeneralInformations from "./UserGeneralInformations";
 import { NFT } from "../../../models/interfaces/nft";
 import _ from "lodash";
 import { Collection } from "../../../models/interfaces/collection";
@@ -19,11 +17,13 @@ import {
 import { toast } from "react-toastify";
 import { apiService } from "../../../services/api.service";
 import Button from "../../ui-components/Button";
+import UserGeneralInformations from "../../ui-components/UserGeneralInformations";
+import NftsCollections from "../../ui-components/NftsCollections";
 
 export interface InitialStateUser {
   username?: string;
   bio?: string;
-  userAvatar: NFT | null;
+  avatar: NFT | null;
   showNfts?: boolean;
   publicNfts: NFT[] | null;
 }
@@ -31,7 +31,7 @@ const initialStateUser = {
   username: "",
   bio: "",
   showNfts: false,
-  userAvatar: null,
+  avatar: null,
   publicNfts: null,
 };
 
@@ -57,7 +57,7 @@ export default function GeneralSettingsAccount() {
           ...formData,
           publicNfts: user.publicNfts,
           bio: user.bio,
-          userAvatar: user.userAvatar,
+          avatar: user.userAvatar,
           username: user.username,
         });
       }
@@ -145,9 +145,9 @@ export default function GeneralSettingsAccount() {
                 handleNftChange={handleNftChange}
                 handleSelectAll={handleSelectAll}
                 setSelectedAvatar={(data: NFT) =>
-                  setFormData({ ...formData, userAvatar: data })
+                  setFormData({ ...formData, avatar: data })
                 }
-                selectedAvatar={formData.userAvatar}
+                selectedAvatar={formData.avatar}
               />
             )}
           </div>

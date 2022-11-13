@@ -47,7 +47,7 @@ export default function Avatar({
   }, [nft]);
 
   return (
-    <div className="flex mb-4 align-center">
+    <div className="flex align-center">
       <ProfileLabel className="f-column align-center justify-center">
         <img
           style={{

@@ -185,10 +185,10 @@ const UserCollections = (props: UserCollectionsProps) => {
                         <Spinner />
                     </div>
                 ) : !!userCollections.length ?
-                        userCollections.map((collection: any) => (
+                        userCollections.map((collection: any,index: number) => (
                         <>
-                            {viewMode === 'card' && <UserCollectionCard collection={collection} onClick={() => setSelectedCollection(collection)} />}
-                            {viewMode === 'list' && <UserCollectionItemSmall collection={collection} onClick={() => setSelectedCollection(collection)} />}
+                            {viewMode === 'card' && <UserCollectionCard key={index} collection={collection} onClick={() => setSelectedCollection(collection)} />}
+                            {viewMode === 'list' && <UserCollectionItemSmall  key={index} collection={collection} onClick={() => setSelectedCollection(collection)} />}
                         </>
                 )) : (
                     <div className="no-results">
