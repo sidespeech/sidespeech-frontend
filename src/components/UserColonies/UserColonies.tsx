@@ -1,31 +1,57 @@
 import React, { useEffect, useState } from "react";
-import "./UserColonies.css";
+import styled from 'styled-components';
 import { useSelector } from "react-redux";
-import { 
-  // Link, 
-  useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { EventType } from "../../constants/EventType";
-import {
-  subscribeToEvent,
-  unSubscribeToEvent,
-} from "../../helpers/CustomEvent";
+import { subscribeToEvent, unSubscribeToEvent } from "../../helpers/CustomEvent";
 import { Announcement } from "../../models/Announcement";
 import { RootState } from "../../redux/store/app.store";
-import { flattenChannels } from "../../redux/Slices/UserDataSlice";
+// import { flattenChannels } from "../../redux/Slices/UserDataSlice";
 import { Side } from "../../models/Side";
-import { Channel } from "diagnostics_channel";
+// import { Channel } from "diagnostics_channel";
 import { Dot } from "../ui-components/styled-components/shared-styled-components";
 import { apiService } from "../../services/api.service";
 import { Profile } from "../../models/Profile";
-export default function UserColonies() {
-  const userData = useSelector((state: RootState) => state.user);
-  const [showCreateModal, setshowCreateModal] = useState<boolean>(false);
-  const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
-  const [isSubscribe, setIsSubscribe] = useState<boolean>(false);
-  const [dots, setDots] = useState<any>({});
-  const { currentSide } = useSelector((state: RootState) => state.appDatas);
 
+const UserColoniesStyled = styled.div`
+  .colony-badge {
+    width: 50px;
+    height: 50px;
+    background-color: var(--bg-secondary-dark);
+    border: 1px solid black;
+    border-radius: 25px;
+    margin: 0px 12px;
+    overflow: hidden;
+    z-index: 50;
+    transition: border .2s ease;
+    &.active {
+      border: 2px solid var(--primary);
+    }
+  }
+  .colony-badge > img {
+    object-fit: cover;
+    width: 51px;
+    height: 51px;
+  }
+
+  .badge-notification {
+    position: absolute;
+    margin-top: -21px;
+  }
+`;
+
+export default function UserColonies() {
+  const { id: currentColony } = useParams();
   const navigate = useNavigate();
+
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const userData = useSelector((state: RootState) => state.user);
+
+  // const [showCreateModal, setshowCreateModal] = useState<boolean>(false);
+  // const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
+  // const [isSubscribe, setIsSubscribe] = useState<boolean>(false);
+  const [dots, setDots] = useState<any>({});
+
 
   const displayColony = (id: string) => {
     navigate(id);
@@ -101,14 +127,14 @@ export default function UserColonies() {
 
   return (
     <>
-      <div className="f-column align-center mt-3" style={{ gap: 15 }}>
+      <UserColoniesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
         {userData.sides.map((c, i) => {
           return (
             <div
               onClick={() => {
                 displayColony(c.id);
               }}
-              className="colony-badge pointer"
+              className={`colony-badge pointer ${currentColony === c.id ? 'active' : ''}`}
               key={c.id}
             >
               <img alt="colony-icon" src={c.sideImage} />
@@ -124,7 +150,7 @@ export default function UserColonies() {
             // onClick={() => changeStateModal(true)}
           ></i>
         </Link> */}
-      </div>
+      </UserColoniesStyled>
     </>
   );
 }
