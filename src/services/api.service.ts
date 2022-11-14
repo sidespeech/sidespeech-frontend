@@ -332,7 +332,6 @@ class apiService {
     return res.body;
   } 
   static async savedCollections(collections: Collection[]) {
-    console.log('collections :', collections)
     const copy = _.cloneDeep(collections);
     const data = copy.map((c: any) => {
       c.opensea = JSON.stringify(c.opensea);

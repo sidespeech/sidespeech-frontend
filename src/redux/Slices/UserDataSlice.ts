@@ -52,11 +52,7 @@ export const flattenChannels = (array: any, key: string) => {
 };
 
 export const filterMetadata = (collection: Collection) => {
-  console.log(`collection :`, collection);
-
   const allMetadata = collection.nfts.reduce(function (prev: any, current: any) {
-    console.log('current :', current)
-    console.log("Array.isArray(current['metadata']['attributes']) :", Array.isArray(current['metadata']['attributes']))
     if (Array.isArray(current['metadata']['attributes'])) {
       let metadata = current['metadata']['attributes'].map((attribute: any) => {
         let object: Metadata = { address: current['token_address'], traitProperty: attribute['trait_type'], traitValue: attribute['value'] }
@@ -67,8 +63,6 @@ export const filterMetadata = (collection: Collection) => {
     }
     return prev
   }, []);
-
-  console.log('allMetadata result :', allMetadata)
   return allMetadata
 
 };
@@ -111,7 +105,7 @@ export const fetchUserDatas = createAsyncThunk(
 
     console.log('allMetadata finished :', allMetadata)
 
-    await apiService.savedMetadata(allMetadata);
+    // await apiService.savedMetadata(collections);
 
     // TEST
 
