@@ -129,10 +129,8 @@ export function checkUserEligibility(
   const res: ElligibilityResponse = {};
   console.log('selectedSide :', selectedSide)
   if (selectedSide) {
-    // Object.entries<any>(selectedSide.conditions).forEach(
     selectedSide.metadataSides.forEach(
       (item) => {
-        // ([token_address, condition]) => {
         const tab = [];
         const token_address = item['metadata']['address']
         const collection = nfts[token_address];
@@ -202,9 +200,6 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
 }
 
 function isEligible(result: ElligibilityResponse, conditions: any): boolean {
-
-  console.log("conditions.find((item:any) => item['required']) :", conditions.find((item:any) => item['required']))
-
   if (!conditions.find((item:any) => item['required'])) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>
@@ -267,6 +262,8 @@ export function fixURL(url: string) {
     return "https://ipfs.io/ipfs/" + url.split("ipfs://").slice(-1)[0];
   } else if (url.startsWith("https://")) {
     return url;
+  } else {
+    return url;
   }
 }
 
@@ -308,6 +305,23 @@ export async function getBase64(file: File): Promise<any> {
   });
 }
 
+export function validateForm(formData: any) {
+  if (formData.username && formData.bio) {
+    return validateUsername(formData.username) && validateBio(formData.bio);
+  }
+}
+
+export function validateUsername(username: string) {
+  const re = new RegExp("^[a-zA-Z0-9]*$");
+  const isValid = re.test(username);
+  return isValid;
+}
+
+export function validateBio(bio: string) {
+  const length = bio.length;
+  const validLength = length <= 500;
+  return validLength;
+}
 export function paginateArray({
   array,
   currentPage = 1,

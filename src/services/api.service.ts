@@ -1,6 +1,5 @@
 import { Vote } from "./../models/Vote";
 import superagent from "superagent";
-import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialStateSide } from "../components/new-side/new-side";
 import { BASE_URL } from "../constants/constants";
@@ -14,19 +13,17 @@ import { Side } from "../models/Side";
 import { User } from "../models/User";
 import { Notification } from "../models/Notification";
 import { Poll } from "../models/Poll";
-import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
 import _ from "lodash";
 import { Metadata } from "../models/Metadata";
+import { InitialStateUser } from "../components/GeneralSettings/Account/GeneralSettingsAccount";
 
 // Create an API Service class
 class apiService {
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
-    console.log("accounts :", accounts)
-    console.log("signature :", signature)
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
       .send({
@@ -71,7 +68,7 @@ class apiService {
 
   static async updateProfile(
     id: string,
-    profile: InitialStateProfile
+    profile: Partial<Profile>
   ): Promise<Profile> {
     const res = await superagent
       .patch(`${BASE_URL}/profile/${id}`)
@@ -95,7 +92,7 @@ class apiService {
     const res = await superagent
       .patch(`${BASE_URL}/user/${id}`)
       .send(updatedInfo);
-    return res["body"];
+    return new User(res["body"]);
   }
   static async updateUserPublicNfts(
     id: string,
@@ -301,6 +298,12 @@ class apiService {
     return res.body;
   } 
 
+  static async sendRequestPrivateSide(data:any): Promise<any> {
+    console.log('data :', data)
+    const res = await superagent.post(`${BASE_URL}/invitation/request`).send(data);
+    return res.body;
+  } 
+
   static async getRequestsFromInvitations(userId:string, sideId:string): Promise<any> {
     const res = await superagent.get(`${BASE_URL}/invitation/${sideId}/${userId}`);
     return res.body;
@@ -312,10 +315,26 @@ class apiService {
     return res.body;
   } 
 
+  static async getPendingInvitationsByRecipient(id:string): Promise<Invitation[]> {
+    const res = await superagent.get(`${BASE_URL}/invitation/pending/recipient/${id}`);
+    return res.body;
+  } 
+ 
+  static async acceptInvitation(invitation:any): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/invitation/accepted`).send(invitation);
+    return res.body;
+  } 
+
+  static async acceptRequest(invitation:any): Promise<any> {
+    const res = await superagent.post(`${BASE_URL}/invitation/request/accepted`).send(invitation);
+    return res.body;
+  } 
+
   static async getUsersByIds(ids:string[]): Promise<any> {
     const res = await superagent.post(`${BASE_URL}/user/ids`).send({ids : ids});
     return res.body;
   }
+
   static async updateSubAdmin(name:string, sideId:string): Promise<any> {
     const res = await superagent.post(`${BASE_URL}/user/subadmin`).send({sideId: sideId, name:name});
     return res.body;
@@ -330,8 +349,10 @@ class apiService {
     const res = await superagent.delete(`${BASE_URL}/profile/${id}`);
     return res.body;
   } 
+
   static async savedCollections(collections: Collection[]) {
     const copy = _.cloneDeep(collections);
+
     const data = copy.map((c: any) => {
       c.opensea = JSON.stringify(c.opensea);
       return c;

@@ -57,7 +57,7 @@ export class sideAPI {
     const res = await superagent.get(`${BASE_URL}/side/featured`);
     const sidesListWithoutCollections = dtoToSideList(res.body);
     const sidesList: Side[] = await Promise.all(sidesListWithoutCollections.map(async (side) => {
-      const conditions = Object.keys(side.conditions);
+      const conditions = Object.keys(JSON.parse(side.conditions));
       const count = conditions.length;
       const firstCollectionAddress = conditions[0]
       let firstCollection;

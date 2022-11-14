@@ -64,6 +64,7 @@ export const fetchUserDatas = createAsyncThunk(
     const collections = await alchemyService.getUserCollections(
       "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
     );
+
     await apiService.savedCollections(collections);
 
     let res: any = {};
@@ -152,6 +153,18 @@ export const userDataSlice = createSlice({
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
       state.currentProfile = action.payload;
+      if (state.user) {
+        const user = { ...state.user };
+        const profiles = [...user.profiles];
+        const index = profiles.findIndex(
+          (p: Profile) => p.id === action.payload.id
+        );
+        if (index !== -1) {
+          profiles.splice(index, 1, action.payload);
+          user.profiles = profiles;
+          state.user = {...user};
+        }
+      }
     },
     addRoomToProfile: (state: UserData, action: PayloadAction<Room>) => {
       if (state.currentProfile) {

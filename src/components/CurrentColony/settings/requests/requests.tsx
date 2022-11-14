@@ -8,6 +8,7 @@ import { apiService } from "../../../../services/api.service";
 import CustomCheckbox from "../../../ui-components/CustomCheckbox";
 import moment from 'moment'
 import { Side } from "../../../../models/Side";
+import { State, Type } from "../../../../models/Invitation";
 
 
 
@@ -45,20 +46,21 @@ export default function Requests({
   };
 
   useEffect(() => {
-    let requestsOrdered = currentSide['invitations'].filter((invitation: any) => invitation['senderId'] !== userData['user']['id'] && invitation['state'] === 3);
+    let requestsOrdered = currentSide['invitations'].filter((invitation: any) => invitation['type'] === Type.Request && invitation['state'] === State.Pending);
     getRequestsUsers(requestsOrdered);
   }, [currentSide, userData]);
 
   const onAccept = async (request:any, index:number) => {
-    let res = await apiService.updateInvitationState(request['id'], 1);
+    let res = await apiService.acceptRequest({id : request['id'] });
+    // let res = await apiService.updateInvitationState(request['id'], State.Accepted);
     let newRequests = [...requests]
     newRequests.splice(index, 1);
     setRequests(newRequests)
-    updateRequestNotifications();
+    window.location.reload();
   };
 
   const onDecline = async (request:any, index:number) => {
-    let res = await apiService.updateInvitationState(request['id'], 2);
+    let res = await apiService.updateInvitationState(request['id'], State.Declined);
     let newRequests = [...requests]
     newRequests.splice(index, 1);
     setRequests(newRequests)
