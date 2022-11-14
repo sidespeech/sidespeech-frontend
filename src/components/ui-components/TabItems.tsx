@@ -6,7 +6,7 @@ interface DivProps {
 }
 
 const TabItems = styled.div<DivProps>`
-  cursor: ${(props) => (props.cursor ? props.cursor : "")};
+  cursor: ${(props) => (props.cursor ? props.cursor : "default")};
   font-family : "Inter", sans-serif;
 `;
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./CurrentColony.css";
+import styled from 'styled-components';
 import "./AnnouncementList/AnnouncementItem.css";
 import AnnouncementList from "./AnnouncementList/AnnouncementList";
 import MiddleContainerHeader from "../ui-components/MiddleContainerHeader";
@@ -13,18 +13,79 @@ import { RootState } from "../../redux/store/app.store";
 import Polls from "./Polls/Polls";
 import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
-import InputText from "../ui-components/InputText";
+// import InputText from "../ui-components/InputText";
 import _ from "lodash";
-import { apiService } from "../../services/api.service";
+// import { apiService } from "../../services/api.service";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
-import websocketService from "../../services/websocket.service";
+// import websocketService from "../../services/websocket.service";
 import { sideAPI } from "../../services/side.service";
 import { useParams } from "react-router-dom";
 
-export default function CurrentColony() {
+const CurrentSideStyled = styled.div`
+  .selected-channel {
+    border-radius: 10px;
+    background-color: var(--bg-primary);
+  }
+  .middle-container-center-colony {
+    height: calc(100vh - 51px);
+    display: flex;
+    width: 100%;
+    align-items: start;
+  }
+  .channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    color: var(--text-secondary);
+    padding: 11px 11px 11px 27px;
+    border-bottom: 1px solid var(--bg-primary);
+  }
+  .annoucement-item {
+    width: 100%;
+    /* min-height: 104px; */
+    border-bottom: 1px solid var(--bg-secondary-light);
+    padding: 13px 16px 17px 16px;
+    gap: 8px;
+    color: var(--text-secondary);
+  }
+  #announcement-list {
+    padding: 0px 32px 0px 27px;
+  }
+
+  .profile-round-small > img {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+  }
+  .profile-round-small {
+    width: 20px;
+    height: 20px;
+    background-color: var(--bg-secondary-dark);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .edit-channel > div {
+    padding: 9px 18px;
+  }
+  .edit-channel {
+    width: 100%;
+    min-height: 96px;
+    border-radius: 10px;
+  }
+  .member-list {
+    background-color: var(--bg-primary);
+    width: 100%;
+    min-height: 96px;
+    border-radius: 10px;
+  }
+`;
+
+export default function CurrentSide() {
   const { id } = useParams();
   const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
@@ -32,8 +93,7 @@ export default function CurrentColony() {
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
   const userData = useSelector((state: RootState) => state.user);
 
-  const [displayEditChannelModal, setDisplayEditChannelModal] =
-    useState<boolean>(false);
+  // const [displayEditChannelModal, setDisplayEditChannelModal] = useState<boolean>(false);
   const [createPollModal, setCreatePollModal] = useState<boolean>(false);
 
   const dispatch = useDispatch();
@@ -81,7 +141,7 @@ export default function CurrentColony() {
   };
 
   return (
-    <div className="flex align-start w-100">
+    <CurrentSideStyled className="flex align-start w-100">
       <CurrentColonyLeft />
 
       <div className="f-column w-100">
@@ -134,6 +194,6 @@ export default function CurrentColony() {
       {createPollModal && selectedChannel && currentSide && (
         <CreatePollModal showModal={setCreatePollModal} />
       )}
-    </div>
+    </CurrentSideStyled>
   );
 }

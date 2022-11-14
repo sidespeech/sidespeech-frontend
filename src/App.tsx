@@ -9,8 +9,8 @@ import { Outlet } from "react-router-dom";
 
 // Components
 import GeneralSettingsMenu from "./components/GeneralSettings/ContainerLeft/Index";
-import UserColonies from "./components/UserColonies/UserColonies";
-import SidesList from "./components/SidesList";
+import UserColonies from "./components/UserColonies/UserSides";
+// import SidesList from "./components/SidesList";
 
 // Images
 import logoSmall from "./assets/logo.svg";

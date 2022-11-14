@@ -13,7 +13,7 @@ import { Dot } from "../ui-components/styled-components/shared-styled-components
 import { apiService } from "../../services/api.service";
 import { Profile } from "../../models/Profile";
 
-const UserColoniesStyled = styled.div`
+const UserSidesStyled = styled.div`
   .colony-badge {
     width: 50px;
     height: 50px;
@@ -40,8 +40,8 @@ const UserColoniesStyled = styled.div`
   }
 `;
 
-export default function UserColonies() {
-  const { id: currentColony } = useParams();
+export default function UserSides() {
+  const { id: currentSideId } = useParams();
   const navigate = useNavigate();
 
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
@@ -53,7 +53,7 @@ export default function UserColonies() {
   const [dots, setDots] = useState<any>({});
 
 
-  const displayColony = (id: string) => {
+  const displaySide = (id: string) => {
     navigate(id);
   };
 
@@ -127,14 +127,14 @@ export default function UserColonies() {
 
   return (
     <>
-      <UserColoniesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
+      <UserSidesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
         {userData.sides.map((c, i) => {
           return (
             <div
               onClick={() => {
-                displayColony(c.id);
+                displaySide(c.id);
               }}
-              className={`colony-badge pointer ${currentColony === c.id ? 'active' : ''}`}
+              className={`colony-badge pointer ${currentSideId === c.id ? 'active' : ''}`}
               key={c.id}
             >
               <img alt="colony-icon" src={c.sideImage} />
@@ -150,7 +150,7 @@ export default function UserColonies() {
             // onClick={() => changeStateModal(true)}
           ></i>
         </Link> */}
-      </UserColoniesStyled>
+      </UserSidesStyled>
     </>
   );
 }
