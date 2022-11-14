@@ -15,8 +15,10 @@ export default function Switch(props: any) {
 
   return (
     <label className="switch">
-      <input type="checkbox" checked={isChecked} onClick={handleOnClick} />
+      <input type="checkbox" checked={isChecked} readOnly onClick={handleOnClick} />
       <span className="slider round"></span>
+      <span className="left-text">{props.left || ""}</span>
+      <span className="right-text">{props.right || ""}</span>
     </label>
   );
 }

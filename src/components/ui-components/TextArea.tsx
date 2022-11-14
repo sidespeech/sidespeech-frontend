@@ -28,6 +28,7 @@ interface TextAreaPropsType {
   onClick?: any;
   onKeyUp?: any;
   defaultValue?: string;
+  parentWidth?: string;
 }
 
 interface TextAreaProps {
@@ -80,7 +81,7 @@ const TextArea = forwardRef((props: TextAreaPropsType, ref: any) => {
   return (
     <div
       className="relative"
-      style={{ width: props.width ? props.width : "100%" }}
+      style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
     >
       <InputTextArea
         id={props.id}

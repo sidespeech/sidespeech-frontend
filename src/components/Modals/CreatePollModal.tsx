@@ -18,6 +18,8 @@ import { Poll } from "../../models/Poll";
 // API Service
 import { apiService } from "../../services/api.service";
 
+
+
 export default function CreatePollModal({ showModal }: { showModal: any }) {
 
   // Configuring all of the states.
@@ -96,6 +98,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
             height={62}
             placeholder={""}
             onChange={handleQuestion}
+            bgColor={"#242635"}
             color={"var(--text-secondary)"}
           />
           <div className="mt-3">
