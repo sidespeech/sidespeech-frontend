@@ -167,7 +167,7 @@ export default function NewSide() {
     if (user && user.profiles) {
       const getInvitationUsers = async (user: any) => {
         let userSides = user.profiles.map((p: Profile) => p.side);
-        let users = await apiService.getUserFromSides(userSides);
+        let users = await apiService.getUserFromSides(userSides);        
         let invitationsUsersObject = [];
         delete user["profiles"];
         for (let userInvite of users) {
@@ -551,6 +551,7 @@ export default function NewSide() {
         setFormData(initialStateSide);
 
         navigate(`/`);
+        window.location.reload();
       }
     } catch (error) {
       console.log(error);
