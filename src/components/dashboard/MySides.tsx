@@ -117,8 +117,8 @@ const searchFiltersInitialState = {
 
 
 const MySides = ({ collections }: MySidesProps) => {
-  const [alertsBySide, setAlertsBySide] = useState<any>({});
-  const [messagesBySide, setMessagesBySide] = useState<any>({});
+  const [alertsBySide, setAlertsBySide] = useState<any>([]);
+  const [messagesBySide, setMessagesBySide] = useState<any>([]);
   const [sidesLoading, setSidesLoading] = useState<boolean>(false);
   const [sidesList, setSidesList] = useState<Side[]>([]);
   const [filteredSides, setFilteredSides] = useState<Side[]>([]);
@@ -164,19 +164,9 @@ useEffect(() => {
 const getAndSetRoomNotifications = useCallback(async (account: string) => {
   try {
     const notifications = await apiService.getNotification(account);
-    let alertsBySideCopy:any = {...alertsBySide}
-    let messagesBySideCopy:any = {...messagesBySide}
     for (let notification of notifications) {
-      if (notification['type'] === NotificationType.Channel) {
-        if (notification['name'] in alertsBySideCopy) alertsBySideCopy[notification.name] += 1;
-        else alertsBySideCopy[notification.name] = 1;
-      } else {
-        if (notification['name'] in messagesBySideCopy) messagesBySideCopy[notification.name] += 1;
-        else messagesBySideCopy[notification.name] = 1;
-      }
+        setMessagesBySide((prevState: any) => [...prevState, notification]);
     }
-    if (JSON.stringify(messagesBySideCopy) !== JSON.stringify(messagesBySide)) setMessagesBySide(messagesBySideCopy);
-    if (JSON.stringify(alertsBySideCopy) !== JSON.stringify(alertsBySide)) setAlertsBySide(alertsBySideCopy);
   } catch (error) {
     console.error(error)     
   }
@@ -187,16 +177,12 @@ useEffect(() => {
   if (account) getAndSetRoomNotifications(account)
 }, []);
 
-const handleReceiveAnnouncement = useCallback(({ detail }: { detail: Announcement }) => {
-  const account = localStorage.getItem("userAccount");
-  console.log(detail);
-  if (detail && account) getAndSetRoomNotifications(account);
-}, []);
+const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
+  if (detail) setAlertsBySide((prevState: any) => [...prevState, detail]);
+};
 
 const handleReceiveMessage = useCallback(async ({ detail }: {detail: any}) => {
-  const account = localStorage.getItem("userAccount");
-  console.log(detail);
-  if (detail && account) getAndSetRoomNotifications(account);
+  if (detail) setMessagesBySide((prevState: any) => [...prevState, detail]);
 }, []);
 
 useEffect(() => {

@@ -67,7 +67,7 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 60%;
+                max-width: 90%;
                 margin: 0;
             }
             & .collections {
@@ -83,12 +83,12 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
                         display: flex;
                         align-items: center;
                         width: auto;
-                        max-width: 80%;
+                        max-width: 75%;
                         & > span {
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
-                            max-width: 80%;
+                            max-width: 100%;
                             margin: 0;
                             padding: 0;
                         }
@@ -133,8 +133,8 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
 `;
 
 interface SideCardItemProps {
-    alerts?: any;
-    messages?: any;
+    alerts?: any[];
+    messages?: any[];
     onJoin?: (side: Side) => void;
     side: Side;
     userProfiles: any[];
@@ -150,18 +150,18 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
     }
 
     let alertsCount = 0;
-    side.profiles.forEach(profile => {
-        const count = profile?.rooms?.filter(room => !alerts?.[room.id])?.reduce((prevCount, room) => {
-            return prevCount + alerts?.[room.id] || 0;
-        }, 0);
-        alertsCount = count;
+    side?.channels?.forEach(channel => {
+        const countOfAlertsByChannel = alerts?.map(message => message.name || message.channelId).filter(message => message === channel.id)?.length || 0;
+        alertsCount += countOfAlertsByChannel;
     });
-    
-    const messagesCount = side.channels.filter(channel => !messages?.[channel.id])?.reduce((prevCount, channel) => {
-        return prevCount + alerts?.[channel.id] || 0;
-    }, 0);
 
-    console.log(alertsCount, messagesCount)
+    let messagesCount = 0;
+    side?.profiles?.forEach(profile => {
+        profile?.rooms?.forEach((room: any) => {
+            const countOfMessageByChannel = messages?.map(message => message.name || message.room?.id).filter(message => message === room.id)?.length || 0;
+            messagesCount += countOfMessageByChannel;
+        })
+    });
 
   return (
     <SideCardItemStyled coverImage={side.coverImage || side.firstCollection?.imageUrl}>
@@ -198,9 +198,20 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
             </div>
             <div className="side-actions">
                 {userSides && side.joined && side.eligible ? (
-                    <SideCardUserActions alertsCount={alertsCount} messagesCount={messagesCount} side={side} userProfiles={userProfiles} />
+                    <SideCardUserActions 
+                        alertsCount={alertsCount} 
+                        messagesCount={messagesCount} 
+                        onNavigate={handleNavigate}
+                        side={side} 
+                        userProfiles={userProfiles} 
+                    />
                     ) : (
-                    <SideCardJoinActions eligible={side.eligible} onNavigate={handleNavigate} joined={side.joined} onJoin={() => onJoin?.(side)} />
+                    <SideCardJoinActions 
+                        eligible={side.eligible} 
+                        onNavigate={handleNavigate} 
+                        joined={side.joined} 
+                        onJoin={() => onJoin?.(side)} 
+                    />
                 )}
             </div>
         </div>

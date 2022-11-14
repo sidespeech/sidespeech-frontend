@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -133,26 +133,27 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
         return () => setSearchFilters(searchFiltersInitialState);
     }, []);
 
-    useEffect(() => {
-      async function getSearchSides() {
-        try {
-            setSidesLoading(true);
-            const response = await sideAPI.getSidesBySearchValue(
-              _searchText, 
-              searchFilters.collections,
-              userCollectionsData,
-              sides
-            );
-            setFilteredSides(response);
-        } catch (error) {
-            console.error(error);
-            toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
-        } finally {
-            setSidesLoading(false);
-        }
+    const getSearchSides = useCallback(async () => {
+      try {
+          setSidesLoading(true);
+          const response = await sideAPI.getSidesBySearchValue(
+            _searchText, 
+            searchFilters.collections,
+            userCollectionsData,
+            sides
+          );
+          setFilteredSides(response);
+      } catch (error) {
+          console.error(error);
+          toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
+      } finally {
+          setSidesLoading(false);
       }
+    }, [_searchText, searchFilters.collections, sides, userCollectionsData])
+
+    useEffect(() => {
       getSearchSides();
-    }, [_searchText, searchFilters.collections, userCollectionsData]);
+    }, [getSearchSides]);
 
     useEffect(() => {
       let parsedArray = searchFilters.elegibility === 'eligible' ?

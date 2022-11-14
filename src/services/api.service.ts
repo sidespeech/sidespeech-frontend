@@ -16,7 +16,6 @@ import { Poll } from "../models/Poll";
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
 import _ from "lodash";
-import { getSidesMetadata } from "./side.service";
 import { InitialStateUser } from "../components/GeneralSettings/Account/GeneralSettingsAccount";
 
 // Create an API Service class
