@@ -264,6 +264,8 @@ export function fixURL(url: string) {
     return "https://ipfs.io/ipfs/" + url.split("ipfs://").slice(-1)[0];
   } else if (url.startsWith("https://")) {
     return url;
+  } else {
+    return url;
   }
 }
 
@@ -305,6 +307,23 @@ export async function getBase64(file: File): Promise<any> {
 	});
 }
 
+export function validateForm(formData: any) {
+  if (formData.username && formData.bio) {
+    return validateUsername(formData.username) && validateBio(formData.bio);
+  }
+}
+
+export function validateUsername(username: string) {
+  const re = new RegExp("^[a-zA-Z0-9]*$");
+  const isValid = re.test(username);
+  return isValid;
+}
+
+export function validateBio(bio: string) {
+  const length = bio.length;
+  const validLength = length <= 500;
+  return validLength;
+}
 export function paginateArray({
   array,
   currentPage = 1,

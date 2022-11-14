@@ -1,6 +1,5 @@
 import { Vote } from "./../models/Vote";
 import superagent from "superagent";
-import { InitialStateProfile } from "../components/CurrentColony/settings/account/account";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialStateSide } from "../components/new-side/new-side";
 import { BASE_URL } from "../constants/constants";
@@ -14,11 +13,11 @@ import { Side } from "../models/Side";
 import { User } from "../models/User";
 import { Notification } from "../models/Notification";
 import { Poll } from "../models/Poll";
-import { InitialStateUser } from "../components/GeneralSettings/Account/UserGeneralInformations";
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
 import _ from "lodash";
 import { getSidesMetadata } from "./side.service";
+import { InitialStateUser } from "../components/GeneralSettings/Account/GeneralSettingsAccount";
 
 // Create an API Service class
 class apiService {
@@ -71,7 +70,7 @@ class apiService {
 
   static async updateProfile(
     id: string,
-    profile: InitialStateProfile
+    profile: Partial<Profile>
   ): Promise<Profile> {
     const res = await superagent
       .patch(`${BASE_URL}/profile/${id}`)
@@ -95,7 +94,7 @@ class apiService {
     const res = await superagent
       .patch(`${BASE_URL}/user/${id}`)
       .send(updatedInfo);
-    return res["body"];
+    return new User(res["body"]);
   }
   static async updateUserPublicNfts(
     id: string,
