@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components'
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
 import { Collection } from '../../../models/interfaces/collection';

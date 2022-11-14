@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import "./CustomSelect.css";
 
 interface ISelectContainer {
   width?: string;
@@ -18,6 +17,40 @@ const SelectContainer = styled.div<ISelectContainer>`
   position: relative;
   width: ${(props) => (props.width ? props.width : "148px")};
   height: ${(props) => (props.height ? props.height : "31px")};
+  .select-custom {
+    width: 100%;
+    padding: 5px 0px 5px 12px;
+    border-radius: 25px;
+    appearance: none;
+    color: var(--text-secondary);
+    text-align: left;
+    height: inherit;
+    &:focus + .select-arrow > i {
+      transform: rotate(-180deg);
+    }
+  }
+  .select-custom:focus-visible {
+    outline: none;
+  }
+  
+  .select-arrow {
+    position: absolute;
+    right: 7px;
+    top: 7px;
+    background-color: transparent;
+    border-radius: 15px;
+    width: 28px;
+    display: flex;
+    height: 20px;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+  }
+  .select-arrow > i {
+    color: var(--text-secondary);
+    transition: transform 0.1s;
+    transform: rotate(0deg);
+  }
 `;
 
 const SelectCustom = styled.select<ISelectCustom>`
@@ -70,7 +103,7 @@ export default function CustomSelect({
   style?: any;
 }) {
   const [selected, setSelected] = useState(false);
-  const [defautState, setDefautState] = useState(null);
+  // const [defautState, setDefautState] = useState(null);
   const [value, setValue] = useState(0);
 
   useEffect(() => {
@@ -117,7 +150,7 @@ export default function CustomSelect({
       </SelectCustom>
       <div
         style={arrowPosition}
-        className={`select-arrow ${selected ? "selected" : ""}`}
+        className="select-arrow"
       >
         <i className="fa-solid fs-22 fa-angle-down"></i>
       </div>

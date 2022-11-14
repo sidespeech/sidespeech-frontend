@@ -83,18 +83,23 @@ const PaginationControls = ({
         Previous
       </button>
 
-      {Array.from(Array(totalPages).keys()).map((pageNumber,index) => (
-        <button
-          key={index}
-          className={`page-number-btn ${
-            currentPage === pageNumber + 1 ? "active" : ""
-          }`}
-          disabled={currentPage === pageNumber + 1}
-          onClick={() => onChangePage(pageNumber)}
-        >
-          {pageNumber + 1}
+        {Array.from(Array(totalPages).keys()).map(pageNumber => (
+            <button 
+                className={`page-number-btn ${currentPage === pageNumber + 1 ? 'active' : ''}`}
+                disabled={currentPage === pageNumber + 1}
+                key={pageNumber}
+                onClick={() => onChangePage(pageNumber + 1)}
+            >
+                {pageNumber + 1}
+            </button>
+        ))}
+
+        <button className="prev-next-btn" disabled={currentPage === totalPages} onClick={() => onChangePage(currentPage + 1)}>
+            Next
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 -5.24537e-07L12 6L6 12L4.93125 10.95L9.13125 6.75L4.5897e-07 6.75L5.90104e-07 5.25L9.13125 5.25L4.93125 1.05L6 -5.24537e-07Z" />
+            </svg>
         </button>
-      ))}
 
       <button
         className="prev-next-btn"
