@@ -1,10 +1,10 @@
 .my-nfts {
     position: relative;
-    padding: 28px;
+    padding: 28px 28px 0px 28px;
     border-radius: 20px;
-    flex: 1.2;
-    background-color: var(--bg-secondary-dark);
-    max-height: calc(100vh - 56px);
+    flex: 1;
+    background-color: var(--input);
+    max-height: calc(100vh - 110px);
 }
 
 .my-nfts .nfts.closed {
@@ -96,11 +96,13 @@
     border: 2px solid var(--green);
     border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 .my-nfts .nftCollection .the-nft.selected-2 .inner {
     border: 2px solid var(--primary);
     border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 .my-nfts .nftCollection .the-nft.selected .inner .status{
     position: absolute;
@@ -190,4 +192,5 @@
     justify-content: center;
     align-items: center;
     pointer-events: none;
+    border-radius: 0px 0px 20px 20px;
 }

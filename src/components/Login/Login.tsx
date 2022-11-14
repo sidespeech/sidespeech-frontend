@@ -47,7 +47,7 @@ export default function Login() {
     // Setup the web3 modal...
     const web3Modal = new Web3Modal({
       network: "mainnet", // optional
-      cacheProvider: false, // optional
+      cacheProvider: true, // optional
       providerOptions, // required
     });
 

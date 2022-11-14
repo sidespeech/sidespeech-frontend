@@ -1,38 +1,42 @@
 import React, { useEffect, useState } from "react";
 // redux
-import { useDispatch } from "react-redux";
-import { updateUser } from "../../../redux/Slices/UserDataSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setCurrentProfile,
+  updateCurrentProfile,
+  updateUser,
+} from "../../redux/Slices/UserDataSlice";
 // service / utilities
-import { fixURL } from "../../../helpers/utilities";
-import { apiService } from "../../../services/api.service";
+import { fixURL } from "../../helpers/utilities";
+import { apiService } from "../../services/api.service";
 // ui component
-import Button from "../../ui-components/Button";
-import InputText from "../../ui-components/InputText";
+import Button from "../ui-components/Button";
+import InputText from "../ui-components/InputText";
 // icon
-import nftIcon from "./../../../assets/example-nft.svg";
+import nftIcon from "./../../assets/example-nft.svg";
 // models
-import { NFT } from "../../../models/interfaces/nft";
-import { UserCollectionsData } from "../../../models/interfaces/UserCollectionsData";
-import { Collection } from "../../../models/interfaces/collection";
-import { User } from "../../../models/User";
+import { NFT } from "../../models/interfaces/nft";
+import { UserCollectionsData } from "../../models/interfaces/UserCollectionsData";
+import { Collection } from "../../models/interfaces/collection";
+import { User } from "../../models/User";
 // libraries
 import { toast } from "react-toastify";
 import _ from "lodash";
 import { FadeLoader } from "react-spinners";
 import "./NftsCollections.css";
-import { Profile } from "../../../models/Profile";
+import { Profile } from "../../models/Profile";
+import Switch from "../ui-components/Switch";
+import { RootState } from "../../redux/store/app.store";
 
 interface IUserNftsCollectionsProps {
-  selectedNfts: {
-    [key: string]: NFT[];
-  };
+  selectedNfts: NFT[];
   collections: Collection[];
-  user: User;
-  handleNftChange: any;
+  handleNftChange?: any;
   profile?: Profile;
   onBoarding?: any;
-  saveNftsProfilePicture?: any;
   handleSelectAll?: any;
+  setSelectedAvatar?: any;
+  selectedAvatar?: NFT | null;
 }
 
 export default function NftsCollections({
@@ -40,16 +44,17 @@ export default function NftsCollections({
   collections,
   profile,
   onBoarding,
-  user,
-  saveNftsProfilePicture,
   handleNftChange,
   handleSelectAll,
+  setSelectedAvatar,
+  selectedAvatar,
 }: IUserNftsCollectionsProps) {
   const [openCollection, setOpenCollection] = useState<boolean[]>([]);
   const [filteredCollections, setFilteredCollections] = useState<
     Collection[] | null
   >(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [groupedNfts, setGroupedNfts] = useState<{ [key: string]: NFT[] }>({});
 
   const dispatch = useDispatch();
 
@@ -60,13 +65,13 @@ export default function NftsCollections({
       const array: boolean[] = new Array(collections.length).fill(true);
       setOpenCollection(array);
       setFilteredCollections(collections);
-      console.log(JSON.stringify(collections?.[1]?.nfts?.[0]));
     }
-  }, []);
+  }, [collections]);
 
   useEffect(() => {
-    if (selectedNfts && Object.values(selectedNfts).length > 0) {
+    if (selectedNfts && selectedNfts.length > 0) {
       setLoading(false);
+      setGroupedNfts(_.groupBy(selectedNfts, "token_address"));
     }
   }, [selectedNfts]);
 
@@ -88,26 +93,33 @@ export default function NftsCollections({
   };
   //#endregion
 
-  const onSubmitNfts = async () => {
-    try {
-      if (selectedNfts) {
-        const nftsList = _.flatten(Object.values(selectedNfts));
-        await apiService.updateUserPublicNfts(user.id, nftsList);
-        dispatch(updateUser({ publicNfts: nftsList }));
-        toast.success("Settings have been updated.", {
-          toastId: 5,
-        });
-      }
-    } catch (error) {
-      toast.error("There has been an issue updating your public nfts.", {
-        toastId: 6,
+  const handleShowNfts = async (value: boolean) => {
+    if (profile) {
+      const updatedProfile = await apiService.updateProfile(profile.id, {
+        ...profile,
+        showNfts: value,
       });
+      dispatch(updateCurrentProfile(updatedProfile));
+      toast.success("Profile updated!", { toastId: 10 });
     }
   };
 
   const Header = () => {
     if (profile) {
-      return <p>Select your profile avatar</p>;
+      return (
+        <div className="flex justify-between align-center">
+          <p>Select your profile avatar</p>
+          <span className="flex align-center">
+            <span className="mr-2">Hide all NFTs</span>
+            <Switch
+              value={profile.showNfts}
+              right={"NO"}
+              left={"YES"}
+              onClick={handleShowNfts}
+            />
+          </span>
+        </div>
+      );
     } else {
       return (
         <p>
@@ -115,7 +127,7 @@ export default function NftsCollections({
           <span className="selected">
             {" "}
             {selectedNfts
-              ? _.sum(Object.values(selectedNfts).map((c) => c.length))
+              ? _.sum(Object.values(groupedNfts).map((c) => c.length))
               : 0}
           </span>
           /{_.sum(filteredCollections?.map((c) => c.nfts.length))})
@@ -125,6 +137,9 @@ export default function NftsCollections({
   };
 
   const renderNumberSelection = (collection: Collection) => {
+    const isAllSelected =
+      groupedNfts[collection.address]?.length === collection.nfts.length;
+
     return (
       <div className="float-right">
         <div className="selected mr-3">
@@ -132,7 +147,7 @@ export default function NftsCollections({
             <>
               Public :{" "}
               <span className="selected">
-                {selectedNfts[collection.address]?.length}/
+                {groupedNfts[collection.address]?.length | 0}/
               </span>
             </>
           )}
@@ -141,9 +156,9 @@ export default function NftsCollections({
         {!profile && (
           <a
             className="selectAll"
-            onClick={() => handleSelectAll(collection.nfts)}
+            onClick={() => handleSelectAll(collection.nfts, isAllSelected)}
           >
-            Select All
+            {isAllSelected ? "Deselect All" : "Select All"}
           </a>
         )}
       </div>
@@ -199,7 +214,7 @@ export default function NftsCollections({
           </div>
         )}
         {filteredCollections &&
-          selectedNfts &&
+          Object.keys(groupedNfts).length > 0 &&
           filteredCollections.map((collection, index) => {
             return (
               <div className={`nftCollection`} key={index}>
@@ -228,27 +243,34 @@ export default function NftsCollections({
                 >
                   {collection.nfts.map((nft: NFT, index: number) => {
                     const metadata = nft.metadata;
-                    const isSelected = selectedNfts[collection.address]?.some(
-                      (c) =>
-                        c.token_id === nft.token_id &&
-                        c.token_address === nft.token_address
-                    );
+                    const isSelected =
+                      !profile &&
+                      groupedNfts[collection.address]?.some((c) =>
+                        nftEqual(c, nft)
+                      );
+                    const isAvatar =
+                      selectedAvatar && nftEqual(nft, selectedAvatar);
+
                     return (
                       <div
-                        onClick={() => handleNftChange(nft)}
-                        className={`the-nft ${
-                          isSelected
-                            ? !profile
-                              ? "selected"
-                              : "selected-2"
-                            : ""
+                        onClick={(e: any) => {
+                          profile
+                            ? setSelectedAvatar(nft)
+                            : handleNftChange(nft);
+                        }}
+                        onContextMenu={(e: any) => {
+                          e.preventDefault();
+                          setSelectedAvatar(nft);
+                        }}
+                        className={`the-nft ${isSelected && "selected"} ${
+                          isAvatar && " selected-2"
                         }`}
                         key={index}
                       >
                         <div className="inner">
-                          {isSelected && (
+                          {(isSelected || isAvatar) && (
                             <div className="status">
-                              {!profile ? "Public" : "Avatar"}
+                              {!isAvatar ? "Public" : "Avatar"}
                             </div>
                           )}
                           <img
@@ -283,5 +305,11 @@ export default function NftsCollections({
         <div className="submitArea">{submitButton}</div>
       )}
     </div>
+  );
+}
+
+function nftEqual(nft: NFT, nft2: NFT) {
+  return (
+    nft.token_address === nft2.token_address && nft.token_id === nft2.token_id
   );
 }

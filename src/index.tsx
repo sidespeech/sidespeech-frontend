@@ -22,7 +22,7 @@ import OnBoarding from "./components/OnBoarding/DefaultView";
 
 // General Settings
 import GeneralSettings from "./components/GeneralSettings/DefaultView";
-import GeneralSettingsAccount from "./components/GeneralSettings/Account/Account";
+import GeneralSettingsAccount from "./components/GeneralSettings/Account/GeneralSettingsAccount";
 
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
 
