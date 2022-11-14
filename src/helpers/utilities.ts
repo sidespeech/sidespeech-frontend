@@ -84,23 +84,18 @@ export const durationToString = (
   _default: string
 ) => {
   if (!duration) return _default;
-  return `${
-    duration.years || duration.years !== 0 ? duration.years + "y " : ""
-  }${duration.months || duration.months !== 0 ? duration.months + "m " : ""}${
-    duration.days || duration.days !== 0 ? duration.days + "d " : ""
-  } ${
-    duration.hours && duration.hours < 10
+  return `${duration.years || duration.years !== 0 ? duration.years + "y " : ""
+    }${duration.months || duration.months !== 0 ? duration.months + "m " : ""}${duration.days || duration.days !== 0 ? duration.days + "d " : ""
+    } ${duration.hours && duration.hours < 10
       ? "0" + duration.hours
       : duration.hours || "00"
-  }:${
-    duration.minutes && duration.minutes < 10
+    }:${duration.minutes && duration.minutes < 10
       ? "0" + duration.minutes
       : duration.minutes || "00"
-  }:${
-    duration.seconds && duration.seconds < 10
+    }:${duration.seconds && duration.seconds < 10
       ? "0" + duration.seconds
       : duration.seconds || "00"
-  }`;
+    }`;
 };
 export const durationToStringMax1h = (
   duration: Duration | null,
@@ -109,15 +104,13 @@ export const durationToStringMax1h = (
   if (!duration) return _default;
   if (duration.days || duration.hours) return "More than 1h ago";
   else {
-    return `${
-      duration.minutes && duration.minutes < 10
+    return `${duration.minutes && duration.minutes < 10
         ? "0" + duration.minutes
         : duration.minutes || "00"
-    } min ${
-      duration.seconds && duration.seconds < 10
+      } min ${duration.seconds && duration.seconds < 10
         ? "0" + duration.seconds
         : duration.seconds || "00"
-    } sec ago`;
+      } sec ago`;
   }
 };
 
@@ -134,11 +127,16 @@ export function checkUserEligibility(
   selectedSide: Side
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
+  console.log('selectedSide :', selectedSide)
   if (selectedSide) {
-    Object.entries<any>(selectedSide.conditions).forEach(
-      ([token_address, condition]) => {
+    // Object.entries<any>(selectedSide.conditions).forEach(
+    selectedSide.metadataSides.forEach(
+      (item) => {
+        // ([token_address, condition]) => {
         const tab = [];
+        const token_address = item['metadata']['address']
         const collection = nfts[token_address];
+        const condition =  { numberNeeded : item['numberNeeded'], trait_type: item['metadata']['traitProperty'], trait_value : item['metadata']['traitValue']}
         if (!collection) {
           return;
         } else {
@@ -161,7 +159,10 @@ export function checkUserEligibility(
       }
     );
   }
-  const eligible = isEligible(res, selectedSide.conditions);
+
+  console.log('res :', res)
+  const eligible = isEligible(res, selectedSide.metadataSides);
+  console.log('eligible :', eligible)
   return [res, eligible];
 }
 
@@ -192,8 +193,7 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
   return createResponseObject(
     numberValidation,
     [],
-    `You need ${
-      number - collection.nfts.length
+    `You need ${number - collection.nfts.length
     } nfts more to meet the condition.`,
     collection.address,
     condition,
@@ -202,7 +202,10 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
 }
 
 function isEligible(result: ElligibilityResponse, conditions: any): boolean {
-  if (!conditions["requiered"]) {
+
+  console.log("conditions.find((item:any) => item['required']) :", conditions.find((item:any) => item['required']))
+
+  if (!conditions.find((item:any) => item['required'])) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>
       res.every((value) => value.type.includes("success"))
@@ -290,19 +293,19 @@ export function getRandomId() {
 }
 
 export async function getBase64(file: File): Promise<any> {
-	return new Promise((res, rej) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = () => {
-			if (reader.readyState === 2) {
-				res(reader.result);
-			}
-		};
-		reader.onerror = error => {
-			console.error('Error: ', error);
-			rej();
-		};
-	});
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        res(reader.result);
+      }
+    };
+    reader.onerror = error => {
+      console.error('Error: ', error);
+      rej();
+    };
+  });
 }
 
 export function paginateArray({
@@ -318,11 +321,11 @@ export function paginateArray({
   pages: number;
 } {
   const pages = currentPage <= 0 ? 1 : Math.ceil(array.length / pageSize);
-  const slicedArray = currentPage <= 0 ? 
-    array : currentPage > pages ? 
-      array.slice(pages, pageSize * pages) : 
-        array.slice(pageSize * (currentPage - 1), pageSize * currentPage);
-  
+  const slicedArray = currentPage <= 0 ?
+    array : currentPage > pages ?
+      array.slice(pages, pageSize * pages) :
+      array.slice(pageSize * (currentPage - 1), pageSize * currentPage);
+
   return {
     array: slicedArray,
     pages

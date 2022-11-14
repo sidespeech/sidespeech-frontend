@@ -54,8 +54,10 @@ export default function Eligibility({ side }: { side: Side }) {
   const [details, setDetails] = useState<any>([]);
 
   useEffect(() => {
+    console.log('useEffect')
     if (userCollectionsData && side) {
       const [res, isEligible] = checkUserEligibility(userCollectionsData, side);
+      console.log('[res, isEligible] :', [res, isEligible])
       setIsEligible(isEligible);
       setDetails(res);
     }

@@ -285,7 +285,6 @@ class apiService {
   }
 
   static async sendInvitation(invitation: Invitation): Promise<any> {
-    console.log(invitation);
     const res = await superagent
       .post(`${BASE_URL}/invitation`)
       .send(invitation);
@@ -341,8 +340,7 @@ class apiService {
     return res;
   }
 
-  static async savedMetadata(metadata: Metadata[]) {
-    console.log('metadata :', metadata)
+  static async savedMetadataConditions(metadata: Metadata[]) {
     const res = await superagent.post(`${BASE_URL}/metadata/many`).send({metadata: metadata});
     return res;
   }

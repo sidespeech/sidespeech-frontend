@@ -51,22 +51,6 @@ export const flattenChannels = (array: any, key: string) => {
   }, []);
 };
 
-export const filterMetadata = (collection: Collection) => {
-  const allMetadata = collection.nfts.reduce(function (prev: any, current: any) {
-    if (Array.isArray(current['metadata']['attributes'])) {
-      let metadata = current['metadata']['attributes'].map((attribute: any) => {
-        let object: Metadata = { address: current['token_address'], traitProperty: attribute['trait_type'], traitValue: attribute['value'] }
-        if (!prev.includes(object)) return object
-      })
-
-      prev = prev.concat(metadata)
-    }
-    return prev
-  }, []);
-  return allMetadata
-
-};
-
 function uniqByFilter<T>(array: T[]) {
   return array.filter((value, index) => array.indexOf(value) === index);
 }
@@ -95,19 +79,6 @@ export const fetchUserDatas = createAsyncThunk(
         res[address].nfts.push(nft);
       }
     }
-
-
-    // TEST
-    let allMetadata: Metadata[] = [];
-    for (let i = 0; i < collections.length; i++) {
-      allMetadata = allMetadata.concat(filterMetadata(collections[i]));
-    }
-
-    console.log('allMetadata finished :', allMetadata)
-
-    // await apiService.savedMetadata(collections);
-
-    // TEST
 
     dispatch(updateSidesByUserCollections(res));
     return res;
@@ -138,6 +109,7 @@ export const userDataSlice = createSlice({
   initialState,
   reducers: {
     connect: (state: UserData, action: PayloadAction<any>) => {
+      console.log('action.payload :', action.payload)
       state.user = action.payload.user;
       state.account = action.payload.account;
       let rooms = flattenChannels(state.user?.profiles, "rooms");
