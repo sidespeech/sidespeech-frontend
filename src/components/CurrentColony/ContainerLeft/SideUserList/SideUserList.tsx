@@ -14,6 +14,8 @@ import check from "../../../../assets/check.svg";
 import { ProfilePictureData } from "../../../GeneralSettings/Account/Avatar";
 import Button from "../../../ui-components/Button";
 import { fixURL, reduceWalletAddress } from "../../../../helpers/utilities";
+import { useNavigate } from "react-router-dom";
+import { setSelectedChannel, setSelectedProfile } from "../../../../redux/Slices/AppDatasSlice";
 
 export default function SideUserList({
   dots,
@@ -32,7 +34,7 @@ export default function SideUserList({
 
   return (
     <div className="f-column align-start w-100">
-      {currentSide?.profiles.map((p: Profile, index:number) => {
+      {currentSide?.profiles.map((p: Profile, index: number) => {
         const isMe = p.id === currentProfile?.id;
         const room = currentProfile?.getRoom(p.id);
         const url = p.profilePicture?.metadata?.image
@@ -41,29 +43,38 @@ export default function SideUserList({
         return (
           <>
             <ReactTooltip
-              id="global"
+              id={p.id}
               globalEventOff="click"
               place="right"
               className="tooltip-radius"
               backgroundColor="#3a445d"
+              effect="float"
+              clickable
             >
-              <ProfileTooltip user={p} />
+              <ProfileTooltip   profile={p} />
             </ReactTooltip>
             <div
               data-tip
-              data-for="global"
               data-event="click"
+              data-for={p.id}
               key={index}
-              onClick={isMe ? () => {} : () => handleSelectedUser(p, currentProfile)}
+              onClick={
+                isMe ? () => {} : () => handleSelectedUser(p, currentProfile)
+              }
               className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${
                 selectedUser && selectedUser.id === p.id && "selected-channel"
-              } ${isMe ? '' : 'pointer'}`}
+              } ${isMe ? "" : "pointer"}`}
             >
               <div className="flex align-center">
-              <UserBadge avatar={url} weight={400} fontSize={11} address={p.username} />
-              {isMe && <span className="ml-2">(you)</span>}
-            </div>
-            {room && !isMe && dots[room.id] > 0 && <Dot>{dots[room.id]}</Dot>}
+                <UserBadge
+                  avatar={url}
+                  weight={400}
+                  fontSize={11}
+                  address={p.username}
+                />
+                {isMe && <span className="ml-2">(you)</span>}
+              </div>
+              {room && !isMe && dots[room.id] > 0 && <Dot>{dots[room.id]}</Dot>}
             </div>
           </>
         );
@@ -91,18 +102,21 @@ const TooltipProfileAvatar = styled.img`
   min-width: 55px;
 `;
 
-const ProfileTooltip = ({ user }: { user: Profile }) => {
+const ProfileTooltip = ({ profile }: { profile: Profile }) => {
   const [url, setUrl] = useState<string>(defaultPP);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (
-      user.profilePicture &&
-      user.profilePicture.metadata &&
-      user.profilePicture.metadata.image
+      profile.profilePicture &&
+      profile.profilePicture.metadata &&
+      profile.profilePicture.metadata.image
     ) {
-      setUrl(fixURL(user.profilePicture.metadata.image));
+      setUrl(fixURL(profile.profilePicture.metadata.image));
     }
-  }, [user.profilePicture]);
+  }, [profile.profilePicture]);
 
   return (
     <TooltipContainer>
@@ -110,9 +124,9 @@ const ProfileTooltip = ({ user }: { user: Profile }) => {
         <div className="flex align-center gap-20 text-main">
           <TooltipProfileAvatar src={url} />
           <div style={{ lineHeight: "19px" }}>
-            <div>{user.username}</div>
+            <div>{profile.user.username}</div>
             <div className="text-inactive">
-              {reduceWalletAddress(user.user.accounts)}
+              {reduceWalletAddress(profile.user.accounts)}
               <img style={{ verticalAlign: "sub" }} src={copyAll} />
             </div>
           </div>
@@ -129,8 +143,12 @@ const ProfileTooltip = ({ user }: { user: Profile }) => {
           <Button
             children={"Profile"}
             width={"117px"}
-            onClick={undefined}
+            onClick={() => {
+              dispatch(setSelectedProfile(profile));
+              navigate(`profile/${profile.user.username}`);
+            }}
             height={44}
+            background={"rgba(125, 166, 220, 0.1)"}
           />
           <Button
             children={"Messages"}

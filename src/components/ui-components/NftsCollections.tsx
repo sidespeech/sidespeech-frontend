@@ -93,7 +93,7 @@ export default function NftsCollections({
     if (profile) {
       const updatedProfile = await apiService.updateProfile(profile.id, {
         ...profile,
-        showNfts: value,
+        showNfts: !value,
       });
       dispatch(updateCurrentProfile(updatedProfile));
       toast.success("Profile updated!", { toastId: 10 });

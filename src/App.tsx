@@ -89,7 +89,7 @@ function App() {
         </div>
       )}
       {!generalSettings ? (
-        <div className="middle-container f-column align-center justify-center">
+        <div className="middle-container f-column align-center">
           <Outlet></Outlet>
         </div>
       ) : (
