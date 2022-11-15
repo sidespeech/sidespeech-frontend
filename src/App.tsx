@@ -29,8 +29,9 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // This is used to detect we are in the general settings.
+  let onBoarding = false;
   let generalSettings = false;
+  let content;
 
   useEffect(() => {
     let account = localStorage.getItem("userAccount") || null;
@@ -58,47 +59,52 @@ function App() {
     };
   }, []);
 
-  // Conditional for checking if we are the settings page as we need a different sidebar.
+
+  if (location.pathname.indexOf("/onboarding") > -1) {
+    onBoarding = true;
+  }
   if (location.pathname.indexOf("/general-settings") > -1) {
     generalSettings = true;
   }
+  
+  if (onBoarding) {
+    content =   <div className="middle-container f-column align-center onboarding" style={{width: "100%"}}>
+                  <Outlet></Outlet>
+                </div>;
+  } else if (generalSettings) {
+    content = <div style={{ display: "flex", width: "100%"}}>
+                <div className="left-container global">
+                  <GeneralSettingsMenu />
+                </div>
+                <div className="general-settings">
+                  <Outlet></Outlet>
+                </div>
+              </div>;
+  } else {
+    content = <div style={{ display: "flex", width: "100%"}}>
+              <div className="left-container">
+                <div>
+                  <Link to="/">
+                      <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.4316 6.06323V0.0632324H18.4316V6.06323H10.4316ZM0.431641 10.0632V0.0632324H8.43164V10.0632H0.431641ZM10.4316 18.0632V8.06323H18.4316V18.0632H10.4316ZM0.431641 18.0632V12.0632H8.43164V18.0632H0.431641Z" fill="#705CE9"/>
+                      </svg>
+                  </Link>  
+                  {userData.user && <UserColonies />}
+                </div>
+                <Link to={"/general-settings"}>
+                  {" "}
+                  <div>
+                    <img width={45} height={45} src={logoSmall} alt="logo-small" />
+                  </div>
+                </Link>
+              </div>
+              <div className="middle-container f-column align-center justify-center">
+                <Outlet></Outlet>
+              </div>
+            </div>;
+  }
 
-  return (
-    <div className="main-container relative">
-      {!generalSettings ? (
-        <div className="left-container">
-          <div>
-            <Link to="/">
-                <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10.4316 6.06323V0.0632324H18.4316V6.06323H10.4316ZM0.431641 10.0632V0.0632324H8.43164V10.0632H0.431641ZM10.4316 18.0632V8.06323H18.4316V18.0632H10.4316ZM0.431641 18.0632V12.0632H8.43164V18.0632H0.431641Z" fill="#705CE9"/>
-                </svg>
-            </Link>  
-            
-            {userData.user && <UserColonies />}
-          </div>
-          <Link to={"/general-settings"}>
-            {" "}
-            <div>
-              <img width={45} height={45} src={logoSmall} alt="logo-small" />
-            </div>
-          </Link>
-        </div>
-      ) : (
-        <div className="left-container global">
-          <GeneralSettingsMenu />
-        </div>
-      )}
-      {!generalSettings ? (
-        <div className="middle-container f-column align-center justify-center">
-          <Outlet></Outlet>
-        </div>
-      ) : (
-        <div className="general-settings">
-          <Outlet></Outlet>
-        </div>
-      )}
-    </div>
-  );
+  return <div className="main-container relative">{content}</div>;
 }
 
 export default App;

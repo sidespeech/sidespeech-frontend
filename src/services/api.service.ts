@@ -43,6 +43,22 @@ class apiService {
     return checkUser.body;
   }
 
+   static async findOnBoarding(accounts: string) {
+    const checkUser = await superagent.get(
+      `${BASE_URL}/user/onboarding/${accounts}`
+    );
+
+    return checkUser.body;
+  }
+
+  static async findExistingUsername(username: string) {
+    const checkUser = await superagent.get(
+      `${BASE_URL}/user/username/${username}`
+    );
+    return checkUser.body;
+  }
+
+
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
     if (!res.body) throw new Error("Error");
