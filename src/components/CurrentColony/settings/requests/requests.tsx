@@ -95,7 +95,7 @@ export default function Requests({
             />
 
             <Button
-              width={159}
+              width={"159px"}
               height={46}
               onClick={undefined}
               radius={10}
@@ -106,7 +106,7 @@ export default function Requests({
             </Button>
 
             <Button
-              width={159}
+              width={"159px"}
               height={46}
               onClick={undefined}
               radius={10}
@@ -140,7 +140,7 @@ export default function Requests({
                   </div>
                   <div className="flex align-center">
                     <Button
-                      width={159}
+                      width={"159px"}
                       height={46}
                       onClick={() => onDecline(request, index)}
                       radius={10}
@@ -151,7 +151,7 @@ export default function Requests({
                       Decline
                     </Button>
                     <Button
-                      width={159}
+                      width={"159px"}
                       height={46}
                       onClick={() => onAccept(request, index)}
                       radius={10}

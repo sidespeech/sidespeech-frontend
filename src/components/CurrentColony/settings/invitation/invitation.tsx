@@ -153,7 +153,7 @@ export default function Invitation({
                     (user['invited']) ?
                       <label className="text-green"><i className="fa-solid fa-check mr-2"></i> Invited</label>
                       :
-                      <Button classes="size-12" width={70} height={27} radius={5} onClick={() => addInvitationUsers(user, index)} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
+                      <Button classes="size-12" width={"70px"} height={27} radius={5} onClick={() => addInvitationUsers(user, index)} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
                   }
                 </div>
               </div>
@@ -177,7 +177,7 @@ export default function Invitation({
             defaultValue={sideLink}
             radius="10px"
           />
-          <Button classes="cursor-pointer ml-4" width={150} height={40} onClick={handleCopyWalletAddress} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
+          <Button classes="cursor-pointer ml-4" width={"150px"} height={40} onClick={handleCopyWalletAddress} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
         </div>
 
         <label className="text-primary-light mt-4">Copy this link and share it with your friends to invite them in this side</label>
@@ -189,7 +189,7 @@ export default function Invitation({
         <div className="flex mt-2 align-center">
           {
             socialsMedia.map((social, index) =>
-              <Button key={index} classes="cursor-pointer mr-2" width={100} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2" />{social.label}</Button>
+              <Button key={index} classes="cursor-pointer mr-2" width={"100px"} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2" />{social.label}</Button>
             )
           }
         </div>

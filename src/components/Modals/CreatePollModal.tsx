@@ -111,7 +111,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
 
             <Button
               classes="fw-400 size-12 my-2"
-              width={127}
+              width={"127px"}
               height={32}
               onClick={addChild}
             >
@@ -121,7 +121,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
         </div>
       }
       footer={
-        <Button width={129} height={43} onClick={handleSavePoll}>
+        <Button width={"129px"} height={43} onClick={handleSavePoll}>
           Send
         </Button>
       }

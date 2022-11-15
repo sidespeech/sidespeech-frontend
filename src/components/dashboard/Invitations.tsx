@@ -178,7 +178,7 @@ const Invitations = ({ }: InvitationsProps) => {
                           <label className="align-center justify-center mt-2 ml-3 text-primary-light">{invitation['side']['name']}</label>
                           <label className="align-center justify-center mt-2 ml-3 flex">
                             <Button
-                              width={100}
+                              width={"100px"}
                               height={25}
                               onClick={undefined}
                               radius={3}
@@ -190,7 +190,7 @@ const Invitations = ({ }: InvitationsProps) => {
                             </Button>
                             {(invitation['side']['collections'].length > 1) ?
                               <Button
-                                width={50}
+                                width={"50px"}
                                 height={25}
                                 onClick={undefined}
                                 radius={3}
@@ -231,7 +231,7 @@ const Invitations = ({ }: InvitationsProps) => {
                     {/* Buttons section */}
                     <div className="flex align-center">
                       <Button
-                        width={159}
+                        width={"159px"}
                         height={46}
                         onClick={() => onDecline(invitation, index)}
                         radius={10}
@@ -245,7 +245,7 @@ const Invitations = ({ }: InvitationsProps) => {
                       {
                         (invitation['eligibility'][1]) ?
                           <Button
-                            width={159}
+                            width={"159px"}
                             height={46}
                             onClick={() => onAccept(invitation, index)}
                             radius={10}
@@ -254,7 +254,7 @@ const Invitations = ({ }: InvitationsProps) => {
                             Accept
                           </Button> :
                           <Button
-                            width={159}
+                            width={"159px"}
                             height={46}
                             onClick={() => handleEligibilityCheck(invitation['side'])}
                             radius={10}
@@ -275,13 +275,13 @@ const Invitations = ({ }: InvitationsProps) => {
               <p>Ooops!<br />Nothing here</p>
               <div className="buttons-wrapper">
                 <Link to="/new-side">
-                  <Button width={145} background="var(--bg-secondary-light)" color='white'>
+                  <Button width={"145px"} background="var(--bg-secondary-light)" color='white'>
                     <i className="fa-solid fa-circle-plus mr-2"></i>
                     Create a Side
                   </Button>
                 </Link>
                 <Link to="/">
-                  <Button width={145}>Explore</Button>
+                  <Button width={"145px"}>Explore</Button>
                 </Link>
               </div>
             </div>

@@ -686,7 +686,7 @@ const FooterButtons = ({
       {index > 0 && (
         <Button
           classes={"mt-4"}
-          width={159}
+          width={"159px"}
           height={46}
           onClick={() => newSideNextPreviousStep(index, true)}
           radius={10}
@@ -700,7 +700,7 @@ const FooterButtons = ({
 
       <Button
         classes={"mt-4"}
-        width={159}
+        width={"159px"}
         height={46}
         onClick={handleContinue}
         radius={10}

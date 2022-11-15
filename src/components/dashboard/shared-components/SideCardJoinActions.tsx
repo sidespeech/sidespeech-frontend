@@ -65,9 +65,9 @@ const SideCardJoinActions = ({ eligible, joined, priv, onJoin }: SideCardJoinAct
             </div>
            ) :
             eligible ? (
-                    <Button onClick={onJoin} width={125}>{ priv ? "Request" : "Join"}</Button>
+                    <Button onClick={onJoin} width={"125px"}>{ priv ? "Request" : "Join"}</Button>
                 ) : (
-                    <Button onClick={onJoin} width={125} background="var(--bg-secondary-light)">Conditions</Button>
+                    <Button onClick={onJoin} width={"125px"} background="var(--bg-secondary-light)">Conditions</Button>
             )}
         </SideCardJoinActionsStyled>
     );
