@@ -61,12 +61,12 @@ export default function NftsCollections({
       const array: boolean[] = new Array(collections.length).fill(true);
       setOpenCollection(array);
       setFilteredCollections(collections);
+      setLoading(false);
     }
   }, [collections]);
 
   useEffect(() => {
     if (selectedNfts && selectedNfts.length > 0) {
-      setLoading(false);
       setGroupedNfts(_.groupBy(selectedNfts, "token_address"));
     }
   }, [selectedNfts]);
@@ -185,7 +185,6 @@ export default function NftsCollections({
           </div>
         )}
         {filteredCollections &&
-          Object.keys(groupedNfts).length > 0 &&
           filteredCollections.map((collection, index) => {
             return (
               <div className={`nftCollection`} key={index}>

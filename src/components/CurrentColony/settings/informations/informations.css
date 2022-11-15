@@ -23,7 +23,6 @@
   
   .flex {
     display: flex;
-    cursor: pointer;
   }
   .yellowDiv button{
     background-color: transparent;

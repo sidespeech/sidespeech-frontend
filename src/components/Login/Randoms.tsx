@@ -132,7 +132,7 @@ export default function Randoms({
 
             {join ? (
               <Button
-                width={150}
+                width={"150px"}
                 height={35}
                 classes="mx-auto mt-3"
                 onClick={handleJoinColony}
@@ -141,7 +141,7 @@ export default function Randoms({
               </Button>
             ) : (
               <Button
-                width={150}
+                width={"150px"} 
                 height={35}
                 classes="mx-auto mt-3"
                 onClick={handleSaveUsername}
@@ -284,7 +284,7 @@ export default function Randoms({
       }
       footer={
         <div className="mt-3">
-          <Button width={149} height={43} onClick={handleSaveNfts}>
+          <Button width={"149px"} height={43} onClick={handleSaveNfts}>
             Save changes
           </Button>
         </div>

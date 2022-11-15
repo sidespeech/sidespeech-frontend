@@ -20,7 +20,7 @@ const ProfileLabel = styled.label`
   overflow: hidden;
 `;
 
-const ProfilePictureData = styled.div`
+export const ProfilePictureData = styled.div`
   height: 39px;
   width: 245px;
   border-radius: 7px;

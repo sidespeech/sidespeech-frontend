@@ -86,6 +86,12 @@ body {
 .text-secondary-light {
   color: var(--text-secondary-light);
 }
+.text-disable {
+  color: var(--disable);
+}
+.text-inactive {
+  color: var(--inactive);
+}
 .text-left {
   text-align: left;
 }
@@ -158,6 +164,9 @@ body {
 .size-40 {
   font-size: 40px;
 }
+.size-45 {
+  font-size: 45px;
+}
 .size-60 {
   font-size: 60px;
 }
@@ -170,6 +179,9 @@ body {
 }
 .gap-20 {
   gap: 20px;
+}
+.gap-30 {
+  gap: 30px;
 }
 .f-column {
   display: flex;
