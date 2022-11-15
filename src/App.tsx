@@ -91,7 +91,7 @@ function App() {
                   </Link>  
                   {userData.user && <UserColonies />}
                 </div>
-                <Link to={"/"}>
+                <Link to={"/general-settings"}>
                   {" "}
                   <div>
                     <img width={45} height={45} src={logoSmall} alt="logo-small" />

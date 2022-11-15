@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from "react";
+
 //redux
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+
 import {
   updateUser
 } from "../../../redux/Slices/UserDataSlice";
+
 // service
 import { apiService } from "../../../services/api.service";
-// models
-import { User } from "../../../models/User";
+
 // ui component
 import Button from "../../ui-components/Button";
 import InputText from "../../ui-components/InputText";
-import TextArea from "../../ui-components/TextArea";
 
 // other
 import { toast } from "react-toastify";
-import { reduceWalletAddress } from "../../../helpers/utilities";
 
 export interface InitialStateUser {
   username: string;
@@ -51,13 +50,6 @@ export default function Welcome({
     useState<InitialErrorState>(initialStateError);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const walletAddress = window.ethereum.selectedAddress;
-
-  useEffect(() => {
-      // setFormData({ username: user.username });
-  }, []);
 
   //#region Form handlers
   const onChangeUsername = async (event: any) => {
@@ -80,9 +72,6 @@ export default function Welcome({
     setFormData({ ...formData, username: username });
   };
 
-
-  localStorage.setItem("currentOnboardingStep", "step 1");
-
   //#region Submit functions
 
   const onSubmit = async () => {
@@ -99,8 +88,6 @@ export default function Welcome({
 
       // Update the set username...
       updateChosenUsername(formData.username);
-
-      // await apiService.updateUser(user.id, formData);
 
       dispatch(updateUser({ ...formData }));
     

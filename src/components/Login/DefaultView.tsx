@@ -46,19 +46,15 @@ export default function DefaultView() {
       if (onBoarding) {
         //Redirect the user to the onboarding area.
         navigate("/onboarding");
-      } else {
-        initialPage = <DashboardPage />
-      }
+        return false;
+      } 
     }
     checkOnBoarding();
+    initialPage = <DashboardPage />
   } else {
     initialPage = <DashboardPage />
   }
         
-  const showProfile = () => {
-    setShowProfileModal(true);
-  };
-  
   return (
     <>
       {initialPage}

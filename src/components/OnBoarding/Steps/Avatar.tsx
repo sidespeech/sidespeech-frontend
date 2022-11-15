@@ -4,9 +4,11 @@ import { useSelector, useDispatch } from "react-redux";
 // CSS Import
 import "./../../GeneralSettings/DefaultView.css";
 
+// service
+import { apiService } from "../../../services/api.service";
+
 import Button from "../../ui-components/Button";
 
-// Example NFT icon.
 import { RootState } from "../../../redux/store/app.store";
 import NftsCollections from "./../../ui-components/NftsCollections";
 import { NFT } from "../../../models/interfaces/nft";
@@ -17,12 +19,16 @@ import {
   updateUser
 } from "../../../redux/Slices/UserDataSlice";
 
+// other
+import { toast } from "react-toastify";
+
+import { useNavigate } from "react-router-dom";
 
 export interface InitialStateUser {
   username?: string;
   bio?: string;
-  showNfts?: boolean;
   avatar: NFT | null;
+  showNfts?: boolean;
   publicNfts: NFT[] | null;
 }
 
@@ -38,7 +44,7 @@ type ChildProps = {
   updateCurrentStep: (step: string) => void;
 }
 
-export default function PublicNFTs({
+export default function Avatar({
   updateCurrentStep
 }: ChildProps) {
   const { user, userCollectionsData } = useSelector(
@@ -46,13 +52,25 @@ export default function PublicNFTs({
   );
 
   const [formData, setFormData] = useState<InitialStateUser>(initialStateUser);
-  const dispatch = useDispatch();
 
+  const [checkedNfts, setCheckedNfts] = useState<{
+    [key: string]: NFT[];
+  } | null>(null);
+
+  // Setup an array state.
   const [collections, setCollections] = useState<Collection[]>([])
+
+  // Setup the dispatch and the navigate
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userCollectionsData && user) {
+
+      // Return the object values of the users collections.
       const collections = Object.values(userCollectionsData);
+      
+      // Check if the user has any public NFTs and set the form data.
       if (user.publicNfts) {
         setFormData({
           ...formData,
@@ -62,63 +80,63 @@ export default function PublicNFTs({
           username: user.username,
         });
       }
-      setCollections(Object.values(userCollectionsData));
+
+      // Set all of the collections
+      setCollections(collections);
+
     }
   }, [userCollectionsData, user]);
 
+
   const handleNftChange = (selectedNft: NFT) => {
-    const checkedNfts = formData.publicNfts;
     if (!checkedNfts) return;
-    const index = checkedNfts.findIndex(
+    const index = checkedNfts[selectedNft.token_address].findIndex(
       (nft) =>
         nft.token_address === selectedNft.token_address &&
         nft.token_id === selectedNft.token_id
     );
     if (index !== -1) {
-      const tmp = [...checkedNfts];
+      const tmp = [...checkedNfts[selectedNft.token_address]];
       tmp.splice(index, 1);
-      const nfts = [...tmp];
-      setFormData({ ...formData, publicNfts: nfts });
+      setCheckedNfts({ ...checkedNfts, [selectedNft.token_address]: tmp });
     } else {
-      const nfts = [...checkedNfts, selectedNft];
-      setFormData({ ...formData, publicNfts: nfts });
+      const tmp = checkedNfts[selectedNft.token_address];
+      setCheckedNfts({
+        ...checkedNfts,
+        [selectedNft.token_address]: [...tmp, selectedNft],
+      });
     }
   };
 
-  const handleSelectAll = (nfts: NFT[], isAllSelected: boolean) => {
-    const publicNfts = formData.publicNfts;
-    if (!publicNfts) return;
-    const address = nfts[0].token_address;
-    if (isAllSelected) {
-      const tmp = publicNfts.filter((nft) => nft.token_address !== address);
-      setFormData({
-        ...formData,
-        publicNfts: [...tmp],
-      });
-    } else {
-      const values = publicNfts;
-      const array = _.union(values, nfts);
-      setFormData({
-        ...formData,
-        publicNfts: [...array],
-      });
-    }
+  const handleSelectAll = (nfts: NFT[]) => {
+    if (!checkedNfts) return;
+    const values = checkedNfts[nfts[0].token_address];
+    const array = _.union(values, nfts);
+    setCheckedNfts({ ...checkedNfts, [nfts[0].token_address]: [...array] });
   };
 
   const goBack = () => {
-    return updateCurrentStep("step 2");
+    return updateCurrentStep("step 3");
   };
 
-
   const onSubmit = async () => {
-    try {
-      
-      // Update the step to go to that we are on.
-      updateCurrentStep("step 4");
+    if (!user) return;
 
-      dispatch(updateUser({ ...formData }));
+    try {
+      const updatedUser = await apiService.updateUser(user.id, formData);
+
+      dispatch(updateUser(updatedUser));
+
+      toast.success("Congratulations you are now onboarded", {
+        toastId: 3,
+      });
+
+      navigate('/');
 
     } catch (error) {
+      toast.error("There has been an issue updating your account.", {
+        toastId: 3,
+      });
       console.log(error);
     }
   };
@@ -129,11 +147,16 @@ export default function PublicNFTs({
         <div className="nft-step">
           {formData.publicNfts && collections.length > 0 && (
               <NftsCollections
-                selectedNfts={formData.publicNfts}
+                selectedNfts={[]}
                 collections={collections}
-                onBoarding={true}
                 handleNftChange={handleNftChange}
                 handleSelectAll={handleSelectAll}
+                onBoarding={true}
+                showAvatarText={true}
+                setSelectedAvatar={(data: NFT) =>
+                  setFormData({ ...formData, avatar: data })
+                }
+                selectedAvatar={formData.avatar}
               />
             )}
         </div>
@@ -159,7 +182,7 @@ export default function PublicNFTs({
             radius={10}
             color={"var(--text-primary-light)"}
           >
-              Continue
+              Finish
           </Button>
       </div>
     </>

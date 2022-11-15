@@ -117,7 +117,8 @@ h2 {
   .step-content.step2 .form-area textarea {
     width: 40%!important;
   }
-  .step-content.step3 {
+  .step-content.step3,
+  .step-content.step4 {
     margin-top: -180px;
     margin-bottom: -90px;
   }

@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from "react";
+
 //redux
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   updateUser
 } from "../../../redux/Slices/UserDataSlice";
-// service
-import { apiService } from "../../../services/api.service";
+
 // models
 import { User } from "../../../models/User";
+
 // ui component
 import Button from "../../ui-components/Button";
-import InputText from "../../ui-components/InputText";
 import TextArea from "../../ui-components/TextArea";
-
-// icons
-import checkGreen from "./../../../assets/check-green.svg";
 
 // other
 import { toast } from "react-toastify";
-import { reduceWalletAddress } from "../../../helpers/utilities";
 
 export interface InitialStateBio {
   bio: string;
