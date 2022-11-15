@@ -110,7 +110,6 @@ export const userDataSlice = createSlice({
   initialState,
   reducers: {
     connect: (state: UserData, action: PayloadAction<any>) => {
-      console.log('action.payload :', action.payload)
       state.user = action.payload.user;
       state.account = action.payload.account;
       let rooms = flattenChannels(state.user?.profiles, "rooms");

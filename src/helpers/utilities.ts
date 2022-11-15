@@ -127,7 +127,6 @@ export function checkUserEligibility(
   selectedSide: Side
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
-  console.log('selectedSide :', selectedSide)
   if (selectedSide) {
     selectedSide.metadataSides.forEach(
       (item) => {
@@ -158,9 +157,7 @@ export function checkUserEligibility(
     );
   }
 
-  console.log('res :', res)
   const eligible = isEligible(res, selectedSide.metadataSides);
-  console.log('eligible :', eligible)
   return [res, eligible];
 }
 

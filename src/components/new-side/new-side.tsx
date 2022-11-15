@@ -98,6 +98,7 @@ const initialStateSide = {
   NftTokenAddress: "",
   conditions: {},
   creatorAddress: window.ethereum.selectedAddress,
+  priv: false
 };
 
 // Data to add collection in condition
@@ -509,7 +510,10 @@ export default function NewSide() {
 
     try {
       if (formData.sideImage) {
+
+        
         const data = _.cloneDeep(formData);
+
         data["conditions"]["requiered"] = onlyOneRequired;
         data["conditions"] = JSON.stringify(data["conditions"]);
         data["NftTokenAddress"] = data["conditions"];
