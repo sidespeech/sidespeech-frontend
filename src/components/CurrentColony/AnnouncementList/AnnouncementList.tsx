@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import styled from 'styled-components';
 import { Editor } from 'react-draft-wysiwyg';
 import { Announcement } from "../../../models/Announcement";
 import AnnouncementItem from "./AnnouncementItem";
@@ -13,10 +14,55 @@ import {
   unSubscribeToEvent,
 } from "../../../helpers/CustomEvent";
 import { EventType } from "../../../constants/EventType";
+import Icons from "../../ui-components/ChannelIcons";
+import emptyScreenImg from '../../../assets/channel_empty_screen_shape.svg'
+import { getRandomId } from "../../../helpers/utilities";
 
-export default function AnnouncementList() {
+const EmptyListStyled = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  .empty-list_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url(${emptyScreenImg});
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center bottom;
+    padding: 0 8rem 10rem 8rem;
+    & .empty-list_icon {
+      display: block;
+      background-color: var(--bg-secondary-light);
+      padding: 1.2rem;
+      border-radius: 10rem;
+      & svg {
+        transform: scale(1.4);
+        & path {
+          fill: var(--text-secondary);
+        }
+      }
+    }
+    & .empty-list_title {
+      margin-bottom: .5rem;
+    }
+    & .empty-list_description {
+      color: var(--text-secondary-dark);
+    }
+  }
+`;
+
+interface AnnouncementListProps {
+  announcementId?: string; 
+  setThread?: any;
+  thread: Announcement | null;
+}
+
+export default function AnnouncementList({ announcementId, setThread, thread }: AnnouncementListProps) {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [extend, setExtend] = useState<string>("");
   const { selectedChannel, currentSide } = useSelector(
     (state: RootState) => state.appDatas
   );
@@ -24,10 +70,16 @@ export default function AnnouncementList() {
 
   const ref = useRef<Editor>(null);
 
-  const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
+  const handleReceiveAnnouncement = useCallback(({ detail }: { detail: Announcement }) => {
     if (selectedChannel?.id === detail.channelId)
-      setAnnouncements([...announcements, detail]);
-  };
+      setAnnouncements(prevState => [...prevState, detail]);
+  }, [selectedChannel]);
+
+  
+  useEffect(() => {
+    const announcementThread = announcements.filter((announ: any) => announ.id === announcementId)[0];
+    setThread?.(announcementThread);
+  }, [announcements, announcementId]);
 
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
@@ -37,7 +89,7 @@ export default function AnnouncementList() {
         handleReceiveAnnouncement
       );
     };
-  }, [announcements]);
+  }, [announcements, handleReceiveAnnouncement]);
 
   useEffect(() => {
     async function getChannelAnnouncements() {
@@ -47,11 +99,7 @@ export default function AnnouncementList() {
       setAnnouncements(announcements);
     }
     if (selectedChannel) getChannelAnnouncements();
-  }, [selectedChannel]);
-
-  const handleExtendComments = (id: string) => {
-    setExtend(id === extend ? "" : id);
-  };
+  }, [announcementId, selectedChannel]);
 
   const handleAnnouncement = async (value: string) => {
     // This will need to be made dynamic.
@@ -66,31 +114,44 @@ export default function AnnouncementList() {
     websocketService.sendAnnouncement(newAnnouncement);
   };
 
+  const Icon = Icons[selectedChannel?.type || 0];
+
   return (
     <>
-      <div
-        id="announcement-list"
-        className="w-100 overflow-auto f-column-reverse"
-      >
-        {_.orderBy(announcements, ["timestamp"], ["desc"]).map(
-          (a: Announcement, i) => {
-            return (
-              <div key={i}>
-                {" "}
+      {announcements.length ? (
+        <div
+          id="announcement-list"
+          className="w-100 overflow-auto f-column-reverse"
+        >
+          {thread ? (
+            <AnnouncementItem
+                  announcement={thread}
+                  isThread
+                />
+          ) : _.orderBy(announcements, ["timestamp"], ["desc"]).map(
+            (a: Announcement, i) => (
                 <AnnouncementItem
-                  key={a.id}
-                  extend={extend}
-                  handleExtendComments={handleExtendComments}
                   announcement={a}
-                />{" "}
-              </div>
-            );
-          }
-        )}
-      </div>
+                  className={i !== 0 ? 'border-bottom' : ''}
+                  key={a.id + getRandomId() + i}
+                />
+            )
+          )}
+        </div>
+      ) : (
+        <EmptyListStyled>
+          <div className="empty-list_wrapper">
+            <span className="empty-list_icon">
+              <Icon />
+            </span>
+            <h2 className="empty-list_title">Welcome to {selectedChannel?.name}</h2>
+            <p className="empty-list_description">This is the beginning of the channel!</p>
+          </div>
+        </EmptyListStyled>
+      )}
       {(selectedChannel?.type !== 0 ||
-        currentSide?.creatorAddress === account) && (
-        <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
+        currentSide?.creatorAddress === account) && !thread && (
+        <div className="w-100" style={{ padding: "1rem", marginTop: "auto" }}>
           <MessageInput
             id="sendmessage"
             imageUpload

@@ -31,7 +31,7 @@ export class Side {
     this.collections = _data.collections;
     this.collectionsCount = 0;
     // this.conditions = _data.conditions ? (_data.conditions instanceof String ? JSON.parse(_data.conditions) : _data.conditions) : {};
-    this.conditions = _data.conditions ? JSON.parse(_data.conditions) : {};
+    this.conditions = _data.conditions ? typeof _data.conditions === 'string' ? JSON.parse(_data.conditions) : _data.conditions : {};
     this.coverImage = _data.coverImage;
     this.creatorAddress = _data.creatorAddress;
     this.description = _data.description;

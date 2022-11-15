@@ -121,7 +121,7 @@ export default function Informations({
           Profile Picture
         </div>
 
-        <label htmlFor="input-colony-picture" className="flex">
+        <label htmlFor="input-colony-picture" className="flex pointer">
           <div className="upload-colony-image f-column align-center justify-center">
             {formData.sideImage ? (
               <img
@@ -186,7 +186,7 @@ export default function Informations({
       {/* Name Section */}
       <div className="f-column mt-3">
         <div className="text-primary-light mb-2 text fw-600 size-13">Side Name</div>
-        <div className="flex">
+        <div className="flex pointer">
           <InputText
             parentWidth="30%"
             height={35}
@@ -211,7 +211,7 @@ export default function Informations({
       {/* Description Section */}
       <div className="f-column mt-3">
         <div className="text-primary-light mb-2 text fw-600 size-13">Description</div>
-        <div className="flex">
+        <div className="flex pointer">
           <TextArea
             height={100}
             width="68%"
@@ -231,7 +231,7 @@ export default function Informations({
       {
         !isNewSide ? (
           <div className="f-column mt-3">
-            <div className="flex">
+            <div className="flex pointer">
               <div className="text-primary-light mb-1 text fw-600 mr-3">Private Side</div>
               <Switch
                 onClick={onChangePrivate}
@@ -260,7 +260,7 @@ export default function Informations({
             </Button>
 
             <div className='yellowDiv mt-3'>
-              <button className='flex mt-2' onClick={onSubmitLeaveSide}>
+              <button className='flex pointer mt-2' onClick={onSubmitLeaveSide}>
                 <i className="fa-solid fa-right-from-bracket"></i>
                 <p>Leave the side</p>
               </button>

@@ -1,9 +1,33 @@
-import React, { useEffect } from "react";
+// import React, { useEffect } from "react";
+import styled from 'styled-components';
 import TableRow from "../../../ui-components/TableRow";
 import _ from "lodash";
 import { useDispatch } from "react-redux";
-import "./members-list.css"
 import { Side } from "../../../../models/Side";
+
+const MembersListStyled = styled.div`
+  .comments-container {
+    max-height: 0px;
+    transition: max-height 0.3s;
+    margin-left: 47px;
+    overflow: hidden;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  .comments-container.extend{
+    max-height: 400px;
+    border-top: 1px solid var(--bg-secondary-light);
+    overflow: auto;
+  }
+
+  .member-list {
+    background-color: var(--bg-primary);
+    width: 60%;
+    min-height: 96px;
+    border-radius: 10px;
+  }
+`;
 
 export default function MembersList({
   currentSide,
@@ -17,7 +41,7 @@ export default function MembersList({
   };
 
   return (
-    <>
+    <MembersListStyled>
       <table className="member-list">
         <thead>
           <tr className="text-primary-light text-center">
@@ -34,6 +58,6 @@ export default function MembersList({
             })} 
         </tbody>
       </table>
-    </>
+    </MembersListStyled>
   );
 }

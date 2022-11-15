@@ -51,6 +51,7 @@ export default function SideProfileAccount({
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log('userData :', userData)
     if (userData.userCollectionsData && userData.user) {
       const collections = Object.values(userData.userCollectionsData);
       const colls: Collection[] = filterCollection(
@@ -84,6 +85,24 @@ export default function SideProfileAccount({
     }
   };
 
+  const leaveSide = async () => {
+    try {
+      if (userData['currentProfile']) {
+        const res = await apiService.leaveSide(userData['currentProfile']);
+        if (res['error'])
+          toast.error(res['message']);
+        else{
+          window.location.reload()
+          toast.success(res['message']);
+        }
+      }
+
+    } catch (error) {
+      toast.error("Error when leaving the side");
+    }
+
+  };
+
   return (
     <div className="flex p-4 w-100 text-main" style={{ gap: 30 }}>
       <UserGeneralInformations
@@ -94,6 +113,7 @@ export default function SideProfileAccount({
         displayNftsCollection={displayNftsCollection}
         setDisplayNftsCollection={setDisplayNftsCollection}
         userCollectionsData={userData.userCollectionsData}
+        leaveSide={leaveSide}
       />
       {displayNftsCollection &&
         userData &&

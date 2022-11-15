@@ -33,7 +33,10 @@ interface IUserNftsCollectionsProps {
   collections: Collection[];
   handleNftChange?: any;
   profile?: Profile;
+  onBoarding?: any;
   handleSelectAll?: any;
+  saveNftsProfilePicture?:any;
+  showAvatarText?: any;
   setSelectedAvatar?: any;
   selectedAvatar?: NFT | null;
 }
@@ -42,11 +45,19 @@ export default function NftsCollections({
   selectedNfts,
   collections,
   profile,
+  onBoarding,
+  saveNftsProfilePicture,
   handleNftChange,
   handleSelectAll,
+  showAvatarText,
   setSelectedAvatar,
   selectedAvatar,
 }: IUserNftsCollectionsProps) {
+
+  const { user, userCollectionsData } = useSelector(
+    (state: RootState) => state.user
+  );
+
   const [openCollection, setOpenCollection] = useState<boolean[]>([]);
   const [filteredCollections, setFilteredCollections] = useState<
     Collection[] | null
@@ -55,6 +66,8 @@ export default function NftsCollections({
   const [groupedNfts, setGroupedNfts] = useState<{ [key: string]: NFT[] }>({});
 
   const dispatch = useDispatch();
+
+  let submitButton;
 
   useEffect(() => {
     if (collections) {
@@ -70,6 +83,7 @@ export default function NftsCollections({
       setGroupedNfts(_.groupBy(selectedNfts, "token_address"));
     }
   }, [selectedNfts]);
+
 
   //#region NFTS handlers
   const handleCollectionShowing = (position: any) => {
@@ -101,14 +115,14 @@ export default function NftsCollections({
   };
 
   const Header = () => {
-    if (profile) {
+    if (profile || showAvatarText) {
       return (
         <div className="flex justify-between align-center">
           <p>Select your profile avatar</p>
           <span className="flex align-center">
             <span className="mr-2">Hide all NFTs</span>
             <Switch
-              value={profile.showNfts}
+              value={profile ? profile.showNfts : true}
               right={"NO"}
               left={"YES"}
               onClick={handleShowNfts}
@@ -139,7 +153,7 @@ export default function NftsCollections({
     return (
       <div className="float-right">
         <div className="selected mr-3">
-          {!profile && (
+          {!profile && !showAvatarText && (
             <>
               Public :{" "}
               <span className="selected">
@@ -149,7 +163,7 @@ export default function NftsCollections({
           )}
           {collection.nfts.length}
         </div>
-        {!profile && (
+        {!profile && !showAvatarText && (
           <a
             className="selectAll"
             onClick={() => handleSelectAll(collection.nfts, isAllSelected)}
@@ -160,6 +174,49 @@ export default function NftsCollections({
       </div>
     );
   };
+
+  const onSubmitNfts = async () => {
+    if (!user) return;
+    try {
+      if (selectedNfts) {
+        const nftsList = _.flatten(Object.values(selectedNfts));
+        await apiService.updateUserPublicNfts(user.id, nftsList);
+        dispatch(updateUser({ publicNfts: nftsList }));
+        toast.success("Settings have been updated.", {
+          toastId: 5,
+        });
+      }
+    } catch (error) {
+      toast.error("There has been an issue updating your public nfts.", {
+        toastId: 6,
+      });
+    }
+  };
+
+
+  if (!profile) {
+    submitButton =  <Button
+                      classes={"mb-3"}
+                      width={"164px"}
+                      height={44}
+                      radius={10}
+                      color={"var(--text-primary-light)"}
+                      onClick={onSubmitNfts}
+                    >
+                      Save this selection
+                    </Button>
+  } else {
+    submitButton =  <Button
+                      classes={"mb-3"}
+                      width={"164px"}
+                      height={44}
+                      radius={10}
+                      color={"var(--text-primary-light)"}
+                      onClick={saveNftsProfilePicture}
+                    >
+                      Use this NFT
+                    </Button>
+  }
 
   return (
     <div className="f-row my-nfts relative text-main">
@@ -271,6 +328,9 @@ export default function NftsCollections({
             );
           })}
       </div>
+      {!onBoarding  && (
+        <div className="submitArea">{submitButton}</div>
+      )}
     </div>
   );
 }

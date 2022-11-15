@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import "./Modal.css";
 
 interface IModalContainerProps {
   height?: string;
@@ -22,6 +21,30 @@ const ModalContainer = styled.div<IModalContainerProps>`
   & .modal-content {
     height: ${(props) => (props.height ? props.height : "fit-content")};
   }
+  .modal-footer {
+    display: flex;
+    justify-content: center;
+  }
+  .modal-content {
+    width: 700px;
+    padding: 16px 17px 24px 27px;
+    background: var(--bg-secondary-light);
+    border-radius: 10px;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal-header {
+    text-align: center;
+    font-weight: 700;
+    font-size: 30px;
+  }
+  .modal-body {
+    max-height: 506px;
+    overflow: auto;
+  }
+  
 `;
 
 export default function Modal({
@@ -42,8 +65,8 @@ export default function Modal({
   height?: string;
 }) {
   return (
-    <ModalContainer height={height}>
-      <div className="modal-content">
+    <ModalContainer height={height} onClick={() => showModal(false)}>
+      <div className="modal-content" onClick={(ev) => ev.stopPropagation()}>
         <div className="modal-header">
           <div className="flex justify-between w-100">
             {backicon && (
@@ -55,10 +78,11 @@ export default function Modal({
               </div>
             )}
             {header}
-            <i
-              onClick={() => showModal(false)}
-              className="pointer fa-solid fa-xmark size-22"
-            ></i>
+            <div onClick={() => showModal(false)}>
+              <i
+                className="pointer fa-solid fa-xmark size-22"
+              ></i>
+            </div>
           </div>
           <div>{title}</div>
         </div>

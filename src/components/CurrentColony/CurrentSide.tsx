@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./CurrentColony.css";
-import "./AnnouncementList/AnnouncementItem.css";
+import styled from 'styled-components';
 import AnnouncementList from "./AnnouncementList/AnnouncementList";
 import MiddleContainerHeader from "../ui-components/MiddleContainerHeader";
-import CurrentColonyLeft from "./ContainerLeft/CurrentColonyLeft";
+import CurrentSideLeft from "./ContainerLeft/CurrentSideLeft";
 import {
   setCurrentColony,
   setSelectedChannel,
@@ -13,33 +12,90 @@ import { RootState } from "../../redux/store/app.store";
 import Polls from "./Polls/Polls";
 import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
-import InputText from "../ui-components/InputText";
+// import InputText from "../ui-components/InputText";
 import _ from "lodash";
-import { apiService } from "../../services/api.service";
+// import { apiService } from "../../services/api.service";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
-import websocketService from "../../services/websocket.service";
+// import websocketService from "../../services/websocket.service";
 import { sideAPI } from "../../services/side.service";
 import { useParams } from "react-router-dom";
 
-export default function CurrentColony() {
-  const { id } = useParams();
+const CurrentSideStyled = styled.div`
+  .selected-channel {
+    border-radius: 10px;
+    background-color: var(--bg-primary);
+  }
+  .middle-container-center-colony {
+    height: 90vh;
+    display: flex;
+    width: 100%;
+    align-items: start;
+  }
+  .channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    color: var(--text-secondary);
+    padding: 11px 11px 11px 27px;
+    border-bottom: 1px solid var(--bg-primary);
+  }
+  #announcement-list {
+    padding: 0px 1rem;
+  }
+
+  .profile-round-small > img {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+  }
+  .profile-round-small {
+    width: 20px;
+    height: 20px;
+    background-color: var(--bg-secondary-dark);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .edit-channel > div {
+    padding: 9px 18px;
+  }
+  .edit-channel {
+    width: 100%;
+    min-height: 96px;
+    border-radius: 10px;
+  }
+  .member-list {
+    background-color: var(--bg-primary);
+    width: 100%;
+    min-height: 96px;
+    border-radius: 10px;
+  }
+`;
+
+export default function CurrentSide() {
+  const { announcementId, id } = useParams();
   const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
   const userData = useSelector((state: RootState) => state.user);
 
-  const [displayEditChannelModal, setDisplayEditChannelModal] =
-    useState<boolean>(false);
+  // const [displayEditChannelModal, setDisplayEditChannelModal] = useState<boolean>(false);
   const [createPollModal, setCreatePollModal] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
+  const [thread, setThread] = useState<Announcement | null>(null);
+
+  useEffect(() => {
+    if (!announcementId) setThread(null);
+  }, [announcementId]);
 
   useEffect(() => {
     if (selectedChannel && selectedChannel.announcements) {
@@ -59,14 +115,18 @@ export default function CurrentColony() {
 
   useEffect(() => {
     async function getSide() {
-      if (id) {
-        const res = await sideAPI.getSideById(id);
-        dispatch(setCurrentColony(res));
-        dispatch(
-          setSelectedChannel(
-            res.channels.find((c) => c.type === 0) || res.channels[0]
-          )
-        );
+      try {        
+        if (id) {
+          const res = await sideAPI.getSideById(id);
+          dispatch(setCurrentColony(res));
+          dispatch(
+            setSelectedChannel(
+              res.channels.find((c) => c.type === 0) || res.channels[0]
+            )
+          );
+        }
+      } catch (error) {
+        console.error(error);
       }
     }
     getSide();
@@ -81,11 +141,11 @@ export default function CurrentColony() {
   };
 
   return (
-    <div className="flex align-start w-100">
-      <CurrentColonyLeft />
+    <CurrentSideStyled className="flex align-start w-100">
+      <CurrentSideLeft />
 
       <div className="f-column w-100">
-        <MiddleContainerHeader room={selectedRoom} />
+        <MiddleContainerHeader channel={selectedChannel} room={selectedRoom} setThread={setThread} thread={thread} />
 
         <div className="middle-container-center-colony f-column justify-start">
           {selectedRoom ? (
@@ -94,20 +154,10 @@ export default function CurrentColony() {
             <>
               {selectedChannel && (
                 <>
-                  <div className="channel-header size-14 fw-700 mb-2">
-                    <span>
-                      <i className="fa-solid fa-hashtag mr-2"></i>
-                      {selectedChannel?.name}
-                    </span>
-                    <i
-                      className="fa-solid fa-ellipsis pointer"
-                      onClick={undefined}
-                    ></i>
-                  </div>
                   {selectedChannel.type === ChannelType.Announcement ||
                   selectedChannel.type === ChannelType.Textual ? (
                     <>
-                      <AnnouncementList />
+                      <AnnouncementList announcementId={announcementId} setThread={setThread} thread={thread} />
                     </>
                   ) : (
                     <>
@@ -134,6 +184,6 @@ export default function CurrentColony() {
       {createPollModal && selectedChannel && currentSide && (
         <CreatePollModal showModal={setCreatePollModal} />
       )}
-    </div>
+    </CurrentSideStyled>
   );
 }

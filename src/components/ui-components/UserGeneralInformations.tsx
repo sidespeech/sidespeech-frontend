@@ -49,6 +49,7 @@ interface IUserGeneralInformationsProps {
   onSubmit: any;
   displayNftsCollection?: boolean;
   setDisplayNftsCollection?: any;
+  leaveSide?:any;
 }
 
 export default function UserGeneralInformations({
@@ -60,6 +61,7 @@ export default function UserGeneralInformations({
   onSubmit,
   displayNftsCollection,
   setDisplayNftsCollection,
+  leaveSide
 }: IUserGeneralInformationsProps) {
   const [errorData, setErrorData] =
     useState<InitialErrorState>(initialStateError);
@@ -210,7 +212,7 @@ export default function UserGeneralInformations({
     return (
       <>
         {currentSide && (
-          <div onClick={undefined} className="text-red mt-4">
+          <div onClick={leaveSide} className="text-red mt-4 cursor-pointer">
             Leave the side
           </div>
         )}

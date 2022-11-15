@@ -10,7 +10,7 @@ import { Side } from "../../models/Side";
 import { UserCollectionsData } from "../../models/interfaces/UserCollectionsData";
 import { Collection } from "../../models/interfaces/collection";
 import alchemyService from "../../services/alchemy.service";
-import { sideAPI } from "../../services/side.service";
+import { getSidesMetadata, sideAPI } from "../../services/side.service";
 import { RootState } from "../store/app.store";
 import { apiService } from "../../services/api.service";
 import { Metadata } from "../../models/Metadata";
@@ -105,6 +105,17 @@ export const getSidesByCollection = createAsyncThunk(
   }
 );
 
+export const addUserParsedSide = createAsyncThunk(
+  "userData/addUserParsedSide",
+  async (side: any, { dispatch, getState }) => {
+    const state: any = getState();
+    const { sides, userCollectionsData } = state.user;
+    const response = await getSidesMetadata([side], userCollectionsData, sides);
+    dispatch(addColony(response[0]))
+    return response;
+  }
+);
+
 export const userDataSlice = createSlice({
   name: "userData",
   initialState,
@@ -139,6 +150,9 @@ export const userDataSlice = createSlice({
     },
     addColony: (state: UserData, action: PayloadAction<any>) => {
       state.sides = [...state.sides, action.payload];
+    },
+    removeSide: (state: UserData, action: PayloadAction<any>) => {
+      state.sides = state.sides.filter(side => side.id !== action.payload);
     },
     setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
       const userprofiles = state.user?.profiles;
@@ -204,6 +218,7 @@ export const {
   disconnect,
   updateUser,
   addColony,
+  removeSide,
   setCurrentProfile,
   updateCurrentProfile,
   addRoomToProfile,

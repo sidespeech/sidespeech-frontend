@@ -8,8 +8,7 @@ import { apiService } from '../../services/api.service';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import InputText from '../ui-components/InputText';
-import moment from 'moment'
-import './invitations.css'
+import moment from 'moment';
 import { checkUserEligibility } from '../../helpers/utilities';
 import Spinner from '../ui-components/Spinner';
 import { Side } from '../../models/Side';
@@ -21,6 +20,91 @@ interface InvitationsStyledProps { }
 const InvitationsStyled = styled.main<InvitationsStyledProps>`
   .title {
     margin-top: 0;
+  }
+  .requests-list {
+    position: relative;
+    padding: 20px;
+    border-radius: 10px;
+    flex: 1.2;
+    background-color: var(--bg-secondary-dark);
+    width: 96%;
+    height: 6rem;
+  }
+
+  .image-collection {
+      width: 70px;
+      height: 70px;
+      cursor: pointer;
+      background: var(--bg-secondary-dark);
+      border-radius: 5px;
+      text-align: center;
+      color: var(--bg-primary-light);
+      overflow: hidden;
+  }
+
+  .date-label {
+      color: var(--placeholer);
+  }
+
+  .spinner-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      width: 100%;
+      color: var(--text-secondary);
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--text-secondary-dark);
+  }
+
+  .override-width {
+      width: fit-content !important;
+  }
+
+  .no-results {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      width: 100%;
+      min-height: 400px;
+      color: var(--text-secondary);
+      flex-direction: column;
+      background-image: url('../../assets/dashboard/invitations_empty_screen_shape.svg');
+      background-position: center center;
+      background-size: contain;
+      background-repeat: no-repeat;
+  }
+
+
+  .no-results p {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--text-secondary-dark);
+  }
+
+  .no-results .buttons-wrapper {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+
+
+  }
+
+  .no-results .buttons-wrapper a {
+      color: inherit;
+  }
+
+  .list-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
+      grid-gap: 1rem;
+      width: 100%;
   }
 `;
 

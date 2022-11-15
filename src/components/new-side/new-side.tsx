@@ -14,7 +14,7 @@ import Channels from "../CurrentColony/settings/channels/channels";
 import Invitation from "../CurrentColony/settings/invitation/invitation";
 import { apiService } from "../../services/api.service";
 import {
-  addColony,
+  addUserParsedSide,
   updateProfiles,
   updateSidesByUserCollections,
   updateUser,
@@ -97,8 +97,8 @@ const initialStateSide = {
   description: "",
   NftTokenAddress: "",
   conditions: {},
-  creatorAddress: window.ethereum.selectedAddress,
-  priv: false
+  priv: false,
+  creatorAddress: window.ethereum?.selectedAddress,
 };
 
 // Data to add collection in condition
@@ -564,7 +564,7 @@ export default function NewSide() {
             dispatch(updateProfiles(profile));
           } catch (error) {}
         }
-        dispatch(addColony(newSide));
+        dispatch(addUserParsedSide(newSide));
         dispatch(updateSidesByUserCollections(null));
         toast.success(data.name + " has been created.", {
           toastId: 4,
