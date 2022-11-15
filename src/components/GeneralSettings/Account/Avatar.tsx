@@ -24,7 +24,7 @@ export const ProfilePictureData = styled.div`
   height: 39px;
   width: 245px;
   border-radius: 7px;
-  border: 1px solid var(--disable);
+  border: 1px solid rgba(125, 166, 220, 0.1);
   display: flex;
   align-items: center;
   padding: 8px 12px;
