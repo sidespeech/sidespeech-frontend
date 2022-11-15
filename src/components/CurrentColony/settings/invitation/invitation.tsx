@@ -10,6 +10,7 @@ import "./invitation.css"
 import { apiService } from "../../../../services/api.service";
 import { toast } from "react-toastify";
 import { Profile } from "../../../../models/Profile";
+import { State, Type } from "../../../../models/Invitation";
 
 
 export default function Invitation({
@@ -39,55 +40,6 @@ export default function Invitation({
   {
     icon: linkedin,
     label: "LinkedIn"
-  }]
-
-  const exampleUsers = [{
-    name: 'User 1',
-    invited: false
-  },
-  {
-    name: 'User 2',
-    invited: true
-  },
-  {
-    name: 'User 3',
-    invited: true
-  },
-  {
-    name: 'User 4',
-    invited: false
-  },
-  {
-    name: 'User 5',
-    invited: false
-  },
-  {
-    name: 'User 6',
-    invited: true
-  },
-  {
-    name: 'User 7',
-    invited: false
-  },
-  {
-    name: 'User 8',
-    invited: true
-  },
-  {
-    name: 'User 9',
-    invited: true
-  },
-  {
-    name: 'User 10',
-    invited: false
-  },
-  {
-    name: 'User 11',
-    invited: false
-  },
-  {
-    name: 'User 12',
-    invited: true
   }]
 
   const [usersInvite, setUsersInvite] = useState<any>([]);
@@ -125,7 +77,8 @@ export default function Invitation({
     if (userInvited) {
       let currentsInvited = [...userInvited];
       let object = {
-        state: 3,
+        state: State.Pending,
+        type: Type.Invitation,
         sender: user.sender,
         recipient: user.recipient,
         invitationLink: sideLink
@@ -141,7 +94,8 @@ export default function Invitation({
       delete user['sender']['profiles'];
 
       let object = {
-        state: 3,
+        state: State.Pending,
+        type: Type.Invitation,
         sender: { ...user.sender },
         recipient: user.recipient,
         invitationLink: sideLink,
@@ -199,7 +153,7 @@ export default function Invitation({
                     (user['invited']) ?
                       <label className="text-green"><i className="fa-solid fa-check mr-2"></i> Invited</label>
                       :
-                      <Button classes="size-12" width={70} height={27} radius={5} onClick={() => addInvitationUsers(user, index)} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
+                      <Button classes="size-12" width={"70px"} height={27} radius={5} onClick={() => addInvitationUsers(user, index)} background={'var(--bg-secondary-light)'}><i className="fa-solid fa-circle-plus mr-2"></i>Invite</Button>
                   }
                 </div>
               </div>
@@ -223,7 +177,7 @@ export default function Invitation({
             defaultValue={sideLink}
             radius="10px"
           />
-          <Button classes="cursor-pointer ml-4" width={150} height={40} onClick={handleCopyWalletAddress} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
+          <Button classes="cursor-pointer ml-4" width={"150px"} height={40} onClick={handleCopyWalletAddress} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
         </div>
 
         <label className="text-primary-light mt-4">Copy this link and share it with your friends to invite them in this side</label>
@@ -235,7 +189,7 @@ export default function Invitation({
         <div className="flex mt-2 align-center">
           {
             socialsMedia.map((social, index) =>
-              <Button key={index} classes="cursor-pointer mr-2" width={100} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2" />{social.label}</Button>
+              <Button key={index} classes="cursor-pointer mr-2" width={"100px"} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2" />{social.label}</Button>
             )
           }
         </div>

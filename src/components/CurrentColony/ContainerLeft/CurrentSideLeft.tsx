@@ -43,7 +43,7 @@ const SidebarStyled = styled.div`
   overflow-y: scroll;
 `;
 
-export default function CurrentColonyLeft() {
+export default function CurrentSideLeft() {
   const { account } = useSelector((state: RootState) => state.user);
   // const [displayColonySettings, setDisplayColonySettings] = useState<boolean>(false);
   // const [displayNewChannelModal, setDisplayNewChannelModal] = useState<boolean>(false);

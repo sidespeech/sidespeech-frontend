@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from 'styled-components';
-import "./AnnouncementList/AnnouncementItem.css";
 import AnnouncementList from "./AnnouncementList/AnnouncementList";
 import MiddleContainerHeader from "../ui-components/MiddleContainerHeader";
-import CurrentColonyLeft from "./ContainerLeft/CurrentColonyLeft";
+import CurrentSideLeft from "./ContainerLeft/CurrentSideLeft";
 import {
   setCurrentColony,
   setSelectedChannel,
@@ -30,7 +29,7 @@ const CurrentSideStyled = styled.div`
     background-color: var(--bg-primary);
   }
   .middle-container-center-colony {
-    height: calc(100vh - 51px);
+    height: 90vh;
     display: flex;
     width: 100%;
     align-items: start;
@@ -44,16 +43,8 @@ const CurrentSideStyled = styled.div`
     padding: 11px 11px 11px 27px;
     border-bottom: 1px solid var(--bg-primary);
   }
-  .annoucement-item {
-    width: 100%;
-    /* min-height: 104px; */
-    border-bottom: 1px solid var(--bg-secondary-light);
-    padding: 13px 16px 17px 16px;
-    gap: 8px;
-    color: var(--text-secondary);
-  }
   #announcement-list {
-    padding: 0px 32px 0px 27px;
+    padding: 0px 1rem;
   }
 
   .profile-round-small > img {
@@ -86,7 +77,7 @@ const CurrentSideStyled = styled.div`
 `;
 
 export default function CurrentSide() {
-  const { id } = useParams();
+  const { announcementId, id } = useParams();
   const { currentSide, selectedChannel } = useSelector(
     (state: RootState) => state.appDatas
   );
@@ -100,6 +91,11 @@ export default function CurrentSide() {
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
+  const [thread, setThread] = useState<Announcement | null>(null);
+
+  useEffect(() => {
+    if (!announcementId) setThread(null);
+  }, [announcementId]);
 
   useEffect(() => {
     if (selectedChannel && selectedChannel.announcements) {
@@ -119,14 +115,18 @@ export default function CurrentSide() {
 
   useEffect(() => {
     async function getSide() {
-      if (id) {
-        const res = await sideAPI.getSideById(id);
-        dispatch(setCurrentColony(res));
-        dispatch(
-          setSelectedChannel(
-            res.channels.find((c) => c.type === 0) || res.channels[0]
-          )
-        );
+      try {        
+        if (id) {
+          const res = await sideAPI.getSideById(id);
+          dispatch(setCurrentColony(res));
+          dispatch(
+            setSelectedChannel(
+              res.channels.find((c) => c.type === 0) || res.channels[0]
+            )
+          );
+        }
+      } catch (error) {
+        console.error(error);
       }
     }
     getSide();
@@ -142,10 +142,10 @@ export default function CurrentSide() {
 
   return (
     <CurrentSideStyled className="flex align-start w-100">
-      <CurrentColonyLeft />
+      <CurrentSideLeft />
 
       <div className="f-column w-100">
-        <MiddleContainerHeader room={selectedRoom} />
+        <MiddleContainerHeader channel={selectedChannel} room={selectedRoom} setThread={setThread} thread={thread} />
 
         <div className="middle-container-center-colony f-column justify-start">
           {selectedRoom ? (
@@ -154,20 +154,10 @@ export default function CurrentSide() {
             <>
               {selectedChannel && (
                 <>
-                  <div className="channel-header size-14 fw-700 mb-2">
-                    <span>
-                      <i className="fa-solid fa-hashtag mr-2"></i>
-                      {selectedChannel?.name}
-                    </span>
-                    <i
-                      className="fa-solid fa-ellipsis pointer"
-                      onClick={undefined}
-                    ></i>
-                  </div>
                   {selectedChannel.type === ChannelType.Announcement ||
                   selectedChannel.type === ChannelType.Textual ? (
                     <>
-                      <AnnouncementList />
+                      <AnnouncementList announcementId={announcementId} setThread={setThread} thread={thread} />
                     </>
                   ) : (
                     <>

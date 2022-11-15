@@ -14,6 +14,7 @@ import { OpenSeaRequestStatus } from "../../models/interfaces/collection";
 import Eligibility from "../CurrentColony/settings/eligibility/eligibility";
 import { toast } from "react-toastify";
 import { addUserParsedSide } from "../../redux/Slices/UserDataSlice";
+import { State, Type } from "../../models/Invitation";
 
 const eligibilityTexts = {
   success: {
@@ -47,7 +48,7 @@ const EligibilityResult = styled.div<IEligibilityResultProps>`
 `;
 interface ISideEligibilityModalProps {
   selectedSide: Side;
-  setDisplayEligibility: React.Dispatch<React.SetStateAction<boolean>>;
+  setDisplayEligibility?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function SideEligibilityModal(
@@ -64,10 +65,24 @@ export default function SideEligibilityModal(
   const [details, setDetails] = useState<any>([]);
 
   const handleJoinSide = async () => {
+    if (!user) return;
     try {
       setIsLoading(true);
-      if (user) await apiService.joinSide(user.id, props.selectedSide.id, Role.User);
-      props.setDisplayEligibility(false);
+      if (props.selectedSide['private'] === true) {
+
+        let sender:any = {...user}
+        delete sender['profiles'];
+        const object = {
+          state: State.Pending,
+          type: Type.Request,
+          sender: sender,
+          recipient: props.selectedSide['creatorAddress'],
+          side: props.selectedSide
+        }
+        await apiService.sendRequestPrivateSide(object);
+
+      } else apiService.joinSide(user.id, props.selectedSide.id, Role.User);
+      props.setDisplayEligibility?.(false);
       dispatch(addUserParsedSide(props.selectedSide));
       toast.success('Great! You join the side', { toastId: getRandomId() });
     } catch (error) {
@@ -120,7 +135,7 @@ export default function SideEligibilityModal(
         <Button
           classes="mt-3"
           disabled={!isEligible || isLoading}
-          children={"Join now"}
+          children={(props.selectedSide['private'] === true) ? "Send Request" : "Join now"}
           onClick={handleJoinSide}
         />
       }

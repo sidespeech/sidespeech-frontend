@@ -22,6 +22,7 @@ import GeneralSettings from "./components/GeneralSettings/DefaultView";
 import GeneralSettingsAccount from "./components/GeneralSettings/Account/GeneralSettingsAccount";
 
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
+import PublicUserProfile from "./components/PublicUserProfile/PublicUserProfile";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -41,33 +42,35 @@ ReactDOM.render(
       }}
     />
     <React.StrictMode>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<App />}>
-              <Route index element={<DefaultView />} />
-              <Route path="/my-sides" element={<DefaultView />} />
-              <Route path="/invitations" element={<DefaultView />} />
-              <Route path="/search" element={<DefaultView />} />
-              <Route
-                path="/CreateSideSpeechProfile"
-                element={<CreateSideSpeechProfile />}
-              />
-              <Route path="new-side" element={<NewSide />} />
-              <Route path=":id" element={<CurrentColony />}>
-                <Route path="profile/:id" element={<UserProfile />} />
-              </Route>
-              <Route path=":id/settings" element={<Settings />} />
-              <Route
-                path="/general-settings"
-                element={<GeneralSettingsAccount />}
-              />
-              <Route
-                path="/general-settings/:page"
-                element={<GeneralSettings />}
-              />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<DefaultView />} />
+            <Route path="/my-sides" element={<DefaultView />} />
+            <Route path="/invitations" element={<DefaultView />} />
+            <Route path="/search" element={<DefaultView />} />
+            <Route
+              path="/CreateSideSpeechProfile"
+              element={<CreateSideSpeechProfile />}
+            />
+            <Route path="new-side" element={<NewSide />} />
+            <Route path=":id" element={<CurrentColony />}>
+              <Route path="profile/:id" element={<UserProfile />} />
             </Route>
-          </Routes>
-        </BrowserRouter>
+            <Route path=":id/thread/:announcementId" element={<CurrentColony />} />
+            <Route path=":id/settings" element={<Settings />} />
+            <Route
+              path="/general-settings"
+              element={<GeneralSettingsAccount />}
+            />
+            <Route
+              path="/general-settings/:page"
+              element={<GeneralSettings />}
+            />
+            <Route path="/user/:username" element={<PublicUserProfile />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </React.StrictMode>
   </Provider>,
   document.getElementById("root")

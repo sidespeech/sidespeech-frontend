@@ -167,7 +167,7 @@ export default function Informations({
                 onChange={onChangeSideImage}
               />
               <Button
-                width={129}
+                width={"129px"}
                 height={36}
                 onClick={undefined}
                 radius={10}
@@ -250,7 +250,7 @@ export default function Informations({
           <>
             <Button
               classes={"mt-1"}
-              width={159}
+              width={"159px"}
               height={46}
               onClick={updateSide}
               radius={10}
@@ -283,7 +283,7 @@ export default function Informations({
                     radius="10px"
                   />
                   <Button
-                    width={149}
+                    width={"149px"}
                     height={36}
                     onClick={onSubmitSubAdmin}
                     radius={10}

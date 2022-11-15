@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
 import { Side } from '../../../models/Side';
+import SideEligibilityModal from '../../Modals/SideEligibilityModal';
 import ClampLines from '../../ui-components/ClampLines';
 import SideCardJoinActions from './SideCardJoinActions';
 import SideCardUserActions from './SideCardUserActions';

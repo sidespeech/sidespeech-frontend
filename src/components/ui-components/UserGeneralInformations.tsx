@@ -115,7 +115,7 @@ export default function UserGeneralInformations({
         <Avatar nft={formData.avatar} collectionName={collectionName} />
         {!displayNftsCollection && !user && (
           <Button
-            width={159}
+            width={"159px"}
             height={46}
             onClick={() => setDisplayNftsCollection(true)}
             radius={10}
@@ -241,7 +241,7 @@ export default function UserGeneralInformations({
         <div className="submitArea mt-5">
           <Button
             classes={"mb-3"}
-            width={164}
+            width={"164px"}
             height={44}
             radius={10}
             color={"var(--text-primary-light)"}

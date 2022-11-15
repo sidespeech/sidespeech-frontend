@@ -1,6 +1,6 @@
 .left-container {
   background-color: var(--bg-secondary);
-  min-width: 70px;
+  width: 70px;
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -26,25 +26,8 @@
   border-radius: 10px;
 }
 
-.middle-container-top {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  background-color: var(--bg-primary-dark);
-  height: 51px;
-  align-self: flex-start;
-  color: var(--text-secondary-dark);
-  border-bottom: 1px solid var(--bg-secondary-light);
-}
-
-.middle-container-top ::placeholder {
-  color: var(--text-secondary);
-  font-size: 15px;
-  font-weight: 400;
-}
 .middle-container-center {
-  height: calc(100vh - 51px);
+  height: 90vh;
   display: flex;
   width: 100%;
   justify-content: center;
@@ -61,8 +44,6 @@
   overflow: hidden;
   object-fit: cover;
 }
-
-
 
 .upload-colony-image {
   width: 70px;

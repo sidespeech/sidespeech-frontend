@@ -77,20 +77,32 @@ const AccordionStyled = styled.div<AccordionStyledProps>`
 interface AccordionProps {
     AccordionButton: any;
     children?: any;
+    hideOpenIcon?: boolean;
+    locked?: boolean;
+    openInitialState?: boolean;
 }
 
-const Accordion = ({AccordionButton, children}: AccordionProps) => {
-    const [isAccordionExpanded, setIsAccordionExpanded] = useState<boolean>(true);
+const Accordion = ({AccordionButton, children, hideOpenIcon, locked, openInitialState = true}: AccordionProps) => {
+    const [isAccordionExpanded, setIsAccordionExpanded] = useState<boolean>(openInitialState);
 
   return (
     <AccordionStyled className="" open={isAccordionExpanded}>
         <div 
-            className="accordion-btn px-2 py-2 text-secondary-light pointer"
-            onClick={() => setIsAccordionExpanded(prevState => !prevState)}
+            className={`accordion-btn px-2 py-2 text-secondary-light ${locked ? '' : 'pointer'}`}
+            onClick={locked ? () => {} : () => setIsAccordionExpanded(prevState => !prevState)}
         >
             <AccordionButton />
 
-            <ExpandButton onClick={() => setIsAccordionExpanded(prevState => !prevState)} open={isAccordionExpanded} />
+            {!hideOpenIcon && (
+              <ExpandButton 
+                onClick={(ev: any) => {
+                  ev.stopPropagation();
+                  if (locked) return;
+                  setIsAccordionExpanded(prevState => !prevState)
+                }} 
+                open={isAccordionExpanded} 
+              />
+            )}
         </div>
 
         <div className="accordion-content">
@@ -102,4 +114,4 @@ const Accordion = ({AccordionButton, children}: AccordionProps) => {
   )
 }
 
-export default Accordion
+export default Accordion;

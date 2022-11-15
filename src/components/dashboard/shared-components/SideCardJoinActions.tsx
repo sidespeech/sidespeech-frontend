@@ -32,11 +32,12 @@ const SideCardJoinActionsStyled = styled.div<SideCardJoinActionsStyledProps>`
 interface SideCardJoinActionsProps {
     eligible?: boolean;
     joined?: boolean;
+    priv?:boolean;
     onJoin?: () => void;
     onNavigate?: () => void;
 };
 
-const SideCardJoinActions = ({ eligible, joined, onJoin, onNavigate }: SideCardJoinActionsProps) => {
+const SideCardJoinActions = ({ eligible, joined, onJoin, onNavigate, priv }: SideCardJoinActionsProps) => {
     return (
         <SideCardJoinActionsStyled className={`${joined ? 'pointer' : ''}`} onClick={onNavigate}>
             <div className="side-actions_eligibility">
@@ -66,9 +67,9 @@ const SideCardJoinActions = ({ eligible, joined, onJoin, onNavigate }: SideCardJ
             </div>
            ) :
             eligible ? (
-                    <Button onClick={onJoin} width={125}>Join</Button>
+                    <Button onClick={onJoin} width={"125px"}>{ priv ? "Request" : "Join"}</Button>
                 ) : (
-                    <Button onClick={onJoin} width={125} background="var(--bg-secondary-light)">Conditions</Button>
+                    <Button onClick={onJoin} width={"125px"} background="var(--bg-secondary-light)">Conditions</Button>
             )}
         </SideCardJoinActionsStyled>
     );

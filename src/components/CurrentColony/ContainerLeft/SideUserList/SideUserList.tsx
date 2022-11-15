@@ -48,7 +48,7 @@ export default function SideUserList({
         return (
           <div key={index}
             onClick={isMe ? () => {} : () => handleSelectedUser(p, currentProfile)}
-            className={`w-100 flex justify-between align-center px-3 py-2 ${
+            className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${
               selectedUser && selectedUser.id === p.id && "selected-channel"
             } ${isMe ? '' : 'pointer'}`}
           >

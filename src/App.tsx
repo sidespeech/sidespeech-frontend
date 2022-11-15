@@ -25,7 +25,7 @@ import { apiService } from "./services/api.service";
 import { getRandomId } from "./helpers/utilities";
 
 function App() {
-  const userData = useSelector((state: RootState) => state.user);
+  const userData: any = useSelector((state: RootState) => state.user);
   const location = useLocation();
   const dispatch = useDispatch();
 

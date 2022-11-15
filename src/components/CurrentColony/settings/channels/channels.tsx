@@ -273,7 +273,7 @@ export default function Channels({
       <div style={{ paddingLeft: 25 }}>
         <Button
           classes="mt-4 fw-700"
-          width={408}
+          width={"408px"}
           height={40}
           onClick={handleAddChannel}
           radius={10}
@@ -286,7 +286,7 @@ export default function Channels({
         {/* Submit Button */}
         {!channelsNewSide ? (
           <Button
-            width={159}
+            width={"159px"}
             height={46}
             onClick={onSubmit}
             radius={10}

@@ -89,7 +89,7 @@ export default function TableRow({
       <td className="flex-1 ml-5 align-center text-center">
         {(getRole(user['role']) !== "Administrator") ? 
         <Button
-          width={70}
+          width={"70px"}
           height={35}
           onClick={() => onClickEject(user)}
           radius={10}
