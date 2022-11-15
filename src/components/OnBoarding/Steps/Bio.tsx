@@ -126,7 +126,7 @@ export default function Bio({
       <div className="actions">
           <Button
             classes={"mt-3 back"}
-            width={121}
+            width={"159px"}
             height={44}
             onClick={goBack}
             radius={10}
@@ -138,7 +138,7 @@ export default function Bio({
           {/* Submit Button */}
           <Button
             classes={"mt-3 submit"}
-            width={121}
+            width={"159px"}
             height={44}
             onClick={onSubmit}
             radius={10}

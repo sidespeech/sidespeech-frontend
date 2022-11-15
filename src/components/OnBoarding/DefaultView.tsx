@@ -7,6 +7,7 @@ import { apiService } from "../../services/api.service";
 import Welcome from "./Steps/Welcome";
 import Bio from "./Steps/Bio";
 import PublicNFTs from "./Steps/PublicNFTs";
+import Avatar from "./Steps/Avatar";
 
 import logoComplete from "./../../assets/logoComplete.svg";
 
@@ -61,6 +62,9 @@ export default function OnBoarding() {
         <li 
           className={`step3  ${currentStep == 'step 3' ? "active" : ""}`}
         ></li>
+        <li 
+          className={`step4  ${currentStep == 'step 4' ? "active" : ""}`}
+        ></li>
       </ul>
 
       <div className="content text-center">
@@ -89,6 +93,13 @@ export default function OnBoarding() {
             <PublicNFTs updateCurrentStep={(step) => updateCurrentStep(step)}/>
         </div>
 
+        <div 
+          className={`step-content step4 ${currentStep == 'step 4' ? "active" : ""}`}
+        >
+            <h1>Your avatar</h1>
+            <h2>Used by default every time you join a Side.</h2>
+            <Avatar updateCurrentStep={(step) => updateCurrentStep(step)}/>
+        </div>
 
         <div className="logoArea">
           <img src={logoComplete} />

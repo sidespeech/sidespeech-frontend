@@ -158,7 +158,7 @@ export default function Welcome({
       {/* Submit Button */}
       <Button
         classes={"mt-3"}
-        width={121}
+        width={"121px"}
         height={44}
         onClick={onSubmit}
         radius={10}

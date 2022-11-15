@@ -75,6 +75,7 @@ export default function NftsCollections({
     }
   }, [selectedNfts]);
 
+
   //#region NFTS handlers
   const handleCollectionShowing = (position: any) => {
     const updatedCollectionShowing = openCollection.map((item, index) =>
@@ -169,22 +170,22 @@ export default function NftsCollections({
   if (!profile) {
     submitButton =  <Button
                       classes={"mb-3"}
-                      width={164}
+                      width={"164px"}
                       height={44}
                       radius={10}
                       color={"var(--text-primary-light)"}
-                      onClick={onSubmitNfts}
+                      // onClick={onSubmitNfts}
                     >
                       Save this selection
                     </Button>
   } else {
     submitButton =  <Button
                       classes={"mb-3"}
-                      width={164}
+                      width={"164px"}
                       height={44}
                       radius={10}
                       color={"var(--text-primary-light)"}
-                      onClick={saveNftsProfilePicture}
+                      // onClick={saveNftsProfilePicture}
                     >
                       Use this NFT
                     </Button>
