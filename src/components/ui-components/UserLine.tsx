@@ -67,8 +67,8 @@ export default function UserLine({
         )}
       </div>
       <div className="flex-1 ml-5 align-center text-center">
-        <Button width={70} height={35} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}>Eject</Button>
+        <Button width={"70px"} height={35} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}>Eject</Button>
       </div>
     </div>
   );
-}
+} 

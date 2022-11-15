@@ -327,7 +327,7 @@ export default function Admission({
           })}
         </div>
         <Button
-          width={547}
+          width={"547px"}
           height={46}
           radius={10}
           background={"var(--bg-secondary-light)"}

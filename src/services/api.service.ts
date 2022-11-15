@@ -23,7 +23,6 @@ class apiService {
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
-
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
       .send({
@@ -62,6 +61,11 @@ class apiService {
 
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
+    if (!res.body) throw new Error("Error");
+    return new User(res.body);
+  }
+  static async getUserPublicData(username: string): Promise<User> {
+    const res = await superagent.get(`${BASE_URL}/user/public/${username}`);
     if (!res.body) throw new Error("Error");
     return new User(res.body);
   }
@@ -298,65 +302,129 @@ class apiService {
   }
 
   static async sendInvitation(invitation: Invitation): Promise<any> {
-    console.log(invitation);
     const res = await superagent
       .post(`${BASE_URL}/invitation`)
       .send(invitation);
     return res.body;
   }
 
-  static async sendMultipleInvitations(invitations:Invitation[]): Promise<any> {
-    const res = await superagent.post(`${BASE_URL}/invitation/many`).send(invitations);
-    return res.body;
-  } 
-
-  static async sendSingleInvitation(invitation:any): Promise<any> {
-    const res = await superagent.post(`${BASE_URL}/invitation`).send(invitation);
-    return res.body;
-  } 
-
-  static async getRequestsFromInvitations(userId:string, sideId:string): Promise<any> {
-    const res = await superagent.get(`${BASE_URL}/invitation/${sideId}/${userId}`);
-    return res.body;
-  } 
-
-
-  static async updateInvitationState(id:string, state:number): Promise<any> {
-    const res = await superagent.patch(`${BASE_URL}/invitation/${id}`).send({state : state});
-    return res.body;
-  } 
-
-  static async getUsersByIds(ids:string[]): Promise<any> {
-    const res = await superagent.post(`${BASE_URL}/user/ids`).send({ids : ids});
+  static async sendMultipleInvitations(
+    invitations: Invitation[]
+  ): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/invitation/many`)
+      .send(invitations);
     return res.body;
   }
-  static async updateSubAdmin(name:string, sideId:string): Promise<any> {
-    const res = await superagent.post(`${BASE_URL}/user/subadmin`).send({sideId: sideId, name:name});
-    return res.body;
-  } 
 
-  static async leaveSide(profile:Profile): Promise<any> {
-    const res = await superagent.post(`${BASE_URL}/profile/leave`).send(profile);
+  static async sendSingleInvitation(invitation: any): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/invitation`)
+      .send(invitation);
     return res.body;
-  } 
+  }
 
-  static async removeProfile(id:string): Promise<any> {
+  static async sendRequestPrivateSide(data: any): Promise<any> {
+    console.log("data :", data);
+    const res = await superagent
+      .post(`${BASE_URL}/invitation/request`)
+      .send(data);
+    return res.body;
+  }
+
+  static async getRequestsFromInvitations(
+    userId: string,
+    sideId: string
+  ): Promise<any> {
+    const res = await superagent.get(
+      `${BASE_URL}/invitation/${sideId}/${userId}`
+    );
+    return res.body;
+  }
+
+  static async updateInvitationState(id: string, state: number): Promise<any> {
+    const res = await superagent
+      .patch(`${BASE_URL}/invitation/${id}`)
+      .send({ state: state });
+    return res.body;
+  }
+
+  static async getPendingInvitationsByRecipient(
+    id: string
+  ): Promise<Invitation[]> {
+    const res = await superagent.get(
+      `${BASE_URL}/invitation/pending/recipient/${id}`
+    );
+    return res.body;
+  }
+
+  static async acceptInvitation(invitation: any): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/invitation/accepted`)
+      .send(invitation);
+    return res.body;
+  }
+
+  static async acceptRequest(invitation: any): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/invitation/request/accepted`)
+      .send(invitation);
+    return res.body;
+  }
+
+  static async getUsersByIds(ids: string[]): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/user/ids`)
+      .send({ ids: ids });
+    return res.body;
+  }
+
+  static async updateSubAdmin(name: string, sideId: string): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/user/subadmin`)
+      .send({ sideId: sideId, name: name });
+    return res.body;
+  }
+
+  static async leaveSide(profile: Profile): Promise<any> {
+    const res = await superagent
+      .post(`${BASE_URL}/profile/leave`)
+      .send(profile);
+    return res.body;
+  }
+
+  static async removeProfile(id: string): Promise<any> {
     const res = await superagent.delete(`${BASE_URL}/profile/${id}`);
     return res.body;
-  } 
+  }
+
   static async savedCollections(collections: Collection[]) {
     const copy = _.cloneDeep(collections);
+
     const data = copy.map((c: any) => {
       c.opensea = JSON.stringify(c.opensea);
       return c;
     });
-    const res = await superagent.post(`${BASE_URL}/collection/many`).send({collections: data});
+    const res = await superagent
+      .post(`${BASE_URL}/collection/many`)
+      .send({ collections: data });
     return res;
   }
 
   static async getAllCollections(): Promise<Collection[]> {
     const res = await superagent.get(`${BASE_URL}/collection`);
     return res.body;
+  }
+
+  static async getCollectionByAddress(address: string): Promise<Collection> {
+    const res = await superagent.get(`${BASE_URL}/collection/${address}`);
+    return new Collection(res.body);
+  }
+  static async getManyCollectionsByAddress(
+    addresses: string[]
+  ): Promise<Collection[]> {
+    const res = await superagent.get(`${BASE_URL}/collection/getMany`).query({addresses});
+    return res.body.map((b: any) => new Collection(b));
   }
 }
 

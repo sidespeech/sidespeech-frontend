@@ -1,12 +1,23 @@
 import { Side } from "./Side";
 import { User } from "./User";
 
+export enum Type {
+  Invitation,
+  Request,
+}
+
+export enum State {
+  Accepted,
+  Declined,
+  Pending
+}
+
 export class Invitation {
   id?:string;
   createdAt?: string;
   state: number;
-  sender: any;
-  recipient: any;
+  sender: User;
+  recipient: User;
   invitationLink: string;
   side: Side;
 
