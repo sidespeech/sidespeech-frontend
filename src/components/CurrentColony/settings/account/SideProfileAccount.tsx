@@ -89,12 +89,12 @@ export default function SideProfileAccount({
     try {
       if (userData['currentProfile']) {
         const res = await apiService.leaveSide(userData['currentProfile']);
-        console.log('res :', res)
-
         if (res['error'])
           toast.error(res['message']);
-        else
+        else{
+          window.location.reload()
           toast.success(res['message']);
+        }
       }
 
     } catch (error) {
