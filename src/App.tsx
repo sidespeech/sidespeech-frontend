@@ -9,8 +9,8 @@ import { Outlet } from "react-router-dom";
 
 // Components
 import GeneralSettingsMenu from "./components/GeneralSettings/ContainerLeft/Index";
-import UserColonies from "./components/UserColonies/UserColonies";
-import SidesList from "./components/SidesList";
+import UserColonies from "./components/UserColonies/UserSides";
+// import SidesList from "./components/SidesList";
 
 // Images
 import logoSmall from "./assets/logo.svg";
@@ -25,7 +25,7 @@ import { apiService } from "./services/api.service";
 import { getRandomId } from "./helpers/utilities";
 
 function App() {
-  const userData = useSelector((state: RootState) => state.user);
+  const userData: any = useSelector((state: RootState) => state.user);
   const location = useLocation();
   const dispatch = useDispatch();
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { checkUserEligibility, fixURL } from "../../helpers/utilities";
+import { checkUserEligibility, fixURL, getRandomId } from "../../helpers/utilities";
 import { NFT } from "../../models/interfaces/nft";
 import { Role } from "../../models/Profile";
 import { Side } from "../../models/Side";
@@ -12,6 +12,8 @@ import Modal from "../ui-components/Modal";
 import { RoundedImageContainer } from "../ui-components/styled-components/shared-styled-components";
 import { OpenSeaRequestStatus } from "../../models/interfaces/collection";
 import Eligibility from "../CurrentColony/settings/eligibility/eligibility";
+import { toast } from "react-toastify";
+import { addUserParsedSide } from "../../redux/Slices/UserDataSlice";
 import { State, Type } from "../../models/Invitation";
 
 const eligibilityTexts = {
@@ -46,21 +48,26 @@ const EligibilityResult = styled.div<IEligibilityResultProps>`
 `;
 interface ISideEligibilityModalProps {
   selectedSide: Side;
-  setDisplayEligibility?: any;
+  setDisplayEligibility?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function SideEligibilityModal(
   props: ISideEligibilityModalProps
 ) {
+  const dispatch = useDispatch();
+
   const { userCollectionsData, user } = useSelector(
     (state: RootState) => state.user
   );
 
   const [isEligible, setIsEligible] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [details, setDetails] = useState<any>([]);
 
   const handleJoinSide = async () => {
-    if (user) {
+    if (!user) return;
+    try {
+      setIsLoading(true);
       if (props.selectedSide['private'] === true) {
 
         let sender:any = {...user}
@@ -75,8 +82,13 @@ export default function SideEligibilityModal(
         await apiService.sendRequestPrivateSide(object);
 
       } else apiService.joinSide(user.id, props.selectedSide.id, Role.User);
-
-      window.location.reload();
+      props.setDisplayEligibility?.(false);
+      dispatch(addUserParsedSide(props.selectedSide));
+      toast.success('Great! You join the side', { toastId: getRandomId() });
+    } catch (error) {
+      toast.error('Ooops! Something went wrong joining this Sides', { toastId: getRandomId() });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,10 +114,7 @@ export default function SideEligibilityModal(
           </RoundedImageContainer>
           <h2>{props.selectedSide.name}</h2>
           <div className="text-center">
-            {props.selectedSide.description}fseufnuseif fesfiesuf ieufnesif
-            pkzpof esibfse qbzdnizqdn esfnoesinf qnqzdo fesfunqoidfnoif eoinff
-            qzidnf ofo fisnfe onq foie qonf qefjnosne sseonso ienf qopa pesoj
-            q,, neqen eonfo oenfoes
+            {props.selectedSide.description}
           </div>
           <EligibilityResult isEligible={isEligible}>
             <div>
@@ -125,7 +134,7 @@ export default function SideEligibilityModal(
       footer={
         <Button
           classes="mt-3"
-          disabled={!isEligible}
+          disabled={!isEligible || isLoading}
           children={(props.selectedSide['private'] === true) ? "Send Request" : "Join now"}
           onClick={handleJoinSide}
         />

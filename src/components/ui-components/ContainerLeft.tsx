@@ -17,7 +17,7 @@ const ContainerLeft = styled.div<DivProps>`
   height: ${(props) => (props.height ? props.height : "92")}vh;
   display: ${(props) => (props.display ? props.display : "flex")};
   flex-direction: ${(props) => (props.flexDirection ? props.flexDirection : "column")};
-  padding-top: ${(props) => (props.paddingTop ? props.paddingTop : "11")}px;
+  padding-top: ${(props) => (typeof props.paddingTop === "number" ? props.paddingTop : "11")}px;
   color: ${(props) => (props.color ? props.color : "var(--text-primary-light)")};
   background-color: ${(props) => (props.backgroundColor ? props.backgroundColor : "")};
   border-right: 1px solid var(--disable)
