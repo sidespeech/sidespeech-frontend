@@ -1,4 +1,5 @@
 import { Channel } from "./Channel";
+import { MetadataSides } from "./MetadataSides";
 import { Profile } from "./Profile";
 
 export class Side {
@@ -23,6 +24,7 @@ export class Side {
   profiles: Profile[];
   invitations: any[];
   collections: any[];
+  metadataSides: MetadataSides[];
 
   constructor(_data: any) {
     this.channels = _data.channels;
@@ -47,5 +49,6 @@ export class Side {
     this.priv = _data.private;
     this.private = _data.private;
     this.sideImage = _data.sideImage;
+    this.metadataSides = _data.metadataSides;
   }
 }
