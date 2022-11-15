@@ -1,18 +1,31 @@
+// import React, { useEffect, useState } from "react";
+import styled from 'styled-components';
 import _ from "lodash";
-import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { EventType } from "../../../../constants/EventType";
-import {
-  subscribeToEvent,
-  unSubscribeToEvent,
-} from "../../../../helpers/CustomEvent";
-import { Announcement } from "../../../../models/Announcement";
-import { Channel } from "../../../../models/Channel";
-import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
-import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
+// import { EventType } from "../../../../constants/EventType";
+// import {
+//   subscribeToEvent,
+//   unSubscribeToEvent,
+// } from "../../../../helpers/CustomEvent";
+// import { Announcement } from "../../../../models/Announcement";
+import { Channel, ChannelType } from "../../../../models/Channel";
+// import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
+// import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
 import { RootState } from "../../../../redux/store/app.store";
-import { apiService } from "../../../../services/api.service";
+// import { apiService } from "../../../../services/api.service";
 import { Dot } from "../../../ui-components/styled-components/shared-styled-components";
+import Icons from '../../../ui-components/ChannelIcons';
+
+const ChannelsListStyled = styled.div`
+  svg {
+    & > path {
+      fill: #B4C1D2;
+    }
+  &.selected > path {
+    fill: #705CE9;
+  }
+  }
+`;
 
 export default function ChannelsList({ channels, dots, onChannelSelected }: { channels: Channel[];  dots:any; onChannelSelected:any }) {
   const dispatch = useDispatch();
@@ -20,22 +33,22 @@ export default function ChannelsList({ channels, dots, onChannelSelected }: { ch
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
 
   return (
-    <div className="mt-2">
+    <ChannelsListStyled className="pl-2 mt-3">
       {channels.map((c, index) => {
+        const Icon = Icons[c.type];
+        const isSelected = selectedChannel?.id === c.id;
+
         return (
           <div
             onClick={() => onChannelSelected(c)}
             key={index}
-            className={`w-100 flex align-center justify-between px-2 mt-1 pointer ${
-              selectedChannel &&
-              selectedChannel.id === c.id &&
+            className={`w-100 flex align-center justify-between px-2 py-2 pointer ${
+              isSelected &&
               "selected-channel"
             }`}
           >
             <span className="fw-600 size-12 flex align-center px-1 py-1">
-              {c.isVisible ? (
-                <i className="fa-solid fa-hashtag mr-2"></i>
-              ) : (
+              {c.isVisible ? (<Icon className={`mr-2 ${isSelected ? 'selected' : ''}`} />) : (
                 <i className="fa-solid fa-lock mr-2"></i>
               )}
 
@@ -45,6 +58,6 @@ export default function ChannelsList({ channels, dots, onChannelSelected }: { ch
           </div>
         );
       })}
-    </div>
+    </ChannelsListStyled>
   );
 }

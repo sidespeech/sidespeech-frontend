@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -17,6 +17,7 @@ import PaginationControls from '../ui-components/PaginationControls';
 import Spinner from '../ui-components/Spinner';
 import { searchFiltersInitialState, searchFiltersProps } from './DashboardPage';
 import SideCardItem from './shared-components/SideCardItem';
+import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg'
 
 interface SearchStyledProps {}
 
@@ -62,10 +63,11 @@ const SearchStyled = styled.main<SearchStyledProps>`
   }
   .no-results {
     flex-direction: column;
-    background-image: url();
+    background-image: url(${noResultsImg});
     background-position: center center;
     backgound-size: contain;
     background-repeat: no-repeat;
+    margin: 80px 0;
     & p {
       text-align: center;
       font-size: 1.5rem;
@@ -121,7 +123,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
     const [selectedSide, setSelectedSide] = useState<Side | null>(null);
     const [totalResults, setTotalResults] = useState<number>(0);
 
-    const { userCollectionsData } = useSelector(
+    const { sides, user, userCollectionsData } = useSelector(
         (state: RootState) => state.user
     );
 
@@ -131,30 +133,27 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
         return () => setSearchFilters(searchFiltersInitialState);
     }, []);
 
-    useEffect(() => {
-      async function getSearchSides() {
-        try {
-            setSidesLoading(true);
-            const response = await sideAPI.getSidesBySearchValue(
-              _searchText, 
-              searchFilters.collections
-            );
-            const sidesWithElegibility = response.map((side: Side) => {
-              const [_, eligible] = checkUserEligibility(userCollectionsData, side);
-              return({
-              ...side,
-              eligible
-            })})
-            setFilteredSides(sidesWithElegibility);
-        } catch (error) {
-            console.error(error);
-            toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
-        } finally {
-            setSidesLoading(false);
-        }
+    const getSearchSides = useCallback(async () => {
+      try {
+          setSidesLoading(true);
+          const response = await sideAPI.getSidesBySearchValue(
+            _searchText, 
+            searchFilters.collections,
+            userCollectionsData,
+            sides
+          );
+          setFilteredSides(response);
+      } catch (error) {
+          console.error(error);
+          toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
+      } finally {
+          setSidesLoading(false);
       }
-      if (Object.keys(userCollectionsData).length) getSearchSides();
-    }, [_searchText, searchFilters.collections, userCollectionsData]);
+    }, [_searchText, searchFilters.collections, sides, userCollectionsData])
+
+    useEffect(() => {
+      getSearchSides();
+    }, [getSearchSides]);
 
     useEffect(() => {
       let parsedArray = searchFilters.elegibility === 'eligible' ?
@@ -230,24 +229,13 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
         </div>
         ) : !!sidesList?.length ? (
             <div className="list-wrapper">
-              {sidesList.map(side => (
-                    <React.Fragment key={side.id}>
-                        {side.joined ? (
-                            <Link to={`/${side.id}`}>
-                                <SideCardItem 
-                                    joined 
-                                    onJoin={handleEligibilityCheck}
-                                    side={side} 
-                                />
-                            </Link>
-                        ) : (
-                            <SideCardItem 
-                                eligible={!!side.eligible} 
-                                onJoin={handleEligibilityCheck}
-                                side={side} 
-                            />
-                        )}
-                    </React.Fragment>
+              {sidesList.map(side => (                        
+                <SideCardItem
+                    key={side.id}
+                    onJoin={handleEligibilityCheck}
+                    side={side} 
+                    userProfiles={user?.profiles || []}
+                />
               ))}
             </div>
           ) : (

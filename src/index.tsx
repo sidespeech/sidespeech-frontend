@@ -8,7 +8,7 @@ import { store } from "./redux/store/app.store";
 import { ToastContainer } from "react-toastify";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DefaultView from "./components/Login/DefaultView";
-import CurrentColony from "./components/CurrentColony/CurrentColony";
+import CurrentColony from "./components/CurrentColony/CurrentSide";
 import "react-leaf-polls/dist/index.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./override.css";
@@ -57,6 +57,7 @@ ReactDOM.render(
             <Route path=":id" element={<CurrentColony />}>
               <Route path="profile/:id" element={<UserProfile />} />
             </Route>
+            <Route path=":id/thread/:announcementId" element={<CurrentColony />} />
             <Route path=":id/settings" element={<Settings />} />
             <Route
               path="/general-settings"
