@@ -197,7 +197,7 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
 }
 
 function isEligible(result: ElligibilityResponse, conditions: any): boolean {
-  if (!conditions.find((item:any) => item['required'])) {
+  if (conditions.find((item:any) => item['required'])) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>
       res.every((value) => value.type.includes("success"))
