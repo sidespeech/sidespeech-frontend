@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiService } from "../../services/api.service";
 import logo from "../../assets/logo.svg";
 import { fixURL } from "../../helpers/utilities";
@@ -24,9 +24,13 @@ import styled from "styled-components";
 import { UserAvatar } from "./UserAvatar";
 import { NftItem } from "./NftItem";
 import useLogin from "../../hooks/useLogin";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/app.store";
 import { Profile } from "../../models/Profile";
+import websocketService from "../../services/websocket.service";
+import { addRoomToProfile } from "../../redux/Slices/UserDataSlice";
+import { setSelectedRoom } from "../../redux/Slices/ChatSlice";
+import { setSelectedChannel } from "../../redux/Slices/AppDatasSlice";
 
 interface IDataCard {
   background: string;
@@ -64,7 +68,12 @@ const DataAddress = styled.div`
 
 export default function PublicUserProfile({ profile }: { profile?: Profile }) {
   const { username } = useParams();
+
   const userData = useSelector((state: RootState) => state.user);
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState<User | null>(null);
   const [collections, setCollections] = useState<Collection[] | null>(null);
@@ -73,8 +82,6 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
   const [link, setLink] = useState<string>("");
   const [filteredNfts, setFilteredNfts] = useState<NFT[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<string>("All");
-
-  const { currentSide } = useSelector((state: RootState) => state.appDatas);
 
   const { connectWallet } = useLogin();
 
@@ -134,6 +141,41 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
     }
   };
 
+  const handleSelectedUser = async (
+    profile: Profile,
+    currentProfile: Profile
+  ) => {
+    try {
+      // getting account
+      const connectedAccount = window.ethereum.selectedAddress;
+      // getting room for given profile id
+      let room = currentProfile?.getRoom(profile.id);
+      if (!currentProfile || !connectedAccount) return;
+      // if room not exist in profile
+      if (!room) {
+        // creating the room
+        room = await apiService.createRoom(currentProfile.id, profile.id);
+        // add this room in the user websocket
+        websocketService.addRoomToUsers(room.id, [
+          currentProfile.id,
+          profile.id,
+        ]);
+        // add the room to profile
+        dispatch(addRoomToProfile(room));
+      }
+      // selecting the room
+      dispatch(setSelectedRoom(room));
+      dispatch(setSelectedChannel(null));
+      navigate(`/${currentSide?.id}`)
+
+    } catch (error) {
+      console.error(error);
+      toast.error("There has been an error opening the room", {
+        toastId: 20,
+      });
+    }
+  };
+
   return (
     <div
       className="flex align-start justify-center"
@@ -147,10 +189,12 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
         className="f-column w-100 align-center justify-start gap-30"
         style={{ maxWidth: 1094 }}
       >
-      {!profile &&  <h1 className="flex align-center gap-20 size-45 fw-700 text-white">
-          <img src={logo} />
-          <span>SideSpeech</span>
-        </h1>}
+        {!profile && (
+          <h1 className="flex align-center gap-20 size-45 fw-700 text-white">
+            <img src={logo} />
+            <span>SideSpeech</span>
+          </h1>
+        )}
         {user ? (
           <>
             <div className="flex gap-30  text-main w-100">
@@ -217,7 +261,10 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
                     <Button
                       height={44}
                       children={"Send a message"}
-                      onClick={connectWallet}
+                      onClick={() => {
+                        if (profile && userData.currentProfile)
+                          handleSelectedUser(profile, userData.currentProfile);
+                      }}
                     />
                   ) : (
                     <Button
@@ -232,9 +279,9 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
                         <span className="text-inactive">
                           {profile
                             ? `https://side.xyz/${currentSide?.id}/profile/`
-                            : "https://side.xyz/user/"}
+                            : "https://side.xyz/user/"}<span className="text-main">{username}</span>
                         </span>
-                        <span>{username}</span>
+                        
                       </>
                     }
                   </DataAddress>
