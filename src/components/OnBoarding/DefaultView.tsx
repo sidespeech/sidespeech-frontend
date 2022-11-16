@@ -26,14 +26,7 @@ export default function OnBoarding() {
     setChosenUsername(username);
   }
 
-  const userData = useSelector((state: RootState) => state.user);
-  const redirect = useSelector((state: RootState) => state.redirect);
-
   const connectedWallet = window.ethereum.selectedAddress;
-
-  // Sort out if they refresh issue.
-  // localStorage.setItem("currentOnboardingStep", currentStep);
-  // console.log(localStorage.getItem("currentOnboardingStep"));
 
   const navigate = useNavigate();
 
@@ -84,21 +77,20 @@ export default function OnBoarding() {
             <Bio updateCurrentStep={(step) => updateCurrentStep(step)}/>
         </div>
 
-
         <div 
           className={`step-content step3 ${currentStep == 'step 3' ? "active" : ""}`}
         >
-            <h1>Your public NFTs</h1>
-            <h2>Choose which NFTs you want to make public</h2>
-            <PublicNFTs updateCurrentStep={(step) => updateCurrentStep(step)}/>
+            <h1>Your avatar</h1>
+            <h2>Used by default every time you join a Side.</h2>
+            <Avatar updateCurrentStep={(step) => updateCurrentStep(step)}/>
         </div>
 
         <div 
           className={`step-content step4 ${currentStep == 'step 4' ? "active" : ""}`}
         >
-            <h1>Your avatar</h1>
-            <h2>Used by default every time you join a Side.</h2>
-            <Avatar updateCurrentStep={(step) => updateCurrentStep(step)}/>
+            <h1>Your public NFTs</h1>
+            <h2>Choose which NFTs you want to make public</h2>
+            <PublicNFTs updateCurrentStep={(step) => updateCurrentStep(step)}/>
         </div>
 
         <div className="logoArea">

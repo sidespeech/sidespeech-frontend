@@ -6,6 +6,9 @@ import "./../../GeneralSettings/DefaultView.css";
 
 import Button from "../../ui-components/Button";
 
+// service
+import { apiService } from "../../../services/api.service";
+
 // Example NFT icon.
 import { RootState } from "../../../redux/store/app.store";
 import NftsCollections from "./../../ui-components/NftsCollections";
@@ -17,6 +20,10 @@ import {
   updateUser
 } from "../../../redux/Slices/UserDataSlice";
 
+// other
+import { toast } from "react-toastify";
+
+import { useNavigate } from "react-router-dom";
 
 export interface InitialStateUser {
   username?: string;
@@ -46,14 +53,17 @@ export default function PublicNFTs({
   );
 
   const [formData, setFormData] = useState<InitialStateUser>(initialStateUser);
+  
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [collections, setCollections] = useState<Collection[]>([])
 
   useEffect(() => {
     if (userCollectionsData && user) {
       const collections = Object.values(userCollectionsData);
-      if (user.publicNfts) {
+
+      // if (user.username) {
         setFormData({
           ...formData,
           publicNfts: user.publicNfts,
@@ -61,8 +71,12 @@ export default function PublicNFTs({
           avatar: user.userAvatar,
           username: user.username,
         });
-      }
-      setCollections(Object.values(userCollectionsData));
+      // }
+
+      console.log('inUserEffect: ', user.userAvatar);
+      console.log('inUserEffect: formData ', formData);
+
+      setCollections(Object.values(collections));
     }
   }, [userCollectionsData, user]);
 
@@ -106,19 +120,27 @@ export default function PublicNFTs({
   };
 
   const goBack = () => {
-    return updateCurrentStep("step 2");
+    return updateCurrentStep("step 3");
   };
 
-
   const onSubmit = async () => {
-    try {
-      
-      // Update the step to go to that we are on.
-      updateCurrentStep("step 4");
+    if (!user) return;
 
-      dispatch(updateUser({ ...formData }));
+    try {
+
+      const updatedUser = await apiService.updateUser(user.id, formData);
+      dispatch(updateUser(updatedUser));
+
+      toast.success("Congratulations you are now onboarded", {
+        toastId: 3,
+      });
+
+      navigate('/');
 
     } catch (error) {
+      toast.error("There has been an issue updating your account.", {
+        toastId: 3,
+      });
       console.log(error);
     }
   };
@@ -159,7 +181,7 @@ export default function PublicNFTs({
             radius={10}
             color={"var(--text-primary-light)"}
           >
-              Continue
+              Finish
           </Button>
       </div>
     </>

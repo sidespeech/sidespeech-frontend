@@ -4,9 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 // CSS Import
 import "./../../GeneralSettings/DefaultView.css";
 
-// service
-import { apiService } from "../../../services/api.service";
-
 import Button from "../../ui-components/Button";
 
 import { RootState } from "../../../redux/store/app.store";
@@ -19,16 +16,13 @@ import {
   updateUser
 } from "../../../redux/Slices/UserDataSlice";
 
-// other
-import { toast } from "react-toastify";
-
 import { useNavigate } from "react-router-dom";
 
 export interface InitialStateUser {
   username?: string;
   bio?: string;
-  avatar: NFT | null;
   showNfts?: boolean;
+  userAvatar: NFT | null;
   publicNfts: NFT[] | null;
 }
 
@@ -36,7 +30,7 @@ const initialStateUser = {
   username: "",
   bio: "",
   showNfts: false,
-  avatar: null,
+  userAvatar: null,
   publicNfts: null,
 };
 
@@ -71,15 +65,15 @@ export default function Avatar({
       const collections = Object.values(userCollectionsData);
       
       // Check if the user has any public NFTs and set the form data.
-      if (user.publicNfts) {
+      // if (user.publicNfts) {
         setFormData({
           ...formData,
           publicNfts: user.publicNfts,
           bio: user.bio,
-          avatar: user.userAvatar,
+          userAvatar: user.userAvatar,
           username: user.username,
         });
-      }
+      // }
 
       // Set all of the collections
       setCollections(collections);
@@ -116,27 +110,16 @@ export default function Avatar({
   };
 
   const goBack = () => {
-    return updateCurrentStep("step 3");
+    return updateCurrentStep("step 2");
   };
 
   const onSubmit = async () => {
-    if (!user) return;
-
     try {
-      const updatedUser = await apiService.updateUser(user.id, formData);
-
-      dispatch(updateUser(updatedUser));
-
-      toast.success("Congratulations you are now onboarded", {
-        toastId: 3,
-      });
-
-      navigate('/');
+      
+      updateCurrentStep("step 4");
+      dispatch(updateUser({ ...formData }));
 
     } catch (error) {
-      toast.error("There has been an issue updating your account.", {
-        toastId: 3,
-      });
       console.log(error);
     }
   };
@@ -154,9 +137,9 @@ export default function Avatar({
                 onBoarding={true}
                 showAvatarText={true}
                 setSelectedAvatar={(data: NFT) =>
-                  setFormData({ ...formData, avatar: data })
+                  setFormData({ ...formData, userAvatar: data })
                 }
-                selectedAvatar={formData.avatar}
+                selectedAvatar={formData.userAvatar}
               />
             )}
         </div>
@@ -182,7 +165,7 @@ export default function Avatar({
             radius={10}
             color={"var(--text-primary-light)"}
           >
-              Finish
+              Continue
           </Button>
       </div>
     </>
