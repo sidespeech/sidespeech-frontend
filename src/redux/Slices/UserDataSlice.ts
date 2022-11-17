@@ -13,6 +13,7 @@ import alchemyService from "../../services/alchemy.service";
 import { getSidesMetadata, sideAPI } from "../../services/side.service";
 import { RootState } from "../store/app.store";
 import { apiService } from "../../services/api.service";
+import { Metadata } from "../../models/Metadata";
 
 export interface UserData {
   user: User | null;
@@ -50,6 +51,10 @@ export const flattenChannels = (array: any, key: string) => {
   }, []);
 };
 
+function uniqByFilter<T>(array: T[]) {
+  return array.filter((value, index) => array.indexOf(value) === index);
+}
+
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string, { dispatch, getState }) => {
@@ -61,6 +66,7 @@ export const fetchUserDatas = createAsyncThunk(
     );
 
     await apiService.savedCollections(collections);
+
     let res: any = {};
     for (let nft of nfts) {
       const address = nft["token_address"];
@@ -74,6 +80,7 @@ export const fetchUserDatas = createAsyncThunk(
         res[address].nfts.push(nft);
       }
     }
+
     dispatch(updateSidesByUserCollections(res));
     return res;
   }
@@ -117,14 +124,17 @@ export const userDataSlice = createSlice({
       state.user = action.payload.user;
       state.account = action.payload.account;
       let rooms = flattenChannels(state.user?.profiles, "rooms");
+
       state.sides = action.payload.user.profiles
         ? action.payload.user.profiles.map((p: Profile) => {
-            p.side["profiles"] = [p];
-            return p.side;
-          })
+          p.side["profiles"] = [p];
+          return p.side;
+        })
         : [];
       state.redirectTo = action.payload.redirectTo;
+
       rooms = rooms?.concat(flattenChannels(state.sides, "channels"));
+
       websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {

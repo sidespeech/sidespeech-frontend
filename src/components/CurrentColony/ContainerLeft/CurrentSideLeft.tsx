@@ -21,6 +21,7 @@ import { addRoomToProfile } from "../../../redux/Slices/UserDataSlice";
 import { toast } from "react-toastify";
 import { getRandomId } from "../../../helpers/utilities";
 import Accordion from "../../ui-components/Accordion";
+import { NotificationType } from "../../../models/Notification";
 
 interface CoverImgProps {
   backgroundImage?: string;
@@ -86,6 +87,7 @@ export default function CurrentSideLeft() {
     const connectedAccount = localStorage.getItem("userAccount");
     // getting room for given profile id
     let room = currentProfile?.getRoom(profile.id);
+
     if (!currentProfile || !connectedAccount) return;
     // if room not exist in profile
     if (!room) {
@@ -126,7 +128,7 @@ export default function CurrentSideLeft() {
     let dotsPrivateMessageCopy:any = {...dotsPrivateMessage}
     let dotsChannelCopy:any = {...dotsChannel}
     for (let notification of notifications) {
-      if (notification['type'] === 1) {
+      if (notification['type'] === NotificationType.Channel) {
         if (!selectedChannel && notification['name'] in dotsChannelCopy) dotsChannelCopy[notification.name] += 1
         else if (selectedChannel && notification['name'] === selectedChannel!.id) {
           dotsChannelCopy[notification['name']] = 0

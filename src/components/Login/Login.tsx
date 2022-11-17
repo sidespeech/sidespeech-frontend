@@ -97,8 +97,14 @@ export default function Login() {
         // Send the wallet to the api service.
         const user = await apiService.walletConnection(accounts, signature);
 
-        // Redirect the user to the general settings page.
-        navigate("/general-settings");
+        if (existingUser == undefined) {
+          // Redirect the user to the onboarding area.
+          navigate("/onboarding");
+        } else {
+          // Redirect the user to the general settings page.
+          navigate("/");
+        }
+        
 
         // Dispatch the account that is connected to the redux slice.
         dispatch(connect({ account: accounts[0], user: user }));
@@ -141,7 +147,7 @@ export default function Login() {
   }
 
   return (
-    <div className="f-column align-center">
+    <div className="f-column align-center my-auto">
       <div style={{ marginBottom: 26 }}>
         <img src={logo} alt="colony-logo" />
       </div>
