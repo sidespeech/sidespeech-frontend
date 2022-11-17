@@ -9,7 +9,6 @@ import {
   setSelectedChannel,
 } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
-import PollsList from "./Polls/PollsList";
 import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
 // import InputText from "../ui-components/InputText";
@@ -25,7 +24,7 @@ import { sideAPI } from "../../services/side.service";
 import { useParams } from "react-router-dom";
 import { Poll } from "../../models/Poll";
 
-import { Outlet, useOutletContext, useParams } from "react-router-dom";
+import { Outlet, useOutletContext } from "react-router-dom";
 import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
 
 

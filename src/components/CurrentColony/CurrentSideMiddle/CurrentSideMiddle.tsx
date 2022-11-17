@@ -6,7 +6,8 @@ import Button from "../../ui-components/Button";
 import AnnouncementList from "../AnnouncementList/AnnouncementList";
 import ChatComponent from "../ChatComponent/ChatComponent";
 import { useMiddleSide } from "../CurrentSide";
-import Polls from "../Polls/Polls";
+import PollsList from "../Polls/PollsList";
+import ChannelView from "./ChannelView";
 
 export default function CurrentSideMiddle() {
   const {
@@ -20,41 +21,10 @@ export default function CurrentSideMiddle() {
 
   return (
     <div className="middle-container-center-colony f-column justify-start">
-      {selectedRoom ? (
+      {!selectedChannel && selectedRoom && (
         <ChatComponent room={selectedRoom} />
-      ) : (
-        <>
-          {selectedChannel && (
-            <>
-              {selectedChannel.type === ChannelType.Announcement ||
-              selectedChannel.type === ChannelType.Textual ? (
-                <>
-                  <AnnouncementList
-                    announcementId={announcementId}
-                    setThread={setThread}
-                    thread={thread}
-                  />
-                </>
-              ) : (
-                <>
-                  <Polls />
-                  <div
-                    className="w-100"
-                    style={{ padding: "11px", marginTop: "auto" }}
-                  >
-                    <Button
-                      classes="mt-auto mx-auto mb-2"
-                      onClick={() => setCreatePollModal(true)}
-                    >
-                      Create Poll
-                    </Button>
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </>
       )}
+      {selectedChannel && <ChannelView />}
     </div>
   );
 }
