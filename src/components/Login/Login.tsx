@@ -141,7 +141,7 @@ export default function Login() {
   }
 
   return (
-    <div className="f-column align-center">
+    <div className="f-column align-center my-auto">
       <div style={{ marginBottom: 26 }}>
         <img src={logo} alt="colony-logo" />
       </div>
