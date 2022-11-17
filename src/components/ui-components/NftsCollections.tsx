@@ -122,7 +122,7 @@ export default function NftsCollections({
           <span className="flex align-center">
             <span className="mr-2">Hide all NFTs</span>
             <Switch
-              value={profile ? profile.showNfts : true}
+              value={profile ? !profile.showNfts : true}
               right={"NO"}
               left={"YES"}
               onClick={handleShowNfts}

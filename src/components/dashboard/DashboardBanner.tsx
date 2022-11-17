@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import InputText from "../ui-components/InputText";
-import bannerImage from '../../assets/images/dashboard-banner.png';
+import bannerImage from '../../assets/images/dashboard-banner.svg';
 
 const DashboardStyled = styled.header`
     display: flex;
