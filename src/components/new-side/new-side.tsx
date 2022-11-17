@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import "./new-side.css";
 import ContainerLeft from "../ui-components/ContainerLeft";
 import TabItems from "../ui-components/TabItems";
@@ -24,6 +24,7 @@ import { Collection } from "../../models/interfaces/collection";
 import _, { valuesIn } from "lodash";
 import { Channel, ChannelType } from "../../models/Channel";
 import { Profile, Role } from "../../models/Profile";
+import { Metadata } from "../../models/Metadata";
 
 const MAX_NUMBER_OF_COLLECTIONS = 5;
 
@@ -96,6 +97,7 @@ const initialStateSide = {
   description: "",
   NftTokenAddress: "",
   conditions: {},
+  priv: false,
   creatorAddress: window.ethereum?.selectedAddress,
 };
 
@@ -368,6 +370,7 @@ export default function NewSide() {
       ...current_divs[index],
       numberNeeded: number,
     };
+
     setDivCollection(current_divs);
   };
 
@@ -505,10 +508,12 @@ export default function NewSide() {
       creatorAddress: window.ethereum.selectedAddress,
     });
 
-    // Save file input to IPFS
     try {
       if (formData.sideImage) {
+
+        
         const data = _.cloneDeep(formData);
+
         data["conditions"]["requiered"] = onlyOneRequired;
         data["conditions"] = JSON.stringify(data["conditions"]);
         data["NftTokenAddress"] = data["conditions"];
@@ -516,6 +521,7 @@ export default function NewSide() {
         fd.append("file", formData["sideImage"]);
         data["sideImage"] = await apiService.uploadImage(fd);
         data["creatorAddress"] = user?.accounts;
+
         const newSide = await apiService.createSide(data);
 
         if (channels["added"].length) {
@@ -525,6 +531,23 @@ export default function NewSide() {
           });
           const addedChannels = await apiService.createManyChannels(added);
         }
+
+        const conditionObject = JSON.parse(data['conditions'])
+
+        const conditions = Object.keys(conditionObject).reduce(function(prev:Metadata[], key:string) {
+          if (key !== 'requiered') 
+            prev.push({
+              address : key,
+              traitProperty: conditionObject[key]['trait_type'],
+              traitValue: conditionObject[key]['trait_value'],
+              numberNeeded: (conditionObject[key]['numberNeeded']) ? conditionObject[key]['numberNeeded'] : 1,
+              required: !onlyOneRequired,
+              side: newSide,
+            })
+          return prev
+        }, [])
+
+        const conditionsSaved = await apiService.savedMetadataConditions(conditions);
 
         let users = userInvited.map((u: any) => {
           u["side"] = newSide;

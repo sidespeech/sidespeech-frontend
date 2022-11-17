@@ -1,0 +1,160 @@
+.onboarding {
+    background: var(--bg-secondary);    
+}
+.content {
+    width: 100%;
+}
+h1 {
+    color: #fff;
+    margin-bottom: 0;
+}
+h2 {
+    margin-top: 0;
+}
+
+.logoArea {
+    margin-top: 180px;
+}
+.steps {
+    counter-reset: step;
+    max-width: 334px;
+    width: 100%;
+    margin-top: 80px;
+    margin-bottom: 187px;
+  }
+  .steps li {
+    list-style: none;
+    display: inline-block;
+    width: 25%;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+  }
+  .steps li:before {
+    content: counter(step);
+    counter-increment: step;
+    width: 40px;
+    height: 40px;
+    line-height : 40px;
+    border-radius: 100%;
+    display: block;
+    text-align: center;
+    margin: 0 auto 10px auto;
+    background-color: rgba(125, 166, 220, 0.1);
+  }
+  .steps li:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: #ddd;
+    top: 15px;
+    left: -50%;
+    z-index : -1;
+  }
+  .steps li:first-child:after {
+    content: none;
+  }
+  .steps li.active {
+    color: white;
+  }
+  .steps li.active:before {
+    background: var(--button-primary);
+  } 
+  .steps li.active + li:after {
+    background-color: rgba(125, 166, 220, 1);
+  }
+
+  .requirements {
+    margin-top: 30px;
+  }
+
+  .requirements .rule {
+    display: inline-block;
+    margin: 0 10px;
+    position: relative;
+  }
+  
+  .requirements .rule:before {
+   content:'';
+   position: absolute;
+   width: 24px;
+   height: 24px;
+   background: url('./../../assets/check-green.svg') no-repeat;
+   background-size: 100%;
+    left: 0;
+    top: 0;
+  }
+
+  .requirements .rule.error:before {
+    background: url('./../../assets/dangerous.svg') no-repeat;
+    background-size: 100%;
+    width: 20px;
+    height: 20px;
+  }
+
+  .requirements .rule p {
+    color: #b4c1d2;
+    margin-left: 35px;
+  }
+
+  button {
+    margin: 30px auto;
+  }
+
+  .step-content {
+    display: none;
+  }
+
+  .step-content.active {
+    display: block;
+  }
+
+  .step-content.step2 .form-area .relative {
+    width: 100%!important;
+  }
+
+  .step-content.step2 .form-area textarea {
+    width: 40%!important;
+  }
+  .step-content.step3,
+  .step-content.step4 {
+    margin-top: -180px;
+    margin-bottom: -90px;
+  }
+
+  .actions {
+    max-width: 40%;
+    margin: 0 auto;
+  }
+  .actions button {
+    display: inline-block;
+  }
+
+  .actions button.back {
+    float: left;
+    background:none;
+    border: 1px solid rgba(125, 166, 220, 0.1);
+   } 
+
+  .actions button.submit,
+  .actions button.skip {
+   float: right;
+   background: rgba(125, 166, 220, 0.1);
+  }
+
+  .actions button.submit {
+    background-color: var(--button-primary);
+  }
+
+  .onboarding .nft-step {
+        display: flex;
+    width: 100%;
+  }
+  .onboarding .my-nfts {
+    max-width: 670px;
+    margin: 0 auto;
+    height: calc(100vh - 420px);
+    padding-bottom: 50px;
+  }
+

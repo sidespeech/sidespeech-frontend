@@ -16,6 +16,7 @@ import { Poll } from "../models/Poll";
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
 import _ from "lodash";
+import { Metadata } from "../models/Metadata";
 import { InitialStateUser } from "../components/GeneralSettings/Account/GeneralSettingsAccount";
 
 // Create an API Service class
@@ -42,6 +43,22 @@ class apiService {
 
     return checkUser.body;
   }
+
+   static async findOnBoarding(accounts: string) {
+    const checkUser = await superagent.get(
+      `${BASE_URL}/user/onboarding/${accounts}`
+    );
+
+    return checkUser.body;
+  }
+
+  static async findExistingUsername(username: string) {
+    const checkUser = await superagent.get(
+      `${BASE_URL}/user/username/${username}`
+    );
+    return checkUser.body;
+  }
+
 
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
@@ -392,6 +409,11 @@ class apiService {
     const res = await superagent
       .post(`${BASE_URL}/collection/many`)
       .send({ collections: data });
+    return res;
+  }
+
+  static async savedMetadataConditions(metadata: Metadata[]) {
+    const res = await superagent.post(`${BASE_URL}/metadata/many`).send({metadata: metadata});
     return res;
   }
 
