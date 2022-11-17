@@ -281,7 +281,7 @@ export default function NftsCollections({
                     return (
                       <div
                         onClick={(e: any) => {
-                          profile
+                          profile || showAvatarText
                             ? setSelectedAvatar(nft)
                             : handleNftChange(nft);
                         }}
