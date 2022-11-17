@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import {
   reduceWalletAddress,
   reduceWalletAddressForColor,
@@ -6,7 +6,13 @@ import {
 import checkImg from "../../assets/check.svg";
 import styled from "styled-components";
 import connectionDot from "../../assets/connection.svg";
-
+import Avatar, { ProfilePictureData } from "../GeneralSettings/Account/Avatar";
+import defaultPP from "../../assets/default-pp.webp";
+import copyAll from "../../assets/copy_all.svg";
+import hexagon from "../../assets/hexagon.svg";
+import check from "../../assets/check.svg";
+import ReactTooltip from "react-tooltip";
+import Button from "./Button";
 interface IWalletAddressProps {
   weight: number;
   fontSize: number;
@@ -29,6 +35,7 @@ export default function UserBadge({
   check,
   connect,
   username,
+  avatar,
 }: {
   address?: string;
   weight: number;
@@ -37,13 +44,14 @@ export default function UserBadge({
   check?: boolean;
   connect?: boolean;
   username?: string;
+  avatar?: string | undefined;
 }) {
   return (
     <div className="flex align-center">
-      <span
+      <img
         className="profile-round-small mr-1"
         title={address}
-        style={{ background: reduceWalletAddressForColor(address || "") }}
+        src={avatar || defaultPP}
       >
         {/* {check && <img alt="verified" src={checkImg} />} */}
         {connect && (
@@ -53,7 +61,7 @@ export default function UserBadge({
             src={connectionDot}
           />
         )}
-      </span>
+      </img>
 
       <WalletAddress color={color} weight={weight} fontSize={fontSize}>
         {address ? reduceWalletAddress(address) : username}

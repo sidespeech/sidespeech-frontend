@@ -2,15 +2,18 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Side } from "../../models/Side";
 import { Channel } from "../../models/Channel";
+import { Profile } from "../../models/Profile";
 
 export interface AppDatas {
   currentSide: Side | null;
   selectedChannel: Channel | null;
+  selectedProfile: Profile | null;
 }
 
 const initialState: AppDatas = {
   currentSide: null,
   selectedChannel: null,
+  selectedProfile: null,
 };
 
 export const appDatasSlice = createSlice({
@@ -18,13 +21,21 @@ export const appDatasSlice = createSlice({
   initialState,
   reducers: {
     setCurrentColony: (state: AppDatas, action: PayloadAction<Side>) => {
-      state.currentSide = {...action.payload};
+      state.currentSide = { ...action.payload };
     },
     setSelectedChannel: (
       state: AppDatas,
       action: PayloadAction<Channel | null>
     ) => {
       state.selectedChannel = action.payload;
+      state.selectedProfile = null;
+    },
+    setSelectedProfile: (
+      state: AppDatas,
+      action: PayloadAction<Profile | null>
+    ) => {
+      state.selectedProfile = action.payload;
+      state.selectedChannel = null;
     },
     updateChannel: (state: AppDatas, action: PayloadAction<Channel>) => {
       if (state.currentSide) {
@@ -46,7 +57,12 @@ export const appDatasSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setCurrentColony, setSelectedChannel, updateChannel, addChannel } =
-  appDatasSlice.actions;
+export const {
+  setCurrentColony,
+  setSelectedChannel,
+  updateChannel,
+  addChannel,
+  setSelectedProfile,
+} = appDatasSlice.actions;
 
 export default appDatasSlice.reducer;

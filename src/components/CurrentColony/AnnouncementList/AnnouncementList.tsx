@@ -12,8 +12,48 @@ import websocketService from "../../../services/websocket.service";
 import { subscribeToEvent, unSubscribeToEvent } from "../../../helpers/CustomEvent";
 import { EventType } from "../../../constants/EventType";
 import { getRandomId } from "../../../helpers/utilities";
+
 import EmptyList from '../shared-components/EmptyList';
 import { Poll } from "../../../models/Poll";
+
+import { Role } from "../../../models/Profile";
+
+const EmptyListStyled = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80%;
+  .empty-list_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url(${emptyScreenImg});
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center bottom;
+    padding: 0 8rem 10rem 8rem;
+    & .empty-list_icon {
+      display: block;
+      background-color: var(--bg-secondary-light);
+      padding: 1.2rem;
+      border-radius: 10rem;
+      & svg {
+        transform: scale(1.4);
+        & path {
+          fill: var(--text-secondary);
+        }
+      }
+    }
+    & .empty-list_title {
+      margin-bottom: .5rem;
+    }
+    & .empty-list_description {
+      color: var(--text-secondary-dark);
+    }
+  }
+`;
 
 interface AnnouncementListProps {
   announcementId?: string; 
@@ -26,7 +66,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
   const { selectedChannel, currentSide } = useSelector(
     (state: RootState) => state.appDatas
   );
-  const { account } = useSelector((state: RootState) => state.user);
+  const { account, currentProfile } = useSelector((state: RootState) => state.user);
 
   const ref = useRef<Editor>(null);
 
@@ -35,7 +75,6 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
       setAnnouncements(prevState => [...prevState, detail]);
   }, [selectedChannel]);
 
-  
   useEffect(() => {
     const announcementThread = announcements.filter((announ: any) => announ.id === announcementId)[0];
     setThread?.(announcementThread);
@@ -100,7 +139,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
         <EmptyList selectedChannel={selectedChannel} />
       )}
       {(selectedChannel?.type !== 0 ||
-        currentSide?.creatorAddress === account) && !thread && (
+        currentProfile && currentProfile.role === Role.Admin) && !thread && (
         <div className="w-100" style={{ padding: "1rem", marginTop: "auto" }}>
           <MessageInput
             id="sendmessage"

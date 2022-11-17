@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+
 import styled from 'styled-components';
 import _ from "lodash";
 import { toast } from "react-toastify";
@@ -15,6 +16,12 @@ import { ChannelType } from "../../../models/Channel";
 import MessageContent from "../../ui-components/MessageContent";
 import Comments from "../shared-components/Comments";
 import { getRandomId, reduceWalletAddressForColor } from "../../../helpers/utilities";
+import Accordion from "../../ui-components/Accordion";
+import { useNavigate, useParams } from "react-router-dom";
+import { subscribeToEvent, unSubscribeToEvent } from "../../../helpers/CustomEvent";
+import { EventType } from "../../../constants/EventType";
+import websocketService from "../../../services/websocket.service";
+
 
 const AnnouncementItemStyled = styled.div`
   width: 100%;
@@ -45,6 +52,8 @@ export default function AnnouncementItem({
 
   // This will handle sending an comment to the api.
   const handleComment = async (value: string) => {
+    console.log('value handleComment :', value)
+
     // This will need to be made dynamic.
     const creatorAddress = account;
     try {
@@ -54,11 +63,28 @@ export default function AnnouncementItem({
         announcement.id
         );
         setComments([...comments, newComment]);
+        websocketService.sendComment(newComment);
       } catch (error) {
        console.error(error);
        toast.error('There has been an error when commenting this announcement', {toastId: getRandomId()}) 
       }
+
+
   };
+
+  const handleReceiveComment = useCallback(({ detail }: { detail: any }) => {
+    setComments([...detail['announcement']['comments'], detail]);
+  }, [selectedChannel]);
+
+  useEffect(() => {
+    subscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
+    return () => {
+      unSubscribeToEvent(
+        EventType.RECEIVE_COMMENT,
+        handleReceiveComment
+      );
+    };
+  }, [comments, handleReceiveComment]);
 
   return (
     <AnnouncementItemStyled className={`${className} f-column`}>
