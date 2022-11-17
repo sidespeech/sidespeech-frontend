@@ -197,6 +197,24 @@ class apiService {
 
     return new Comment(sendComment.body);
   }
+ 
+  // This method will send the comment to the API
+  static async commentPoll(
+    comment: any,
+    creatorAddress: any,
+    pollId: string
+  ): Promise<any> {
+    const sendComment = await superagent
+      .post(`${BASE_URL}/poll/${pollId}/comment`)
+      .send({
+        content: comment,
+        creatorAddress: creatorAddress,
+        timestamp: Date.now().toString(),
+      })
+      .set("accept", "json");
+
+    return new Comment(sendComment.body);
+  }
 
   // Grab all the comments.
   static async getComents(): Promise<any> {
@@ -257,7 +275,10 @@ class apiService {
     return res.text || "";
   }
   static async createPoll(
+    channelId: string,
     creatorId: string,
+    proposalTitle: string,
+    endDate: string,
     question: string,
     isProposed: boolean,
     options: any,
@@ -265,11 +286,11 @@ class apiService {
   ): Promise<Poll> {
     const res = await superagent
       .post(`${BASE_URL}/poll`)
-      .send({ creatorId, question, isProposed, options, timestamp });
+      .send({ channelId, creatorId, proposalTitle, endDate, question, isProposed, options, timestamp });
     return new Poll(res.body);
   }
 
-  static async getChannelPolls(): Promise<Poll[]> {
+  static async getChannelPolls(channelId: string): Promise<Poll[]> {
     const res = await superagent.get(`${BASE_URL}/poll`);
     return res.body.map((m: any) => new Poll(m));
   }

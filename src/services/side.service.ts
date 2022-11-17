@@ -3,6 +3,7 @@ import { BASE_URL } from "../constants/constants";
 import { checkUserEligibility } from "../helpers/utilities";
 import { Side } from "../models/Side";
 import alchemyService from "./alchemy.service";
+import _ from 'lodash'
 
 export class sideAPI {
   // get side by Id
@@ -64,7 +65,8 @@ export async function getSidesMetadata(sides: any[], userCollectionsData?: any, 
       firstCollection,
       collectionsCount: count
     }
-    if (userCollectionsData) {
+    if (!_.isEmpty(userCollectionsData)) {
+      console.log(userCollectionsData)
       const [_, eligible] = checkUserEligibility(userCollectionsData, parsedSide);
       parsedSide = {
         ...parsedSide,

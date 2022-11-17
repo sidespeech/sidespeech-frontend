@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 interface IModalContainerProps {
   height?: string;
+  width?: string;
 }
 
 const ModalContainer = styled.div<IModalContainerProps>`
@@ -26,9 +27,10 @@ const ModalContainer = styled.div<IModalContainerProps>`
     justify-content: center;
   }
   .modal-content {
-    width: 700px;
+    width: ${(props) => (props.width ? props.width : '700px')};
+    max-width: ${(props) => (props.width ? props.width : '700px')};
     padding: 16px 17px 24px 27px;
-    background: var(--bg-secondary-light);
+    background: var(--bg-primary);
     border-radius: 10px;
     color: var(--text);
     display: flex;
@@ -43,6 +45,7 @@ const ModalContainer = styled.div<IModalContainerProps>`
   .modal-body {
     max-height: 506px;
     overflow: auto;
+    margin-top: 1rem;
   }
   
 `;
@@ -55,6 +58,7 @@ export default function Modal({
   showModal,
   backicon = false,
   height,
+  width
 }: {
   header?: any;
   body: any;
@@ -63,9 +67,10 @@ export default function Modal({
   showModal: any;
   backicon?: boolean;
   height?: string;
+  width?: string;
 }) {
   return (
-    <ModalContainer height={height} onClick={() => showModal(false)}>
+    <ModalContainer height={height} width={width} onClick={() => showModal(false)}>
       <div className="modal-content" onClick={(ev) => ev.stopPropagation()}>
         <div className="modal-header">
           <div className="flex justify-between w-100">
@@ -89,7 +94,6 @@ export default function Modal({
 
         <div
           className="f-column align-center modal-body"
-          style={{ marginTop: 29 }}
         >
           {body}
         </div>

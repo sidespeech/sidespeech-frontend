@@ -3,5 +3,6 @@ export enum EventType {
   RECEIVE_ANNOUNCEMENT = "announcement",
   RECEIVE_COMMENT = "comment",
   ADDED_ROOM = "added_room",
-  UPDATE_USER_SIDES = "update_user_sides"
+  UPDATE_USER_SIDES = "update_user_sides",
+  ADDED_POLL = 'added_poll'
 }
