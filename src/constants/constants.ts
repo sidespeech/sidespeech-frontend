@@ -1,5 +1,5 @@
 import { Network } from "alchemy-sdk";
-import bannerImage from "../assets/images/dashboard-banner.png";
+import bannerImage from "../assets/logo.svg";
 
 export const NUMBER_OF_DECIMALS = 18;
 
