@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiService } from "../../services/api.service";
 import logo from "../../assets/logo.svg";
 import { fixURL } from "../../helpers/utilities";
@@ -24,8 +24,13 @@ import styled from "styled-components";
 import { UserAvatar } from "./UserAvatar";
 import { NftItem } from "./NftItem";
 import useLogin from "../../hooks/useLogin";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/app.store";
+import { Profile } from "../../models/Profile";
+import websocketService from "../../services/websocket.service";
+import { addRoomToProfile } from "../../redux/Slices/UserDataSlice";
+import { setSelectedRoom } from "../../redux/Slices/ChatSlice";
+import { setSelectedChannel } from "../../redux/Slices/AppDatasSlice";
 
 interface IDataCard {
   background: string;
@@ -61,9 +66,14 @@ const DataAddress = styled.div`
   }
 `;
 
-export default function PublicUserProfile() {
+export default function PublicUserProfile({ profile }: { profile?: Profile }) {
   const { username } = useParams();
+
   const userData = useSelector((state: RootState) => state.user);
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState<User | null>(null);
   const [collections, setCollections] = useState<Collection[] | null>(null);
@@ -131,12 +141,46 @@ export default function PublicUserProfile() {
     }
   };
 
+  const handleSelectedUser = async (
+    profile: Profile,
+    currentProfile: Profile
+  ) => {
+    try {
+      // getting account
+      const connectedAccount = window.ethereum.selectedAddress;
+      // getting room for given profile id
+      let room = currentProfile?.getRoom(profile.id);
+      if (!currentProfile || !connectedAccount) return;
+      // if room not exist in profile
+      if (!room) {
+        // creating the room
+        room = await apiService.createRoom(currentProfile.id, profile.id);
+        // add this room in the user websocket
+        websocketService.addRoomToUsers(room.id, [
+          currentProfile.id,
+          profile.id,
+        ]);
+        // add the room to profile
+        dispatch(addRoomToProfile(room));
+      }
+      // selecting the room
+      dispatch(setSelectedRoom(room));
+      dispatch(setSelectedChannel(null));
+      navigate(`/${currentSide?.id}`)
+
+    } catch (error) {
+      console.error(error);
+      toast.error("There has been an error opening the room", {
+        toastId: 20,
+      });
+    }
+  };
+
   return (
     <div
       className="flex align-start justify-center"
       style={{
-        height: "100vh",
-        maxHeight: "100vh",
+        maxHeight: "90vh",
         width: "100%",
         overflow: "auto",
       }}
@@ -145,19 +189,26 @@ export default function PublicUserProfile() {
         className="f-column w-100 align-center justify-start gap-30"
         style={{ maxWidth: 1094 }}
       >
-        <h1 className="flex align-center gap-20 size-45 fw-700 text-white">
-          <img src={logo} />
-          <span>SideSpeech</span>
-        </h1>
+        {!profile && (
+          <h1 className="flex align-center gap-20 size-45 fw-700 text-white">
+            <img src={logo} />
+            <span>SideSpeech</span>
+          </h1>
+        )}
         {user ? (
           <>
             <div className="flex gap-30  text-main w-100">
               <UserAvatar
-                nft={user.userAvatar}
+                nft={profile ? profile.profilePicture : user.userAvatar}
                 name={
-                  collections?.find(
-                    (c) => c.address === user.userAvatar?.token_address
-                  )?.name
+                  profile
+                    ? collections?.find(
+                        (c) =>
+                          c.address === profile.profilePicture.token_address
+                      )?.name
+                    : collections?.find(
+                        (c) => c.address === user.userAvatar?.token_address
+                      )?.name
                 }
               />
               <div
@@ -190,7 +241,7 @@ export default function PublicUserProfile() {
                     <div className="flex align-center gap-20 mb-3">
                       <img src={yellowLogo} />
                       {userData.user ? (
-                       <span className="size-40">{sharedSidesCount}</span>
+                        <span className="size-40">{sharedSidesCount}</span>
                       ) : (
                         <span style={{ lineHeight: "12px" }}>
                           Connect <br /> your wallet
@@ -210,7 +261,10 @@ export default function PublicUserProfile() {
                     <Button
                       height={44}
                       children={"Send a message"}
-                      onClick={connectWallet}
+                      onClick={() => {
+                        if (profile && userData.currentProfile)
+                          handleSelectedUser(profile, userData.currentProfile);
+                      }}
                     />
                   ) : (
                     <Button
@@ -223,9 +277,11 @@ export default function PublicUserProfile() {
                     {
                       <>
                         <span className="text-inactive">
-                          https://side.xyz/user/
+                          {profile
+                            ? `https://side.xyz/${currentSide?.id}/profile/`
+                            : "https://side.xyz/user/"}<span className="text-main">{username}</span>
                         </span>
-                        <span>{username}</span>
+                        
                       </>
                     }
                   </DataAddress>
@@ -237,50 +293,52 @@ export default function PublicUserProfile() {
                 </div>
               </div>
             </div>
-            <div className="f-column gap-20">
-              <div>Public NFTs</div>
-              <div className="flex f-wrap gap-20">
-                <Button
-                  width={"61px"}
-                  height={36}
-                  children={"All"}
-                  onClick={() => setSelectedCollection("All")}
-                  background={
-                    selectedCollection === "All"
-                      ? "var(--primary)"
-                      : "var(--disable)"
-                  }
-                />
-                {collections &&
-                  collections.map((c) => {
-                    const isSelected = c.address === selectedCollection;
-                    return (
-                      <Button
-                        key={c.address}
-                        radius={7}
-                        classes="px-3 py-2"
-                        width="fit-content"
-                        height={36}
-                        children={c.name}
-                        background={
-                          isSelected ? "var(--primary)" : "var(--disable)"
-                        }
-                        onClick={() => setSelectedCollection(c.address)}
-                      />
-                    );
-                  })}
+            {((profile && profile.showNfts) || !profile) && (
+              <div className="f-column gap-20 w-100">
+                <div>Public NFTs</div>
+                <div className="flex f-wrap gap-20">
+                  <Button
+                    width={"61px"}
+                    height={36}
+                    children={"All"}
+                    onClick={() => setSelectedCollection("All")}
+                    background={
+                      selectedCollection === "All"
+                        ? "var(--primary)"
+                        : "var(--disable)"
+                    }
+                  />
+                  {collections &&
+                    collections.map((c) => {
+                      const isSelected = c.address === selectedCollection;
+                      return (
+                        <Button
+                          key={c.address}
+                          radius={7}
+                          classes="px-3 py-2"
+                          width="fit-content"
+                          height={36}
+                          children={c.name}
+                          background={
+                            isSelected ? "var(--primary)" : "var(--disable)"
+                          }
+                          onClick={() => setSelectedCollection(c.address)}
+                        />
+                      );
+                    })}
+                </div>
+                <div className="flex f-wrap" style={{ gap: 30 }}>
+                  {collections &&
+                    filteredNfts.map((nft: NFT, index: number) => {
+                      const col = collections.find(
+                        (c) => c.address === nft.token_address
+                      );
+                      if (!col) return <></>;
+                      return <NftItem key={index} nft={nft} collection={col} />;
+                    })}
+                </div>
               </div>
-              <div className="flex f-wrap" style={{ gap: 30 }}>
-                {collections &&
-                  filteredNfts.map((nft: NFT, index: number) => {
-                    const col = collections.find(
-                      (c) => c.address === nft.token_address
-                    );
-                    if (!col) return <></>;
-                    return <NftItem key={index} nft={nft} collection={col} />;
-                  })}
-              </div>
-            </div>
+            )}
           </>
         ) : (
           <FadeLoader color="var(--text)" />

@@ -59,6 +59,9 @@ body {
 .text-main {
   color: var(--text);
 }
+.text-inactive {
+  color: var(--inactive);
+}
 .text-primary {
   color: var(--primary);
 }
@@ -512,6 +515,10 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
+}
 .mb-auto {
   margin-bottom: auto;
 }
@@ -637,4 +644,11 @@ h3 {
 
 .search-icon {
   position: absolute;
+}
+
+.tooltip-radius {
+  border-radius: 10px !important;
+  opacity: 1 !important;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+
 }

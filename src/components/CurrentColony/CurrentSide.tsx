@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled from 'styled-components';
+import styled from "styled-components";
 import AnnouncementList from "./AnnouncementList/AnnouncementList";
 import MiddleContainerHeader from "../ui-components/MiddleContainerHeader";
 import CurrentSideLeft from "./ContainerLeft/CurrentSideLeft";
@@ -21,7 +21,8 @@ import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 // import websocketService from "../../services/websocket.service";
 import { sideAPI } from "../../services/side.service";
-import { useParams } from "react-router-dom";
+import { Outlet, useOutletContext, useParams } from "react-router-dom";
+import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
 
 const CurrentSideStyled = styled.div`
   .selected-channel {
@@ -76,6 +77,15 @@ const CurrentSideStyled = styled.div`
   }
 `;
 
+type ContextMiddleSide = {
+  selectedRoom: any;
+  selectedChannel: any;
+  announcementId: any;
+  setThread: any;
+  thread: any;
+  setCreatePollModal: any;
+};
+
 export default function CurrentSide() {
   const { announcementId, id } = useParams();
   const { currentSide, selectedChannel } = useSelector(
@@ -115,7 +125,7 @@ export default function CurrentSide() {
 
   useEffect(() => {
     async function getSide() {
-      try {        
+      try {
         if (id) {
           const res = await sideAPI.getSideById(id);
           dispatch(setCurrentColony(res));
@@ -145,45 +155,30 @@ export default function CurrentSide() {
       <CurrentSideLeft />
 
       <div className="f-column w-100">
-        <MiddleContainerHeader channel={selectedChannel} room={selectedRoom} setThread={setThread} thread={thread} />
-
-        <div className="middle-container-center-colony f-column justify-start">
-          {selectedRoom ? (
-            <ChatComponent room={selectedRoom} />
-          ) : (
-            <>
-              {selectedChannel && (
-                <>
-                  {selectedChannel.type === ChannelType.Announcement ||
-                  selectedChannel.type === ChannelType.Textual ? (
-                    <>
-                      <AnnouncementList announcementId={announcementId} setThread={setThread} thread={thread} />
-                    </>
-                  ) : (
-                    <>
-                      <Polls />
-                      <div
-                        className="w-100"
-                        style={{ padding: "11px", marginTop: "auto" }}
-                      >
-                        <Button
-                          classes="mt-auto mx-auto mb-2"
-                          onClick={() => setCreatePollModal(true)}
-                        >
-                          Create Poll
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-            </>
-          )}
-        </div>
+        <MiddleContainerHeader
+          channel={selectedChannel}
+          room={selectedRoom}
+          setThread={setThread}
+          thread={thread}
+        />
+        <Outlet
+          context={{
+            selectedRoom,
+            selectedChannel,
+            announcementId,
+            setThread,
+            thread,
+            setCreatePollModal,
+          }}
+        />
       </div>
       {createPollModal && selectedChannel && currentSide && (
         <CreatePollModal showModal={setCreatePollModal} />
       )}
     </CurrentSideStyled>
   );
+}
+
+export function useMiddleSide() {
+  return useOutletContext<ContextMiddleSide>();
 }

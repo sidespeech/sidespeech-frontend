@@ -26,6 +26,7 @@ import GeneralSettingsAccount from "./components/GeneralSettings/Account/General
 
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
 import PublicUserProfile from "./components/PublicUserProfile/PublicUserProfile";
+import CurrentSideMiddle from "./components/CurrentColony/CurrentSideMiddle/CurrentSideMiddle";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -52,13 +53,10 @@ ReactDOM.render(
             <Route path="/my-sides" element={<DefaultView />} />
             <Route path="/invitations" element={<DefaultView />} />
             <Route path="/search" element={<DefaultView />} />
-            <Route
-              path="/CreateSideSpeechProfile"
-              element={<CreateSideSpeechProfile />}
-            />
             <Route path="new-side" element={<NewSide />} />
             <Route path=":id" element={<CurrentColony />}>
-              <Route path="profile/:id" element={<UserProfile />} />
+              <Route path="profile/:username" element={<UserProfile />} />
+              <Route index element={<CurrentSideMiddle />} />
             </Route>
             <Route path=":id/thread/:announcementId" element={<CurrentColony />} />
             <Route path=":id/settings" element={<Settings />} />
