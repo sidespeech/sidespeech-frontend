@@ -27,7 +27,13 @@ const ChannelsListStyled = styled.div`
   }
 `;
 
-export default function ChannelsList({ channels, dots, onChannelSelected }: { channels: Channel[];  dots:any; onChannelSelected:any }) {
+interface ChannelsListProps  { 
+  channels: Channel[];  
+  dots:any; 
+  onChannelSelected:any 
+}
+
+export default function ChannelsList({ channels, dots, onChannelSelected }: ChannelsListProps) {
   const dispatch = useDispatch();
 
   const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
