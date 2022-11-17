@@ -124,6 +124,7 @@ export const userDataSlice = createSlice({
       state.user = action.payload.user;
       state.account = action.payload.account;
       let rooms = flattenChannels(state.user?.profiles, "rooms");
+
       state.sides = action.payload.user.profiles
         ? action.payload.user.profiles.map((p: Profile) => {
           p.side["profiles"] = [p];
@@ -131,7 +132,9 @@ export const userDataSlice = createSlice({
         })
         : [];
       state.redirectTo = action.payload.redirectTo;
+
       rooms = rooms?.concat(flattenChannels(state.sides, "channels"));
+
       websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {

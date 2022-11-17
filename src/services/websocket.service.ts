@@ -29,6 +29,9 @@ class WebSocketService {
     this.socket.on("newAnnouncement", async (data) => {
       trigger(EventType.RECEIVE_ANNOUNCEMENT, data);
     });
+    this.socket.on("newComment", async (data) => {
+      trigger(EventType.RECEIVE_COMMENT, data);
+    });
   }
 
   login(user: any, rooms: any) {
@@ -51,6 +54,12 @@ class WebSocketService {
       channelId: announcement.channelId,
     });
   }
+  sendComment(comment: any) {
+    this.socket?.emit("sendComment", {
+      comment,
+    });
+  }
+
   addRoomToUsers(roomId: string, profiles: string[]) {
     this.socket?.emit("addRoomToUsers", {
       roomId,

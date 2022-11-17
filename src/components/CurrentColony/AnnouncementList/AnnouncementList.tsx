@@ -17,13 +17,14 @@ import { EventType } from "../../../constants/EventType";
 import Icons from "../../ui-components/ChannelIcons";
 import emptyScreenImg from '../../../assets/channel_empty_screen_shape.svg'
 import { getRandomId } from "../../../helpers/utilities";
+import { Role } from "../../../models/Profile";
 
 const EmptyListStyled = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100%;
+  min-height: 80%;
   .empty-list_wrapper {
     display: flex;
     flex-direction: column;
@@ -66,7 +67,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
   const { selectedChannel, currentSide } = useSelector(
     (state: RootState) => state.appDatas
   );
-  const { account } = useSelector((state: RootState) => state.user);
+  const { account, currentProfile } = useSelector((state: RootState) => state.user);
 
   const ref = useRef<Editor>(null);
 
@@ -75,7 +76,6 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
       setAnnouncements(prevState => [...prevState, detail]);
   }, [selectedChannel]);
 
-  
   useEffect(() => {
     const announcementThread = announcements.filter((announ: any) => announ.id === announcementId)[0];
     setThread?.(announcementThread);
@@ -150,7 +150,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
         </EmptyListStyled>
       )}
       {(selectedChannel?.type !== 0 ||
-        currentSide?.creatorAddress === account) && !thread && (
+        currentProfile && currentProfile.role === Role.Admin) && !thread && (
         <div className="w-100" style={{ padding: "1rem", marginTop: "auto" }}>
           <MessageInput
             id="sendmessage"

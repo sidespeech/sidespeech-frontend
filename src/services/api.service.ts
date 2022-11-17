@@ -215,6 +215,12 @@ class apiService {
     return res.body.map((m: any) => new Announcement(m));
   }
 
+  static async getCommentByAnnoucementId(id: string): Promise<Comment[]> {
+    const res = await superagent
+      .get(`${BASE_URL}/comment/announcement/${id}`);
+    return res.body.map((m: any) => new Comment(m));
+  }
+
   static async createChannel(
     sideId: string,
     name: string,

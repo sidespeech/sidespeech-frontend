@@ -51,7 +51,6 @@ export default function SideProfileAccount({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('userData :', userData)
     if (userData.userCollectionsData && userData.user) {
       const collections = Object.values(userData.userCollectionsData);
       const colls: Collection[] = filterCollection(
