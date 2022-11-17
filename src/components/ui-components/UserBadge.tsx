@@ -56,7 +56,6 @@ export default function UserBadge({
         {/* {check && <img alt="verified" src={checkImg} />} */}
         {connect && (
           <img
-            style={{ bottom: 0, right: 0 }}
             alt="verified"
             src={connectionDot}
           />

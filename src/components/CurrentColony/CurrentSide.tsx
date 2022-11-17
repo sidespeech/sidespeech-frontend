@@ -52,6 +52,7 @@ const CurrentSideStyled = styled.div`
     position: absolute;
     bottom: -2px;
     right: -2px;
+    width: 8px;
   }
   .profile-round-small {
     width: 20px;
@@ -59,7 +60,6 @@ const CurrentSideStyled = styled.div`
     background-color: var(--bg-secondary-dark);
     border-radius: 10px;
     position: relative;
-    overflow: hidden;
   }
   .edit-channel > div {
     padding: 9px 18px;

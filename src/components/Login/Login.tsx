@@ -5,11 +5,14 @@ import Button from "../ui-components/Button";
 import metamaskLogo from "../../assets/metamask.svg";
 import walletConnectLogo from "../../assets/walletconnect.svg";
 
+import websocketService from "../../services/websocket.service";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserDatas,
   disconnect,
   connect,
+  addRoomToProfile
 } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
 import { useNavigate, redirect } from "react-router-dom";
@@ -34,6 +37,7 @@ export default function Login() {
   const redirection = useSelector((state: RootState) => state.redirect);
 
   function ConnectWalletArea() {
+
     // This is the all of the providers that are needed...
     const providerOptions = {
       walletconnect: {
@@ -97,6 +101,10 @@ export default function Login() {
         // Send the wallet to the api service.
         const user = await apiService.walletConnection(accounts, signature);
 
+        // Send the notification to the web socket with the user logged in.
+        websocketService.login(user, []);
+
+        // Check if the existing user still needs to onboard or not.
         if (existingUser == undefined) {
           // Redirect the user to the onboarding area.
           navigate("/onboarding");
@@ -104,16 +112,26 @@ export default function Login() {
           // Redirect the user to the general settings page.
           navigate("/");
         }
+
+        console.log('User object', user);
         
+        // if (!room) {
+        //   // creating the room
+        //   room = await apiService.createRoom(currentProfile.id, profile.id);
+        //   // add this room in the user websocket
+        //   websocketService.addRoomToUsers(room.id, [currentProfile.id, profile.id]);
+        //   // add the room to profile
+        //   dispatch(addRoomToProfile(room));
+        // }
 
         // Dispatch the account that is connected to the redux slice.
         dispatch(connect({ account: accounts[0], user: user }));
         dispatch(fetchUserDatas(accounts[0]));
 
-        // Set a local storage of the account
+        // Set a local storage of the account and token.
         localStorage.setItem("userAccount", accounts[0]);
-
         localStorage.setItem("jwtToken", user.token);
+
       }
 
       // Listen for accounts being disconnected - this only seems to work for WalletConnect.

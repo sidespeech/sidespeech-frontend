@@ -37,6 +37,7 @@ function App() {
     let account = localStorage.getItem("userAccount") || null;
 
     websocketService.connectToWebSocket();
+    
     async function getUser(account: string) {
       try {
         const user = await apiService.getUserByAddress(account);
@@ -58,7 +59,6 @@ function App() {
       websocketService.deconnectWebsocket();
     };
   }, []);
-
 
   if (location.pathname.indexOf("/onboarding") > -1) {
     onBoarding = true;
