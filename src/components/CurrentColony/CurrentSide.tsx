@@ -160,20 +160,7 @@ export default function CurrentSide() {
                       <AnnouncementList announcementId={announcementId} setThread={setThread} thread={thread} />
                     </>
                   ) : (
-                    <>
-                      <Polls />
-                      <div
-                        className="w-100"
-                        style={{ padding: "11px", marginTop: "auto" }}
-                      >
-                        <Button
-                          classes="mt-auto mx-auto mb-2"
-                          onClick={() => setCreatePollModal(true)}
-                        >
-                          Create Poll
-                        </Button>
-                      </div>
-                    </>
+                    <Polls setCreatePollModal={setCreatePollModal} />
                   )}
                 </>
               )}

@@ -50,7 +50,7 @@ const CustomButtonSecondary = styled.button<ButtonProps>`
 `;
 const CustomButtonDanger = styled.button<ButtonProps>`
   width: ${(props) => (props.width ? props.width : "251px")};
-  height: ${(props) => (props.height ? props.height : 48)}px;
+  height: ${(props) => (props.height ? props.height : 44)}px;
   color: ${(props) => (props.background ? props.color : "white")};
   background: ${(props) =>
     props.background ? props.background : "var(--button-primary)"};

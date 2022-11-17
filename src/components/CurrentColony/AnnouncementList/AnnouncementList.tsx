@@ -15,45 +15,8 @@ import {
 } from "../../../helpers/CustomEvent";
 import { EventType } from "../../../constants/EventType";
 import Icons from "../../ui-components/ChannelIcons";
-import emptyScreenImg from '../../../assets/channel_empty_screen_shape.svg'
 import { getRandomId } from "../../../helpers/utilities";
-
-const EmptyListStyled = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100%;
-  .empty-list_wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-image: url(${emptyScreenImg});
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center bottom;
-    padding: 0 8rem 10rem 8rem;
-    & .empty-list_icon {
-      display: block;
-      background-color: var(--bg-secondary-light);
-      padding: 1.2rem;
-      border-radius: 10rem;
-      & svg {
-        transform: scale(1.4);
-        & path {
-          fill: var(--text-secondary);
-        }
-      }
-    }
-    & .empty-list_title {
-      margin-bottom: .5rem;
-    }
-    & .empty-list_description {
-      color: var(--text-secondary-dark);
-    }
-  }
-`;
+import EmptyList from '../shared-components/EmptyList';
 
 interface AnnouncementListProps {
   announcementId?: string; 
@@ -114,8 +77,6 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
     websocketService.sendAnnouncement(newAnnouncement);
   };
 
-  const Icon = Icons[selectedChannel?.type || 0];
-
   return (
     <>
       {announcements.length ? (
@@ -139,15 +100,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
           )}
         </div>
       ) : (
-        <EmptyListStyled>
-          <div className="empty-list_wrapper">
-            <span className="empty-list_icon">
-              <Icon />
-            </span>
-            <h2 className="empty-list_title">Welcome to {selectedChannel?.name}</h2>
-            <p className="empty-list_description">This is the beginning of the channel!</p>
-          </div>
-        </EmptyListStyled>
+        <EmptyList selectedChannel={selectedChannel} />
       )}
       {(selectedChannel?.type !== 0 ||
         currentSide?.creatorAddress === account) && !thread && (
