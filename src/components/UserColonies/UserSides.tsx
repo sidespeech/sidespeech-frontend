@@ -12,6 +12,7 @@ import { Side } from "../../models/Side";
 import { Dot } from "../ui-components/styled-components/shared-styled-components";
 import { apiService } from "../../services/api.service";
 import { Profile } from "../../models/Profile";
+import { NotificationType } from "../../models/Notification";
 
 const UserSidesStyled = styled.div`
   .colony-badge {
@@ -91,6 +92,7 @@ export default function UserSides() {
   async function getAndSetRoomNotifications(account: string) {
     const notifications = await apiService.getNotification(account!);
     let dots_object: any = { ...dots };
+
     const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
     for (let notification of notifications) {
       if (
@@ -102,7 +104,8 @@ export default function UserSides() {
         dots_object[currentSide!["id"]] = 0;
       } else {
         let sideFounded: any;
-        if (notification["type"] == 1) {
+
+        if (notification["type"] == NotificationType.Channel) {
           sideFounded = userData.sides.find((s: Side) => {
             return s.channels.find((c: any) => c.id === notification["name"]);
           });
@@ -113,8 +116,9 @@ export default function UserSides() {
             });
           });
         }
-        dots_object[sideFounded!["id"]] =
-          dots_object[sideFounded!["id"]]++ || 1;
+
+        if (currentSide && sideFounded!["id"] !== currentSide['id'])
+          dots_object[sideFounded!["id"]] = dots_object[sideFounded!["id"]]++ || 1;
       }
     }
     notifications.length ? setDots(dots_object) : setDots({});

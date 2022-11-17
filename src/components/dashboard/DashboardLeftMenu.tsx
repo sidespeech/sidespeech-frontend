@@ -74,7 +74,8 @@ const DashboardLeftMenu = ({
     const [invitations, setInvitations] = useState<any[]>([]);
 
     const getInvitations = async (user: User) => {
-        let invitations = (await apiService.getPendingInvitationsByRecipient(user['id'])).map((item: any) => {
+        const pendingInvitations = await apiService.getPendingInvitationsByRecipient(user['id']);
+        let invitations = pendingInvitations.map((item: any) => {
             item['eligibility'] = checkUserEligibility(userData['userCollectionsData'], item['side']);
             return item
         })
