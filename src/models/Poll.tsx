@@ -10,6 +10,8 @@ export class Poll {
   public creator: any;
   public votes: Vote[] = [];
   public pollOption: any;
+  public comments: any[];
+  public channel: any;
 
   constructor(_data: any) {
     this.id = _data.id;
@@ -21,6 +23,8 @@ export class Poll {
     this.proposalTitle = _data.proposalTitle;
     this.pollOption = _data.pollOption;
     this.votes = _data.vote;
+    this.comments = _data.comments;
+    this.channel = _data.channel;
   }
 
   async getVotes(votes: any) {

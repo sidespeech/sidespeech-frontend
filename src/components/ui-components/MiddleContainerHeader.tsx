@@ -11,6 +11,7 @@ import { Channel, ChannelType } from "../../models/Channel";
 import Icons from "./ChannelIcons";
 import { Announcement } from "../../models/Announcement";
 import { useNavigate } from "react-router-dom";
+import { Poll } from "../../models/Poll";
 
 const MiddleContainerHeaderStyled = styled.div`
   width: 100%;
@@ -100,7 +101,7 @@ interface MiddleContainerHeaderProps {
   channel?: Channel | null; 
   room?: Room | null; 
   setThread?: any;
-  thread?: Announcement | null;
+  thread?: any;
 }
 
 export default function MiddleContainerHeader({ channel, room, setThread, thread }: MiddleContainerHeaderProps) {
@@ -129,12 +130,12 @@ export default function MiddleContainerHeader({ channel, room, setThread, thread
             </button>
             <img
               className="profile-round pointer"
-              style={{ backgroundColor: reduceWalletAddressForColor(thread?.creatorAddress)}}
+              style={{ backgroundColor: reduceWalletAddressForColor(thread?.creator || thread?.creatorAddress)}}
               alt=""
-              src={thread?.creatorAddress || ""}
+              src={thread?.creator || thread?.creatorAddress || ""}
             />
             <div className="user-name-address">
-              <p className="user-name size-14">{thread?.creatorAddress}</p>
+              <p className="user-name size-14">{thread?.creator || thread?.creatorAddress}</p>
               <p className="user-address size-14">13 hours ago</p>
             </div>  
           </div>

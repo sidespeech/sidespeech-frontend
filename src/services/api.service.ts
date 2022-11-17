@@ -197,6 +197,24 @@ class apiService {
 
     return new Comment(sendComment.body);
   }
+ 
+  // This method will send the comment to the API
+  static async commentPoll(
+    comment: any,
+    creatorAddress: any,
+    pollId: string
+  ): Promise<any> {
+    const sendComment = await superagent
+      .post(`${BASE_URL}/poll/${pollId}/comment`)
+      .send({
+        content: comment,
+        creatorAddress: creatorAddress,
+        timestamp: Date.now().toString(),
+      })
+      .set("accept", "json");
+
+    return new Comment(sendComment.body);
+  }
 
   // Grab all the comments.
   static async getComents(): Promise<any> {

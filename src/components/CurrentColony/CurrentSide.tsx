@@ -9,7 +9,7 @@ import {
   setSelectedChannel,
 } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
-import Polls from "./Polls/Polls";
+import PollsList from "./Polls/PollsList";
 import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
 // import InputText from "../ui-components/InputText";
@@ -22,6 +22,7 @@ import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 // import websocketService from "../../services/websocket.service";
 import { sideAPI } from "../../services/side.service";
 import { useParams } from "react-router-dom";
+import { Poll } from "../../models/Poll";
 
 const CurrentSideStyled = styled.div`
   .selected-channel {
@@ -91,7 +92,7 @@ export default function CurrentSide() {
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
-  const [thread, setThread] = useState<Announcement | null>(null);
+  const [thread, setThread] = useState<Announcement | Poll | null>(null);
 
   useEffect(() => {
     if (!announcementId) setThread(null);
@@ -148,21 +149,19 @@ export default function CurrentSide() {
         <MiddleContainerHeader channel={selectedChannel} room={selectedRoom} setThread={setThread} thread={thread} />
 
         <div className="middle-container-center-colony f-column justify-start">
-          {selectedRoom ? (
+          {!selectedChannel && selectedRoom && (
             <ChatComponent room={selectedRoom} />
-          ) : (
+          )}
+          {selectedChannel && (
             <>
-              {selectedChannel && (
-                <>
-                  {selectedChannel.type === ChannelType.Announcement ||
-                  selectedChannel.type === ChannelType.Textual ? (
-                    <>
-                      <AnnouncementList announcementId={announcementId} setThread={setThread} thread={thread} />
-                    </>
-                  ) : (
-                    <Polls setCreatePollModal={setCreatePollModal} />
-                  )}
-                </>
+              {selectedChannel.type === ChannelType.Announcement && (
+                <AnnouncementList announcementId={announcementId} setThread={setThread} thread={thread} />
+              )}
+              {selectedChannel.type === ChannelType.Poll && (
+                <PollsList pollId={announcementId} setCreatePollModal={setCreatePollModal} setThread={setThread} thread={thread} />
+              )}
+              {selectedChannel.type === ChannelType.Textual && selectedRoom && (
+                <ChatComponent room={selectedRoom} />
               )}
             </>
           )}
