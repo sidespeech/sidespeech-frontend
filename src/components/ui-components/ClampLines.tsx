@@ -38,10 +38,10 @@ const ClampLines = ({ buttons = true, children, className, id, length = 100, sho
     <ClampLinesStyled className={className} id={id} style={style}>
         <p className="clamp-lines_paragraph">
             <span className="clamp-lines_content">
-                {isAllContentShown ? children : `${children?.substring(0, length)}...`}
+                {isAllContentShown || children?.length <= length ? children : `${children?.substring(0, length)}...`}
             </span>
 
-            {buttons && <button 
+            {buttons && children?.length > length && <button 
                 className="clamp-lines_button" 
                 onClick={() => setIsAllcontentShown(bool => !bool)}
             >

@@ -1,22 +1,21 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import styled from 'styled-components';
+import { useSelector } from "react-redux";
 import { Editor } from 'react-draft-wysiwyg';
+import _ from "lodash";
+
 import { Announcement } from "../../../models/Announcement";
 import AnnouncementItem from "./AnnouncementItem";
-import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
-import _ from "lodash";
 import { apiService } from "../../../services/api.service";
 import MessageInput from "../../ui-components/MessageInput";
 import websocketService from "../../../services/websocket.service";
-import {
-  subscribeToEvent,
-  unSubscribeToEvent,
-} from "../../../helpers/CustomEvent";
+import { subscribeToEvent, unSubscribeToEvent } from "../../../helpers/CustomEvent";
 import { EventType } from "../../../constants/EventType";
-import Icons from "../../ui-components/ChannelIcons";
-import emptyScreenImg from '../../../assets/channel_empty_screen_shape.svg'
 import { getRandomId } from "../../../helpers/utilities";
+
+import EmptyList from '../shared-components/EmptyList';
+import { Poll } from "../../../models/Poll";
+
 import { Role } from "../../../models/Profile";
 
 const EmptyListStyled = styled.div`
@@ -59,7 +58,7 @@ const EmptyListStyled = styled.div`
 interface AnnouncementListProps {
   announcementId?: string; 
   setThread?: any;
-  thread: Announcement | null;
+  thread: any;
 }
 
 export default function AnnouncementList({ announcementId, setThread, thread }: AnnouncementListProps) {
@@ -114,8 +113,6 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
     websocketService.sendAnnouncement(newAnnouncement);
   };
 
-  const Icon = Icons[selectedChannel?.type || 0];
-
   return (
     <>
       {announcements.length ? (
@@ -139,15 +136,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
           )}
         </div>
       ) : (
-        <EmptyListStyled>
-          <div className="empty-list_wrapper">
-            <span className="empty-list_icon">
-              <Icon />
-            </span>
-            <h2 className="empty-list_title">Welcome to {selectedChannel?.name}</h2>
-            <p className="empty-list_description">This is the beginning of the channel!</p>
-          </div>
-        </EmptyListStyled>
+        <EmptyList selectedChannel={selectedChannel} />
       )}
       {(selectedChannel?.type !== 0 ||
         currentProfile && currentProfile.role === Role.Admin) && !thread && (

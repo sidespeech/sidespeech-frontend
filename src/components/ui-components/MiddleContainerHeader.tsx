@@ -6,11 +6,12 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/app.store";
 import { Room } from "../../models/Room";
-import { fixURL, reduceWalletAddress } from "../../helpers/utilities";
+import { fixURL, reduceWalletAddress, reduceWalletAddressForColor } from "../../helpers/utilities";
 import { Channel, ChannelType } from "../../models/Channel";
 import Icons from "./ChannelIcons";
 import { Announcement } from "../../models/Announcement";
 import { useNavigate } from "react-router-dom";
+import { Poll } from "../../models/Poll";
 
 const MiddleContainerHeaderStyled = styled.div`
   width: 100%;
@@ -41,6 +42,9 @@ const MiddleContainerHeaderStyled = styled.div`
     .channel-title {
       display: flex;
       align-items: center;
+      & h2 {
+        margin: 0;
+      }
       & svg {
         transform: scale(1.4);
         & > path {
@@ -97,7 +101,7 @@ interface MiddleContainerHeaderProps {
   channel?: Channel | null; 
   room?: Room | null; 
   setThread?: any;
-  thread?: Announcement | null;
+  thread?: any;
 }
 
 export default function MiddleContainerHeader({ channel, room, setThread, thread }: MiddleContainerHeaderProps) {
@@ -111,7 +115,7 @@ export default function MiddleContainerHeader({ channel, room, setThread, thread
 
   const Icon = Icons[channel?.type || 0];
 
-  const currentUser = user?.profiles?.find((a) => a.side?.id === currentSide?.id)
+  const currentUser = user?.profiles?.find((a) => a.side?.id === currentSide?.id);
 
   return (
     <MiddleContainerHeaderStyled className="middle-container-top">
@@ -126,11 +130,12 @@ export default function MiddleContainerHeader({ channel, room, setThread, thread
             </button>
             <img
               className="profile-round pointer"
-              alt="profile"
-              src={fixURL(currentUser?.profilePicture?.token_uri || "")}
+              style={{ backgroundColor: reduceWalletAddressForColor(thread?.creator || thread?.creatorAddress)}}
+              alt=""
+              src={thread?.creator || thread?.creatorAddress || ""}
             />
             <div className="user-name-address">
-              <p className="user-name size-14">{thread?.creatorAddress}</p>
+              <p className="user-name size-14">{thread?.creator || thread?.creatorAddress}</p>
               <p className="user-address size-14">13 hours ago</p>
             </div>  
           </div>
@@ -167,8 +172,9 @@ export default function MiddleContainerHeader({ channel, room, setThread, thread
         <div className="user-info">
           <img
             onClick={() => setDisplayProfile(true)}
+            style={{ backgroundColor: reduceWalletAddressForColor(currentUser?.username || '')}}
             className="profile-round pointer"
-            alt="profile"
+            alt=""
             src={fixURL(currentUser?.profilePicture?.token_uri || "")}
           />
           <div className="user-name-address">

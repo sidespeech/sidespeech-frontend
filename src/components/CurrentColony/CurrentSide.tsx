@@ -9,7 +9,7 @@ import {
   setSelectedChannel,
 } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
-import Polls from "./Polls/Polls";
+import PollsList from "./Polls/PollsList";
 import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
 // import InputText from "../ui-components/InputText";
@@ -21,8 +21,13 @@ import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 // import websocketService from "../../services/websocket.service";
 import { sideAPI } from "../../services/side.service";
+
+import { useParams } from "react-router-dom";
+import { Poll } from "../../models/Poll";
+
 import { Outlet, useOutletContext, useParams } from "react-router-dom";
 import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
+
 
 const CurrentSideStyled = styled.div`
   .selected-channel {
@@ -101,7 +106,7 @@ export default function CurrentSide() {
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
-  const [thread, setThread] = useState<Announcement | null>(null);
+  const [thread, setThread] = useState<Announcement | Poll | null>(null);
 
   useEffect(() => {
     if (!announcementId) setThread(null);
@@ -155,6 +160,7 @@ export default function CurrentSide() {
       <CurrentSideLeft />
 
       <div className="f-column w-100">
+
         <MiddleContainerHeader
           channel={selectedChannel}
           room={selectedRoom}

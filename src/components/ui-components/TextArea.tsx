@@ -65,6 +65,7 @@ const InputTextArea = styled.textarea<TextAreaProps>`
   padding: ${(props) => (props.padding ? props.padding : "10px 20px")};
   font-size: ${(props) => (props.size ? props.size : "15")}px;
   font-weight: ${(props) => (props.weight ? props.weight : "400")};
+  font-family: inherit;
   &::placeholder {
     color: ${(props) =>
       props.placeholderColor

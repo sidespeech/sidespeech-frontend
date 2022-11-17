@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { checkUserEligibility, getRandomId, paginateArray } from '../../helpers/utilities';
+import { getRandomId, paginateArray } from '../../helpers/utilities';
 import { Collection } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
