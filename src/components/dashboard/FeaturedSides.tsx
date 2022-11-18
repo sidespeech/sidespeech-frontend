@@ -5,6 +5,7 @@ import { FALLBACK_BG_IMG } from '../../constants/constants';
 import { Side } from '../../models/Side';
 import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import Spinner from '../ui-components/Spinner';
+import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg'
 
 const CARD_HEIGHT = 191;
 const CARD_WIDTH = 265;
@@ -158,6 +159,19 @@ const FeatureSidesStyled = styled.div<ListStyledProps>`
         font-weight: 700;
         line-height: 1.4;
         color: var(--text-secondary-dark);
+    }
+    & .no-results {
+        background-image: url(${noResultsImg});
+        background-position: center center;
+        backgound-size: contain;
+        background-repeat: no-repeat;
+        & p {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--text-secondary-dark);
+        }
     }
 `;
 

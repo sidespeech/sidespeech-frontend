@@ -80,12 +80,12 @@ export interface UserCollectionItemProps {
 };
 
 const UserCollectionCard = ({collection, onClick}: UserCollectionItemProps) => {
-    return <UserCollectionCardStyled coverImage={collection?.media?.[0]?.thumbnail || collection?.opensea?.imageUrl}>
+    return <UserCollectionCardStyled coverImage={collection?.media?.[0]?.thumbnail || collection.media[0]?.raw || collection?.opensea?.imageUrl}>
         <div className="cover-image" />
         <div className="content">
             <div className="flex align-center title-wrapper">
                 <div className="avatar">
-                    <img src={collection?.opensea?.imageUrl || FALLBACK_BG_IMG} alt={`${collection?.name} avatar`} />
+                    <img src={collection?.opensea?.imageUrl || collection.media[0]?.raw || FALLBACK_BG_IMG} alt={`${collection?.name} avatar`} />
                 </div>
                 <h3 className="title">{collection?.opensea?.collectionName || "{No Name}"}</h3>
                 {collection.opensea?.safelistRequestStatus === 'verified' && (

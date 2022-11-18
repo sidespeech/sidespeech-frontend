@@ -34,12 +34,14 @@ const AnnouncementItemStyled = styled.div`
 
 interface AnnouncementItemProps {
   announcement: Announcement;
+  authorizeComments?: boolean;
   className?: string;
   isThread?: boolean;
 }
 
 export default function AnnouncementItem({
   announcement,
+  authorizeComments,
   className,
   isThread
 }: AnnouncementItemProps) {
@@ -108,7 +110,7 @@ export default function AnnouncementItem({
 
       <MessageContent message={announcement.content} />
 
-      {selectedChannel && selectedChannel.type === ChannelType.Announcement && (
+      {authorizeComments && selectedChannel && selectedChannel.type === ChannelType.Announcement && (
         <Comments 
           channel={announcement}
           comments={comments}

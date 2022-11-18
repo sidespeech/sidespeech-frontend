@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from 'styled-components';
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -146,7 +146,7 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
   };
 
   // Get all of the channels polls.
-  const getChannelPolls = async() => {
+  const getChannelPolls = useCallback(async () => {
     if (!selectedChannel) return;
     try {
       const polls = await apiService.getChannelPolls(selectedChannel.id);
@@ -154,11 +154,11 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
     } catch (error) {
      toast.error('Error fetching polls', {toastId: 10}) 
     }
-  }
+  }, [selectedChannel])
 
-  const handlePollAdded = ({detail}: {detail: Poll}) => {
+  const handlePollAdded = useCallback(({detail}: {detail: Poll}) => {
     getChannelPolls();
-  }
+  }, [getChannelPolls])
   
   useEffect(() => {
     subscribeToEvent(EventType.ADDED_POLL, handlePollAdded)
@@ -166,7 +166,7 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
     return () => {
       unSubscribeToEvent(EventType.ADDED_POLL, handlePollAdded);
     }
-  }, []);
+  }, [handlePollAdded]);
 
   useEffect(() => {
     function updateScroll() {
@@ -184,6 +184,7 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
         {polls.length ? 
           thread ? (
             <PollItem
+              authorizeComments={selectedChannel?.authorizeComments}
               handleVote={handleVote}
               isFirstItem
               isThread
@@ -193,6 +194,7 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
           ) :
             polls.map((poll: Poll, i) => (
               <PollItem
+                authorizeComments={selectedChannel?.authorizeComments}
                 handleVote={handleVote}
                 isFirstItem={i === 0}
                 isThread={false}
