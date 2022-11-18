@@ -26,6 +26,7 @@ import GeneralSettingsAccount from "./components/GeneralSettings/Account/General
 import UserProfile from "./components/CurrentColony/UserProfile/UserProfile";
 import PublicUserProfile from "./components/PublicUserProfile/PublicUserProfile";
 import CurrentSideMiddle from "./components/CurrentColony/CurrentSideMiddle/CurrentSideMiddle";
+import ChannelView from "./components/CurrentColony/CurrentSideMiddle/ChannelView";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -56,14 +57,11 @@ ReactDOM.render(
             <Route path=":id" element={<CurrentColony />}>
               <Route path="profile/:username" element={<UserProfile />} />
               <Route index element={<CurrentSideMiddle />} />
+              <Route path="thread/:announcementId" element={<ChannelView />} />
             </Route>
-            <Route path=":id/thread/:announcementId" element={<CurrentColony />} />
             <Route path=":id/settings" element={<Settings />} />
+            <Route path="/onboarding" element={<OnBoarding />} />
             <Route
-                path="/onboarding"
-                element={<OnBoarding />}
-              />
-              <Route
               path="/general-settings"
               element={<GeneralSettingsAccount />}
             />

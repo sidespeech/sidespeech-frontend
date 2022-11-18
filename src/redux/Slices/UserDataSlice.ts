@@ -59,10 +59,10 @@ export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string, { dispatch, getState }) => {
     const nfts = await alchemyService.getUserNfts(
-      "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
+      address
     );
     const collections = await alchemyService.getUserCollections(
-      "0xC2500706B995CFC3eE4Bc3f83029705B7e4D1a74"
+      address
     );
 
     await apiService.savedCollections(collections);

@@ -1,5 +1,9 @@
 import { Network, Alchemy, NftContract } from "alchemy-sdk";
-import { ALCHEMY_API_KEY } from "../constants/constants";
+import {
+  ALCHEMY_API_KEY,
+  ALCHEMY_BASE_URL,
+  ALCHEMY_NETWORK,
+} from "../constants/constants";
 import {
   alchemyNftModelToSideNftModel,
   alchemyNftsModelToSideNftsModel,
@@ -57,7 +61,7 @@ class AlchemyService {
       // Optional Config object, but defaults to demo api-key and eth-mainnet.
       const settings = {
         apiKey: ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
-        network: Network.ETH_MAINNET, // Replace with your network.
+        network: ALCHEMY_NETWORK, // Replace with your network.
       };
 
       AlchemyService.alchemy = new Alchemy(settings);
@@ -77,20 +81,20 @@ class AlchemyService {
       allResults = allResults.concat(response.ownedNfts);
       pageKey = response.pageKey;
     } while (pageKey !== "" && pageKey !== undefined);
-    const toSideNftModel = alchemyNftsModelToSideNftsModel(allResults)
+    const toSideNftModel = alchemyNftsModelToSideNftsModel(allResults);
     return toSideNftModel;
   }
 
   async getContractMetadata(address: string): Promise<any> {
     const res = await fetch(
-      `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getContractMetadata?contractAddress=${address}`
+      `${ALCHEMY_BASE_URL}/nft/v2/${ALCHEMY_API_KEY}/getContractMetadata?contractAddress=${address}`
     );
     const data = await res.json();
     return data.contractMetadata.openSea;
   }
   async getUserCollections(address: string): Promise<Collection[]> {
     const res = await fetch(
-      `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API_KEY}/getContractsForOwner?owner=${address}`
+      `${ALCHEMY_BASE_URL}/nft/v2/${ALCHEMY_API_KEY}/getContractsForOwner?owner=${address}`
     );
     const result = await res.json();
     const ownedCollections: Collection[] = result.contracts.map(

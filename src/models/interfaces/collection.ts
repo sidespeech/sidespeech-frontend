@@ -19,7 +19,7 @@ export class Collection {
   sides: Side[] = [];
   constructor(_data: any) {
     this.address = _data.address;
-    this.name = _data.name;
+    this.name = _data.name || _data.opensea.collectionName || "No name data";
     this.symbol = _data.symbol;
     this.tokenType = _data.tokenType;
     this.totalSupply = _data.totalSupply;
