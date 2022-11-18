@@ -25,6 +25,17 @@ export function reduceWalletAddress(address: string): string {
     address.substring(address.length - 4, address.length);
   return name;
 }
+export function reduceTokenId(id: string): string {
+  let reducedId = "";
+  if (!id) return "";
+  if (id.length > 10) {
+    reducedId =
+      id.substring(0, 4) +
+      "..." +
+      id.substring(id.length - 4, id.length);
+  }
+  return reducedId;
+}
 export function reduceWalletAddressForColor(address: string): string {
   if (!address) return "";
   const name = "#" + address.substring(2, 8);
@@ -84,18 +95,23 @@ export const durationToString = (
   _default: string
 ) => {
   if (!duration) return _default;
-  return `${duration.years || duration.years !== 0 ? duration.years + "y " : ""
-    }${duration.months || duration.months !== 0 ? duration.months + "m " : ""}${duration.days || duration.days !== 0 ? duration.days + "d " : ""
-    } ${duration.hours && duration.hours < 10
+  return `${
+    duration.years || duration.years !== 0 ? duration.years + "y " : ""
+  }${duration.months || duration.months !== 0 ? duration.months + "m " : ""}${
+    duration.days || duration.days !== 0 ? duration.days + "d " : ""
+  } ${
+    duration.hours && duration.hours < 10
       ? "0" + duration.hours
       : duration.hours || "00"
-    }:${duration.minutes && duration.minutes < 10
+  }:${
+    duration.minutes && duration.minutes < 10
       ? "0" + duration.minutes
       : duration.minutes || "00"
-    }:${duration.seconds && duration.seconds < 10
+  }:${
+    duration.seconds && duration.seconds < 10
       ? "0" + duration.seconds
       : duration.seconds || "00"
-    }`;
+  }`;
 };
 export const durationToStringMax1h = (
   duration: Duration | null,
@@ -104,13 +120,15 @@ export const durationToStringMax1h = (
   if (!duration) return _default;
   if (duration.days || duration.hours) return "More than 1h ago";
   else {
-    return `${duration.minutes && duration.minutes < 10
+    return `${
+      duration.minutes && duration.minutes < 10
         ? "0" + duration.minutes
         : duration.minutes || "00"
-      } min ${duration.seconds && duration.seconds < 10
+    } min ${
+      duration.seconds && duration.seconds < 10
         ? "0" + duration.seconds
         : duration.seconds || "00"
-      } sec ago`;
+    } sec ago`;
   }
 };
 
@@ -128,33 +146,32 @@ export function checkUserEligibility(
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
   if (selectedSide) {
-    selectedSide.metadataSides.forEach(
-      (item) => {
-        const tab = [];
-        const token_address = item['metadata']['address']
-        const collection = nfts[token_address];
-        const condition =  { numberNeeded : item['numberNeeded'], trait_type: item['metadata']['traitProperty'], trait_value : item['metadata']['traitValue']}
-        if (!collection) {
-          return;
-        } else {
-          // get nfts from collection with needed attributes
-          const filteredNfts = getNftsWithAttributes(
-            collection.nfts,
-            condition
-          );
+    selectedSide.metadataSides.forEach((item) => {
+      const tab = [];
+      const token_address = item["metadata"]["address"];
+      const collection = nfts[token_address];
+      const condition = {
+        numberNeeded: item["numberNeeded"],
+        trait_type: item["metadata"]["traitProperty"],
+        trait_value: item["metadata"]["traitValue"],
+      };
+      if (!collection) {
+        return;
+      } else {
+        // get nfts from collection with needed attributes
+        const filteredNfts = getNftsWithAttributes(collection.nfts, condition);
 
-          // validate number
-          tab.push(validateNumberOfNfts(condition, collection));
+        // validate number
+        tab.push(validateNumberOfNfts(condition, collection));
 
-          // if no nfts corresponding to the condition returning error response
+        // if no nfts corresponding to the condition returning error response
 
-          tab.push(
-            validateNftsWithAttributes(filteredNfts, condition, collection)
-          );
-        }
-        res[token_address] = tab;
+        tab.push(
+          validateNftsWithAttributes(filteredNfts, condition, collection)
+        );
       }
-    );
+      res[token_address] = tab;
+    });
   }
 
   const eligible = isEligible(res, selectedSide.metadataSides);
@@ -188,7 +205,8 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
   return createResponseObject(
     numberValidation,
     [],
-    `You need ${number - collection.nfts.length
+    `You need ${
+      number - collection.nfts.length
     } nfts more to meet the condition.`,
     collection.address,
     condition,
@@ -197,7 +215,7 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
 }
 
 function isEligible(result: ElligibilityResponse, conditions: any): boolean {
-  if (conditions.find((item:any) => item['required'])) {
+  if (conditions.find((item: any) => item["required"])) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>
       res.every((value) => value.type.includes("success"))
@@ -295,8 +313,8 @@ export async function getBase64(file: File): Promise<any> {
         res(reader.result);
       }
     };
-    reader.onerror = error => {
-      console.error('Error: ', error);
+    reader.onerror = (error) => {
+      console.error("Error: ", error);
       rej();
     };
   });
@@ -322,7 +340,7 @@ export function validateBio(bio: string) {
 export function paginateArray({
   array,
   currentPage = 1,
-  pageSize = 10
+  pageSize = 10,
 }: {
   array: any[];
   currentPage?: number;
@@ -332,13 +350,15 @@ export function paginateArray({
   pages: number;
 } {
   const pages = currentPage <= 0 ? 1 : Math.ceil(array.length / pageSize);
-  const slicedArray = currentPage <= 0 ?
-    array : currentPage > pages ?
-      array.slice(pages, pageSize * pages) :
-      array.slice(pageSize * (currentPage - 1), pageSize * currentPage);
+  const slicedArray =
+    currentPage <= 0
+      ? array
+      : currentPage > pages
+      ? array.slice(pages, pageSize * pages)
+      : array.slice(pageSize * (currentPage - 1), pageSize * currentPage);
 
   return {
     array: slicedArray,
-    pages
-  }
-};
+    pages,
+  };
+}

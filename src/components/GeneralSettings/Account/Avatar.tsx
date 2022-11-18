@@ -21,7 +21,7 @@ const ProfileLabel = styled.label`
 `;
 
 export const ProfilePictureData = styled.div`
-  height: 39px;
+  min-height: 39px;
   width: 245px;
   border-radius: 7px;
   border: 1px solid rgba(125, 166, 220, 0.1);
