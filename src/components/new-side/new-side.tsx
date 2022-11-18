@@ -109,6 +109,7 @@ const initialDivCollections = [
     value_selected: "",
     traits_values: [],
     numberNeeded: 1,
+    metadata: {}
   },
 ];
 
@@ -142,6 +143,8 @@ export default function NewSide() {
     (state: RootState) => state.user
   );
 
+  const userData = useSelector((state: RootState) => state.user);
+
   const [steps, setSteps] = useState<any[]>(initialStateSteps);
 
   // Variables for Admission component
@@ -159,11 +162,15 @@ export default function NewSide() {
   const [userInvited, setUserInvited] = useState<any>([]);
 
   useEffect(() => {
+    console.log('userCollectionsData :', userCollectionsData)
+    console.log('userData :', userData)
+
     if (userCollectionsData) {
       let collections = Object.values(userCollectionsData);
+      console.log('collections :', collections)
       setCollectionHolder(collections);
     }
-  }, [userCollectionsData]);
+  }, [userCollectionsData, userData]);
 
   useEffect(() => {
     if (user && user.profiles) {
@@ -313,13 +320,23 @@ export default function NewSide() {
   };
 
   // ----- Functions for Admission component **start
-  const setSideTokenAddress = async (address: string, index: number) => {
+  const setSideTokenAddress = async (address: string, index: number, filteredCollections:any) => {
+
+    console.log('filteredCollections :', filteredCollections)
+    console.log('address :', address)
+    console.log('index :', index)
+
     setFormData({ ...formData, NftTokenAddress: address });
     if (address.trim().length) {
       let current_divs = [...divCollections];
       current_divs[index]["collection"] = address;
       current_divs[index]["traits_values"] = createPropertiesObject(address);
+
+      const data = filteredCollections.find((item:Collection) => item['address'] === address);
+      current_divs[index]["metadata"] = data
       setDivCollection(current_divs);
+
+      console.log('current_divs :', current_divs)
     }
   };
 

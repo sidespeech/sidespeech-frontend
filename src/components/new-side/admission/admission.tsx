@@ -91,6 +91,10 @@ export default function Admission({
   );
 
   useEffect(() => {
+    console.log('divCollections :', divCollections)
+
+    console.log('filteredCollections :', filteredCollections)
+
     const selectedCollections: string[] = divCollections.map(
       (d: any) => d.collection
     );
@@ -155,39 +159,66 @@ export default function Admission({
                           values={
                             filteredCollections.length
                               ? [
-                                  "",
-                                  ...filteredCollections.map((c) => c.address),
-                                ]
-                              : [""]
+                                "",
+                                ...filteredCollections.map((c) => c.address),
+                              ]
+                              : [current['collection']]
                           }
                           options={
                             filteredCollections.length
                               ? [
-                                  "Choose NFT collection",
-                                  ...filteredCollections.map((c) => {
-                                    return (
-                                      <span className="flex align-center pl-3">
+                                "Choose NFT collection",
+                                ...filteredCollections.map((c) => {
+                                  return (
+                                    <span className="flex align-center pl-3">
+                                      {
+                                        c.opensea?.imageUrl ?
+                                          <Thumbnail
+                                            width={27}
+                                            height={27}
+                                            src={c.opensea?.imageUrl}
+                                            alt="thumbnail"
+                                          /> :
+                                          null
+                                      }
+                                      <span className="ml-2 mr-3">
+                                        {c.name}
+                                      </span>
+                                      {c.opensea?.safelistRequestStatus ===
+                                        OpenSeaRequestStatus.verified && (
+                                          <img alt="check" src={check} />
+                                        )}
+                                    </span>
+                                  );
+                                }),
+                              ]
+                              :
+                              (Object.keys(current['metadata']).length !== 0) ?
+                                [
+                                  <span className="flex align-center pl-3">
+                                    {
+                                      current['metadata'].opensea?.imageUrl ?
                                         <Thumbnail
                                           width={27}
                                           height={27}
-                                          src={c.opensea?.imageUrl}
+                                          src={current['metadata'].opensea?.imageUrl}
                                           alt="thumbnail"
-                                        />
-                                        <span className="ml-2 mr-3">
-                                          {c.name}
-                                        </span>
-                                        {c.opensea?.safelistRequestStatus ===
-                                          OpenSeaRequestStatus.verified && (
-                                          <img alt="check" src={check} />
-                                        )}
-                                      </span>
-                                    );
-                                  }),
-                                ]
-                              : ["Choose collection"]
+                                        /> :
+                                        null
+                                    }
+                                    <span className="ml-2 mr-3">
+                                      {current['metadata'].name}
+                                    </span>
+                                    {current['metadata'].opensea?.safelistRequestStatus ===
+                                      OpenSeaRequestStatus.verified && (
+                                        <img alt="check" src={check} />
+                                      )}
+                                  </span>
+                                ] : ['Choose collection']
+
                           }
                           onChange={(address: string) =>
-                            setSideTokenAddress(address, i)
+                            setSideTokenAddress(address, i, filteredCollections)
                           }
                         />
                         <div className="ml-4">
@@ -224,21 +255,21 @@ export default function Admission({
                               values={
                                 current["traits_values"].length
                                   ? [
-                                      "",
-                                      ...current["traits_values"].map(
-                                        (item: any) => item["property"]["value"]
-                                      ),
-                                    ]
+                                    "",
+                                    ...current["traits_values"].map(
+                                      (item: any) => item["property"]["value"]
+                                    ),
+                                  ]
                                   : [""]
                               }
                               options={
                                 current["traits_values"].length
                                   ? [
-                                      "Select trait",
-                                      ...current["traits_values"].map(
-                                        (item: any) => item["property"]["label"]
-                                      ),
-                                    ]
+                                    "Select trait",
+                                    ...current["traits_values"].map(
+                                      (item: any) => item["property"]["label"]
+                                    ),
+                                  ]
                                   : ["Traits"]
                               }
                               onChange={(event: any) =>
@@ -260,29 +291,29 @@ export default function Admission({
                               values={
                                 current["traits_values"].length
                                   ? [
-                                      "",
-                                      ...(current["traits_values"].find(
-                                        (item: any) =>
-                                          item["property"]["value"] ===
-                                          current["trait_selected"]
-                                      ) || { values: [] })["values"].map(
-                                        (item: any) => item["value"]
-                                      ),
-                                    ]
+                                    "",
+                                    ...(current["traits_values"].find(
+                                      (item: any) =>
+                                        item["property"]["value"] ===
+                                        current["trait_selected"]
+                                    ) || { values: [] })["values"].map(
+                                      (item: any) => item["value"]
+                                    ),
+                                  ]
                                   : [""]
                               }
                               options={
                                 current["traits_values"].length
                                   ? [
-                                      "Select value of trait",
-                                      ...(current["traits_values"].find(
-                                        (item: any) =>
-                                          item["property"]["value"] ===
-                                          current["trait_selected"]
-                                      ) || { values: [] })["values"].map(
-                                        (item: any) => item["label"]
-                                      ),
-                                    ]
+                                    "Select value of trait",
+                                    ...(current["traits_values"].find(
+                                      (item: any) =>
+                                        item["property"]["value"] ===
+                                        current["trait_selected"]
+                                    ) || { values: [] })["values"].map(
+                                      (item: any) => item["label"]
+                                    ),
+                                  ]
                                   : ["Values"]
                               }
                               onChange={(event: any) =>
