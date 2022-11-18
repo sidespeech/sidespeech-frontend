@@ -1,29 +1,40 @@
+// Default Imports
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import Button from "../ui-components/Button";
 
-import metamaskLogo from "../../assets/metamask.svg";
-import walletConnectLogo from "../../assets/walletconnect.svg";
+// Routers
+import { useNavigate, redirect } from "react-router-dom";
 
-import websocketService from "../../services/websocket.service";
-
-import { useDispatch, useSelector } from "react-redux";
+// Slices
 import {
   fetchUserDatas,
   disconnect,
   connect,
   addRoomToProfile
 } from "../../redux/Slices/UserDataSlice";
-import { RootState } from "../../redux/store/app.store";
-import { useNavigate, redirect } from "react-router-dom";
-// import { redirect } from "../../redux/Slices/RedirectSlice";
-import logo from "../../assets/logoComplete.svg";
 
+// Modals
+import { Profile } from "../../models/Profile";
+
+// Redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store/app.store";
+
+// Images
+import logo from "../../assets/logoComplete.svg";
+import walletConnectLogo from "../../assets/walletconnect.svg";
+
+// Web3 Imports
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 
+// API / Socket Services
 import { apiService } from "../../services/api.service";
+import websocketService from "../../services/websocket.service";
+
+// Stylings
+import styled from "styled-components";
+import Button from "../ui-components/Button"
 
 export const SeparatorVertical = styled.div`
   min-height: 415px;
@@ -32,9 +43,12 @@ export const SeparatorVertical = styled.div`
 `;
 
 export default function Login() {
+
+  // Setup constants for dispatch, navigate and selector methods
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const redirection = useSelector((state: RootState) => state.redirect);
+
 
   function ConnectWalletArea() {
 
@@ -68,12 +82,15 @@ export default function Login() {
 
       const existingUser = await apiService.findExistingWallet(accounts[0]);
 
+      // Create a signature variable.
       let signature;
 
       // If there are any accounts connected then send them to the API.
       if (accounts) {
+
         // If there isn't an existing user then ensure that he signs the signature.
         if (existingUser == undefined) {
+
           // Get Signer
           const signer = library.getSigner();
 
@@ -96,26 +113,30 @@ export default function Login() {
           if (signerAddr !== address) {
             return false;
           }
+
         }
 
         // Send the wallet to the api service.
         const user = await apiService.walletConnection(accounts, signature);
 
-        // Send the notification to the web socket with the user logged in.
-        websocketService.login(user, []);
-
         // Check if the existing user still needs to onboard or not.
         if (existingUser == undefined) {
+
           // Redirect the user to the onboarding area.
           navigate("/onboarding");
+
         } else {
+
           // Redirect the user to the general settings page.
           navigate("/");
+
         }
 
-        console.log('User object', user);
-        
-        // if (!room) {
+        // Check if the logged in doesn't user has a room
+      //  const currentProfiles = await apiService.getProfilesByUserId(user.accounts);
+
+        // if (!room && currentProfiles) {
+
         //   // creating the room
         //   room = await apiService.createRoom(currentProfile.id, profile.id);
         //   // add this room in the user websocket

@@ -15,13 +15,16 @@ class WebSocketService {
   connectToWebSocket() {
     if (this.socket !== null || !WEBSOCKET_URL) return;
     this.socket = io(WEBSOCKET_URL + "/");
-
     this.socket.on("connect", () => {
       console.log("connected");
     });
 
     this.socket.on("disconnect", () => {
       console.log("disconnected");
+    });
+
+    this.socket.on("checkLogin", (data) => {
+      trigger(EventType.RECEIVE_LOGIN, data);
     });
 
     this.socket.on("message", async (data) => {
@@ -36,9 +39,6 @@ class WebSocketService {
   }
 
   login(user: any, rooms: any) {
-    this.socket?.emit("connect",{
-
-    });
     this.socket?.emit("login", {
       user: { id: user.id, username: user.accounts },
       rooms: rooms,

@@ -65,6 +65,17 @@ const CurrentSideStyled = styled.div`
     border-radius: 10px;
     position: relative;
   }
+  .user-status {
+    left: -11px;
+    position: relative;
+    z-index: 9;
+    top: 6px;
+    width: 8px;
+  }
+
+  .user-status img {
+    width: 100%;
+  }
   .edit-channel > div {
     padding: 9px 18px;
   }

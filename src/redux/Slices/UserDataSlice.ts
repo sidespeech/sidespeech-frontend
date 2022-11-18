@@ -21,6 +21,7 @@ export interface UserData {
   account: string | null;
   userTokens: UserTokensData | null;
   redirectTo: null;
+  status: null | true;
   sides: Side[];
   currentProfile: Profile | undefined;
   userCollectionsData: UserCollectionsData;
@@ -32,6 +33,7 @@ const initialState: UserData = {
   user: null,
   profiles: [],
   account: null,
+  status: null,
   userTokens: null,
   redirectTo: null,
   sides: [],
@@ -121,6 +123,7 @@ export const userDataSlice = createSlice({
   initialState,
   reducers: {
     connect: (state: UserData, action: PayloadAction<any>) => {
+    
       state.user = action.payload.user;
       state.account = action.payload.account;
       let rooms = flattenChannels(state.user?.profiles, "rooms");
@@ -135,12 +138,17 @@ export const userDataSlice = createSlice({
 
       rooms = rooms?.concat(flattenChannels(state.sides, "channels"));
 
+      state.status = true;
+
+      console.log('test');
       websocketService.login(state.user, rooms);
     },
     disconnect: (state: UserData) => {
       state.user = null;
       state.account = null;
       state.userTokens = null;
+
+      websocketService.deconnectWebsocket();
     },
     updateUser: (state: UserData, action: PayloadAction<any>) => {
       state.user = { ...state.user, ...action.payload };
