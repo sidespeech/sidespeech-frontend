@@ -169,7 +169,7 @@ export default function NewSide() {
     if (user && user.profiles) {
       const getInvitationUsers = async (user: any) => {
         let userSides = user.profiles.map((p: Profile) => p.side);
-        let users = await apiService.getUserFromSides(userSides);        
+        let users = await apiService.getUserFromSides(userSides);
         let invitationsUsersObject = [];
         delete user["profiles"];
         for (let userInvite of users) {
@@ -193,49 +193,55 @@ export default function NewSide() {
     index: number,
     previous: boolean = false
   ) => {
+
+    console.log('newSideNextPreviousStep previous :', previous)
+
     let current_data = { ...formData };
     let current_steps = [...steps];
 
-    // Checking if sideImage and name stored to continu to the other steps
-    if (
-      (index === 0 && !current_data["sideImage"]) ||
-      !current_data["name"].trim().length
-    ) {
-      toast.error("Missing data", { toastId: 3 });
-      return;
-    }
+    if (!previous) {
 
-    // Set conditions and checking if there is minimum one condition to continu to the other steps
-    if (index === 1) {
-      let current_divs = [...divCollections];
-      let conditions: any = {};
-      for (let div of current_divs) {
-        if (
-          div["collection"].trim().length !== 0 &&
-          div["trait_selected"].trim().length !== 0 &&
-          div["value_selected"].trim().length !== 0
-        ) {
-          conditions[div["collection"]] = {};
-          conditions[div["collection"]][div["trait_selected"]] =
-            div["value_selected"];
-          conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
+      // Checking if sideImage and name stored to continu to the other steps
+      if (
+        (index === 0 && !current_data["sideImage"]) ||
+        !current_data["name"].trim().length
+      ) {
+        toast.error("Missing data", { toastId: 3 });
+        return;
+      }
+
+      // Set conditions and checking if there is minimum one condition to continu to the other steps
+      if (index === 1) {
+        let current_divs = [...divCollections];
+        let conditions: any = {};
+        for (let div of current_divs) {
+          if (
+            div["collection"].trim().length !== 0 &&
+            div["trait_selected"].trim().length !== 0 &&
+            div["value_selected"].trim().length !== 0
+          ) {
+            conditions[div["collection"]] = {};
+            conditions[div["collection"]][div["trait_selected"]] =
+              div["value_selected"];
+            conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
+          }
         }
+        if (Object.keys(conditions).length === 0) {
+          toast.error("You need to enter miminum one condition", { toastId: 3 });
+          return;
+        }
+        setFormData({ ...formData, conditions: conditions });
       }
-      if (Object.keys(conditions).length === 0) {
-        toast.error("You need to enter miminum one condition", { toastId: 3 });
-        return;
-      }
-      setFormData({ ...formData, conditions: conditions });
-    }
 
-    // Checking if every channels have name to continu to the other steps
-    if (index === 2) {
-      let isWrongChannels = channels["added"].filter(
-        (c: Channel) => c["name"].trim().length === 0
-      );
-      if (isWrongChannels.length) {
-        toast.error("You need to name every channels", { toastId: 3 });
-        return;
+      // Checking if every channels have name to continu to the other steps
+      if (index === 2) {
+        let isWrongChannels = channels["added"].filter(
+          (c: Channel) => c["name"].trim().length === 0
+        );
+        if (isWrongChannels.length) {
+          toast.error("You need to name every channels", { toastId: 3 });
+          return;
+        }
       }
     }
 
@@ -260,6 +266,9 @@ export default function NewSide() {
           setFormData({ ...formData, conditions: conditions });
         }
       } else {
+
+        console.log('current_data :', current_data)
+
         // Turn active or not for selected item
         item["active"] = map_i === index - 1 ? true : false;
         // Turn completed or not for previous or next items
@@ -280,7 +289,11 @@ export default function NewSide() {
     }
   };
 
-  const validateForm = async () => {};
+  const onChangeSideDescription = async (text: string) => {
+    setFormData({ ...formData, description: text });
+  };
+
+  const validateForm = async () => { };
 
   // validate the name, return true if name is valid;
   const validateName = async (name: string) => {
@@ -511,7 +524,7 @@ export default function NewSide() {
     try {
       if (formData.sideImage) {
 
-        
+
         const data = _.cloneDeep(formData);
 
         data["conditions"]["requiered"] = onlyOneRequired;
@@ -534,10 +547,10 @@ export default function NewSide() {
 
         const conditionObject = JSON.parse(data['conditions'])
 
-        const conditions = Object.keys(conditionObject).reduce(function(prev:Metadata[], key:string) {
-          if (key !== 'requiered') 
+        const conditions = Object.keys(conditionObject).reduce(function (prev: Metadata[], key: string) {
+          if (key !== 'requiered')
             prev.push({
-              address : key,
+              address: key,
               traitProperty: conditionObject[key]['trait_type'],
               traitValue: conditionObject[key]['trait_value'],
               numberNeeded: (conditionObject[key]['numberNeeded']) ? conditionObject[key]['numberNeeded'] : 1,
@@ -562,7 +575,7 @@ export default function NewSide() {
               Role.Admin
             );
             dispatch(updateProfiles(profile));
-          } catch (error) {}
+          } catch (error) { }
         }
         dispatch(addUserParsedSide(newSide));
         dispatch(updateSidesByUserCollections(null));
@@ -603,11 +616,9 @@ export default function NewSide() {
             return (
               <TabItems
                 key={index}
-                className={`nav-link pl-5 pt-3 pb-3 ${
-                  step["active"] ? "active" : ""
-                } ${
-                  step["completed"] ? "completed" : ""
-                } sidebar-item text-secondary-dark`}
+                className={`nav-link pl-5 pt-3 pb-3 ${step["active"] ? "active" : ""
+                  } ${step["completed"] ? "completed" : ""
+                  } sidebar-item text-secondary-dark`}
               >
                 <i className={`${step["icon"]} mr-2`}></i>
                 {step["label"]}{" "}
@@ -629,6 +640,7 @@ export default function NewSide() {
                       currentSide={formData}
                       onChangeNewSideName={onChangeSideName}
                       onChangeNewSideImage={onChangeSideImage}
+                      onChangeNewSideDescription={onChangeSideDescription}
                       formError={formError}
                     />
                   </>

@@ -53,7 +53,6 @@ export class sideAPI {
 
 export async function getSidesMetadata(sides: any[], userCollectionsData?: any, userSides?: Side[]): Promise<Side[]> {
   const sidesListWithoutCollections = dtoToSideList(sides);
-  console.log('sidesListWithoutCollections :', sidesListWithoutCollections)
   const sidesList: Side[] = await Promise.all(sidesListWithoutCollections.map(async (side) => {
     const conditions = Object.keys(side.conditions);
     const count = conditions.length;

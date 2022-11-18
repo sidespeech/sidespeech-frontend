@@ -28,12 +28,14 @@ export default function Informations({
   userData,
   onChangeNewSideName,
   onChangeNewSideImage,
+  onChangeNewSideDescription,
   formError,
 }: {
   userData?:any;
   currentSide: any;
   onChangeNewSideName?: any;
   onChangeNewSideImage?: any;
+  onChangeNewSideDescription?:any;
   formError?: any;
 }) {
   const [formData, setFormData] = useState<InitialStateUpdateSide>(
@@ -65,6 +67,13 @@ export default function Informations({
     const name = event.target.value;
     setFormData({ ...formData, name: name });
     if (isNewSide) onChangeNewSideName(event.target.value);
+  };
+
+
+  const onChangeSideDescription = (event: any) => {
+    const description = event.target.value;
+    setFormData({ ...formData, description: description });
+    if (isNewSide) onChangeNewSideDescription(event.target.value);
   };
 
   const onChangePrivate = (event: any) => {
@@ -140,7 +149,7 @@ export default function Informations({
                   width: "inherit",
                   objectFit: "cover",
                 }}
-                src={currentSide.sideImage}
+                src={URL.createObjectURL(currentSide.sideImage)}
                 alt="file"
               />
             ) : (
@@ -193,6 +202,7 @@ export default function Informations({
             width="70%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
+            placeholder={"Name your Side"}
             defaultValue={currentSide.name}
             onChange={onChangeSideName}
             radius="10px"
@@ -218,7 +228,8 @@ export default function Informations({
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             placeholder={"Describe your Side"}
-            onChange={undefined}
+            defaultValue={currentSide.description}
+            onChange={onChangeSideDescription}
             radius="10px"
             maxLength={500}
           />
