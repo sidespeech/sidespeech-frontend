@@ -10,6 +10,7 @@ const LeaveSideAsAdminStyled = styled.div<LeaveSideAsAdminStyledProps>`
     border: 1px solid var(--warning);
     border-radius: 10px;
     padding: 1.5rem;
+    text-align: left;
     .leave-title {
         color: var(--warning);
         margin: 0;
