@@ -89,10 +89,11 @@ export default function SidesList() {
       </div>
       {displayEligibility && selectedSide && (
         <SideEligibilityModal
+          setDisplayLeaveSide={() => {}}
           setDisplayEligibility={setDisplayEligibility}
           selectedSide={selectedSide}
         />
-      )}
+      )} 
     </div>
   );
 }

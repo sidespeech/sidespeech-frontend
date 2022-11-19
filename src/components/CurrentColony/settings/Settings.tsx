@@ -17,6 +17,7 @@ import { setCurrentColony, setSelectedChannel } from "../../../redux/Slices/AppD
 import { Dot } from "../../ui-components/styled-components/shared-styled-components";
 import { Role } from "../../../models/Profile";
 import { State, Type } from "../../../models/Invitation";
+import { sideAPI } from "../../../services/side.service";
 
 const initialStateTabs = {
   menu: [
@@ -60,7 +61,7 @@ export default function Settings(
   const handleTabs = (tabName: any) => {
     async function getSide() {
       if (currentSide) {
-        const res = await apiService.getSideById(currentSide['id']);
+        const res = await sideAPI.getSideById(currentSide['id']);
         dispatch(setCurrentColony(res));
         dispatch(
           setSelectedChannel(
