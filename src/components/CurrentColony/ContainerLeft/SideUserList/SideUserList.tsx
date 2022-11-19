@@ -11,7 +11,7 @@ import defaultPP from "../../../../assets/default-pp.webp";
 import copyAll from "../../../../assets/copy_all.svg";
 import hexagon from "../../../../assets/hexagon.svg";
 import check from "../../../../assets/check.svg";
-import { ProfilePictureData } from "../../../GeneralSettings/Account/Avatar";
+import { ProfilePictureData, SpanElipsis } from "../../../GeneralSettings/Account/Avatar";
 import Button from "../../../ui-components/Button";
 import {
   fixURL,
@@ -196,9 +196,9 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
           <ProfilePictureData className="flex align-center text-main">
             <img src={hexagon} className="mr-3 size-12 fw-700" />
             <span title={nft?.token_id + " " + collection.name}>
-              <span className="mr-2">
-                #{nft && reduceTokenId(nft.token_id)}
-              </span>
+              <SpanElipsis className="mr-2">
+                #{nft &&nft.token_id}
+              </SpanElipsis>
               <span className="">
                 {collection &&
                   (collection.name || collection.opensea?.collectionName)}

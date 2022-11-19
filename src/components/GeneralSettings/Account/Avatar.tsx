@@ -20,6 +20,13 @@ const ProfileLabel = styled.label`
   overflow: hidden;
 `;
 
+export const SpanElipsis = styled.span`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 51px;
+  overflow: hidden;
+`;
+
 export const ProfilePictureData = styled.div`
   min-height: 39px;
   width: 245px;
@@ -41,7 +48,7 @@ export default function Avatar({
 
   useEffect(() => {
     if (nft && nft.metadata && nft.metadata.image) {
-      console.log(nft)
+      console.log(nft);
       setUrl(fixURL(nft.metadata.image));
     }
   }, [nft]);
@@ -67,7 +74,7 @@ export default function Avatar({
           <ProfilePictureData className="mt-3">
             <img src={hexagon} className="mr-3" />
             <>
-              <span className="mr-2 size-12">#{nft.token_id}</span>
+              <SpanElipsis className="mr-2 size-12">#{nft.token_id}</SpanElipsis>
               <span className="size-12">{collectionName}</span>
             </>
           </ProfilePictureData>
