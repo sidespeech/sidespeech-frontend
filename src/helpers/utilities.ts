@@ -3,6 +3,7 @@ import { Duration } from "date-fns";
 import { Side } from "../models/Side";
 import { NFT } from "../models/interfaces/nft";
 import { Collection } from "../models/interfaces/collection";
+import { Metadata } from "../models/Metadata";
 
 export function weiToDecimals(
   value: number,
@@ -30,9 +31,7 @@ export function reduceTokenId(id: string): string {
   if (!id) return "";
   if (id.length > 10) {
     reducedId =
-      id.substring(0, 4) +
-      "..." +
-      id.substring(id.length - 4, id.length);
+      id.substring(0, 4) + "..." + id.substring(id.length - 4, id.length);
   }
   return reducedId;
 }
@@ -173,8 +172,10 @@ export function checkUserEligibility(
       res[token_address] = tab;
     });
   }
-
-  const eligible = isEligible(res, selectedSide.metadataSides);
+  let eligible = false;
+  if (Object.keys(res).length > 0) {
+    eligible = isEligible(res, selectedSide.metadataSides);
+  }
   return [res, eligible];
 }
 

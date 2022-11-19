@@ -93,7 +93,6 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
           const addresses = Object.keys(
             _.groupBy(user.publicNfts, "token_address")
           );
-          console.log(addresses);
           const collections = await apiService.getManyCollectionsByAddress(
             addresses
           );
