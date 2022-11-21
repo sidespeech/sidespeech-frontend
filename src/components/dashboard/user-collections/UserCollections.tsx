@@ -222,7 +222,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                                     onClick={() => setSearchFilters(prevState => ({
                                         ...prevState,
                                         collections: collection.address,
-                                        selectedCollection: collection?.opensea?.collectionName
+                                        selectedCollection: collection?.opensea?.collectionName || collection?.name
                                     }))} 
                                 />
                             )}
@@ -232,7 +232,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                                     onClick={() => setSearchFilters(prevState => ({
                                         ...prevState,
                                         collections: collection.address,
-                                        selectedCollection: collection?.opensea?.collectionName
+                                        selectedCollection: collection?.opensea?.collectionName || collection?.name
                                     }))}  
                                 />
                             )}

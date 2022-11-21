@@ -7,6 +7,7 @@ import { Role } from '../../../models/Profile';
 import { Side } from '../../../models/Side';
 import { removeSide } from '../../../redux/Slices/UserDataSlice';
 import { apiService } from '../../../services/api.service';
+import LeaveSideConfirmationModal from '../../Modals/LeaveSideConfirmationModal';
 import Button from '../../ui-components/Button';
 import LeavSideAsAdmin from '../../ui-components/LeavSideAsAdmin';
 import Modal from '../../ui-components/Modal';
@@ -62,32 +63,11 @@ interface SideCardUserActionsProps {
 
 const SideCardUserActions = ({ alertsCount, messagesCount, onNavigate, side, userProfiles }: SideCardUserActionsProps) => {
     const [isLeaveConfirmationModalOpen, setIsLeaveConfirmationModalOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    
-    const dispatch = useDispatch();
 
     const sideProfile = userProfiles.find(profile => profile.side.id === side.id);
     
     const isSideAdmin = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
     
-    const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(isSideAdmin);
-
-    const handleLeaveSide = async (ev: any) => {
-        ev.stopPropagation();
-        try {
-            setIsLoading(true);
-            if(!sideProfile) throw new Error('No Side Profile');
-            await apiService.leaveSide(sideProfile);
-            dispatch(removeSide(side.id));
-            toast.success(`We are sorry to see you leave Side ${side.name}`, { toastId: getRandomId() });
-            setIsLeaveConfirmationModalOpen(false);
-        } catch (error) {
-            console.error(error);
-            toast.error(`There has been an error trying to leave Side ${side.name}`, { toastId: getRandomId() });
-        } finally {
-            setIsLoading(false);
-        }
-    }
 
     return (
         <>
@@ -129,39 +109,7 @@ const SideCardUserActions = ({ alertsCount, messagesCount, onNavigate, side, use
             </SideCardUserActionsStyled>
 
             {isLeaveConfirmationModalOpen && (
-                <Modal 
-                    body={
-                        <div>
-                            {isSideAdmin ? (
-                                <LeavSideAsAdmin />
-                            )
-                            : (
-                                <p>Are you sure you want to leave Side {side.name}?</p>
-                            )}
-                        </div>}
-                    footer={
-                        isSideAdmin ? 
-                            <div className="mt-4"></div> 
-                        : (
-                            <div className="flex mt-5 gap-20">
-                                <Button
-                                    classes=""
-                                    children={"Cancel"}
-                                    onClick={() => setIsLeaveConfirmationModalOpen(false)}
-                                />
-                                <Button
-                                    background='var(--red)'
-                                    classes=""
-                                    disabled={isLoading || isButtonDisabled}
-                                    children={"Leave Side"}
-                                    onClick={handleLeaveSide}
-                                />
-                            </div>
-                    )}
-                    showModal={() => setIsLeaveConfirmationModalOpen(false)}
-                    title={undefined}
-
-                />
+                <LeaveSideConfirmationModal side={side} isSideAdmin={isSideAdmin} setIsLeaveConfirmationModalOpen={setIsLeaveConfirmationModalOpen}  />
             )}
         </>
     );

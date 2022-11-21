@@ -25,6 +25,7 @@ import _, { valuesIn } from "lodash";
 import { Channel, ChannelType } from "../../models/Channel";
 import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
+import { sideAPI } from "../../services/side.service";
 
 const MAX_NUMBER_OF_COLLECTIONS = 5;
 
@@ -169,7 +170,7 @@ export default function NewSide() {
     if (user && user.profiles) {
       const getInvitationUsers = async (user: any) => {
         let userSides = user.profiles.map((p: Profile) => p.side);
-        let users = await apiService.getUserFromSides(userSides);        
+        let users = await apiService.getUserFromSides(userSides);
         let invitationsUsersObject = [];
         delete user["profiles"];
         for (let userInvite of users) {
@@ -284,7 +285,7 @@ export default function NewSide() {
 
   // validate the name, return true if name is valid;
   const validateName = async (name: string) => {
-    const exist = await apiService.isSideNameExist(name);
+    const exist = await sideAPI.isSideNameExist(name);
     const inValidLength = !(name.length < 50 && name.length > 3);
     setFormError({ ...formError, name: { exist, length: inValidLength } });
     return !(exist || inValidLength);
@@ -510,8 +511,6 @@ export default function NewSide() {
 
     try {
       if (formData.sideImage) {
-
-        
         const data = _.cloneDeep(formData);
 
         data["conditions"]["requiered"] = onlyOneRequired;
@@ -522,7 +521,7 @@ export default function NewSide() {
         data["sideImage"] = await apiService.uploadImage(fd);
         data["creatorAddress"] = user?.accounts;
 
-        const newSide = await apiService.createSide(data);
+        const newSide = await sideAPI.createSide(data);
 
         if (channels["added"].length) {
           let added = channels["added"].map((item: any) => {
@@ -532,22 +531,31 @@ export default function NewSide() {
           const addedChannels = await apiService.createManyChannels(added);
         }
 
-        const conditionObject = JSON.parse(data['conditions'])
+        const conditionObject = JSON.parse(data["conditions"]);
 
-        const conditions = Object.keys(conditionObject).reduce(function(prev:Metadata[], key:string) {
-          if (key !== 'requiered') 
+        const conditions = Object.keys(conditionObject).reduce(function (
+          prev: Metadata[],
+          key: string
+        ) {
+          if (key !== "requiered")
             prev.push({
-              address : key,
-              traitProperty: conditionObject[key]['trait_type'],
-              traitValue: conditionObject[key]['trait_value'],
-              numberNeeded: (conditionObject[key]['numberNeeded']) ? conditionObject[key]['numberNeeded'] : 1,
+              address: key,
+              traitProperty: conditionObject[key]["trait_type"],
+              traitValue: conditionObject[key]["trait_value"],
+              numberNeeded: conditionObject[key]["numberNeeded"]
+                ? conditionObject[key]["numberNeeded"]
+                : 1,
               required: !onlyOneRequired,
               side: newSide,
-            })
-          return prev
-        }, [])
+            });
+          return prev;
+        },
+        []);
 
-        const conditionsSaved = await apiService.savedMetadataConditions(conditions);
+        console.log(conditions);
+        const conditionsSaved = await apiService.savedMetadataConditions(
+          conditions
+        );
 
         let users = userInvited.map((u: any) => {
           u["side"] = newSide;
