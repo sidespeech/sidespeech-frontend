@@ -1,10 +1,12 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import { FALLBACK_BG_IMG } from "../../constants/constants";
-import { Side } from "../../models/Side";
-import SideEligibilityModal from "../Modals/SideEligibilityModal";
-import Spinner from "../ui-components/Spinner";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { FALLBACK_BG_IMG } from '../../constants/constants';
+import { Side } from '../../models/Side';
+import SideEligibilityModal from '../Modals/SideEligibilityModal';
+import Spinner from '../ui-components/Spinner';
+import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg'
+
 
 const CARD_HEIGHT = 191;
 const CARD_WIDTH = 265;
@@ -169,22 +171,19 @@ const FeatureSidesStyled = styled.div<ListStyledProps>`
         );
       }
     }
-  }
-  .no-results,
-  .spinner-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    width: 100%;
-    min-height: ${CARD_HEIGHT}px;
-    color: var(--text-secondary);
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.4;
-    color: var(--text-secondary-dark);
-  }
+    & .no-results {
+        background-image: url(${noResultsImg});
+        background-position: center center;
+        backgound-size: contain;
+        background-repeat: no-repeat;
+        & p {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--text-secondary-dark);
+        }
+    }
 `;
 
 interface FeatureSidesProps {

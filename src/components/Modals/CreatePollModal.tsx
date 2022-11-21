@@ -141,7 +141,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
     }
   };
 
-  const valid = proposalTitle && question && Object.values(answers).filter(ans => ans.trim().length > 0).length >= 2;
+  const valid = proposalTitle && endDate && question && Object.values(answers).filter(ans => ans.trim().length > 0).length >= 2;
 
   return (
     <Modal
@@ -165,7 +165,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
           </div>
 
           <div className="poll-field">
-            <label htmlFor="end-date">End date</label>
+            <label htmlFor="end-date">End date *</label>
             <InputText
               bgColor="rgba(0, 0, 0, 0.2)"
               color={"var(--text-secondary)"}

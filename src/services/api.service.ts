@@ -281,7 +281,7 @@ class apiService {
   }
 
   static async getChannelPolls(channelId: string): Promise<Poll[]> {
-    const res = await superagent.get(`${BASE_URL}/poll`);
+    const res = await superagent.get(`${BASE_URL}/channel/${channelId}/polls`);
     return res.body.map((m: any) => new Poll(m));
   }
 
