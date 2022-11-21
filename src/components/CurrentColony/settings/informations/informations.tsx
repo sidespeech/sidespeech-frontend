@@ -150,7 +150,7 @@ export default function Informations({
                   width: "inherit",
                   objectFit: "cover",
                 }}
-                src={URL.createObjectURL(currentSide.sideImage)}
+                src={(!window.location.href.includes("settings")) ? URL.createObjectURL(currentSide.sideImage) : currentSide.sideImage}
                 alt="file"
               />
             ) : (

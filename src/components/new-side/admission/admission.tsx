@@ -31,6 +31,7 @@ interface IAdmissionProps {
 interface IRequirementsRadioButtonContainerProps {
   selected: boolean;
 }
+
 const Chip = styled.span`
   width: fit-content;
   border-radius: 50px;
@@ -91,10 +92,6 @@ export default function Admission({
   );
 
   useEffect(() => {
-    console.log('divCollections :', divCollections)
-
-    console.log('filteredCollections :', filteredCollections)
-
     const selectedCollections: string[] = divCollections.map(
       (d: any) => d.collection
     );
@@ -168,9 +165,9 @@ export default function Admission({
                             filteredCollections.length
                               ? [
                                 "Choose NFT collection",
-                                ...filteredCollections.map((c) => {
+                                ...filteredCollections.map((c, fi) => {
                                   return (
-                                    <span className="flex align-center pl-3">
+                                    <span className="flex align-center pl-3" key={fi}>
                                       {
                                         c.opensea?.imageUrl ?
                                           <Thumbnail
@@ -231,117 +228,243 @@ export default function Admission({
                         </div>
                       </div>
                     </div>
-                    {"trait_selected" in current ? (
-                      <div className="d-flex">
-                        <div className="featureBox mr-auto">
-                          <div className="flex hdBox justify-between mb-3">
-                            <label>Feature</label>
-                          </div>
+                    {current['features'].length ? (
+                      // {/* {"trait_selected" in current ? ( */}
+                      //   {/* <>
+                      //     <div className="d-flex">
+                      //       <div className="featureBox mr-auto">
+                      //         <div className="flex hdBox justify-between mb-3">
+                      //           <label>Feature</label>
+                      //         </div>
 
-                          <div className="d-flex justify-space-between">
-                            <CustomSelect
-                              width={"400px"}
-                              height={"40px"}
-                              radius={"10px"}
-                              classes={"mr-3"}
-                              valueToSet={
-                                current["trait_selected"].length
-                                  ? current["trait_selected"]
-                                  : ""
-                              }
-                              fontSize={12}
-                              fontWeight={700}
-                              arrowPosition={{ top: 12, right: 15 }}
-                              values={
-                                current["traits_values"].length
-                                  ? [
-                                    "",
-                                    ...current["traits_values"].map(
-                                      (item: any) => item["property"]["value"]
-                                    ),
-                                  ]
-                                  : [""]
-                              }
-                              options={
-                                current["traits_values"].length
-                                  ? [
-                                    "Select trait",
-                                    ...current["traits_values"].map(
-                                      (item: any) => item["property"]["label"]
-                                    ),
-                                  ]
-                                  : ["Traits"]
-                              }
-                              onChange={(event: any) =>
-                                setSidePropertyCondition(event, i)
-                              }
-                            />
-                            <CustomSelect
-                              width={"400px"}
-                              height={"40px"}
-                              radius={"10px"}
-                              valueToSet={
-                                current["value_selected"].length
-                                  ? current["value_selected"]
-                                  : ""
-                              }
-                              fontSize={12}
-                              fontWeight={700}
-                              arrowPosition={{ top: 12, right: 15 }}
-                              values={
-                                current["traits_values"].length
-                                  ? [
-                                    "",
-                                    ...(current["traits_values"].find(
-                                      (item: any) =>
-                                        item["property"]["value"] ===
-                                        current["trait_selected"]
-                                    ) || { values: [] })["values"].map(
-                                      (item: any) => item["value"]
-                                    ),
-                                  ]
-                                  : [""]
-                              }
-                              options={
-                                current["traits_values"].length
-                                  ? [
-                                    "Select value of trait",
-                                    ...(current["traits_values"].find(
-                                      (item: any) =>
-                                        item["property"]["value"] ===
-                                        current["trait_selected"]
-                                    ) || { values: [] })["values"].map(
-                                      (item: any) => item["label"]
-                                    ),
-                                  ]
-                                  : ["Values"]
-                              }
-                              onChange={(event: any) =>
-                                setSideValueCondition(event, i)
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="featureBtn f-column justify-center">
-                          <button className="mt-2 text-red">
-                            <i className="fa-solid fa-minus"></i>
+                      //         <div className="d-flex justify-space-between">
+                      //           <CustomSelect
+                      //             width={"400px"}
+                      //             height={"40px"}
+                      //             radius={"10px"}
+                      //             classes={"mr-3"}
+                      //             valueToSet={
+                      //               current["trait_selected"].length
+                      //                 ? current["trait_selected"]
+                      //                 : ""
+                      //             }
+                      //             fontSize={12}
+                      //             fontWeight={700}
+                      //             arrowPosition={{ top: 12, right: 15 }}
+                      //             values={
+                      //               current["traits_values"].length
+                      //                 ? [
+                      //                   "",
+                      //                   ...current["traits_values"].map(
+                      //                     (item: any) => item["property"]["value"]
+                      //                   ),
+                      //                 ]
+                      //                 : [""]
+                      //             }
+                      //             options={
+                      //               current["traits_values"].length
+                      //                 ? [
+                      //                   "Select trait",
+                      //                   ...current["traits_values"].map(
+                      //                     (item: any) => item["property"]["label"]
+                      //                   ),
+                      //                 ]
+                      //                 : ["Traits"]
+                      //             }
+                      //             onChange={(event: any) =>
+                      //               setSidePropertyCondition(event, i)
+                      //             }
+                      //           />
+                      //           <CustomSelect
+                      //             width={"400px"}
+                      //             height={"40px"}
+                      //             radius={"10px"}
+                      //             valueToSet={
+                      //               current["value_selected"].length
+                      //                 ? current["value_selected"]
+                      //                 : ""
+                      //             }
+                      //             fontSize={12}
+                      //             fontWeight={700}
+                      //             arrowPosition={{ top: 12, right: 15 }}
+                      //             values={
+                      //               current["traits_values"].length
+                      //                 ? [
+                      //                   "",
+                      //                   ...(current["traits_values"].find(
+                      //                     (item: any) =>
+                      //                       item["property"]["value"] ===
+                      //                       current["trait_selected"]
+                      //                   ) || { values: [] })["values"].map(
+                      //                     (item: any) => item["value"]
+                      //                   ),
+                      //                 ]
+                      //                 : [""]
+                      //             }
+                      //             options={
+                      //               current["traits_values"].length
+                      //                 ? [
+                      //                   "Select value of trait",
+                      //                   ...(current["traits_values"].find(
+                      //                     (item: any) =>
+                      //                       item["property"]["value"] ===
+                      //                       current["trait_selected"]
+                      //                   ) || { values: [] })["values"].map(
+                      //                     (item: any) => item["label"]
+                      //                   ),
+                      //                 ]
+                      //                 : ["Values"]
+                      //             }
+                      //             onChange={(event: any) =>
+                      //               setSideValueCondition(event, i)
+                      //             }
+                      //           />
+                      //         </div>
+                      //       </div>
+                      //       <div className="featureBtn f-column justify-center">
+                      //         <button className="mt-2 text-red">
+                      //           <i className="fa-solid fa-minus"></i>
+                      //         </button>
+                      //       </div>
+                      //     </div>
+                      //     <div
+                      //       className="addFeature mt-3"
+                      //       onClick={() => addConditionToDivCollection(i)}
+                      //     >
+                      //       <button>
+                      //         <i
+                      //           className="fa fa-plus-circle"
+                      //           aria-hidden="true"
+                      //         ></i>{" "}
+                      //         Add a Feature
+                      //       </button>
+                      //     </div>
+                      //   </> */}
+                      <>
+                        {
+                          current['features'].map((fcurrent: any, findex: number) => {
+                            return (
+
+                              <div className="d-flex mt-3" key={findex}>
+                                <div className="featureBox mr-auto">
+                                  <div className="flex hdBox justify-between mb-3">
+                                    <label>Feature</label>
+                                  </div>
+
+                                  <div className="d-flex justify-space-between">
+                                    <CustomSelect
+                                      width={"400px"}
+                                      height={"40px"}
+                                      radius={"10px"}
+                                      classes={"mr-3"}
+                                      valueToSet={fcurrent["trait_selected"]}
+                                      fontSize={12}
+                                      fontWeight={700}
+                                      arrowPosition={{ top: 12, right: 15 }}
+                                      values={
+                                        current["traits_values"].length
+                                          ? [
+                                            "",
+                                            ...current["traits_values"].map(
+                                              (item: any) => item["property"]["value"]
+                                            ),
+                                          ]
+                                          : [""]
+                                      }
+                                      options={
+                                        current["traits_values"].length
+                                          ? [
+                                            "Select trait",
+                                            ...current["traits_values"].map(
+                                              (item: any) => item["property"]["label"]
+                                            ),
+                                          ]
+                                          : ["Traits"]
+                                      }
+                                      onChange={(event: any) =>
+                                        setSidePropertyCondition(event, i, findex)
+                                      }
+                                    />
+                                    <CustomSelect
+                                      width={"400px"}
+                                      height={"40px"}
+                                      radius={"10px"}
+                                      valueToSet={fcurrent["value_selected"]}
+                                      fontSize={12}
+                                      fontWeight={700}
+                                      arrowPosition={{ top: 12, right: 15 }}
+                                      values={
+                                        current["traits_values"].length
+                                          ? [
+                                            "",
+                                            ...(current["traits_values"].find(
+                                              (item: any) =>
+                                                item["property"]["value"] ===
+                                                fcurrent["trait_selected"]
+                                            ) || { values: [] })["values"].map(
+                                              (item: any) => item["value"]
+                                            ),
+                                          ]
+                                          : [""]
+                                      }
+                                      options={
+                                        current["traits_values"].length
+                                          ? [
+                                            "Select value of trait",
+                                            ...(current["traits_values"].find(
+                                              (item: any) =>
+                                                item["property"]["value"] ===
+                                                fcurrent["trait_selected"]
+                                            ) || { values: [] })["values"].map(
+                                              (item: any) => item["label"]
+                                            ),
+                                          ]
+                                          : ["Values"]
+                                      }
+                                      onChange={(event: any) =>
+                                        setSideValueCondition(event, i, findex)
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                                <div className="featureBtn f-column justify-center">
+                                  <button className="mt-2 text-red">
+                                    <i className="fa-solid fa-minus"></i>
+                                  </button>
+                                </div>
+                              </div>
+
+                            )
+                          })}
+                        <div
+                          className="addFeature mt-3"
+                          onClick={() => addConditionToDivCollection(i)}
+                        >
+                          <button>
+                            <i
+                              className="fa fa-plus-circle"
+                              aria-hidden="true"
+                            ></i>{" "}
+                            Add a Feature
                           </button>
                         </div>
-                      </div>
-                    ) : (
-                      <div
-                        className="addFeature"
-                        onClick={() => addConditionToDivCollection(i)}
-                      >
-                        <button>
-                          <i
-                            className="fa fa-plus-circle"
-                            aria-hidden="true"
-                          ></i>{" "}
-                          Add a Feature
-                        </button>
-                      </div>
-                    )}
+                      </>
+
+                    )
+                      : (
+                        <div
+                          className="addFeature"
+                          onClick={() => addConditionToDivCollection(i)}
+                        >
+                          <button>
+                            <i
+                              className="fa fa-plus-circle"
+                              aria-hidden="true"
+                            ></i>{" "}
+                            Add a Feature
+                          </button>
+                        </div>
+                      )}
                   </div>
                 </div>{" "}
                 {i < divCollections.length - 1 && (
@@ -401,6 +524,6 @@ export default function Admission({
           })}
         </div>
       </div>
-    </div>
+    </div >
   );
 }

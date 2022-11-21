@@ -123,7 +123,6 @@ export async function getSidesMetadata(
   userSides?: Side[]
 ): Promise<Side[]> {
   const sidesListWithoutCollections = dtoToSideList(sides);
-  console.log("sidesListWithoutCollections :", sidesListWithoutCollections);
   const sidesList: Side[] = await Promise.all(
     sidesListWithoutCollections.map(async (side) => {
       const conditions = Object.keys(side.conditions);
@@ -140,12 +139,10 @@ export async function getSidesMetadata(
         collectionsCount: count,
       };
       if (!_.isEmpty(userCollectionsData)) {
-        console.log(userCollectionsData, parsedSide);
         const [_, eligible] = checkUserEligibility(
           userCollectionsData,
           parsedSide
         );
-        console.log(eligible);
         parsedSide = {
           ...parsedSide,
           eligible,

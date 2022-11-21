@@ -73,9 +73,6 @@ export default function PublicNFTs({
         });
       // }
 
-      console.log('inUserEffect: ', user.userAvatar);
-      console.log('inUserEffect: formData ', formData);
-
       setCollections(Object.values(collections));
     }
   }, [userCollectionsData, user]);
