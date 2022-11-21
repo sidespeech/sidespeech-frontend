@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import { getRandomId } from "../../helpers/utilities";
 import { RootState } from "../../redux/store/app.store";
 import { useSelector } from "react-redux";
+import { breakpoints, size } from "../../helpers/breakpoints";
 
 const DashboardPageStyled = styled.div`
   display: flex;
@@ -26,6 +27,10 @@ const DashboardPageStyled = styled.div`
   & > div {
     flex-shrink: 1;
     width: 100%;
+    flex-direction: column;
+    ${breakpoints(size.lg, `{
+      flex-direction: row;
+    }`)};
     & .current-tab-wrapper {
       width: 100%;
       height: 100%;
