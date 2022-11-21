@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
-import styled from 'styled-components';
+import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventType } from "../../constants/EventType";
-import { subscribeToEvent, unSubscribeToEvent } from "../../helpers/CustomEvent";
+import {
+  subscribeToEvent,
+  unSubscribeToEvent,
+} from "../../helpers/CustomEvent";
 import { Announcement } from "../../models/Announcement";
 import { RootState } from "../../redux/store/app.store";
 // import { flattenChannels } from "../../redux/Slices/UserDataSlice";
-import { Side } from "../../models/Side";
+import { Side, SideStatus } from "../../models/Side";
 // import { Channel } from "diagnostics_channel";
 import { Dot } from "../ui-components/styled-components/shared-styled-components";
 import { apiService } from "../../services/api.service";
-import { Profile } from "../../models/Profile";
+import { Profile, Role } from "../../models/Profile";
 import { NotificationType } from "../../models/Notification";
+import SideEligibilityModal from "../Modals/SideEligibilityModal";
+import LeaveSideConfirmationModal from "../Modals/LeaveSideConfirmationModal";
 
 const UserSidesStyled = styled.div`
   .colony-badge {
@@ -24,7 +29,7 @@ const UserSidesStyled = styled.div`
     margin: 0px 12px;
     overflow: hidden;
     z-index: 50;
-    transition: border .2s ease;
+    transition: border 0.2s ease;
     &.active {
       border: 2px solid var(--primary);
     }
@@ -48,14 +53,22 @@ export default function UserSides() {
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const userData = useSelector((state: RootState) => state.user);
 
+  const [displayModal, setDisplayModal] = useState<boolean>(false);
+  const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
+  const [side, setSide] = useState<Side | null>(null);
+
   // const [showCreateModal, setshowCreateModal] = useState<boolean>(false);
   // const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
   // const [isSubscribe, setIsSubscribe] = useState<boolean>(false);
   const [dots, setDots] = useState<any>({});
 
-
-  const displaySide = (id: string) => {
-    navigate(id);
+  const displaySide = (side: Side) => {
+    if (side.status === SideStatus.inactive) {
+      setSide(side);
+      setDisplayModal(true);
+    } else {
+      navigate(side.id);
+    }
   };
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
@@ -117,8 +130,9 @@ export default function UserSides() {
           });
         }
 
-        if (currentSide && sideFounded!["id"] !== currentSide['id'])
-          dots_object[sideFounded!["id"]] = dots_object[sideFounded!["id"]]++ || 1;
+        if (currentSide && sideFounded!["id"] !== currentSide["id"])
+          dots_object[sideFounded!["id"]] =
+            dots_object[sideFounded!["id"]]++ || 1;
       }
     }
     notifications.length ? setDots(dots_object) : setDots({});
@@ -129,16 +143,28 @@ export default function UserSides() {
     if (currentSide && account) getAndSetRoomNotifications(account);
   }, [currentSide]);
 
+  const sideProfile = userData.user?.profiles.find(
+    (profile) => profile.side.id === side?.id
+  );
+
+  const isSideAdmin =
+    sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
+
   return (
     <>
-      <UserSidesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
+      <UserSidesStyled
+        className="f-column align-center mt-3"
+        style={{ gap: 15 }}
+      >
         {userData.sides.map((c, i) => {
           return (
             <div
               onClick={() => {
-                displaySide(c.id);
+                displaySide(c);
               }}
-              className={`colony-badge pointer ${currentSideId === c.id ? 'active' : ''}`}
+              className={`colony-badge pointer ${
+                currentSideId === c.id ? "active" : ""
+              }`}
               key={c.id}
             >
               <img alt="colony-icon" src={c.sideImage} />
@@ -154,6 +180,20 @@ export default function UserSides() {
             // onClick={() => changeStateModal(true)}
           ></i>
         </Link> */}
+        {displayModal && side && (
+          <SideEligibilityModal
+            selectedSide={side}
+            setDisplayEligibility={setDisplayModal}
+            setDisplayLeaveSide={setDisplayLeaveSide}
+          />
+        )}
+        {displayLeaveSide && side && (
+          <LeaveSideConfirmationModal
+            side={side}
+            setIsLeaveConfirmationModalOpen={setDisplayLeaveSide}
+            isSideAdmin={isSideAdmin}
+          />
+        )}
       </UserSidesStyled>
     </>
   );

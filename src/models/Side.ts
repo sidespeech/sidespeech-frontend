@@ -2,6 +2,11 @@ import { Channel } from "./Channel";
 import { MetadataSides } from "./MetadataSides";
 import { Profile } from "./Profile";
 
+export enum SideStatus {
+  active,
+  inactive,
+}
+
 export class Side {
   id: string;
   name: string;
@@ -15,6 +20,7 @@ export class Side {
   sideImage: string;
   priv: boolean;
   private?: boolean;
+  status: SideStatus;
   firstCollection: any;
   collectionsCount: number;
   // this will be a json containing an object with the token related to a condition as key and
@@ -31,7 +37,12 @@ export class Side {
     this.collections = _data.collections;
     this.collectionsCount = 0;
     // this.conditions = _data.conditions ? (_data.conditions instanceof String ? JSON.parse(_data.conditions) : _data.conditions) : {};
-    this.conditions = _data.conditions ? typeof _data.conditions === 'string' ? JSON.parse(_data.conditions) : _data.conditions : {};
+    this.conditions = _data.conditions
+      ? typeof _data.conditions === "string"
+        ? JSON.parse(_data.conditions)
+        : _data.conditions
+      : {};
+    this.status = _data.status;
     this.coverImage = _data.coverImage;
     this.creatorAddress = _data.creatorAddress;
     this.description = _data.description;

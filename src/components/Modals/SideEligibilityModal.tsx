@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { checkUserEligibility, fixURL, getRandomId } from "../../helpers/utilities";
+import {
+  checkUserEligibility,
+  fixURL,
+  getRandomId,
+} from "../../helpers/utilities";
 import { NFT } from "../../models/interfaces/nft";
 import { Role } from "../../models/Profile";
-import { Side } from "../../models/Side";
+import { Side, SideStatus } from "../../models/Side";
 import { RootState } from "../../redux/store/app.store";
 import { apiService } from "../../services/api.service";
 import Button from "../ui-components/Button";
@@ -18,13 +22,18 @@ import { State, Type } from "../../models/Invitation";
 
 const eligibilityTexts = {
   success: {
-    title: "Nice",
+    title: "You are eligible.",
     message:
       "Your wallet meets the requirements to join this Side. You can now join it.",
   },
   error: {
-    title: "Sadly",
+    title: "You are not eligible.",
     message: "Your wallet does not meets the requirements to join this Side.",
+  },
+  inactive: {
+    title: "You are not eligible.",
+    message:
+      "You are no longer eligible for this Side, get the NFTs you need to regain access or choose a Sub-admin user to leave the Side.",
   },
 };
 
@@ -45,10 +54,12 @@ const EligibilityResult = styled.div<IEligibilityResultProps>`
   border-radius: 10px;
   margin-top: 20px;
   margin-bottom: 30px;
+  text-align: left;
 `;
 interface ISideEligibilityModalProps {
   selectedSide: Side;
-  setDisplayEligibility?: React.Dispatch<React.SetStateAction<boolean>>;
+  setDisplayEligibility: React.Dispatch<React.SetStateAction<boolean>>;
+  setDisplayLeaveSide: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function SideEligibilityModal(
@@ -68,25 +79,33 @@ export default function SideEligibilityModal(
     if (!user) return;
     try {
       setIsLoading(true);
-      if (props.selectedSide['private'] === true) {
-
-        let sender:any = {...user}
-        delete sender['profiles'];
+      if (props.selectedSide["private"] === true) {
+        let sender: any = { ...user };
+        delete sender["profiles"];
         const object = {
           state: State.Pending,
           type: Type.Request,
           sender: sender,
-          recipient: props.selectedSide['creatorAddress'],
-          side: props.selectedSide
-        }
+          recipient: props.selectedSide["creatorAddress"],
+          side: props.selectedSide,
+        };
         await apiService.sendRequestPrivateSide(object);
-
-      } else apiService.joinSide(user.id, props.selectedSide.id, Role.User);
-      props.setDisplayEligibility?.(false);
-      dispatch(addUserParsedSide(props.selectedSide));
-      toast.success('Great! You join the side', { toastId: getRandomId() });
-    } catch (error) {
-      toast.error('Ooops! Something went wrong joining this Sides', { toastId: getRandomId() });
+      } else {
+        await apiService.joinSide(user.id, props.selectedSide.id, Role.User);
+        props.setDisplayEligibility?.(false);
+        dispatch(addUserParsedSide(props.selectedSide));
+        toast.success("Great! You join the side", { toastId: 26 });
+      }
+    } catch (error: any) {
+      if (error.statusCode === "403") {
+        toast.error("you do not meet the requirements to join this side.", {
+          toastId: 15,
+        });
+      } else {
+        toast.error("Ooops! Something went wrong joining this Sides", {
+          toastId: 25,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -113,18 +132,25 @@ export default function SideEligibilityModal(
             <img src={props.selectedSide?.sideImage} width="100%" alt="side" />
           </RoundedImageContainer>
           <h2>{props.selectedSide.name}</h2>
-          <div className="text-center">
-            {props.selectedSide.description}
-          </div>
+          <div className="text-center">{props.selectedSide.description}</div>
           <EligibilityResult isEligible={isEligible}>
             <div>
+              {isEligible ? (
+                <i className="fa-solid fa-circle-check mr-2"></i>
+              ) : (
+                <i className="fa-solid fa-circle-xmark mr-2"></i>
+              )}
               {isEligible
                 ? eligibilityTexts.success.title
+                : props.selectedSide.status === SideStatus.inactive
+                ? eligibilityTexts.inactive.title
                 : eligibilityTexts.error.title}
             </div>
             <div>
               {isEligible
                 ? eligibilityTexts.success.message
+                : props.selectedSide.status === SideStatus.inactive
+                ? eligibilityTexts.inactive.message
                 : eligibilityTexts.error.message}
             </div>
           </EligibilityResult>
@@ -132,12 +158,32 @@ export default function SideEligibilityModal(
         </>
       }
       footer={
-        <Button
-          classes="mt-3"
-          disabled={!isEligible || isLoading}
-          children={(props.selectedSide['private'] === true) ? "Send Request" : "Join now"}
-          onClick={handleJoinSide}
-        />
+        props.selectedSide.status === SideStatus.active ? (
+          <Button
+            classes="mt-3 ml-auto"
+            width="121px"
+            height={44}
+            disabled={!isEligible || isLoading}
+            children={
+              props.selectedSide["private"] === true
+                ? "Send Request"
+                : "Join now"
+            }
+            onClick={handleJoinSide}
+          />
+        ) : (
+          <Button
+            classes="mt-3 ml-auto"
+            width="185px"
+            height={44}
+            background={"var(--disable)"}
+            children={"Choose a sub-admin"}
+            onClick={() => {
+              props.setDisplayLeaveSide(true);
+              props.setDisplayEligibility(false);
+            }}
+          />
+        )
       }
       title={undefined}
       showModal={props.setDisplayEligibility}

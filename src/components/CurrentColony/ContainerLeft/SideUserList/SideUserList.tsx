@@ -11,11 +11,25 @@ import defaultPP from "../../../../assets/default-pp.webp";
 import copyAll from "../../../../assets/copy_all.svg";
 import hexagon from "../../../../assets/hexagon.svg";
 import check from "../../../../assets/check.svg";
-import { ProfilePictureData } from "../../../GeneralSettings/Account/Avatar";
+import { ProfilePictureData, SpanElipsis } from "../../../GeneralSettings/Account/Avatar";
 import Button from "../../../ui-components/Button";
-import { fixURL, reduceWalletAddress } from "../../../../helpers/utilities";
+import {
+  fixURL,
+  reduceTokenId,
+  reduceWalletAddress,
+} from "../../../../helpers/utilities";
 import { useNavigate } from "react-router-dom";
-import { setSelectedChannel, setSelectedProfile } from "../../../../redux/Slices/AppDatasSlice";
+import {
+  setSelectedChannel,
+  setSelectedProfile,
+} from "../../../../redux/Slices/AppDatasSlice";
+import { apiService } from "../../../../services/api.service";
+import { Collection } from "../../../../models/interfaces/collection";
+import { NFT } from "../../../../models/interfaces/nft";
+import websocketService from "../../../../services/websocket.service";
+import { addRoomToProfile } from "../../../../redux/Slices/UserDataSlice";
+import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
+import { toast } from "react-toastify";
 
 export default function SideUserList({
   dots,
@@ -51,7 +65,7 @@ export default function SideUserList({
               effect="float"
               clickable
             >
-              <ProfileTooltip   profile={p} />
+              <ProfileTooltip profile={p} />
             </ReactTooltip>
             <div
               data-tip
@@ -104,11 +118,20 @@ const TooltipProfileAvatar = styled.img`
 
 const ProfileTooltip = ({ profile }: { profile: Profile }) => {
   const [url, setUrl] = useState<string>(defaultPP);
+  const [collection, setCollection] = useState<Collection | null>(null);
+  const [nft, setNft] = useState<NFT | null>(null);
+
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const { currentProfile } = useSelector((state: RootState) => state.user);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    async function getCollection(address: string) {
+      const collection = await apiService.getCollectionByAddress(address);
+      setCollection(collection);
+    }
     if (
       profile.profilePicture &&
       profile.profilePicture.metadata &&
@@ -116,7 +139,45 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
     ) {
       setUrl(fixURL(profile.profilePicture.metadata.image));
     }
+    if (profile.profilePicture.token_address) {
+      getCollection(profile.profilePicture.token_address);
+      setNft(profile.profilePicture);
+    }
   }, [profile.profilePicture]);
+
+  const handleSelectedUser = async (
+    profile: Profile,
+    currentProfile: Profile
+  ) => {
+    try {
+      // getting account
+      const connectedAccount = window.ethereum.selectedAddress;
+      // getting room for given profile id
+      let room = currentProfile?.getRoom(profile.id);
+      if (!currentProfile || !connectedAccount) return;
+      // if room not exist in profile
+      if (!room) {
+        // creating the room
+        room = await apiService.createRoom(currentProfile.id, profile.id);
+        // add this room in the user websocket
+        websocketService.addRoomToUsers(room.id, [
+          currentProfile.id,
+          profile.id,
+        ]);
+        // add the room to profile
+        dispatch(addRoomToProfile(room));
+      }
+      // selecting the room
+      dispatch(setSelectedRoom(room));
+      dispatch(setSelectedChannel(null));
+      navigate(`/${currentSide?.id}`);
+    } catch (error) {
+      console.error(error);
+      toast.error("There has been an error opening the room", {
+        toastId: 20,
+      });
+    }
+  };
 
   return (
     <TooltipContainer>
@@ -131,14 +192,21 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
             </div>
           </div>
         </div>
-        <ProfilePictureData className="flex align-center text-main">
-          <img src={hexagon} className="mr-3 size-12 fw-700" />
-          <span>
-            <span className="mr-2">#{4789}</span>
-            <span className="">{"Moonbirds"}</span>
-            <img src={check} className="ml-2" />
-          </span>
-        </ProfilePictureData>
+        {collection && (
+          <ProfilePictureData className="flex align-center text-main">
+            <img src={hexagon} className="mr-3 size-12 fw-700" />
+            <span title={nft?.token_id + " " + collection.name}>
+              <SpanElipsis className="mr-2">
+                #{nft &&nft.token_id}
+              </SpanElipsis>
+              <span className="">
+                {collection &&
+                  (collection.name || collection.opensea?.collectionName)}
+              </span>
+              <img src={check} className="ml-2" />
+            </span>
+          </ProfilePictureData>
+        )}
         <div className="flex" style={{ gap: 11 }}>
           <Button
             children={"Profile"}
@@ -153,7 +221,9 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
           <Button
             children={"Messages"}
             width={"117px"}
-            onClick={undefined}
+            onClick={() => {
+              currentProfile && handleSelectedUser(profile, currentProfile);
+            }}
             height={44}
           />
         </div>

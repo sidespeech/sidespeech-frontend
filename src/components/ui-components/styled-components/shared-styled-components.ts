@@ -48,5 +48,6 @@ export const RoundedImageContainer = styled.div<IRoundedImageContainerProps>`
   overflow: hidden;
   & img {
     object-fit: cover;
+    height: 100%;
   }
 `;
