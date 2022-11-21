@@ -5,7 +5,7 @@ import { Side } from "../models/Side";
 import alchemyService from "./alchemy.service";
 import _ from "lodash";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
-import { InitialStateSide } from "../components/new-side/new-side";
+import { InitialStateSide } from "../components/new-side/NewSide";
 
 
 const post = (url: string) => {

@@ -15,7 +15,7 @@ import "./override.css";
 import "./index.css";
 import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import Settings from "./components/CurrentColony/settings/Settings";
-import NewSide from "./components/new-side/new-side";
+import NewSide from "./components/new-side/NewSide";
 
 // Onboarding
 import OnBoarding from "./components/OnBoarding/DefaultView";

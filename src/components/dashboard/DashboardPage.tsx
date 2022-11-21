@@ -24,6 +24,12 @@ const DashboardPageStyled = styled.div`
   overflow-y: scroll;
   width: 100%;
   min-height: 100vh;
+  padding-bottom: 77px;
+  ${breakpoints(size.lg, `
+    {
+      padding-bottom: 0;
+    }
+  `)}
   & > div {
     flex-shrink: 1;
     width: 100%;
@@ -34,8 +40,10 @@ const DashboardPageStyled = styled.div`
     & .current-tab-wrapper {
       width: 100%;
       height: 100%;
-      padding: 0 1rem;
       overflow-x: hidden;
+      ${breakpoints(size.lg,`{
+        padding: 0 1rem;
+      }`)}
     }
   }
 `;

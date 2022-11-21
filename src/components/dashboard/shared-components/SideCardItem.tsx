@@ -195,6 +195,7 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
             <div className={`side-description ${side.joined ? 'pointer' : ''}`} onClick={handleNavigate}>
                 <ClampLines>
                     {side.description}
+                    Mi proin molestie suspendisse massa amet ex diam adipiscing metus erat et elementum ex phasellus arcu interdum nisi metus vivamus gravida accumsan et nisi magna.
                 </ClampLines>
             </div>
             <div className="side-actions">

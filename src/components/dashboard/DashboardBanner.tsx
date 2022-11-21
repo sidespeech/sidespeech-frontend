@@ -18,13 +18,22 @@ const DashboardStyled = styled.header`
     border-radius: 10px;
     ${breakpoints(size.xs, `{height: 40px;}`)};
     ${breakpoints(size.lg, `{
-        height: 35vh;, 
+        height: 35vh;
         background-image: 
         linear-gradient(0deg, rgba(112, 92, 233, 0.7) 0%, rgba(112, 92, 233, 0.322) 100%), url(${bannerImage});
       }`)};
     & .desktop-toolbar {
+      h1 {
+        margin: 0;
+      }
       ${breakpoints(size.xs, `{display: none;}`)};
-      ${breakpoints(size.lg, `{display: block;}`)};
+      ${breakpoints(size.lg, `{
+        display: block;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }`)};
     }
     & .mobile-toolbar {
       ${breakpoints(size.xs, `{display: flex;}`)};

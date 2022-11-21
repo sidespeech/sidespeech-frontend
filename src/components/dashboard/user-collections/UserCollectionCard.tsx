@@ -15,11 +15,14 @@ const UserCollectionCardStyled = styled.div<CollectionCardStyledProps>`
     flex-direction: column;
     justify-content: flex-end;
     width: 100%;
-    height: ${CARD_HEIGHT}px;
+    height: ${CARD_HEIGHT * .8}px;
     flex-shrink: 0;
     background-color: var(--bg-secondary);
     border-radius: 10px;
     overflow: hidden;
+    ${breakpoints(size.lg, `{
+        height: ${CARD_HEIGHT}px;
+    }`)}
     .cover-image {
         height: 50%;
         background: url(${(props) => props.coverImage || FALLBACK_BG_IMG});
@@ -62,7 +65,7 @@ const UserCollectionCardStyled = styled.div<CollectionCardStyledProps>`
                 }
             }
             & .discover-btn {
-                width: 80%;
+                width: 100%;
                 ${breakpoints(size.md,`
                 {
                      width: 100%;
