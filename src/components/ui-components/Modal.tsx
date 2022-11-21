@@ -4,6 +4,7 @@ import styled from "styled-components";
 interface IModalContainerProps {
   height?: string;
   width?: string;
+  overflow?: string;
 }
 
 const ModalContainer = styled.div<IModalContainerProps>`
@@ -27,8 +28,8 @@ const ModalContainer = styled.div<IModalContainerProps>`
     justify-content: center;
   }
   .modal-content {
-    width: ${(props) => (props.width ? props.width : '700px')};
-    max-width: ${(props) => (props.width ? props.width : '700px')};
+    width: ${(props) => (props.width ? props.width : "639px")};
+    max-width: ${(props) => (props.width ? props.width : "639px")};
     padding: 16px 17px 24px 27px;
     background: var(--bg-primary);
     border-radius: 10px;
@@ -36,18 +37,17 @@ const ModalContainer = styled.div<IModalContainerProps>`
     display: flex;
     flex-direction: column;
   }
-  
+
   .modal-header {
     text-align: center;
     font-weight: 700;
     font-size: 30px;
   }
   .modal-body {
-    max-height: 506px;
-    overflow: auto;
+    max-height: 75vh;
+    overflow: ${(props) => (props.overflow ? props.overflow : "auto")};
     margin-top: 1rem;
   }
-  
 `;
 
 export default function Modal({
@@ -58,7 +58,8 @@ export default function Modal({
   showModal,
   backicon = false,
   height,
-  width
+  width,
+  overflow,
 }: {
   header?: any;
   body: any;
@@ -68,9 +69,15 @@ export default function Modal({
   backicon?: boolean;
   height?: string;
   width?: string;
+  overflow?: string;
 }) {
   return (
-    <ModalContainer height={height} width={width} onClick={() => showModal(false)}>
+    <ModalContainer
+      overflow={overflow}
+      height={height}
+      width={width}
+      onClick={() => showModal(false)}
+    >
       <div className="modal-content" onClick={(ev) => ev.stopPropagation()}>
         <div className="modal-header">
           <div className="flex justify-between w-100">
@@ -84,19 +91,13 @@ export default function Modal({
             )}
             {header}
             <div onClick={() => showModal(false)}>
-              <i
-                className="pointer fa-solid fa-xmark size-22"
-              ></i>
+              <i className="pointer fa-solid fa-xmark size-22"></i>
             </div>
           </div>
           <div>{title}</div>
         </div>
 
-        <div
-          className="f-column align-center modal-body"
-        >
-          {body}
-        </div>
+        <div className="f-column align-center modal-body">{body}</div>
         <div className="modal-footer mt-auto">{footer}</div>
       </div>
     </ModalContainer>

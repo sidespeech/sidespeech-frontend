@@ -21,12 +21,13 @@ import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 // import websocketService from "../../services/websocket.service";
 import { sideAPI } from "../../services/side.service";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Poll } from "../../models/Poll";
 
 import { Outlet, useOutletContext } from "react-router-dom";
 import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
-
+import { SideStatus } from "../../models/Side";
+import { toast } from "react-toastify";
 
 const CurrentSideStyled = styled.div`
   .selected-channel {
@@ -101,6 +102,7 @@ export default function CurrentSide() {
   // const [displayEditChannelModal, setDisplayEditChannelModal] = useState<boolean>(false);
   const [createPollModal, setCreatePollModal] = useState<boolean>(false);
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const ref = useRef<HTMLInputElement>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -132,6 +134,10 @@ export default function CurrentSide() {
       try {
         if (id) {
           const res = await sideAPI.getSideById(id);
+          if (res.status === SideStatus.inactive) {
+            toast.info("This side is currently inactive", { toastId: 36 });
+            navigate("/");
+          }
           dispatch(setCurrentColony(res));
           dispatch(
             setSelectedChannel(
@@ -156,29 +162,34 @@ export default function CurrentSide() {
 
   return (
     <CurrentSideStyled className="flex align-start w-100">
-      <CurrentSideLeft />
+      {currentSide?.status === SideStatus.active ? (
+        <>
+          <CurrentSideLeft />
 
-      <div className="f-column w-100">
-
-        <MiddleContainerHeader
-          channel={selectedChannel}
-          room={selectedRoom}
-          setThread={setThread}
-          thread={thread}
-        />
-        <Outlet
-          context={{
-            selectedRoom,
-            selectedChannel,
-            announcementId,
-            setThread,
-            thread,
-            setCreatePollModal,
-          }}
-        />
-      </div>
-      {createPollModal && selectedChannel && currentSide && (
-        <CreatePollModal showModal={setCreatePollModal} />
+          <div className="f-column w-100">
+            <MiddleContainerHeader
+              channel={selectedChannel}
+              room={selectedRoom}
+              setThread={setThread}
+              thread={thread}
+            />
+            <Outlet
+              context={{
+                selectedRoom,
+                selectedChannel,
+                announcementId,
+                setThread,
+                thread,
+                setCreatePollModal,
+              }}
+            />
+          </div>
+          {createPollModal && selectedChannel && currentSide && (
+            <CreatePollModal showModal={setCreatePollModal} />
+          )}
+        </>
+      ) : (
+        <div>This side is currently inactive</div>
       )}
     </CurrentSideStyled>
   );

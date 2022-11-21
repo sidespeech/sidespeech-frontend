@@ -14,6 +14,7 @@ import Spinner from '../../ui-components/Spinner';
 import { paginateArray } from '../../../helpers/utilities';
 import { searchFiltersProps } from '../DashboardPage';
 // import Button from '../../ui-components/Button';
+import noResultsImg from '../../../assets/my_sides_empty_screen_shape.svg'
 
 interface CollectionsStyledProps {
 
@@ -37,10 +38,11 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
         }
         & .no-results {
             flex-direction: column;
-            background-image: url();
+            background-image: url(${noResultsImg});
             background-position: center center;
             backgound-size: contain;
             background-repeat: no-repeat;
+            margin: 4rem 0;
             & p {
                 text-align: center;
                 font-size: 1.5rem;
@@ -220,7 +222,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                                     onClick={() => setSearchFilters(prevState => ({
                                         ...prevState,
                                         collections: collection.address,
-                                        selectedCollection: collection?.opensea?.collectionName
+                                        selectedCollection: collection?.opensea?.collectionName || collection?.name
                                     }))} 
                                 />
                             )}
@@ -230,7 +232,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                                     onClick={() => setSearchFilters(prevState => ({
                                         ...prevState,
                                         collections: collection.address,
-                                        selectedCollection: collection?.opensea?.collectionName
+                                        selectedCollection: collection?.opensea?.collectionName || collection?.name
                                     }))}  
                                 />
                             )}

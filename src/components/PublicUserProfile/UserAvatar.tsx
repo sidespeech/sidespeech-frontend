@@ -4,6 +4,7 @@ import { fixURL } from "../../helpers/utilities";
 
 import defaultPP from "../../assets/default-pp.webp";
 import hexagon from "../../assets/hexagon.svg";
+import { SpanElipsis } from "../GeneralSettings/Account/Avatar";
 
 const UserAvatarContainer = styled.div`
   background: var(--input);
@@ -34,7 +35,7 @@ export const UserAvatar = ({ nft, name }: any) => {
         <img src={hexagon} className="mr-3" />
         {name && nft ? (
           <>
-            <span className="mr-2 size-12">#{nft.token_id}</span>
+            <SpanElipsis title={nft.token_id} className="mr-2 size-12">#{nft.token_id}</SpanElipsis>
             <span className="size-12">{name}</span>
           </>
         ) : (

@@ -8,6 +8,7 @@ import "./informations.css";
 import { apiService } from "../../../../services/api.service";
 import { Side } from "../../../../models/Side";
 import Switch from "../../../ui-components/Switch";
+import { sideAPI } from "../../../../services/side.service";
 
 export interface InitialStateUpdateSide {
   sideImage: string | undefined;
@@ -88,7 +89,7 @@ export default function Informations({
         delete formData["sideImage"];
       }
       if (!currentSide["id"]) return;
-      const updatedSide = await apiService.updateSide(
+      const updatedSide = await sideAPI.updateSide(
         formData,
         currentSide["id"]
       );

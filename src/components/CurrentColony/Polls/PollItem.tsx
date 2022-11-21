@@ -58,6 +58,7 @@ const PollItemStyled = styled.div`
 `;
 
 interface PollItemProps {
+    authorizeComments?: boolean;
     handleVote?: any;
     isThread: boolean;
     isFirstItem?: boolean;
@@ -65,7 +66,7 @@ interface PollItemProps {
     sideId: string;
 }
 
-const PollItem = ({ handleVote, isFirstItem, isThread, poll, sideId }: PollItemProps) => {
+const PollItem = ({ authorizeComments, handleVote, isFirstItem, isThread, poll, sideId }: PollItemProps) => {
     const walletAddress = window.ethereum.selectedAddress;
     const [comments, setComments] = useState<Comment[]>([]);
 
@@ -95,11 +96,11 @@ const PollItem = ({ handleVote, isFirstItem, isThread, poll, sideId }: PollItemP
         alignment: "center",
       };
 
-    const participants = poll.pollOption.reduce((prevCount: number, next: any) => {
+    const participants = poll.pollOption?.reduce((prevCount: number, next: any) => {
         return prevCount + next.votes || 0;
       }, 0);
 
-      const thePollOptions = poll.pollOption.map((option: any, index: any) => {
+      const thePollOptions = poll.pollOption?.map((option: any, index: any) => {
         return { id: index, optionId: option.id, text: option.text, votes: option.votes};
       });
 
@@ -107,7 +108,7 @@ const PollItem = ({ handleVote, isFirstItem, isThread, poll, sideId }: PollItemP
       const finishedVoting = isExpired;
 
       // We'll check if the user has voted.
-      const checkUserVoted = poll.votes.some((v) => v.voterId === walletAddress);
+      const checkUserVoted = poll.votes?.some((v) => v.voterId === walletAddress);
 
   return (
     <PollItemStyled className={`w-100 poll-item ${!isFirstItem ? 'border-top' : ''}`}>
@@ -151,7 +152,7 @@ const PollItem = ({ handleVote, isFirstItem, isThread, poll, sideId }: PollItemP
             <div className="flex poll-override">
             <LeafPoll
                 type={"multiple"}
-                results={thePollOptions}
+                results={thePollOptions || []}
                 theme={customTheme}
                 isVoted={!!checkUserVoted}
                 isVotedId={walletAddress}
@@ -160,13 +161,15 @@ const PollItem = ({ handleVote, isFirstItem, isThread, poll, sideId }: PollItemP
             </div>
         </div>
 
-        <Comments
-            channel={poll}
-            comments={comments}
-            isThread={!!isThread}
-            handleComment={handleComment}
-            sideId={sideId || ''}
-        />
+        {authorizeComments && (
+            <Comments
+                channel={poll}
+                comments={comments}
+                isThread={!!isThread}
+                handleComment={handleComment}
+                sideId={sideId || ''}
+            />
+        )}
     </PollItemStyled>
   )
 }
