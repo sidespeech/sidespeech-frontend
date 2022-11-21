@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { getRandomId } from "../../helpers/utilities";
@@ -6,6 +6,7 @@ import { Side } from "../../models/Side";
 import { removeSide } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
 import { apiService } from "../../services/api.service";
+import { sideAPI } from "../../services/side.service";
 import Button from "../ui-components/Button";
 import LeavSideAsAdmin from "../ui-components/LeavSideAsAdmin";
 import Modal from "../ui-components/Modal";
@@ -30,7 +31,6 @@ export default function LeaveSideConfirmationModal(
   const dispatch = useDispatch();
 
   const handleLeaveSide = async (ev: any) => {
-    ev.stopPropagation();
     try {
       const sideProfile = user?.profiles.find(
         (profile) => profile.side.id === props.side.id
@@ -57,10 +57,14 @@ export default function LeaveSideConfirmationModal(
 
   return (
     <Modal
+      overflow="visible"
       body={
         <div>
           {props.isSideAdmin ? (
-            <LeavSideAsAdmin />
+            <LeavSideAsAdmin
+              side={props.side}
+              handleLeaveSide={handleLeaveSide}
+            />
           ) : (
             <p>Are you sure you want to leave Side {props.side.name}?</p>
           )}

@@ -86,7 +86,11 @@ class apiService {
     sideId: string,
     role: number
   ): Promise<Profile> {
-    const res = await post(`${BASE_URL}/profile/join`).send({ userId, sideId, role });
+    const res = await post(`${BASE_URL}/profile/join`).send({
+      userId,
+      sideId,
+      role,
+    });
     return new Profile(res.body);
   }
 
@@ -403,7 +407,7 @@ class apiService {
   static async leaveSide(profile: Profile): Promise<any> {
     const res = await superagent
       .post(`${BASE_URL}/profile/leave`)
-      .send(profile);
+      .send({ id: profile.id, sideId: profile.side.id, role: profile.role });
     return res.body;
   }
 

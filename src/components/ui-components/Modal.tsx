@@ -4,6 +4,7 @@ import styled from "styled-components";
 interface IModalContainerProps {
   height?: string;
   width?: string;
+  overflow?: string;
 }
 
 const ModalContainer = styled.div<IModalContainerProps>`
@@ -44,7 +45,7 @@ const ModalContainer = styled.div<IModalContainerProps>`
   }
   .modal-body {
     max-height: 75vh;
-    overflow: auto;
+    overflow: ${(props) => (props.overflow ? props.overflow : "auto")};
     margin-top: 1rem;
   }
 `;
@@ -58,6 +59,7 @@ export default function Modal({
   backicon = false,
   height,
   width,
+  overflow,
 }: {
   header?: any;
   body: any;
@@ -67,9 +69,11 @@ export default function Modal({
   backicon?: boolean;
   height?: string;
   width?: string;
+  overflow?: string;
 }) {
   return (
     <ModalContainer
+      overflow={overflow}
       height={height}
       width={width}
       onClick={() => showModal(false)}
