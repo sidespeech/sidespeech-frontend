@@ -1,16 +1,29 @@
 .left-container {
   background-color: var(--bg-secondary);
   width: 70px;
-  display: flex;
+  display: none;
   flex-direction: column;
   text-align: center;
   justify-content: space-between;
   padding: 13px 0px 21px 0px;
 }
+@media screen and (min-width: 980px) {
+  .left-container {
+    display: flex;
+  }
+}
+
 .middle-container {
   background-color: var(--bg-primary);
-  width: calc(100% - 70px);
+  width: 100%;
 }
+
+@media screen and (min-width: 980px){
+  .middle-container {
+    width: calc(100% - 70px);
+  }
+}
+
 .main-container {
   height: 100vh;
   max-height: 100vh;

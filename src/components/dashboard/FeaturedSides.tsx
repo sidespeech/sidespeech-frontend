@@ -171,19 +171,24 @@ const FeatureSidesStyled = styled.div<ListStyledProps>`
         );
       }
     }
-    & .no-results {
-        background-image: url(${noResultsImg});
-        background-position: center center;
-        backgound-size: contain;
-        background-repeat: no-repeat;
-        & p {
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1.4;
-            color: var(--text-secondary-dark);
-        }
-    }
+  }
+  & .no-results {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: url(${noResultsImg});
+      background-position: center center;
+      background-size: contain;
+      background-repeat: no-repeat;
+      height: ${CARD_HEIGHT}px;
+      & p {
+          text-align: center;
+          font-size: 1.5rem;
+          font-weight: 700;
+          line-height: 1.4;
+          color: var(--text-secondary-dark);
+      }
+  }
 `;
 
 interface FeatureSidesProps {
