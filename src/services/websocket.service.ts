@@ -71,15 +71,15 @@ class WebSocketService {
     });
   }
 
-  getUsersStatus() {
-    this.socket?.emit("usersStatus");
-  }
-
   logout() {
     this.socket?.emit("login", {
       user: { id: user.id, username: user.accounts },
       rooms: rooms,
     });
+  }
+
+  getUsersStatus() {
+    this.socket?.emit("usersStatus");
   }
 
   deconnectWebsocket() {

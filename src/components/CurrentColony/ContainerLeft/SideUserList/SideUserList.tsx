@@ -13,17 +13,13 @@ import hexagon from "../../../../assets/hexagon.svg";
 import check from "../../../../assets/check.svg";
 import { ProfilePictureData, SpanElipsis } from "../../../GeneralSettings/Account/Avatar";
 import Button from "../../../ui-components/Button";
-<<<<<<< Updated upstream
 import {
   fixURL,
   reduceTokenId,
   reduceWalletAddress,
 } from "../../../../helpers/utilities";
-=======
 import { subscribeToEvent, unSubscribeToEvent } from "../../../../helpers/CustomEvent";
 import { EventType } from "../../../../constants/EventType"; 
-import { fixURL, reduceWalletAddress } from "../../../../helpers/utilities";
->>>>>>> Stashed changes
 import { useNavigate } from "react-router-dom";
 import {
   setSelectedChannel,
@@ -73,25 +69,19 @@ export default function SideUserList({
       {currentSide?.profiles.map((p: Profile, index: number) => {
 
         let status;
+
         const isMe = p.id === currentProfile?.id;
         const room = currentProfile?.getRoom(p.id);
         const url = p.profilePicture?.metadata?.image
           ? fixURL(p.profilePicture?.metadata?.image)
-          : undefined; 
+          : undefined;  
        
           if(usersStatus[index]) {
-            // console.log('userstatus:',  usersStatus[index].user.id );
-            // console.log('profils:',  p.user.id );
-
-            console.log(usersStatus);
-            console.log(p.user);
-
             status = usersStatus[index].user.id == p.user.id ? true : false;
           } else {
             status = false;
           }
         
-        //const status = true;
           return (
           <>
             <ReactTooltip
