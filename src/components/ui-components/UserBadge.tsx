@@ -52,17 +52,17 @@ export default function UserBadge({
         className="profile-round-small mr-1"
         title={address}
         src={avatar || defaultPP}
-      >
-        {/* {check && <img alt="verified" src={checkImg} />} */}
-        {connect && (
-          <img
-            style={{ bottom: 0, right: 0 }}
-            alt="verified"
+      />
+      {/* {check && <img alt="verified" src={checkImg} />} */}
+      {connect && (
+        <span
+          className="user-status"
+        >
+          <img 
             src={connectionDot}
           />
-        )}
-      </img>
-
+        </span>
+      )}
       <WalletAddress color={color} weight={weight} fontSize={fontSize}>
         {address ? reduceWalletAddress(address) : username}
       </WalletAddress>
