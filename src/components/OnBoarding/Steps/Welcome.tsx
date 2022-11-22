@@ -144,7 +144,7 @@ export default function Welcome({
 
       {/* Submit Button */}
       <Button
-        classes={"mt-3"}
+        classes={"mt-5 mx-auto"}
         width={"121px"}
         height={44}
         onClick={onSubmit}
