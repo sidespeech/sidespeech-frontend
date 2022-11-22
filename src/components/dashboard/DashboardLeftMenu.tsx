@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
 import { breakpoints, size } from '../../helpers/breakpoints';
 import { checkUserEligibility } from '../../helpers/utilities';
@@ -64,6 +64,12 @@ const DashboardLeftMenuStyled = styled.aside`
             margin-right: 1rem;
         }
     }
+    &.search-page {
+        display: none;
+        ${breakpoints(size.lg, `{
+            display: block;
+        }`)}
+    }
 `;
 
 const DashboardLeftMenu = ({
@@ -78,6 +84,7 @@ const DashboardLeftMenu = ({
     }
 }) => {
     const navigate = useNavigate();
+    const { pathname } = useLocation();
 
     const userData = useSelector((state: RootState) => state.user);
     const [invitations, setInvitations] = useState<any[]>([]);
@@ -97,7 +104,7 @@ const DashboardLeftMenu = ({
     }, [userData]);
 
     return (
-        <DashboardLeftMenuStyled>
+        <DashboardLeftMenuStyled className={pathname === '/search' ? 'search-page' : ''}>
             <h2 className="title">Dashboard</h2>
             <nav className="navigation-menu">
                 <ul>

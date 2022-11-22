@@ -20,7 +20,6 @@ import { apiService } from '../../services/api.service';
 import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
 import { EventType } from '../../constants/EventType';
 import { Announcement } from '../../models/Announcement';
-import { NotificationType } from '../../models/Notification';
 import { breakpoints, size } from '../../helpers/breakpoints';
 
 interface MySidesStyledProps {}
