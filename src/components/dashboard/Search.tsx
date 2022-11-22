@@ -17,19 +17,48 @@ import PaginationControls from "../ui-components/PaginationControls";
 import Spinner from "../ui-components/Spinner";
 import { searchFiltersInitialState, searchFiltersProps } from "./DashboardPage";
 import SideCardItem from "./shared-components/SideCardItem";
+import { breakpoints, size } from '../../helpers/breakpoints';
 import noResultsImg from "../../assets/my_sides_empty_screen_shape.svg";
 
 interface SearchStyledProps {}
 
 const SearchStyled = styled.main<SearchStyledProps>`
-  .title {
-    margin-top: 0;
-  }
-  .search-toolbar {
+  .title_wrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 1rem;
+    .title {
+      margin: 0;
+    }
+    .filters-btn {
+      background: transparent;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      ${breakpoints(size.md, `{
+        display: none;
+      }`)}
+    }
+  }
+  .search-toolbar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     margin: 1rem 0 2rem 0;
+    gap: 1rem;
+    transform: scaleY(0);
+    position: absolute;
+    ${breakpoints(size.md, `{
+      position: relative;
+      flex-direction: row;
+      align-items: center;
+      transform: scaleY(1);
+    }`)}
+    &.filters-showing {
+      position: relative;
+      transform: scaleY(1);
+    }
     .collection-select,
     .elegibility-select,
     .verified-checkbox {
@@ -45,10 +74,16 @@ const SearchStyled = styled.main<SearchStyledProps>`
       border-radius: 10px;
     }
     .collection-select {
-      width: 30%;
+      width: 100%;
+      ${breakpoints(size.md, `{
+        width: 30%;
+      }`)}
     }
     .elegibility-select {
-      width: 20%;
+      width: 100%;
+      ${breakpoints(size.md, `{
+        width: 20%;
+      }`)}
     }
   }
 
@@ -90,10 +125,13 @@ const SearchStyled = styled.main<SearchStyledProps>`
   }
   .list-wrapper {
     display: grid;
-    grid-template-columns: repeat(
-      auto-fit,
-      minmax(250px, calc(33% - (2rem / 3)))
-    );
+    grid-template-columns: 1fr;
+    ${breakpoints(size.md, `{
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(250px, calc(33% - (2rem / 3)))
+      );
+    }`)}
     grid-gap: 1rem;
   }
   .pagination-controls {
@@ -124,14 +162,15 @@ const Search = ({
   searchText,
   setSearchFilters,
 }: SearchProps) => {
-  const [sidesLoading, setSidesLoading] = useState<boolean>(false);
-  const [sidesList, setSidesList] = useState<Side[]>([]);
-  const [filteredSides, setFilteredSides] = useState<Side[]>([]);
   const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
+  const [filteredSides, setFilteredSides] = useState<Side[]>([]);
+  const [isFiltersShowing, setIsFiltersShowing] = useState<boolean>(false);
   const [pagination, setPagination] = useState<paginationProps>(
     paginationInitialState
   );
   const [selectedSide, setSelectedSide] = useState<Side | null>(null);
+  const [sidesList, setSidesList] = useState<Side[]>([]);
+  const [sidesLoading, setSidesLoading] = useState<boolean>(false);
   const [totalResults, setTotalResults] = useState<number>(0);
 
   const { sides, user, userCollectionsData } = useSelector(
@@ -196,12 +235,20 @@ const Search = ({
 
   return (
     <SearchStyled>
-      <h2 className="title">
-        {totalResults} Sides found for "
-        {searchText || searchFilters.selectedCollection || ""}"
-      </h2>
+      <div className="title_wrapper">
+        <h2 className="title">
+          {totalResults} Sides found for "
+          {searchText || searchFilters.selectedCollection || ""}"
+        </h2>
 
-      <div className="search-toolbar">
+        <button onClick={() => setIsFiltersShowing(prevState => !prevState)} className="filters-btn">
+          <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.99991 16C7.71657 16 7.47924 15.904 7.28791 15.712C7.09591 15.5207 6.99991 15.2833 6.99991 15V9L1.19991 1.6C0.949908 1.26667 0.912574 0.916667 1.08791 0.55C1.26257 0.183334 1.56657 0 1.99991 0H15.9999C16.4332 0 16.7376 0.183334 16.9129 0.55C17.0876 0.916667 17.0499 1.26667 16.7999 1.6L10.9999 9V15C10.9999 15.2833 10.9042 15.5207 10.7129 15.712C10.5209 15.904 10.2832 16 9.99991 16H7.99991ZM8.99991 8.3L13.9499 2H4.04991L8.99991 8.3Z" fill="#B4C1D2"/>
+          </svg>
+        </button>
+      </div>
+
+      <div className={`search-toolbar ${isFiltersShowing ? 'filters-showing' : ''}`}>
         <div className="collection-select">
           <label>Collection</label>
           <CustomSelect
