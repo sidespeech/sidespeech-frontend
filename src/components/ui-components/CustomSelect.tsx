@@ -4,6 +4,7 @@ import styled from "styled-components";
 interface ISelectContainer {
   width?: string;
   height?: string;
+  radius?: string;
 }
 
 interface ISelectCustom {
@@ -20,7 +21,7 @@ const SelectContainer = styled.div<ISelectContainer>`
   .select-custom {
     width: 100%;
     padding: 5px 0px 5px 12px;
-    border-radius: 25px;
+    border-radius: ${(props) => (props.radius ? props.radius : '25px')};
     appearance: none;
     color: var(--text-secondary);
     text-align: left;
@@ -122,6 +123,7 @@ export default function CustomSelect({
       style={{ ...style }}
       width={width}
       height={height}
+      radius={radius}
       className={classes}
     >
       <SelectCustom

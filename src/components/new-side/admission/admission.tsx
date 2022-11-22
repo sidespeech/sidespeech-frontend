@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import "./admission.css";
 import CustomSelect from "../../ui-components/CustomSelect";
 import check from "../../../assets/check.svg";
 import Button from "../../ui-components/Button";
@@ -14,6 +13,7 @@ import {
 import { fixURL } from "../../../helpers/utilities";
 import CustomInputNumber from "../../ui-components/InputNumber";
 import { filter, unionBy } from "lodash";
+import { breakpoints, size } from "../../../helpers/breakpoints";
 
 interface IAdmissionProps {
   divCollections: any[];
@@ -43,10 +43,14 @@ const Thumbnail = styled.img`
   border-radius: 15px;
 `;
 const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonContainerProps>`
-  height: 44px;
-  background-color: ${(props) =>
-    props.selected ? "var(--primary)" : "var(--input)"};
-  border-radius: 50px;
+background-color: ${(props) =>
+  props.selected ? "var(--primary)" : "var(--input)"};
+  border-radius: 7px;
+  padding: .5rem;
+  ${breakpoints(size.lg, `{
+    height: 44px;
+    border-radius: 50px;
+  }`)}
   flex: 1 0 0;
   align-items: center;
   color: ${(props) => (props.selected ? "var(--white)" : "var(--inactive)")};
@@ -58,9 +62,9 @@ const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonCont
       ${(props) => (props.selected ? "var(--white)" : "var(--inactive)")};
     width: 20px;
     height: 20px;
+    flex-shrink: 0;
     border-radius: 10px;
     margin-right: 13px;
-    margin-left: 13px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -71,6 +75,97 @@ const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonCont
       border-radius: 8px;
     }
   }
+`;
+
+const AdmissionStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  ${breakpoints(size.lg, `{
+    flex-direction: row;
+    justify-content: space-between;
+  }`)}
+  .left-side {
+    width: 100%;
+    ${breakpoints(size.lg, `{
+      width: 60%;
+      max-width: 500px;
+    }`)}
+
+    .collection-item {
+      padding: 1rem;
+      border-radius: 7px;
+      background-color: var(--bg-secondary-dark);
+      width: 100%;
+      max-width: 90vw;
+      ${breakpoints(size.lg, `{
+        max-width: 500px;
+      }`)}
+      .collection-name {
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        width: 100%;
+      }
+      .feature-box {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        width: 100%;
+        margin: 1rem 0;
+        .feature-selects {
+          width: 90%;
+          background-color: var(--disable);
+          padding: 12px 15px;
+          border-radius: 8px;
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+        .feature-btn {
+          width: 10%;
+          text-align: center;
+          & button {
+            background-color: transparent;
+            border: none;
+            & i {
+              background-color: var(--bg-secondary-light);
+              opacity: 0.7;
+              padding: 8px;
+              border-radius: 50%;
+              font-size: 16px;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+      
+      .add-feature button {
+        width: 100%;
+        padding: 8px 0px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 17px;
+        color: var(--bg-primary-light);
+        background-color: var(--bg-secondary-dark);
+        border: 2px dashed var(--bg-secondary-light);
+        border-radius: 7px;
+      }
+    }
+    .separator {
+      width: 100%;
+      height: 1px;
+      background: var(--disable);
+      flex: 5 0 0;
+    } 
+  }
+  .right-side {
+    width: 100%;
+    ${breakpoints(size.lg, `{
+      width: 40%;
+      max-width: 400px;
+    }`)}
+  } 
 `;
 
 export default function Admission({
@@ -104,13 +199,13 @@ export default function Admission({
   }, [divCollections]);
 
   return (
-    <div className="flex  text-main">
-      <div className="f-column mb-4 flex-1">
+    <AdmissionStyled>
+      <div className="left-side">
         <label htmlFor="name" className="size-14 fw-400 mb-4 text-left">
           Admission conditions ({divCollections.length})
         </label>
-        <div>Collection requirements</div>
-        <div className="flex gap-20 mt-2 mb-3" style={{ width: 547 }}>
+        <p className="text-secondary my-3">Collection requirements</p>
+        <div className="flex gap-20 mt-2 mb-3 w-100">
           <RequirementsRadioButtonContainer
             onClick={() => setOnlyOneRequired(true)}
             selected={onlyOneRequired}
@@ -128,13 +223,7 @@ export default function Admission({
         </div>
 
         <div
-          className="f-column"
-          style={{
-            maxHeight: "50vh",
-            overflow: "auto",
-            width: "fit-content",
-            paddingRight: 10,
-          }}
+          className="f-column align-center"
         >
           {divCollections.map((current: any, i: number) => {
             return (
@@ -230,23 +319,21 @@ export default function Admission({
                         </div>
                       </div>
                     </div>
+                    
+                    <label>Holders of one of these traits</label>
+
                     {current['features'].length ? (
                       <>
                         {
                           current['features'].map((fcurrent: any, findex: number) => {
                             return (
 
-                              <div className="d-flex mt-3" key={findex}>
-                                <div className="featureBox mr-auto">
-                                  <div className="flex hdBox justify-between mb-3">
-                                    <label>Feature</label>
-                                  </div>
-
-                                  <div className="d-flex justify-space-between">
+                              <div className="feature-box" key={findex}>
+                                <div className="feature-selects mr-auto">
                                     <CustomSelect
-                                      width={"400px"}
+                                      width={"100%"}
                                       height={"40px"}
-                                      radius={"10px"}
+                                      radius={"7px"}
                                       classes={"mr-3"}
                                       valueToSet={fcurrent["trait_selected"]}
                                       fontSize={12}
@@ -277,9 +364,9 @@ export default function Admission({
                                       }
                                     />
                                     <CustomSelect
-                                      width={"400px"}
+                                      width={"100%"}
                                       height={"40px"}
-                                      radius={"10px"}
+                                      radius={"7px"}
                                       valueToSet={fcurrent["value_selected"]}
                                       fontSize={12}
                                       fontWeight={700}
@@ -316,9 +403,9 @@ export default function Admission({
                                         setSideValueCondition(event, i, findex)
                                       }
                                     />
-                                  </div>
                                 </div>
-                                <div className="featureBtn f-column justify-center">
+                                
+                                <div className="feature-btn f-column justify-center">
                                   <button className="mt-2 text-red" onClick={() => onRemoveFeature(i, findex)}>
                                     <i className="fa-solid fa-minus"></i>
                                   </button>
@@ -328,7 +415,7 @@ export default function Admission({
                             )
                           })}
                         <div
-                          className="addFeature mt-3"
+                          className="add-feature mt-3"
                           onClick={() => addConditionToDivCollection(i)}
                         >
                           <button>
@@ -344,7 +431,7 @@ export default function Admission({
                     )
                       : (
                         <div
-                          className="addFeature"
+                          className="add-feature"
                           onClick={() => addConditionToDivCollection(i)}
                         >
                           <button>
@@ -372,7 +459,7 @@ export default function Admission({
           })}
         </div>
         <Button
-          width={"547px"}
+          width={"100%"}
           height={46}
           radius={10}
           background={"var(--bg-secondary-light)"}
@@ -382,7 +469,8 @@ export default function Admission({
           <i className="fa-solid fa-circle-plus mr-2"></i> Add a collection
         </Button>
       </div>
-      <div className="flex-1">
+
+      <div className="right-side">
         <div>Summary</div>
         <div style={{ lineHeight: "26px" }}>
           To join this Side, you must have in your wallet : <br />
@@ -415,6 +503,6 @@ export default function Admission({
           })}
         </div>
       </div>
-    </div >
+    </AdmissionStyled >
   );
 }

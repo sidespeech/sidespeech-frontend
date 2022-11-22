@@ -41,7 +41,11 @@ width: 100%;
 }
 
 .container-next-back {
-  max-width: 536px;
+  width: 100%;
+  ${breakpoints(size.lg, `{
+    width: 60%;
+    max-width: 500px;
+  }`)}
 }
 
 .tabs-wrapper_mobile {
@@ -250,8 +254,12 @@ const initialChannelsState = {
 };
 
 const Middle = styled.div`
-  overflow: auto;
-  max-height: calc(100vh - 58px);
+  overflow: scroll;
+  height: calc(100vh - 62px - 77px);
+  padding-bottom: calc(2rem + 77px);
+  ${breakpoints(size.lg, `{
+    height: calc(100vh - 62px);
+  }`)}
 `;
 
 export default function NewSide() {
@@ -818,7 +826,7 @@ export default function NewSide() {
           </nav>
         </ContainerLeft>
 
-        <Middle className="f-column w-100 pt-3 px-5">
+        <Middle className="f-column w-100 pt-3 pb-5 px-5">
           {steps.map((step: any, index: number) => {
             return (
               <div key={index}>
@@ -906,8 +914,8 @@ const FooterButtons = ({
   };
 
   return (
-    <div className="flex justify-end container-next-back">
-      {index > 0 && (
+    <div className="flex justify-between container-next-back">
+      {index > 0 ? (
         <Button
           classes={"mt-4"}
           width={"159px"}
@@ -920,6 +928,8 @@ const FooterButtons = ({
         >
           Back
         </Button>
+      ) : (
+        <div />
       )}
 
       <Button
