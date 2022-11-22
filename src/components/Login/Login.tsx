@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import Button from "../ui-components/Button";
+
 
 import metamaskLogo from "../../assets/metamask.svg";
 import walletConnectLogo from "../../assets/walletconnect.svg";
@@ -53,71 +55,100 @@ export default function Login() {
 
     // Method for wallet connection...
     const connectWallet = async () => {
-      // Open the connector
-      const provider = await web3Modal.connect();
 
-      // Set the provider.
-      const library = new ethers.providers.Web3Provider(provider);
+      try {
+        // Open the connector
+        const provider = await web3Modal.connect();
 
-      // Grab the accounts.
-      const accounts = await library.listAccounts();
+        // Set the provider.
+        const library = new ethers.providers.Web3Provider(provider);
 
-      const existingUser = await apiService.findExistingWallet(accounts[0]);
+        // Grab the accounts.
+        const accounts = await library.listAccounts();
 
-      let signature;
+        const existingUser = await apiService.findExistingWallet(accounts[0]);
 
-      // If there are any accounts connected then send them to the API.
-      if (accounts) {
-        // If there isn't an existing user then ensure that he signs the signature.
-        if (existingUser == undefined) {
-          // Get Signer
-          const signer = library.getSigner();
+        let signature;
 
-          // Create the signer message
-          const signerMessage = "sidespeech";
+        // If there are any accounts connected then send them to the API.
+        if (accounts) {
+          // If there isn't an existing user then ensure that he signs the signature.
+          if (existingUser == undefined) {
+            // Get Signer
+            const signer = library.getSigner();
 
-          // Create the signature signing message.
-          signature = await signer.signMessage(signerMessage);
+            // Create the signer message
+            const signerMessage = "sidespeech";
 
-          // Grab the wallet address
-          const address = await signer.getAddress();
+            // Create the signature signing message.
+            signature = await signer.signMessage(signerMessage);
 
-          // Get the signer address.
-          const signerAddr = ethers.utils.verifyMessage(
-            signerMessage,
-            signature
-          );
+            // Grab the wallet address
+            const address = await signer.getAddress();
 
-          // Check if the signer address is the same as the connected address.
-          if (signerAddr !== address) {
-            return false;
+            // Get the signer address.
+            const signerAddr = ethers.utils.verifyMessage(
+              signerMessage,
+              signature
+            );
+
+            // Check if the signer address is the same as the connected address.
+            if (signerAddr !== address) {
+              return false;
+            }
           }
+
+          // Send the wallet to the api service.
+          const user = await apiService.walletConnection(accounts, signature);
+
+          if (existingUser == undefined) {
+            // Redirect the user to the onboarding area.
+            navigate("/onboarding");
+          } else {
+            // Redirect the user to the general settings page.
+            navigate("/");
+          }
+          
+
+          // Dispatch the account that is connected to the redux slice.
+          dispatch(connect({ account: accounts[0], user: user }));
+          dispatch(fetchUserDatas(accounts[0]));
+
+          // Set a local storage of the account
+          localStorage.setItem("userAccount", accounts[0]);
+
+          localStorage.setItem("jwtToken", user.token);
         }
 
-        // Send the wallet to the api service.
-        const user = await apiService.walletConnection(accounts, signature);
+        // Listen for accounts being disconnected - this only seems to work for WalletConnect.
+        provider.on("disconnect", handleDisconnect);
 
-        if (existingUser == undefined) {
-          // Redirect the user to the onboarding area.
-          navigate("/onboarding");
+      } catch (err : any) {
+
+        console.log("error", err, " message", err.message);
+        if (
+          typeof err !== "undefined" &&
+          typeof err.message !== "undefined" &&
+          err.message.includes("User Rejected")
+        ) {
+          toast.error("You rejected the request", {
+            toastId: 6,
+           });
+        } else if (
+          (typeof err === "string" || err instanceof String) &&
+          err.includes("Modal closed by user")
+        ) {
+         toast.error("You closed the modal", {
+          toastId: 6,
+         });
         } else {
-          // Redirect the user to the general settings page.
-          navigate("/");
+          toast.error("Something went wrong.", {
+            toastId: 6,
+          });
         }
-        
 
-        // Dispatch the account that is connected to the redux slice.
-        dispatch(connect({ account: accounts[0], user: user }));
-        dispatch(fetchUserDatas(accounts[0]));
-
-        // Set a local storage of the account
-        localStorage.setItem("userAccount", accounts[0]);
-
-        localStorage.setItem("jwtToken", user.token);
       }
-
-      // Listen for accounts being disconnected - this only seems to work for WalletConnect.
-      provider.on("disconnect", handleDisconnect);
+     
     };
 
     // Method for handling the disconnection.
