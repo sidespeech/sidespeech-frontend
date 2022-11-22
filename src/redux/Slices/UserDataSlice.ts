@@ -58,12 +58,8 @@ function uniqByFilter<T>(array: T[]) {
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string, { dispatch, getState }) => {
-    const nfts = await alchemyService.getUserNfts(
-      address
-    );
-    const collections = await alchemyService.getUserCollections(
-      address
-    );
+    const nfts = await alchemyService.getUserNfts(address);
+    const collections = await alchemyService.getUserCollections(address);
 
     await apiService.savedCollections(collections);
 
@@ -95,7 +91,7 @@ export const updateSidesByUserCollections = createAsyncThunk(
       dispatch(getSidesByCollection(coll?.address));
     });
   }
-)
+);
 
 export const getSidesByCollection = createAsyncThunk(
   "userData/getSidesByCollection",
@@ -111,7 +107,7 @@ export const addUserParsedSide = createAsyncThunk(
     const state: any = getState();
     const { sides, userCollectionsData } = state.user;
     const response = await getSidesMetadata([side], userCollectionsData, sides);
-    dispatch(addColony(response[0]))
+    dispatch(addColony(response[0]));
     return response;
   }
 );
@@ -127,9 +123,9 @@ export const userDataSlice = createSlice({
 
       state.sides = action.payload.user.profiles
         ? action.payload.user.profiles.map((p: Profile) => {
-          p.side["profiles"] = [p];
-          return p.side;
-        })
+            p.side["profiles"] = [p];
+            return p.side;
+          })
         : [];
       state.redirectTo = action.payload.redirectTo;
 
@@ -155,7 +151,10 @@ export const userDataSlice = createSlice({
       state.sides = [...state.sides, action.payload];
     },
     removeSide: (state: UserData, action: PayloadAction<any>) => {
-      state.sides = state.sides.filter(side => side.id !== action.payload);
+      state.sides = state.sides.filter((side) => side.id !== action.payload);
+      state.profiles = state.profiles.filter(
+        (profile) => profile.side.id !== action.payload
+      );
     },
     setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
       const userprofiles = state.user?.profiles;
@@ -178,7 +177,7 @@ export const userDataSlice = createSlice({
         if (index !== -1) {
           profiles.splice(index, 1, action.payload);
           user.profiles = profiles;
-          state.user = {...user};
+          state.user = { ...user };
         }
       }
     },

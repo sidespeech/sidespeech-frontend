@@ -1,6 +1,7 @@
 :root {
   /* new styles */
   --primary: #705ce9; /* Main color */
+  --primary-opacity: #705ce91a; /* Main color */
   --red: #dc4964;
   --red-opacity: #dc49641a;
   --green: #36da80;
@@ -52,6 +53,7 @@ body {
   color: #b4c1d2;
   height: 100vh;
   width: 100vw;
+  overflow-x: hidden;
 }
 .open-sans {
   font-family: "Open Sans", sans-serif;
@@ -620,22 +622,40 @@ body {
 
 h1 {
   font-weight: 700;
-  font-size: 30px;
-  line-height: 40px;
-  color: #b4c1d2;
-}
-h2 {
-  font-weight: 700;
   font-size: 22px;
   line-height: 30px;
   color: #b4c1d2;
 }
+@media screen and (min-width: 980px) {
+  h1 {
+    font-size: 30px;
+    line-height: 40px;
+  }
+}
+h2 {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 22px;
+  color: #b4c1d2;
+}
+@media screen and (min-width: 980px) {
+  h2 {
+    font-size: 22px;
+    line-height: 30px;
+  }
+}
 
 h3 {
   font-weight: 700;
-  font-size: 14px;
-  line-height: 19px;
+  font-size: 12px;
+  line-height: 14px;
   color: #b4c1d2;
+}
+@media screen and (min-width: 980px) {
+  h3 {
+    font-size: 14px;
+    line-height: 19px;
+  }
 }
 
 .cursor-pointer {

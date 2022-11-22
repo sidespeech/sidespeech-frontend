@@ -83,7 +83,13 @@ const PaginationControls = ({
         Previous
       </button>
 
-        {Array.from(Array(totalPages).keys()).map(pageNumber => (
+        {Array.from(Array(totalPages).keys()).map(pageNumber => {
+          if (totalPages <= 5 ||
+              pageNumber === currentPage ||
+                  pageNumber === 0 || 
+                    pageNumber === totalPages - 1 || 
+                      (pageNumber < currentPage && pageNumber > currentPage - 3) ||
+                        (pageNumber > currentPage && pageNumber < currentPage + 1)) return(
             <button 
                 className={`page-number-btn ${currentPage === pageNumber + 1 ? 'active' : ''}`}
                 disabled={currentPage === pageNumber + 1}
@@ -92,7 +98,13 @@ const PaginationControls = ({
             >
                 {pageNumber + 1}
             </button>
-        ))}
+          )
+          else if (totalPages > 5 && currentPage !== totalPages - 2 && pageNumber === totalPages - 2 ||
+            totalPages > 5 && currentPage !== 1 && pageNumber === 1) return (
+            <span>...</span>
+          )
+          else return null;
+        })}
 
         <button className="prev-next-btn" disabled={currentPage === totalPages} onClick={() => onChangePage(currentPage + 1)}>
             Next

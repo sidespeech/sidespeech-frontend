@@ -157,7 +157,11 @@ export function checkUserEligibility(
       };
 
       if (!collection) {
-        return;
+        tab.push(
+          validateNftsWithAttributes([], condition, {
+            address: token_address,
+          })
+        );
       } else {
         // get nfts from collection with needed attributes
         const filteredNfts = getNftsWithAttributes(collection.nfts, condition);
@@ -184,14 +188,14 @@ export function checkUserEligibility(
 function validateNftsWithAttributes(
   nfts: any[],
   condition: any,
-  collection: Collection
+  collection: Partial<Collection>
 ) {
   const nftsNotEmpty = nfts.length > 0;
   return createResponseObject(
     nftsNotEmpty,
     nfts,
     `No nft in the collection ${collection.address} with property ${condition["trait_type"]} and value ${condition["trait_value"]}`,
-    collection.address,
+    collection.address || "",
     condition,
     "attributes"
   );

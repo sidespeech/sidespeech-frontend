@@ -9,6 +9,7 @@ import { apiService } from "../../../../services/api.service";
 import ChannelRow from "./channel-row/channel-row";
 import { Channel, ChannelType } from "../../../../models/Channel";
 import { Side } from "../../../../models/Side";
+import _ from "lodash";
 
 export interface InitialChannelsState {
   currents: Channel[];
@@ -152,7 +153,7 @@ export default function Channels({
     } else {
       // Change name on existing channel
       if (current) {
-        let current_channels = channels["currents"];
+        let current_channels = _.cloneDeep(channels["currents"]);
         current_channels[index]["authorizeComments"] = event.target.checked;
         setChannels({ ...channels, currents: current_channels });
       }
