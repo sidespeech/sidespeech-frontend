@@ -144,6 +144,7 @@ export function checkUserEligibility(
   selectedSide: Side
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
+
   if (selectedSide) {
     selectedSide.metadataSides.forEach((item) => {
       const tab = [];
@@ -154,6 +155,7 @@ export function checkUserEligibility(
         trait_type: item["metadata"]["traitProperty"],
         trait_value: item["metadata"]["traitValue"],
       };
+
       if (!collection) {
         tab.push(
           validateNftsWithAttributes([], condition, {

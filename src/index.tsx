@@ -13,7 +13,6 @@ import "react-leaf-polls/dist/index.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./override.css";
 import "./index.css";
-import CreateSideSpeechProfile from "./components/Login/CreateSideSpeechProfile";
 import Settings from "./components/CurrentColony/settings/Settings";
 import NewSide from "./components/new-side/NewSide";
 

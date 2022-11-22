@@ -1,26 +1,44 @@
+// Default Imports
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import Button from "../ui-components/Button";
+
+// Routers
+import { useNavigate, redirect } from "react-router-dom";
+
+import { toast } from "react-toastify";
 
 import metamaskLogo from "../../assets/metamask.svg";
-import walletConnectLogo from "../../assets/walletconnect.svg";
 
-import { useDispatch, useSelector } from "react-redux";
+// Slices
 import {
   fetchUserDatas,
   disconnect,
   connect,
+  addRoomToProfile,
 } from "../../redux/Slices/UserDataSlice";
-import { RootState } from "../../redux/store/app.store";
-import { useNavigate, redirect } from "react-router-dom";
-// import { redirect } from "../../redux/Slices/RedirectSlice";
-import logo from "../../assets/logoComplete.svg";
 
+// Modals
+import { Profile } from "../../models/Profile";
+
+// Redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store/app.store";
+
+// Images
+import logo from "../../assets/logoComplete.svg";
+import walletConnectLogo from "../../assets/walletconnect.svg";
+
+// Web3 Imports
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 
+// API / Socket Services
 import { apiService } from "../../services/api.service";
+import websocketService from "../../services/websocket.service";
+
+// Stylings
+import styled from "styled-components";
+import Button from "../ui-components/Button";
 
 export const SeparatorVertical = styled.div`
   min-height: 415px;
@@ -29,6 +47,7 @@ export const SeparatorVertical = styled.div`
 `;
 
 export default function Login() {
+  // Setup constants for dispatch, navigate and selector methods
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const redirection = useSelector((state: RootState) => state.redirect);
@@ -53,50 +72,54 @@ export default function Login() {
 
     // Method for wallet connection...
     const connectWallet = async () => {
-      // Open the connector
-      const provider = await web3Modal.connect();
+      try {
+        // Open the connector
+        const provider = await web3Modal.connect();
 
-      // Set the provider.
-      const library = new ethers.providers.Web3Provider(provider);
+        // Set the provider.
+        const library = new ethers.providers.Web3Provider(provider);
 
-      // Grab the accounts.
-      const accounts = await library.listAccounts();
+        // Grab the accounts.
+        const accounts = await library.listAccounts();
 
-      const existingUser = await apiService.findExistingWallet(accounts[0]);
+        const existingUser = await apiService.findExistingWallet(accounts[0]);
 
-      let signature;
+        // Create a signature variable.
+        let signature;
 
-      // If there are any accounts connected then send them to the API.
-      if (accounts) {
-        // If there isn't an existing user then ensure that he signs the signature.
-        if (existingUser == undefined) {
-          // Get Signer
-          const signer = library.getSigner();
+        // If there are any accounts connected then send them to the API.
+        if (accounts) {
+          // If there isn't an existing user then ensure that he signs the signature.
+          if (existingUser == undefined) {
+            // Get Signer
+            const signer = library.getSigner();
 
-          // Create the signer message
-          const signerMessage = "sidespeech";
+            // Create the signer message
+            const signerMessage = "sidespeech";
 
-          // Create the signature signing message.
-          signature = await signer.signMessage(signerMessage);
+            // Create the signature signing message.
+            signature = await signer.signMessage(signerMessage);
 
-          // Grab the wallet address
-          const address = await signer.getAddress();
+            // Grab the wallet address
+            const address = await signer.getAddress();
 
-          // Get the signer address.
-          const signerAddr = ethers.utils.verifyMessage(
-            signerMessage,
-            signature
-          );
+            // Get the signer address.
+            const signerAddr = ethers.utils.verifyMessage(
+              signerMessage,
+              signature
+            );
 
-          // Check if the signer address is the same as the connected address.
-          if (signerAddr !== address) {
-            return false;
+            // Check if the signer address is the same as the connected address.
+            if (signerAddr !== address) {
+              return false;
+            }
           }
         }
 
         // Send the wallet to the api service.
         const user = await apiService.walletConnection(accounts, signature);
 
+        // Check if the existing user still needs to onboard or not.
         if (existingUser == undefined) {
           // Redirect the user to the onboarding area.
           navigate("/onboarding");
@@ -104,7 +127,19 @@ export default function Login() {
           // Redirect the user to the general settings page.
           navigate("/");
         }
-        
+
+        // Check if the logged in doesn't user has a room
+        //  const currentProfiles = await apiService.getProfilesByUserId(user.accounts);
+
+        // if (!room && currentProfiles) {
+
+        //   // creating the room
+        //   room = await apiService.createRoom(currentProfile.id, profile.id);
+        //   // add this room in the user websocket
+        //   websocketService.addRoomToUsers(room.id, [currentProfile.id, profile.id]);
+        //   // add the room to profile
+        //   dispatch(addRoomToProfile(room));
+        // }
 
         // Dispatch the account that is connected to the redux slice.
         dispatch(connect({ account: accounts[0], user: user }));
@@ -114,10 +149,32 @@ export default function Login() {
         localStorage.setItem("userAccount", accounts[0]);
 
         localStorage.setItem("jwtToken", user.token);
-      }
 
-      // Listen for accounts being disconnected - this only seems to work for WalletConnect.
-      provider.on("disconnect", handleDisconnect);
+        // Listen for accounts being disconnected - this only seems to work for WalletConnect.
+        provider.on("disconnect", handleDisconnect);
+      } catch (err: any) {
+        console.log("error", err, " message", err.message);
+        if (
+          typeof err !== "undefined" &&
+          typeof err.message !== "undefined" &&
+          err.message.includes("User Rejected")
+        ) {
+          toast.error("You rejected the request", {
+            toastId: 6,
+          });
+        } else if (
+          (typeof err === "string" || err instanceof String) &&
+          err.includes("Modal closed by user")
+        ) {
+          toast.error("You closed the modal", {
+            toastId: 6,
+          });
+        } else {
+          toast.error("Something went wrong.", {
+            toastId: 6,
+          });
+        }
+      }
     };
 
     // Method for handling the disconnection.

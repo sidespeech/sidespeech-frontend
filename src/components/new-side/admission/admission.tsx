@@ -21,6 +21,7 @@ interface IAdmissionProps {
   setSideTokenAddress: any;
   setSidePropertyCondition: any;
   setSideValueCondition: any;
+  onRemoveFeature:any;
   addDivCollection: any;
   removeDivCollection: any;
   addConditionToDivCollection: any;
@@ -31,6 +32,7 @@ interface IAdmissionProps {
 interface IRequirementsRadioButtonContainerProps {
   selected: boolean;
 }
+
 const Chip = styled.span`
   width: fit-content;
   border-radius: 50px;
@@ -77,6 +79,7 @@ export default function Admission({
   setSideTokenAddress,
   setSidePropertyCondition,
   setSideValueCondition,
+  onRemoveFeature,
   addDivCollection,
   removeDivCollection,
   addConditionToDivCollection,
@@ -155,39 +158,66 @@ export default function Admission({
                           values={
                             filteredCollections.length
                               ? [
-                                  "",
-                                  ...filteredCollections.map((c) => c.address),
-                                ]
-                              : [""]
+                                "",
+                                ...filteredCollections.map((c) => c.address),
+                              ]
+                              : [current['collection']]
                           }
                           options={
                             filteredCollections.length
                               ? [
-                                  "Choose NFT collection",
-                                  ...filteredCollections.map((c) => {
-                                    return (
-                                      <span className="flex align-center pl-3">
+                                "Choose NFT collection",
+                                ...filteredCollections.map((c, fi) => {
+                                  return (
+                                    <span className="flex align-center pl-3" key={fi}>
+                                      {
+                                        c.opensea?.imageUrl ?
+                                          <Thumbnail
+                                            width={27}
+                                            height={27}
+                                            src={c.opensea?.imageUrl}
+                                            alt="thumbnail"
+                                          /> :
+                                          null
+                                      }
+                                      <span className="ml-2 mr-3">
+                                        {c.name}
+                                      </span>
+                                      {c.opensea?.safelistRequestStatus ===
+                                        OpenSeaRequestStatus.verified && (
+                                          <img alt="check" src={check} />
+                                        )}
+                                    </span>
+                                  );
+                                }),
+                              ]
+                              :
+                              (Object.keys(current['metadata']).length !== 0) ?
+                                [
+                                  <span className="flex align-center pl-3">
+                                    {
+                                      current['metadata'].opensea?.imageUrl ?
                                         <Thumbnail
                                           width={27}
                                           height={27}
-                                          src={c.opensea?.imageUrl}
+                                          src={current['metadata'].opensea?.imageUrl}
                                           alt="thumbnail"
-                                        />
-                                        <span className="ml-2 mr-3">
-                                          {c.name}
-                                        </span>
-                                        {c.opensea?.safelistRequestStatus ===
-                                          OpenSeaRequestStatus.verified && (
-                                          <img alt="check" src={check} />
-                                        )}
-                                      </span>
-                                    );
-                                  }),
-                                ]
-                              : ["Choose collection"]
+                                        /> :
+                                        null
+                                    }
+                                    <span className="ml-2 mr-3">
+                                      {current['metadata'].name}
+                                    </span>
+                                    {current['metadata'].opensea?.safelistRequestStatus ===
+                                      OpenSeaRequestStatus.verified && (
+                                        <img alt="check" src={check} />
+                                      )}
+                                  </span>
+                                ] : ['Choose collection']
+
                           }
                           onChange={(address: string) =>
-                            setSideTokenAddress(address, i)
+                            setSideTokenAddress(address, i, filteredCollections)
                           }
                         />
                         <div className="ml-4">
@@ -200,117 +230,132 @@ export default function Admission({
                         </div>
                       </div>
                     </div>
-                    {"trait_selected" in current ? (
-                      <div className="d-flex">
-                        <div className="featureBox mr-auto">
-                          <div className="flex hdBox justify-between mb-3">
-                            <label>Feature</label>
-                          </div>
+                    {current['features'].length ? (
+                      <>
+                        {
+                          current['features'].map((fcurrent: any, findex: number) => {
+                            return (
 
-                          <div className="d-flex justify-space-between">
-                            <CustomSelect
-                              width={"400px"}
-                              height={"40px"}
-                              radius={"10px"}
-                              classes={"mr-3"}
-                              valueToSet={
-                                current["trait_selected"].length
-                                  ? current["trait_selected"]
-                                  : ""
-                              }
-                              fontSize={12}
-                              fontWeight={700}
-                              arrowPosition={{ top: 12, right: 15 }}
-                              values={
-                                current["traits_values"].length
-                                  ? [
-                                      "",
-                                      ...current["traits_values"].map(
-                                        (item: any) => item["property"]["value"]
-                                      ),
-                                    ]
-                                  : [""]
-                              }
-                              options={
-                                current["traits_values"].length
-                                  ? [
-                                      "Select trait",
-                                      ...current["traits_values"].map(
-                                        (item: any) => item["property"]["label"]
-                                      ),
-                                    ]
-                                  : ["Traits"]
-                              }
-                              onChange={(event: any) =>
-                                setSidePropertyCondition(event, i)
-                              }
-                            />
-                            <CustomSelect
-                              width={"400px"}
-                              height={"40px"}
-                              radius={"10px"}
-                              valueToSet={
-                                current["value_selected"].length
-                                  ? current["value_selected"]
-                                  : ""
-                              }
-                              fontSize={12}
-                              fontWeight={700}
-                              arrowPosition={{ top: 12, right: 15 }}
-                              values={
-                                current["traits_values"].length
-                                  ? [
-                                      "",
-                                      ...(current["traits_values"].find(
-                                        (item: any) =>
-                                          item["property"]["value"] ===
-                                          current["trait_selected"]
-                                      ) || { values: [] })["values"].map(
-                                        (item: any) => item["value"]
-                                      ),
-                                    ]
-                                  : [""]
-                              }
-                              options={
-                                current["traits_values"].length
-                                  ? [
-                                      "Select value of trait",
-                                      ...(current["traits_values"].find(
-                                        (item: any) =>
-                                          item["property"]["value"] ===
-                                          current["trait_selected"]
-                                      ) || { values: [] })["values"].map(
-                                        (item: any) => item["label"]
-                                      ),
-                                    ]
-                                  : ["Values"]
-                              }
-                              onChange={(event: any) =>
-                                setSideValueCondition(event, i)
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="featureBtn f-column justify-center">
-                          <button className="mt-2 text-red">
-                            <i className="fa-solid fa-minus"></i>
+                              <div className="d-flex mt-3" key={findex}>
+                                <div className="featureBox mr-auto">
+                                  <div className="flex hdBox justify-between mb-3">
+                                    <label>Feature</label>
+                                  </div>
+
+                                  <div className="d-flex justify-space-between">
+                                    <CustomSelect
+                                      width={"400px"}
+                                      height={"40px"}
+                                      radius={"10px"}
+                                      classes={"mr-3"}
+                                      valueToSet={fcurrent["trait_selected"]}
+                                      fontSize={12}
+                                      fontWeight={700}
+                                      arrowPosition={{ top: 12, right: 15 }}
+                                      values={
+                                        current["traits_values"].length
+                                          ? [
+                                            "",
+                                            ...current["traits_values"].map(
+                                              (item: any) => item["property"]["value"]
+                                            ),
+                                          ]
+                                          : [""]
+                                      }
+                                      options={
+                                        current["traits_values"].length
+                                          ? [
+                                            "Select trait",
+                                            ...current["traits_values"].map(
+                                              (item: any) => item["property"]["label"]
+                                            ),
+                                          ]
+                                          : ["Traits"]
+                                      }
+                                      onChange={(event: any) =>
+                                        setSidePropertyCondition(event, i, findex)
+                                      }
+                                    />
+                                    <CustomSelect
+                                      width={"400px"}
+                                      height={"40px"}
+                                      radius={"10px"}
+                                      valueToSet={fcurrent["value_selected"]}
+                                      fontSize={12}
+                                      fontWeight={700}
+                                      arrowPosition={{ top: 12, right: 15 }}
+                                      values={
+                                        current["traits_values"].length
+                                          ? [
+                                            "",
+                                            ...(current["traits_values"].find(
+                                              (item: any) =>
+                                                item["property"]["value"] ===
+                                                fcurrent["trait_selected"]
+                                            ) || { values: [] })["values"].map(
+                                              (item: any) => item["value"]
+                                            ),
+                                          ]
+                                          : [""]
+                                      }
+                                      options={
+                                        current["traits_values"].length
+                                          ? [
+                                            "Select value of trait",
+                                            ...(current["traits_values"].find(
+                                              (item: any) =>
+                                                item["property"]["value"] ===
+                                                fcurrent["trait_selected"]
+                                            ) || { values: [] })["values"].map(
+                                              (item: any) => item["label"]
+                                            ),
+                                          ]
+                                          : ["Values"]
+                                      }
+                                      onChange={(event: any) =>
+                                        setSideValueCondition(event, i, findex)
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                                <div className="featureBtn f-column justify-center">
+                                  <button className="mt-2 text-red" onClick={() => onRemoveFeature(i, findex)}>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </button>
+                                </div>
+                              </div>
+
+                            )
+                          })}
+                        <div
+                          className="addFeature mt-3"
+                          onClick={() => addConditionToDivCollection(i)}
+                        >
+                          <button>
+                            <i
+                              className="fa fa-plus-circle"
+                              aria-hidden="true"
+                            ></i>{" "}
+                            Add a Feature
                           </button>
                         </div>
-                      </div>
-                    ) : (
-                      <div
-                        className="addFeature"
-                        onClick={() => addConditionToDivCollection(i)}
-                      >
-                        <button>
-                          <i
-                            className="fa fa-plus-circle"
-                            aria-hidden="true"
-                          ></i>{" "}
-                          Add a Feature
-                        </button>
-                      </div>
-                    )}
+                      </>
+
+                    )
+                      : (
+                        <div
+                          className="addFeature"
+                          onClick={() => addConditionToDivCollection(i)}
+                        >
+                          <button>
+                            <i
+                              className="fa fa-plus-circle"
+                              aria-hidden="true"
+                            ></i>{" "}
+                            Add a Feature
+                          </button>
+                        </div>
+                      )}
                   </div>
                 </div>{" "}
                 {i < divCollections.length - 1 && (
@@ -370,6 +415,6 @@ export default function Admission({
           })}
         </div>
       </div>
-    </div>
+    </div >
   );
 }

@@ -52,7 +52,7 @@ export default function UserSides() {
 
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const userData = useSelector((state: RootState) => state.user);
-
+  const [isSideAdmin, SetIsSideAdmin] = useState<any>(null);
   const [displayModal, setDisplayModal] = useState<boolean>(false);
   const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
   const [side, setSide] = useState<Side | null>(null);
@@ -141,14 +141,16 @@ export default function UserSides() {
   useEffect(() => {
     const account = localStorage.getItem("userAccount");
     if (currentSide && account) getAndSetRoomNotifications(account);
-  }, [currentSide]);
 
-  const sideProfile = userData?.user?.profiles?.find(
-    (profile) => profile.side.id === side?.id
-  );
+    const sideProfile = userData.user?.profiles.find(
+      (profile) => profile.side.id === side?.id
+    );
+  
+    const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
+    SetIsSideAdmin(isSideAdminResponse);
+  }, [currentSide, userData]);
 
-  const isSideAdmin =
-    sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
+
 
   return (
     <>
