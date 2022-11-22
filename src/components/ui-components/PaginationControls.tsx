@@ -83,7 +83,13 @@ const PaginationControls = ({
         Previous
       </button>
 
-        {Array.from(Array(totalPages).keys()).map(pageNumber => (
+        {Array.from(Array(totalPages).keys()).map(pageNumber => {
+          if (totalPages <= 5 ||
+              pageNumber === currentPage ||
+                  pageNumber === 0 || 
+                    pageNumber === totalPages - 1 || 
+                      (pageNumber < currentPage && pageNumber > currentPage - 3) ||
+                        (pageNumber > currentPage && pageNumber < currentPage + 1)) return(
             <button 
                 className={`page-number-btn ${currentPage === pageNumber + 1 ? 'active' : ''}`}
                 disabled={currentPage === pageNumber + 1}
@@ -92,7 +98,13 @@ const PaginationControls = ({
             >
                 {pageNumber + 1}
             </button>
-        ))}
+          )
+          else if (totalPages > 5 && currentPage !== totalPages - 2 && pageNumber === totalPages - 2 ||
+            totalPages > 5 && currentPage !== 1 && pageNumber === 1) return (
+            <span>...</span>
+          )
+          else return null;
+        })}
 
         <button className="prev-next-btn" disabled={currentPage === totalPages} onClick={() => onChangePage(currentPage + 1)}>
             Next
@@ -100,23 +112,6 @@ const PaginationControls = ({
                 <path d="M6 -5.24537e-07L12 6L6 12L4.93125 10.95L9.13125 6.75L4.5897e-07 6.75L5.90104e-07 5.25L9.13125 5.25L4.93125 1.05L6 -5.24537e-07Z" />
             </svg>
         </button>
-
-      <button
-        className="prev-next-btn"
-        disabled={currentPage === totalPages}
-        onClick={() => onChangePage(currentPage + 1)}
-      >
-        Next
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 12 12"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M6 -5.24537e-07L12 6L6 12L4.93125 10.95L9.13125 6.75L4.5897e-07 6.75L5.90104e-07 5.25L9.13125 5.25L4.93125 1.05L6 -5.24537e-07Z" />
-        </svg>
-      </button>
     </PaginationControlsStyled>
   );
 };

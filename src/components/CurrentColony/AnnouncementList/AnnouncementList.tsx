@@ -89,12 +89,14 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
           {thread ? (
             <AnnouncementItem
                   announcement={thread}
+                  authorizeComments={selectedChannel?.authorizeComments}
                   isThread
                 />
           ) : _.orderBy(announcements, ["timestamp"], ["desc"]).map(
             (a: Announcement, i) => (
                 <AnnouncementItem
                   announcement={a}
+                  authorizeComments={selectedChannel?.authorizeComments}
                   className={i !== 0 ? 'border-bottom' : ''}
                   key={a.id + getRandomId() + i}
                 />

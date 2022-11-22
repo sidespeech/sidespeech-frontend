@@ -1,7 +1,7 @@
 import { Vote } from "./../models/Vote";
 import superagent from "superagent";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
-import { InitialStateSide } from "../components/new-side/new-side";
+import { InitialStateSide } from "../components/new-side/NewSide";
 import { BASE_URL } from "../constants/constants";
 import { Announcement } from "../models/Announcement";
 import { Channel, ChannelType } from "../models/Channel";
@@ -20,6 +20,12 @@ import { Metadata } from "../models/Metadata";
 import { InitialStateUser } from "../components/GeneralSettings/Account/GeneralSettingsAccount";
 
 // Create an API Service class
+
+const post = (url: string) => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token) return superagent.post(url);
+  return superagent.post(url).auth(token, { type: "bearer" });
+};
 class apiService {
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
@@ -44,7 +50,7 @@ class apiService {
     return checkUser.body;
   }
 
-   static async findOnBoarding(accounts: string) {
+  static async findOnBoarding(accounts: string) {
     const checkUser = await superagent.get(
       `${BASE_URL}/user/onboarding/${accounts}`
     );
@@ -58,7 +64,6 @@ class apiService {
     );
     return checkUser.body;
   }
-
 
   static async getUserByAddress(address: string): Promise<User> {
     const res = await superagent.get(`${BASE_URL}/user/${address}`);
@@ -86,9 +91,11 @@ class apiService {
     sideId: string,
     role: number
   ): Promise<Profile> {
-    const res = await superagent
-      .post(`${BASE_URL}/profile/join`)
-      .send({ userId, sideId, role });
+    const res = await post(`${BASE_URL}/profile/join`).send({
+      userId,
+      sideId,
+      role,
+    });
     return new Profile(res.body);
   }
 
@@ -99,7 +106,7 @@ class apiService {
     const res = await superagent
       .patch(`${BASE_URL}/profile/${id}`)
       .send(profile);
-    return res["body"];
+    return new Profile(res["body"]);
   }
   static async updateProfilePicture(
     id: string,
@@ -128,29 +135,6 @@ class apiService {
       .patch(`${BASE_URL}/user/saveNfts/${id}`)
       .send(updatedInfo);
     return res["body"];
-  }
-
-  static async getSideById(id: string): Promise<Side> {
-    const res = await superagent.get(`${BASE_URL}/side/${id}`);
-    return new Side(res.body);
-  }
-  static async isSideNameExist(name: string): Promise<boolean> {
-    const res = await superagent
-      .get(`${BASE_URL}/side/name/exist`)
-      .query({ name: name });
-    return res.body.exist;
-  }
-  static async createSide(side: InitialStateSide): Promise<Side> {
-    const res = await superagent.post(`${BASE_URL}/side`).send(side);
-    return new Side(res["body"]);
-  }
-
-  static async updateSide(
-    side: InitialStateUpdateSide,
-    id: string
-  ): Promise<Side> {
-    const res = await superagent.patch(`${BASE_URL}/side/${id}`).send(side);
-    return res["body"]["side"];
   }
 
   static async createRoom(id: string, id2: string): Promise<Room> {
@@ -202,7 +186,7 @@ class apiService {
 
     return new Comment(sendComment.body);
   }
- 
+
   // This method will send the comment to the API
   static async commentPoll(
     comment: any,
@@ -239,8 +223,7 @@ class apiService {
   }
 
   static async getCommentByAnnoucementId(id: string): Promise<Comment[]> {
-    const res = await superagent
-      .get(`${BASE_URL}/comment/announcement/${id}`);
+    const res = await superagent.get(`${BASE_URL}/comment/announcement/${id}`);
     return res.body.map((m: any) => new Comment(m));
   }
 
@@ -289,14 +272,21 @@ class apiService {
     options: any,
     timestamp: string
   ): Promise<Poll> {
-    const res = await superagent
-      .post(`${BASE_URL}/poll`)
-      .send({ channelId, creatorId, proposalTitle, endDate, question, isProposed, options, timestamp });
+    const res = await superagent.post(`${BASE_URL}/poll`).send({
+      channelId,
+      creatorId,
+      proposalTitle,
+      endDate,
+      question,
+      isProposed,
+      options,
+      timestamp,
+    });
     return new Poll(res.body);
   }
 
   static async getChannelPolls(channelId: string): Promise<Poll[]> {
-    const res = await superagent.get(`${BASE_URL}/poll`);
+    const res = await superagent.get(`${BASE_URL}/channel/${channelId}/polls`);
     return res.body.map((m: any) => new Poll(m));
   }
 
@@ -422,7 +412,7 @@ class apiService {
   static async leaveSide(profile: Profile): Promise<any> {
     const res = await superagent
       .post(`${BASE_URL}/profile/leave`)
-      .send(profile);
+      .send({ id: profile.id, sideId: profile.side.id, role: profile.role });
     return res.body;
   }
 
@@ -445,7 +435,9 @@ class apiService {
   }
 
   static async savedMetadataConditions(metadata: Metadata[]) {
-    const res = await superagent.post(`${BASE_URL}/metadata/many`).send({metadata: metadata});
+    const res = await superagent
+      .post(`${BASE_URL}/metadata/many`)
+      .send({ metadata: metadata });
     return res;
   }
 
@@ -461,7 +453,9 @@ class apiService {
   static async getManyCollectionsByAddress(
     addresses: string[]
   ): Promise<Collection[]> {
-    const res = await superagent.get(`${BASE_URL}/collection/getMany`).query({addresses});
+    const res = await superagent
+      .get(`${BASE_URL}/collection/getMany`)
+      .query({ addresses });
     return res.body.map((b: any) => new Collection(b));
   }
 }

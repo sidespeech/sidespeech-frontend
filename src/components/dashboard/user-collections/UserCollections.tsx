@@ -14,6 +14,8 @@ import Spinner from '../../ui-components/Spinner';
 import { paginateArray } from '../../../helpers/utilities';
 import { searchFiltersProps } from '../DashboardPage';
 // import Button from '../../ui-components/Button';
+import noResultsImg from '../../../assets/my_sides_empty_screen_shape.svg'
+import { breakpoints, size } from '../../../helpers/breakpoints';
 
 interface CollectionsStyledProps {
 
@@ -23,8 +25,21 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
     .collections-list-wrapper {
         display: grid;
         justify-items: center;
-        grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
         grid-gap: 1rem;
+        grid-template-columns: repeat(2, 1fr);
+        ${breakpoints(size.md, `
+        {
+                grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
+            }
+        `)}
+        &.list-view {
+            grid-template-columns: 1fr;
+            ${breakpoints(size.md, `
+        {
+                grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
+            }
+        `)}
+        }
         & .spinner, & .no-results {
             grid-column: 1/4;
             width: 100%;
@@ -37,10 +52,11 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
         }
         & .no-results {
             flex-direction: column;
-            background-image: url();
+            background-image: url(${noResultsImg});
             background-position: center center;
             backgound-size: contain;
             background-repeat: no-repeat;
+            margin: 4rem 0;
             & p {
                 text-align: center;
                 font-size: 1.5rem;
@@ -62,35 +78,38 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
         }
     }
     .toolbar-wrapper {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         align-items: center;
         justify-content: space-between;
-        margin: 1rem 0;
+        margin: 2rem 0;
         padding-right: .5rem;
-        .toolbar {
+        ${breakpoints(size.md, `{display: flex; margin: 1rem 0;}`)};
+        color: var(--text-secondary);
+        .view-mode {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             gap: 1rem;
-            color: var(--text-secondary);
-            .view-mode {
-                display: flex;
-                gap: 1rem;
-                align-items: center;
-                & button {
-                    background-color: transparent;
-                    border: none;
-                    outline: none;
-                    box-shadow: none;
-                    padding: .5rem;
-                    & svg path {
-                        fill: var(--text-secondary-dark);
-                    }
-                    &.active svg path {
-                        fill: var(--text-secondary-light);
-                    }
+            align-items: center;
+            flex-grow: 1;
+            justify-content: flex-end;
+            & button {
+                background-color: transparent;
+                border: none;
+                outline: none;
+                box-shadow: none;
+                padding: .5rem;
+                & svg path {
+                    fill: var(--text-secondary-dark);
+                }
+                &.active svg path {
+                    fill: var(--text-secondary-light);
                 }
             }
+        }
+        .checkboxes {
+            display: flex;
+            gap: 1rem;
+            grid-column: 1/3;   
             .checkbox-wrapper {
                 display: flex;
                 align-items: center;
@@ -157,38 +176,39 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
         <div>
             <div className="toolbar-wrapper">
                 <h2 className="title">My Collections</h2>
-                <div className="toolbar">
-                    <div className="view-mode">
-                        Show
-                        <button 
-                            className={viewMode === 'list' ? 'active' : ''} 
-                            onClick={() => {
-                                setViewMode('list');
-                                setPagination(prevState => ({
-                                    ...prevState,
-                                    pageSize: 21
-                                }))
-                            }}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2 20C1.45 20 0.979333 19.8043 0.588 19.413C0.196 19.021 0 18.55 0 18V2C0 1.45 0.196 0.979 0.588 0.587C0.979333 0.195667 1.45 0 2 0H18C18.55 0 19.021 0.195667 19.413 0.587C19.8043 0.979 20 1.45 20 2V18C20 18.55 19.8043 19.021 19.413 19.413C19.021 19.8043 18.55 20 18 20H2ZM2 14V18H6V14H2ZM8 14V18H12V14H8ZM14 18H18V14H14V18ZM2 12H6V8H2V12ZM8 12H12V8H8V12ZM14 12H18V8H14V12ZM6 2H2V6H6V2ZM8 6H12V2H8V6ZM14 6H18V2H14V6Z" />
-                            </svg>
-                        </button>
-                        <button 
-                            className={viewMode === 'card' ? 'active' : ''} 
-                            onClick={() => {
-                                setViewMode('card');
-                                setPagination(prevState => ({
-                                    ...prevState,
-                                    pageSize: 9
-                                }))
-                            }}
-                        >
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2 18C1.45 18 0.979 17.8043 0.587 17.413C0.195667 17.021 0 16.55 0 16V2C0 1.45 0.195667 0.979 0.587 0.587C0.979 0.195667 1.45 0 2 0H16C16.55 0 17.021 0.195667 17.413 0.587C17.8043 0.979 18 1.45 18 2V16C18 16.55 17.8043 17.021 17.413 17.413C17.021 17.8043 16.55 18 16 18H2ZM10 10V16H16V10H10ZM10 8H16V2H10V8ZM8 8V2H2V8H8ZM8 10H2V16H8V10Z" />
-                            </svg>
-                        </button>
-                    </div>
+                <div className="view-mode">
+                    Show
+                    <button 
+                        className={viewMode === 'list' ? 'active' : ''} 
+                        onClick={() => {
+                            setViewMode('list');
+                            setPagination(prevState => ({
+                                ...prevState,
+                                pageSize: 21
+                            }))
+                        }}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 20C1.45 20 0.979333 19.8043 0.588 19.413C0.196 19.021 0 18.55 0 18V2C0 1.45 0.196 0.979 0.588 0.587C0.979333 0.195667 1.45 0 2 0H18C18.55 0 19.021 0.195667 19.413 0.587C19.8043 0.979 20 1.45 20 2V18C20 18.55 19.8043 19.021 19.413 19.413C19.021 19.8043 18.55 20 18 20H2ZM2 14V18H6V14H2ZM8 14V18H12V14H8ZM14 18H18V14H14V18ZM2 12H6V8H2V12ZM8 12H12V8H8V12ZM14 12H18V8H14V12ZM6 2H2V6H6V2ZM8 6H12V2H8V6ZM14 6H18V2H14V6Z" />
+                        </svg>
+                    </button>
+                    <button 
+                        className={viewMode === 'card' ? 'active' : ''} 
+                        onClick={() => {
+                            setViewMode('card');
+                            setPagination(prevState => ({
+                                ...prevState,
+                                pageSize: 9
+                            }))
+                        }}
+                    >
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 18C1.45 18 0.979 17.8043 0.587 17.413C0.195667 17.021 0 16.55 0 16V2C0 1.45 0.195667 0.979 0.587 0.587C0.979 0.195667 1.45 0 2 0H16C16.55 0 17.021 0.195667 17.413 0.587C17.8043 0.979 18 1.45 18 2V16C18 16.55 17.8043 17.021 17.413 17.413C17.021 17.8043 16.55 18 16 18H2ZM10 10V16H16V10H10ZM10 8H16V2H10V8ZM8 8V2H2V8H8ZM8 10H2V16H8V10Z" />
+                        </svg>
+                    </button>
+                </div>
+                    
+                <div className="checkboxes">
                     <div className="checkbox-wrapper">
                         <CustomCheckbox 
                             isChecked={isWithSidesChecked} 
@@ -201,12 +221,12 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                             isChecked={isOnlyVerifiedCollectionsChecked}
                             label="Only verified collections" 
                             onClick={() => setIsOnlyVerifiedCollectionsChecked(!isOnlyVerifiedCollectionsChecked)} 
-                        />
+                            />
                     </div>
                 </div>
             </div>
 
-            <div className="collections-list-wrapper">
+            <div className={`collections-list-wrapper ${viewMode === 'list' ? 'list-view' : 'card-view'}`}>
                 {userCollectionsLoading ? (
                     <div className="spinner">
                         <Spinner />
@@ -220,7 +240,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                                     onClick={() => setSearchFilters(prevState => ({
                                         ...prevState,
                                         collections: collection.address,
-                                        selectedCollection: collection?.opensea?.collectionName
+                                        selectedCollection: collection?.opensea?.collectionName || collection?.name
                                     }))} 
                                 />
                             )}
@@ -230,7 +250,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                                     onClick={() => setSearchFilters(prevState => ({
                                         ...prevState,
                                         collections: collection.address,
-                                        selectedCollection: collection?.opensea?.collectionName
+                                        selectedCollection: collection?.opensea?.collectionName || collection?.name
                                     }))}  
                                 />
                             )}

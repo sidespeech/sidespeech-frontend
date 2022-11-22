@@ -76,12 +76,12 @@ export default function Eligibility({ side }: { side: Side }) {
         }}
       >
         {Object.values(details).map((d: any) => {
-          const isError = d.find((item:any) => item.type.includes("error"))
+          const isError = d.find((item: any) => item.type.includes("error"));
           return d.map((v: any) => {
             if (v.type.includes("number")) return;
             const nft = v.usefulNfts ? v.usefulNfts[0] : null;
             const num = v.usefulNfts?.length - 1;
-            const collection = userCollectionsData[v.id];
+            const collection = side.collections.find((c) => c.address === v.id);
             // const isError = v.type.includes("error");
             return (
               <>
@@ -96,7 +96,8 @@ export default function Eligibility({ side }: { side: Side }) {
                     <div className="flex align-center">
                       {" "}
                       <span className="mr-2">-</span>
-                      {collection?.name}{" "}
+                      {collection?.name ||
+                        collection.opensea.collectionName}{" "}
                       {collection?.opensea?.safelistRequestStatus ===
                         OpenSeaRequestStatus.verified && (
                         <img

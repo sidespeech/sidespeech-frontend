@@ -3,6 +3,7 @@ import { Duration } from "date-fns";
 import { Side } from "../models/Side";
 import { NFT } from "../models/interfaces/nft";
 import { Collection } from "../models/interfaces/collection";
+import { Metadata } from "../models/Metadata";
 
 export function weiToDecimals(
   value: number,
@@ -30,9 +31,7 @@ export function reduceTokenId(id: string): string {
   if (!id) return "";
   if (id.length > 10) {
     reducedId =
-      id.substring(0, 4) +
-      "..." +
-      id.substring(id.length - 4, id.length);
+      id.substring(0, 4) + "..." + id.substring(id.length - 4, id.length);
   }
   return reducedId;
 }
@@ -156,7 +155,11 @@ export function checkUserEligibility(
         trait_value: item["metadata"]["traitValue"],
       };
       if (!collection) {
-        return;
+        tab.push(
+          validateNftsWithAttributes([], condition, {
+            address: token_address,
+          })
+        );
       } else {
         // get nfts from collection with needed attributes
         const filteredNfts = getNftsWithAttributes(collection.nfts, condition);
@@ -173,22 +176,24 @@ export function checkUserEligibility(
       res[token_address] = tab;
     });
   }
-
-  const eligible = isEligible(res, selectedSide.metadataSides);
+  let eligible = false;
+  if (Object.keys(res).length > 0) {
+    eligible = isEligible(res, selectedSide.metadataSides);
+  }
   return [res, eligible];
 }
 
 function validateNftsWithAttributes(
   nfts: any[],
   condition: any,
-  collection: Collection
+  collection: Partial<Collection>
 ) {
   const nftsNotEmpty = nfts.length > 0;
   return createResponseObject(
     nftsNotEmpty,
     nfts,
     `No nft in the collection ${collection.address} with property ${condition["trait_type"]} and value ${condition["trait_value"]}`,
-    collection.address,
+    collection.address || "",
     condition,
     "attributes"
   );

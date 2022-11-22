@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import { getRandomId } from "../../helpers/utilities";
 import { RootState } from "../../redux/store/app.store";
 import { useSelector } from "react-redux";
+import { breakpoints, size } from "../../helpers/breakpoints";
 
 const DashboardPageStyled = styled.div`
   display: flex;
@@ -23,14 +24,26 @@ const DashboardPageStyled = styled.div`
   overflow-y: scroll;
   width: 100%;
   min-height: 100vh;
+  padding-bottom: 77px;
+  ${breakpoints(size.lg, `
+    {
+      padding-bottom: 0;
+    }
+  `)}
   & > div {
     flex-shrink: 1;
     width: 100%;
+    flex-direction: column;
+    ${breakpoints(size.lg, `{
+      flex-direction: row;
+    }`)};
     & .current-tab-wrapper {
       width: 100%;
       height: 100%;
-      padding: 0 1rem;
       overflow-x: hidden;
+      ${breakpoints(size.lg,`{
+        padding: 0 1rem;
+      }`)}
     }
   }
 `;

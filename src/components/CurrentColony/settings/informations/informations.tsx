@@ -8,6 +8,10 @@ import "./informations.css";
 import { apiService } from "../../../../services/api.service";
 import { Side } from "../../../../models/Side";
 import Switch from "../../../ui-components/Switch";
+import { sideAPI } from "../../../../services/side.service";
+import LeavSideAsAdmin from "../../../ui-components/LeavSideAsAdmin";
+import { removeSide } from "../../../../redux/Slices/UserDataSlice";
+import { useNavigate } from "react-router-dom";
 
 export interface InitialStateUpdateSide {
   sideImage: string | undefined;
@@ -30,7 +34,7 @@ export default function Informations({
   onChangeNewSideImage,
   formError,
 }: {
-  userData?:any;
+  userData?: any;
   currentSide: any;
   onChangeNewSideName?: any;
   onChangeNewSideImage?: any;
@@ -40,12 +44,19 @@ export default function Informations({
     initialStateUpdateSide
   );
   const [isNewSide, setIsNewSide] = useState<boolean>(true);
-  const [subAdmin, setSubAdmin] = useState<string>('');
+  const [subAdmin, setSubAdmin] = useState<string>("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (window.location.href.includes("settings")) {
       setIsNewSide(false);
-      setFormData({ sideImage: currentSide['sideImage'], name: currentSide['name'], description: currentSide['description'], priv: currentSide['priv'] })
+      setFormData({
+        sideImage: currentSide["sideImage"],
+        name: currentSide["name"],
+        description: currentSide["description"],
+        priv: currentSide["priv"],
+      });
     }
   }, [currentSide]);
 
@@ -79,10 +90,7 @@ export default function Informations({
         delete formData["sideImage"];
       }
       if (!currentSide["id"]) return;
-      const updatedSide = await apiService.updateSide(
-        formData,
-        currentSide["id"]
-      );
+      const updatedSide = await sideAPI.updateSide(formData, currentSide["id"]);
       toast.success(formData.name + " has been updated.", {
         toastId: 4,
       });
@@ -92,33 +100,22 @@ export default function Informations({
     }
   };
 
-  const onChangeSubAdmin = (event:any) => {
-    if (event.target.value.length) {
-      setSubAdmin(event.target.value)
-    }
-  };
-
-  const onSubmitSubAdmin = async () => {
-    let result = await apiService.updateSubAdmin(subAdmin, currentSide['id']);
-    (result['error']) ? toast.error(result['message'], { toastId: 3 }) : toast.success(result['message'], { toastId: 4 });
-  };
-
   const onSubmitLeaveSide = async () => {
-    let result = await apiService.leaveSide(userData['currentProfile']);
-    if (result['error'])
-      toast.error(result['message'], { toastId: 3 })
+    let result = await apiService.leaveSide(userData["currentProfile"]);
+    if (result["error"]) toast.error(result["message"], { toastId: 3 });
     else {
-      toast.success(result['message'], { toastId: 4 });
-      window.location.reload();
+      toast.success(result["message"], { toastId: 4 });
+      dispatch(removeSide(userData["currentProfile"].side.id));
+      navigate("/");
     }
   };
 
   return (
-    <>
+    <div className="w-50">
       {/* Profile Picture Section */}
       <div className="f-column">
         <div className="text-primary-light mb-2 text fw-600 size-13">
-          Profile Picture
+          Side Picture
         </div>
 
         <label htmlFor="input-colony-picture" className="flex pointer">
@@ -161,7 +158,11 @@ export default function Informations({
             <div>
               <input
                 accept=".png,.jpg,.jpeg,.webp"
-                style={{ opacity: 0, position: 'absolute', pointerEvents: 'none' }}
+                style={{
+                  opacity: 0,
+                  position: "absolute",
+                  pointerEvents: "none",
+                }}
                 id="input-colony-picture"
                 type={"file"}
                 onChange={onChangeSideImage}
@@ -185,12 +186,12 @@ export default function Informations({
 
       {/* Name Section */}
       <div className="f-column mt-3">
-        <div className="text-primary-light mb-2 text fw-600 size-13">Side Name</div>
+        <div className="text-primary-light mb-2 text fw-600 size-13">
+          Side Name
+        </div>
         <div className="flex pointer">
           <InputText
-            parentWidth="30%"
             height={35}
-            width="70%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             defaultValue={currentSide.name}
@@ -210,11 +211,12 @@ export default function Informations({
 
       {/* Description Section */}
       <div className="f-column mt-3">
-        <div className="text-primary-light mb-2 text fw-600 size-13">Description</div>
+        <div className="text-primary-light mb-2 text fw-600 size-13">
+          Description
+        </div>
         <div className="flex pointer">
           <TextArea
             height={100}
-            width="68%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             placeholder={"Describe your Side"}
@@ -228,81 +230,40 @@ export default function Informations({
 
       {/* Private Side Section */}
 
-      {
-        !isNewSide ? (
-          <div className="f-column mt-3">
-            <div className="flex pointer">
-              <div className="text-primary-light mb-1 text fw-600 mr-3">Private Side</div>
-              <Switch
-                onClick={onChangePrivate}
-                value={currentSide.priv}
-              />
+      {!isNewSide ? (
+        <div className="f-column mt-3">
+          <div className="flex pointer">
+            <div className="text-primary-light mb-1 text fw-600 mr-3">
+              Private Side
             </div>
-            <div className="size-8">Only invited users will be able to join this Side. All invitations will be received as requests.</div>
+            <Switch onClick={onChangePrivate} value={currentSide.priv} />
           </div>
-        ) : null
-      }
-
+          <div className="size-8">
+            Only invited users will be able to join this Side. All invitations
+            will be received as requests.
+          </div>
+        </div>
+      ) : null}
 
       {/* Submit Button */}
-      {
-        !isNewSide ? (
-          <>
-            <Button
-              classes={"mt-1"}
-              width={"159px"}
-              height={46}
-              onClick={updateSide}
-              radius={10}
-              color={"var(--text-primary-light)"}
-            >
-              Save{" "}
-            </Button>
-
-            <div className='yellowDiv mt-3'>
-              <button className='flex pointer mt-2' onClick={onSubmitLeaveSide}>
-                <i className="fa-solid fa-right-from-bracket"></i>
-                <p>Leave the side</p>
-              </button>
-
-              <p className='sub-text mt-5'>To leave a side, you must define a sub-admin-user who will become the new administrator</p>
-
-              <div className='btm-div'>
-                <p className='btm-div-head mt-5'>Define a sub-admin User</p>
-                <p className='btm-div-nor'>Search for a username or wallet address registered on<br /> SideSpeech</p>
-                <div className='typ-sm mt-5'>
-                  {/* <input className='sideInput' placeholder='Type something' /> */}
-                  <InputText
-                    parentWidth="100%"
-                    height={35}
-                    width="100%"
-                    bgColor="rgba(19, 19, 16, 0.55)"
-                    glass={false}
-                    placeholder={"Type something"}
-                    onChange={onChangeSubAdmin}
-                    radius="10px"
-                  />
-                  <Button
-                    width={"149px"}
-                    height={36}
-                    onClick={onSubmitSubAdmin}
-                    radius={10}
-                    background={"rgba(19, 19, 16, 0.55)"}
-                    color={"var(--text-primary-light)"}
-                    fontSize={"11px"}
-                    classes={"ml-3"}
-                  >
-                    {" "}
-                    Update Sub-admin
-                  </Button>
-                </div>
-
-              </div>
-            </div>
-          </>
-        ) : null
-      }
-
-    </>
+      {!isNewSide ? (
+        <>
+          <Button
+            classes={"my-3"}
+            width={"121px"}
+            height={44}
+            onClick={updateSide}
+            radius={10}
+            color={"var(--text-primary-light)"}
+          >
+            Save{" "}
+          </Button>
+          <LeavSideAsAdmin
+            side={currentSide}
+            handleLeaveSide={onSubmitLeaveSide}
+          />
+        </>
+      ) : null}
+    </div>
   );
 }
