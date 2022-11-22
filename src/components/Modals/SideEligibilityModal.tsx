@@ -17,7 +17,10 @@ import { RoundedImageContainer } from "../ui-components/styled-components/shared
 import { OpenSeaRequestStatus } from "../../models/interfaces/collection";
 import Eligibility from "../CurrentColony/settings/eligibility/eligibility";
 import { toast } from "react-toastify";
-import { addUserParsedSide } from "../../redux/Slices/UserDataSlice";
+import {
+  addUserParsedSide,
+  updateProfiles,
+} from "../../redux/Slices/UserDataSlice";
 import { State, Type } from "../../models/Invitation";
 
 const eligibilityTexts = {
@@ -107,8 +110,13 @@ export default function SideEligibilityModal(
         };
         await apiService.sendRequestPrivateSide(object);
       } else {
-        await apiService.joinSide(user.id, props.selectedSide.id, Role.User);
+        const profile = await apiService.joinSide(
+          user.id,
+          props.selectedSide.id,
+          Role.User
+        );
         props.setDisplayEligibility?.(false);
+        dispatch(updateProfiles(profile));
         dispatch(addUserParsedSide(props.selectedSide));
         toast.success("Great! You join the side", { toastId: 26 });
       }

@@ -21,7 +21,7 @@ export class User {
     this.publicNfts = _data.publicNfts ? JSON.parse(_data.publicNfts) : [];
     this.profiles = _data.profiles
       ? _data.profiles.map((p: any) => new Profile(p))
-      : _data.profiles;
+      : [];
     this.token = _data.token;
     this.invitations = _data.invitations;
     this.ownedNfts = _data.ownedNfts ? JSON.parse(_data.ownedNfts) : [];

@@ -35,10 +35,12 @@ interface IUserNftsCollectionsProps {
   profile?: Profile;
   onBoarding?: any;
   handleSelectAll?: any;
-  saveNftsProfilePicture?:any;
+  saveNftsProfilePicture?: any;
   showAvatarText?: any;
   setSelectedAvatar?: any;
   selectedAvatar?: NFT | null;
+  handleShowNfts?: any;
+  formData?: any;
 }
 
 export default function NftsCollections({
@@ -52,8 +54,9 @@ export default function NftsCollections({
   showAvatarText,
   setSelectedAvatar,
   selectedAvatar,
+  handleShowNfts,
+  formData,
 }: IUserNftsCollectionsProps) {
-
   const { user, userCollectionsData } = useSelector(
     (state: RootState) => state.user
   );
@@ -84,7 +87,6 @@ export default function NftsCollections({
     }
   }, [selectedNfts]);
 
-
   //#region NFTS handlers
   const handleCollectionShowing = (position: any) => {
     const updatedCollectionShowing = openCollection.map((item, index) =>
@@ -103,17 +105,6 @@ export default function NftsCollections({
   };
   //#endregion
 
-  const handleShowNfts = async (value: boolean) => {
-    if (profile) {
-      const updatedProfile = await apiService.updateProfile(profile.id, {
-        ...profile,
-        showNfts: !value,
-      });
-      dispatch(updateCurrentProfile(updatedProfile));
-      toast.success("Profile updated!", { toastId: 10 });
-    }
-  };
-
   const Header = () => {
     if (profile || showAvatarText) {
       return (
@@ -122,7 +113,7 @@ export default function NftsCollections({
           <span className="flex align-center">
             <span className="mr-2">Hide all NFTs</span>
             <Switch
-              value={profile ? !profile.showNfts : true}
+              value={formData ? !formData.showNfts : true}
               right={"NO"}
               left={"YES"}
               onClick={handleShowNfts}
@@ -193,30 +184,33 @@ export default function NftsCollections({
     }
   };
 
-
-  if (!profile) {
-    submitButton =  <Button
-                      classes={"mb-3"}
-                      width={"164px"}
-                      height={44}
-                      radius={10}
-                      color={"var(--text-primary-light)"}
-                      onClick={onSubmitNfts}
-                    >
-                      Save this selection
-                    </Button>
-  } else {
-    submitButton =  <Button
-                      classes={"mb-3"}
-                      width={"164px"}
-                      height={44}
-                      radius={10}
-                      color={"var(--text-primary-light)"}
-                      onClick={saveNftsProfilePicture}
-                    >
-                      Use this NFT
-                    </Button>
-  }
+  // if (!profile) {
+  //   submitButton = (
+  //     <Button
+  //       classes={"mb-3"}
+  //       width={"164px"}
+  //       height={44}
+  //       radius={10}
+  //       color={"var(--text-primary-light)"}
+  //       onClick={onSubmitNfts}
+  //     >
+  //       Save this selection
+  //     </Button>
+  //   );
+  // } else {
+  //   submitButton = (
+  //     <Button
+  //       classes={"mb-3"}
+  //       width={"164px"}
+  //       height={44}
+  //       radius={10}
+  //       color={"var(--text-primary-light)"}
+  //       onClick={saveNftsProfilePicture}
+  //     >
+  //       Use this NFT
+  //     </Button>
+  //   );
+  // }
 
   return (
     <div className="f-row my-nfts relative text-main">
@@ -328,9 +322,7 @@ export default function NftsCollections({
             );
           })}
       </div>
-      {!onBoarding  && (
-        <div className="submitArea">{submitButton}</div>
-      )}
+      {/* {!onBoarding && <div className="submitArea">{submitButton}</div>} */}
     </div>
   );
 }

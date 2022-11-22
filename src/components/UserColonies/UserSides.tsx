@@ -143,7 +143,7 @@ export default function UserSides() {
     if (currentSide && account) getAndSetRoomNotifications(account);
 
     const sideProfile = userData.user?.profiles.find(
-      (profile) => profile.side.id === side?.id
+      (profile) => profile.side?.id === side?.id
     );
   
     const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
