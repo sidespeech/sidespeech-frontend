@@ -71,12 +71,12 @@ class WebSocketService {
     });
   }
 
-  logout() {
-    this.socket?.emit("login", {
-      user: { id: user.id, username: user.accounts },
-      rooms: rooms,
-    });
-  }
+  // logout() {
+  //   this.socket?.emit("login", {
+  //     user: { id: user.id, username: user.accounts },
+  //     rooms: rooms,
+  //   });
+  // }
 
   getUsersStatus() {
     this.socket?.emit("usersStatus");
