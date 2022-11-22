@@ -21,6 +21,7 @@ interface IAdmissionProps {
   setSideTokenAddress: any;
   setSidePropertyCondition: any;
   setSideValueCondition: any;
+  onRemoveFeature:any;
   addDivCollection: any;
   removeDivCollection: any;
   addConditionToDivCollection: any;
@@ -78,6 +79,7 @@ export default function Admission({
   setSideTokenAddress,
   setSidePropertyCondition,
   setSideValueCondition,
+  onRemoveFeature,
   addDivCollection,
   removeDivCollection,
   addConditionToDivCollection,
@@ -229,117 +231,6 @@ export default function Admission({
                       </div>
                     </div>
                     {current['features'].length ? (
-                      // {/* {"trait_selected" in current ? ( */}
-                      //   {/* <>
-                      //     <div className="d-flex">
-                      //       <div className="featureBox mr-auto">
-                      //         <div className="flex hdBox justify-between mb-3">
-                      //           <label>Feature</label>
-                      //         </div>
-
-                      //         <div className="d-flex justify-space-between">
-                      //           <CustomSelect
-                      //             width={"400px"}
-                      //             height={"40px"}
-                      //             radius={"10px"}
-                      //             classes={"mr-3"}
-                      //             valueToSet={
-                      //               current["trait_selected"].length
-                      //                 ? current["trait_selected"]
-                      //                 : ""
-                      //             }
-                      //             fontSize={12}
-                      //             fontWeight={700}
-                      //             arrowPosition={{ top: 12, right: 15 }}
-                      //             values={
-                      //               current["traits_values"].length
-                      //                 ? [
-                      //                   "",
-                      //                   ...current["traits_values"].map(
-                      //                     (item: any) => item["property"]["value"]
-                      //                   ),
-                      //                 ]
-                      //                 : [""]
-                      //             }
-                      //             options={
-                      //               current["traits_values"].length
-                      //                 ? [
-                      //                   "Select trait",
-                      //                   ...current["traits_values"].map(
-                      //                     (item: any) => item["property"]["label"]
-                      //                   ),
-                      //                 ]
-                      //                 : ["Traits"]
-                      //             }
-                      //             onChange={(event: any) =>
-                      //               setSidePropertyCondition(event, i)
-                      //             }
-                      //           />
-                      //           <CustomSelect
-                      //             width={"400px"}
-                      //             height={"40px"}
-                      //             radius={"10px"}
-                      //             valueToSet={
-                      //               current["value_selected"].length
-                      //                 ? current["value_selected"]
-                      //                 : ""
-                      //             }
-                      //             fontSize={12}
-                      //             fontWeight={700}
-                      //             arrowPosition={{ top: 12, right: 15 }}
-                      //             values={
-                      //               current["traits_values"].length
-                      //                 ? [
-                      //                   "",
-                      //                   ...(current["traits_values"].find(
-                      //                     (item: any) =>
-                      //                       item["property"]["value"] ===
-                      //                       current["trait_selected"]
-                      //                   ) || { values: [] })["values"].map(
-                      //                     (item: any) => item["value"]
-                      //                   ),
-                      //                 ]
-                      //                 : [""]
-                      //             }
-                      //             options={
-                      //               current["traits_values"].length
-                      //                 ? [
-                      //                   "Select value of trait",
-                      //                   ...(current["traits_values"].find(
-                      //                     (item: any) =>
-                      //                       item["property"]["value"] ===
-                      //                       current["trait_selected"]
-                      //                   ) || { values: [] })["values"].map(
-                      //                     (item: any) => item["label"]
-                      //                   ),
-                      //                 ]
-                      //                 : ["Values"]
-                      //             }
-                      //             onChange={(event: any) =>
-                      //               setSideValueCondition(event, i)
-                      //             }
-                      //           />
-                      //         </div>
-                      //       </div>
-                      //       <div className="featureBtn f-column justify-center">
-                      //         <button className="mt-2 text-red">
-                      //           <i className="fa-solid fa-minus"></i>
-                      //         </button>
-                      //       </div>
-                      //     </div>
-                      //     <div
-                      //       className="addFeature mt-3"
-                      //       onClick={() => addConditionToDivCollection(i)}
-                      //     >
-                      //       <button>
-                      //         <i
-                      //           className="fa fa-plus-circle"
-                      //           aria-hidden="true"
-                      //         ></i>{" "}
-                      //         Add a Feature
-                      //       </button>
-                      //     </div>
-                      //   </> */}
                       <>
                         {
                           current['features'].map((fcurrent: any, findex: number) => {
@@ -428,7 +319,7 @@ export default function Admission({
                                   </div>
                                 </div>
                                 <div className="featureBtn f-column justify-center">
-                                  <button className="mt-2 text-red">
+                                  <button className="mt-2 text-red" onClick={() => onRemoveFeature(i, findex)}>
                                     <i className="fa-solid fa-minus"></i>
                                   </button>
                                 </div>

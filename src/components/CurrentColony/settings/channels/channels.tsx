@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import "./channels.css";
 import { apiService } from "../../../../services/api.service";
 import ChannelRow from "./channel-row/channel-row";
-import { Channel } from "../../../../models/Channel";
+import { Channel, ChannelType } from "../../../../models/Channel";
 import { Side } from "../../../../models/Side";
 
 export interface InitialChannelsState {
@@ -98,7 +98,7 @@ export default function Channels({
       current_added.push({
         name: "",
         isVisible: true,
-        type: 2,
+        type: ChannelType.Announcement,
         side: currentSide,
       });
       setChannels({ ...channels, added: current_added });

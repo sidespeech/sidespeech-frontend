@@ -117,15 +117,14 @@ const initialDivCollections = [
 ];
 
 const initialChannelsState = {
-  currents: [
-    {
-      name: "Announcement",
-      isVisible: true,
-      type: ChannelType.Announcement,
-    },
-  ],
+  currents: [],
   removed: [],
-  added: [],
+  added: [{
+    name: "Announcement",
+    isVisible: true,
+    type: ChannelType.Announcement,
+    authorizeComments: false,
+  }],
 };
 
 const Middle = styled.div`
@@ -384,6 +383,18 @@ export default function NewSide() {
     }
   };
 
+  const onRemoveFeature = (index: number, findex: number) => {
+      let current_divs = [...divCollections];
+
+      console.log('current_divs before :', current_divs)
+
+      current_divs[index]['features'].splice(findex, 1);
+
+      console.log('current_divs after :', current_divs)
+
+      setDivCollection(current_divs);
+  };
+
   // Add collection div in condition
   const addDivCollection = () => {
     if (divCollections.length < MAX_NUMBER_OF_COLLECTIONS) {
@@ -567,6 +578,7 @@ export default function NewSide() {
 
         const data = _.cloneDeep(formData);
 
+        console.log('channels["added"] :', channels["added"])
         data["conditions"]["required"] = onlyOneRequired;
 
         data["conditions"] = JSON.stringify(data["conditions"]);
@@ -698,6 +710,7 @@ export default function NewSide() {
                       setSideTokenAddress={setSideTokenAddress}
                       setSidePropertyCondition={setSidePropertyCondition}
                       setSideValueCondition={setSideValueCondition}
+                      onRemoveFeature={onRemoveFeature}
                       addDivCollection={addDivCollection}
                       removeDivCollection={removeDivCollection}
                       addConditionToDivCollection={addConditionToDivCollection}
