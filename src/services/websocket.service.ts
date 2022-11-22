@@ -19,8 +19,12 @@ class WebSocketService {
       console.log("connected");
     });
 
-    this.socket.on("disconnect", () => {
-      console.log("disconnected");
+    this.socket.on("disconnect", (data) => {
+      trigger(EventType.RECEIVE_USERS_STATUS, data);
+    });
+
+    this.socket.on("usersStatus", (data) => {
+      trigger(EventType.RECEIVE_USERS_STATUS, data);
     });
 
     this.socket.on("message", async (data) => {
@@ -65,6 +69,17 @@ class WebSocketService {
       roomId,
       profiles,
     });
+  }
+
+  // logout() {
+  //   this.socket?.emit("login", {
+  //     user: { id: user.id, username: user.accounts },
+  //     rooms: rooms,
+  //   });
+  // }
+
+  getUsersStatus() {
+    this.socket?.emit("usersStatus");
   }
 
   deconnectWebsocket() {

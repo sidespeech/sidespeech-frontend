@@ -137,6 +137,8 @@ export const userDataSlice = createSlice({
       state.user = null;
       state.account = null;
       state.userTokens = null;
+
+      websocketService.getUsersStatus();
     },
     updateUser: (state: UserData, action: PayloadAction<any>) => {
       state.user = { ...state.user, ...action.payload };
@@ -163,7 +165,6 @@ export const userDataSlice = createSlice({
           return p.side.id === action.payload.id;
         });
         state.currentProfile = profile;
-        // websocketService.login(state.user, profile);
       }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {

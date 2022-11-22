@@ -81,6 +81,11 @@ class apiService {
     return new Profile(res.body);
   }
 
+  static async getProfilesByUserId(id: string): Promise<Profile> {
+    const res = await superagent.get(`${BASE_URL}/profile/user`).query({ id });
+    return new Profile(res.body);
+  }
+
   static async joinSide(
     userId: string,
     sideId: string,
@@ -343,7 +348,6 @@ class apiService {
   }
 
   static async sendRequestPrivateSide(data: any): Promise<any> {
-    console.log("data :", data);
     const res = await superagent
       .post(`${BASE_URL}/invitation/request`)
       .send(data);
