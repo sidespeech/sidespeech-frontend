@@ -1,22 +1,19 @@
 // Default Imports
 import React, { useEffect, useState } from "react";
 
-
 // Routers
 import { useNavigate, redirect } from "react-router-dom";
 
 import { toast } from "react-toastify";
 
-
 import metamaskLogo from "../../assets/metamask.svg";
-
 
 // Slices
 import {
   fetchUserDatas,
   disconnect,
   connect,
-  addRoomToProfile
+  addRoomToProfile,
 } from "../../redux/Slices/UserDataSlice";
 
 // Modals
@@ -41,7 +38,7 @@ import websocketService from "../../services/websocket.service";
 
 // Stylings
 import styled from "styled-components";
-import Button from "../ui-components/Button"
+import Button from "../ui-components/Button";
 
 export const SeparatorVertical = styled.div`
   min-height: 415px;
@@ -50,15 +47,12 @@ export const SeparatorVertical = styled.div`
 `;
 
 export default function Login() {
-
   // Setup constants for dispatch, navigate and selector methods
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const redirection = useSelector((state: RootState) => state.redirect);
 
-
   function ConnectWalletArea() {
-
     // This is the all of the providers that are needed...
     const providerOptions = {
       walletconnect: {
@@ -78,7 +72,6 @@ export default function Login() {
 
     // Method for wallet connection...
     const connectWallet = async () => {
-
       try {
         // Open the connector
         const provider = await web3Modal.connect();
@@ -91,18 +84,15 @@ export default function Login() {
 
         const existingUser = await apiService.findExistingWallet(accounts[0]);
 
-      // Create a signature variable.
-      let signature;
+        // Create a signature variable.
+        let signature;
 
-      // If there are any accounts connected then send them to the API.
-      if (accounts) {
-
-        // If there isn't an existing user then ensure that he signs the signature.
-        if (existingUser == undefined) {
-
-          // Get Signer
-          const signer = library.getSigner();
-
+        // If there are any accounts connected then send them to the API.
+        if (accounts) {
+          // If there isn't an existing user then ensure that he signs the signature.
+          if (existingUser == undefined) {
+            // Get Signer
+            const signer = library.getSigner();
 
             // Create the signer message
             const signerMessage = "sidespeech";
@@ -124,27 +114,22 @@ export default function Login() {
               return false;
             }
           }
-
         }
 
-          // Send the wallet to the api service.
-          const user = await apiService.walletConnection(accounts, signature);
+        // Send the wallet to the api service.
+        const user = await apiService.walletConnection(accounts, signature);
 
         // Check if the existing user still needs to onboard or not.
         if (existingUser == undefined) {
-
           // Redirect the user to the onboarding area.
           navigate("/onboarding");
-
         } else {
-
           // Redirect the user to the general settings page.
           navigate("/");
-
         }
 
         // Check if the logged in doesn't user has a room
-      //  const currentProfiles = await apiService.getProfilesByUserId(user.accounts);
+        //  const currentProfiles = await apiService.getProfilesByUserId(user.accounts);
 
         // if (!room && currentProfiles) {
 
@@ -156,22 +141,18 @@ export default function Login() {
         //   dispatch(addRoomToProfile(room));
         // }
 
-          // Dispatch the account that is connected to the redux slice.
-          dispatch(connect({ account: accounts[0], user: user }));
-          dispatch(fetchUserDatas(accounts[0]));
+        // Dispatch the account that is connected to the redux slice.
+        dispatch(connect({ account: accounts[0], user: user }));
+        dispatch(fetchUserDatas(accounts[0]));
 
+        // Set a local storage of the account
+        localStorage.setItem("userAccount", accounts[0]);
 
-          // Set a local storage of the account
-          localStorage.setItem("userAccount", accounts[0]);
-
-          localStorage.setItem("jwtToken", user.token);
-        }
+        localStorage.setItem("jwtToken", user.token);
 
         // Listen for accounts being disconnected - this only seems to work for WalletConnect.
         provider.on("disconnect", handleDisconnect);
-
-      } catch (err : any) {
-
+      } catch (err: any) {
         console.log("error", err, " message", err.message);
         if (
           typeof err !== "undefined" &&
@@ -180,21 +161,20 @@ export default function Login() {
         ) {
           toast.error("You rejected the request", {
             toastId: 6,
-           });
+          });
         } else if (
           (typeof err === "string" || err instanceof String) &&
           err.includes("Modal closed by user")
         ) {
-         toast.error("You closed the modal", {
-          toastId: 6,
-         });
+          toast.error("You closed the modal", {
+            toastId: 6,
+          });
         } else {
           toast.error("Something went wrong.", {
             toastId: 6,
           });
         }
       }
-     
     };
 
     // Method for handling the disconnection.
