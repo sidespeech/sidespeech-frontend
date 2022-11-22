@@ -21,6 +21,7 @@ import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent'
 import { EventType } from '../../constants/EventType';
 import { Announcement } from '../../models/Announcement';
 import { NotificationType } from '../../models/Notification';
+import { breakpoints, size } from '../../helpers/breakpoints';
 
 interface MySidesStyledProps {}
 
@@ -31,9 +32,15 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
   }
   .my-sides-toolbar {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
     justify-content: space-between;
     margin: 1rem 0 2rem 0;
+    ${breakpoints(size.md, `{
+      flex-direction: row;
+      align-items: center;
+      gap: 0;
+    }`)}
     .collection-select, .verified-checkbox {
       display: flex;
       align-items: center;
@@ -43,8 +50,11 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
       justify-content: space-between;
       background-color: var(--bg-secondary-dark);
       padding: .5rem 1rem;
-      width: 40%;
+      width: 100%;
       border-radius: 10px;
+      ${breakpoints(size.md, `{
+        width: 40%;
+      }`)}
     }
   }
 
@@ -85,7 +95,10 @@ const MySidesStyled = styled.main<MySidesStyledProps>`
   }
   .list-wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
+    grid-template-columns: 1fr;
+    ${breakpoints(size.md, `{
+      grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - .5rem)));
+    }`)}
     grid-gap: 1rem;
     width: 100%;
   }

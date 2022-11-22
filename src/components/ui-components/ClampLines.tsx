@@ -43,7 +43,10 @@ const ClampLines = ({ buttons = true, children, className, id, length = 100, sho
 
             {buttons && children?.length > length && <button 
                 className="clamp-lines_button" 
-                onClick={() => setIsAllcontentShown(bool => !bool)}
+                onClick={(ev) => {
+                    ev.stopPropagation();
+                    setIsAllcontentShown(bool => !bool)
+                }}
             >
                 {isAllContentShown ? showLessText : showMoreText}
             </button>}

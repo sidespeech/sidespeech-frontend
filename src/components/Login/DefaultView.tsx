@@ -8,7 +8,6 @@ import { apiService } from "../../services/api.service";
 import DashboardPage from "../dashboard/DashboardPage";
 import OnBoarding from "./../OnBoarding/DefaultView";
 import { Side } from "../../models/Side";
-import "./DefaultView.css";
 
 interface ISeparatorHorizontal {
   borderColor?: string;

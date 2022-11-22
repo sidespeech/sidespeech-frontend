@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
+import { breakpoints, size } from '../../helpers/breakpoints';
 import { checkUserEligibility } from '../../helpers/utilities';
 import { User } from '../../models/User';
 import { RootState } from '../../redux/store/app.store';
@@ -10,22 +11,28 @@ import Button from '../ui-components/Button';
 import { Dot } from '../ui-components/styled-components/shared-styled-components';
 
 const DashboardLeftMenuStyled = styled.aside`
+    ${breakpoints(size.lg, `{flex: 1 0;}`)};
     & .title {
         margin-top: 0;
+        ${breakpoints(size.xs, `{display: none;}`)};
+        ${breakpoints(size.lg, `{display: block;}`)};
     }
     & .navigation-menu ul {
         width: 100%;
         padding: 0;
+        display: flex;
+        ${breakpoints(size.xs, `{flex-direction: row; gap: 1rem; margin: 0;}`)};
+        ${breakpoints(size.lg, `{flex-direction: column; gap: 0; margin: 1rem 0;}`)};
         & .menu-item {
             width: 100%;
             display: flex;
             list-style: none;
             padding: 10px;
-            margin: 1rem 0;
             cursor: pointer;
             border-radius: 10px;
             color: var(--text-secondary-dark);
             transition: background-color .3s ease;
+            ${breakpoints(size.lg, `{ margin: 1rem 0;}`)};
             & svg {
                 margin-right: 1rem;
                 opacity: .4;
@@ -51,6 +58,8 @@ const DashboardLeftMenuStyled = styled.aside`
         }
     }
     .add-side-btn {
+        ${breakpoints(size.xs, `{display: none;}`)};
+        ${breakpoints(size.lg, `{display: block;}`)};
         svg {
             margin-right: 1rem;
         }
@@ -88,7 +97,7 @@ const DashboardLeftMenu = ({
     }, [userData]);
 
     return (
-        <DashboardLeftMenuStyled className="flex-1">
+        <DashboardLeftMenuStyled>
             <h2 className="title">Dashboard</h2>
             <nav className="navigation-menu">
                 <ul>

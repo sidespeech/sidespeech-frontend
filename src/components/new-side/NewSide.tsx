@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
-import "./new-side.css";
 import ContainerLeft from "../ui-components/ContainerLeft";
 import TabItems from "../ui-components/TabItems";
 import Informations from "../CurrentColony/settings/informations/informations";
@@ -26,6 +25,76 @@ import { Channel, ChannelType } from "../../models/Channel";
 import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
 import { sideAPI } from "../../services/side.service";
+
+const NewSideStyled = styled.div`
+width: 100%;
+.sidebar-title, .sidebar-item {
+  font-family : "Inter", sans-serif;
+}
+
+.container-next-back {
+  max-width: 536px;
+}
+
+nav{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px;
+  width: inherit;
+}
+
+.nav-link.active {
+  color: var(--primary) !important;
+  background-color: transparent !important;
+  border-right: 2px solid  var(--primary);
+}
+
+.nav-link.completed {
+  color: var(--green) !important;
+  background-color: transparent !important;
+}
+
+nav .nav-items {
+  display: flex;
+  flex: 1;
+}
+
+nav .nav-items li {
+  list-style: none;
+  padding: 0 15px;
+}
+
+nav .nav-items li a {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+nav .nav-items li a:hover {
+  color: #4f4f4f;
+}
+
+nav .menu-icon {
+  width: 40px;
+  text-align: center;
+  margin: 0 50px;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+}
+
+nav .menu-icon span {
+  display: none;
+}
+
+.collection-icon-check {
+  color: #0d6efd;
+}
+`;
 
 const MAX_NUMBER_OF_COLLECTIONS = 5;
 
@@ -591,7 +660,7 @@ export default function NewSide() {
   };
 
   return (
-    <>
+    <NewSideStyled>
       <nav>
         <div className="menu-icon">
           <span className="fas fa-bars"></span>
@@ -694,7 +763,7 @@ export default function NewSide() {
           />
         </Middle>
       </div>
-    </>
+    </NewSideStyled>
   );
 }
 
