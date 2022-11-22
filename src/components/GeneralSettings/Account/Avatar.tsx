@@ -48,7 +48,6 @@ export default function Avatar({
 
   useEffect(() => {
     if (nft && nft.metadata && nft.metadata.image) {
-      console.log(nft);
       setUrl(fixURL(nft.metadata.image));
     }
   }, [nft]);

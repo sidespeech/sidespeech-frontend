@@ -175,23 +175,25 @@ const initialStateSide = {
 const initialDivCollections = [
   {
     collection: "",
-    trait_selected: "",
-    value_selected: "",
+    features: [{
+      trait_selected: "",
+      value_selected: "",
+    }],
     traits_values: [],
     numberNeeded: 1,
+    metadata: {}
   },
 ];
 
 const initialChannelsState = {
-  currents: [
-    {
-      name: "Announcement",
-      isVisible: true,
-      type: ChannelType.Announcement,
-    },
-  ],
+  currents: [],
   removed: [],
-  added: [],
+  added: [{
+    name: "Announcement",
+    isVisible: true,
+    type: ChannelType.Announcement,
+    authorizeComments: false,
+  }],
 };
 
 const Middle = styled.div`
@@ -212,7 +214,11 @@ export default function NewSide() {
     (state: RootState) => state.user
   );
 
+  const userData = useSelector((state: RootState) => state.user);
+
   const [steps, setSteps] = useState<any[]>(initialStateSteps);
+  const [currentStep, setCurrentStep] = useState<number>(0);
+
 
   // Variables for Admission component
   const [divCollections, setDivCollection] = useState<any[]>(
@@ -233,7 +239,7 @@ export default function NewSide() {
       let collections = Object.values(userCollectionsData);
       setCollectionHolder(collections);
     }
-  }, [userCollectionsData]);
+  }, [userCollectionsData, userData]);
 
   useEffect(() => {
     if (user && user.profiles) {
@@ -255,26 +261,82 @@ export default function NewSide() {
         }
         setInvitationUsers(invitationsUsersObject);
       };
-      getInvitationUsers(user);
+      getInvitationUsers({...user});
     }
   }, [user]);
 
-  const newSideNextPreviousStep = (
+  const handleTabs = async (tabIndex: number) => {
+    let current_data = { ...formData };
+    let current_steps = [...steps];
+    let isValidate:boolean;
+
+    if (currentStep < tabIndex) {
+      isValidate = await validatorSteps(currentStep, current_data)
+      // if (!isValidate || currentStep + 1 < tabIndex) return 
+      const tabCompletedValidator = current_steps.find((item, index) => !item['completed'] && index < tabIndex && !item['active'])
+
+      if (!isValidate || tabCompletedValidator) return 
+    }
+
+    const currentStepsState = current_steps.map((item: any, map_i: number) => {
+      // if (!previous) {
+      // Turn active or not for selected item
+      item["active"] = map_i === tabIndex ? true : false;
+      // Turn completed or not for previous or next items
+      item["completed"] = (map_i < tabIndex || item["completed"]) ? true : false;
+      return item;
+    });
+
+    setCurrentStep(tabIndex);
+    setSteps(currentStepsState);
+  };
+
+  const newSideNextPreviousStep = async (
     index: number,
     previous: boolean = false
   ) => {
+
     let current_data = { ...formData };
     let current_steps = [...steps];
 
+    if (!previous) {
+      const isValidate = await validatorSteps(index, current_data)
+      if (!isValidate) return 
+    }
+
+    const currentStepsState = current_steps.map((item: any, map_i: number) => {
+      if (!previous) {
+        // Turn active or not for selected item
+        item["active"] = map_i === index + 1 ? true : false;
+        // Turn completed or not for previous or next items
+        item["completed"] = map_i < index + 1 ? true : false;
+      } else {
+        // Turn active or not for selected item
+        item["active"] = map_i === index - 1 ? true : false;
+        // Turn completed or not for previous or next items
+        item["completed"] = map_i < index - 1 ? true : false;
+      }
+
+      return item;
+    });
+
+    setCurrentStep(index);
+    setSteps(currentStepsState);
+  };
+
+
+  // Functions to check mandatory data in steps
+  const validatorSteps = async (index: number, current_data:any) => {
     // Checking if sideImage and name stored to continu to the other steps
     if (
       (index === 0 && !current_data["sideImage"]) ||
       !current_data["name"].trim().length
     ) {
       toast.error("Missing data", { toastId: 3 });
-      return;
+      return false;
     }
 
+    //TODO
     // Set conditions and checking if there is minimum one condition to continu to the other steps
     if (index === 1) {
       let current_divs = [...divCollections];
@@ -282,18 +344,27 @@ export default function NewSide() {
       for (let div of current_divs) {
         if (
           div["collection"].trim().length !== 0 &&
-          div["trait_selected"].trim().length !== 0 &&
-          div["value_selected"].trim().length !== 0
+          !(div["features"].find((item:any) => item["trait_selected"].trim().length == 0)) &&
+          !(div["features"].find((item:any) => item["value_selected"].trim().length == 0))
         ) {
-          conditions[div["collection"]] = {};
-          conditions[div["collection"]][div["trait_selected"]] =
-            div["value_selected"];
+
+          conditions[div["collection"]] = { features : []};
           conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
+
+          for (let feature of div["features"]) {
+            conditions[div["collection"]]['features'].push({
+              property : feature['trait_selected'],
+              value : feature["value_selected"]
+            })
+          }
+          // conditions[div["collection"]][div["trait_selected"]] =
+          //   div["value_selected"];
+          // conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
         }
       }
       if (Object.keys(conditions).length === 0) {
         toast.error("You need to enter miminum one condition", { toastId: 3 });
-        return;
+        return false;
       }
       setFormData({ ...formData, conditions: conditions });
     }
@@ -305,41 +376,10 @@ export default function NewSide() {
       );
       if (isWrongChannels.length) {
         toast.error("You need to name every channels", { toastId: 3 });
-        return;
+        return false;
       }
     }
-
-    const currentStepsState = current_steps.map((item: any, map_i: number) => {
-      if (!previous) {
-        // Turn active or not for selected item
-        item["active"] = map_i === index + 1 ? true : false;
-        // Turn completed or not for previous or next items
-        item["completed"] = map_i < index + 1 ? true : false;
-
-        // Set condition of Side
-        if (item["label"] === "Admission" && map_i === index) {
-          let current_divs = [...divCollections];
-          let conditions: any = {};
-          for (let div of current_divs) {
-            conditions[div["collection"]] = {};
-            conditions[div["collection"]]["trait_type"] = div["trait_selected"];
-            conditions[div["collection"]]["trait_value"] =
-              div["value_selected"];
-            conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
-          }
-          setFormData({ ...formData, conditions: conditions });
-        }
-      } else {
-        // Turn active or not for selected item
-        item["active"] = map_i === index - 1 ? true : false;
-        // Turn completed or not for previous or next items
-        item["completed"] = map_i < index - 1 ? true : false;
-      }
-
-      return item;
-    });
-
-    setSteps(currentStepsState);
+    return true
   };
 
   // Functions for information component
@@ -350,7 +390,11 @@ export default function NewSide() {
     }
   };
 
-  const validateForm = async () => {};
+  const onChangeSideDescription = async (text: string) => {
+    setFormData({ ...formData, description: text });
+  };
+
+  const validateForm = async () => { };
 
   // validate the name, return true if name is valid;
   const validateName = async (name: string) => {
@@ -370,12 +414,15 @@ export default function NewSide() {
   };
 
   // ----- Functions for Admission component **start
-  const setSideTokenAddress = async (address: string, index: number) => {
+  const setSideTokenAddress = async (address: string, index: number, filteredCollections: any) => {
     setFormData({ ...formData, NftTokenAddress: address });
     if (address.trim().length) {
       let current_divs = [...divCollections];
       current_divs[index]["collection"] = address;
       current_divs[index]["traits_values"] = createPropertiesObject(address);
+
+      const data = filteredCollections.find((item: Collection) => item['address'] === address);
+      current_divs[index]["metadata"] = data
       setDivCollection(current_divs);
     }
   };
@@ -387,22 +434,34 @@ export default function NewSide() {
     return properties;
   }
 
-  const setSidePropertyCondition = (event: any, index: number) => {
+  const setSidePropertyCondition = (event: any, index: number, findex:number) => {
     const trait = event.target.value;
     if (trait.trim().length) {
       let current_divs = [...divCollections];
-      current_divs[index]["trait_selected"] = trait;
+      current_divs[index]['features'][findex]["trait_selected"] = trait;
       setDivCollection(current_divs);
     }
   };
 
-  const setSideValueCondition = (event: any, index: number) => {
+  const setSideValueCondition = (event: any, index: number, findex: number) => {
     const value = event.target.value;
     if (value.trim().length) {
       let current_divs = [...divCollections];
-      current_divs[index]["value_selected"] = value;
+      current_divs[index]['features'][findex]["value_selected"] = value;
       setDivCollection(current_divs);
     }
+  };
+
+  const onRemoveFeature = (index: number, findex: number) => {
+      let current_divs = [...divCollections];
+
+      console.log('current_divs before :', current_divs)
+
+      current_divs[index]['features'].splice(findex, 1);
+
+      console.log('current_divs after :', current_divs)
+
+      setDivCollection(current_divs);
   };
 
   // Add collection div in condition
@@ -412,6 +471,9 @@ export default function NewSide() {
       current_divs.push({
         collection: "",
         traits_values: [],
+        features: [],
+        numberNeeded: 1,
+        metadata: {}
       });
       setDivCollection(current_divs);
     } else {
@@ -424,11 +486,12 @@ export default function NewSide() {
 
   const addConditionToDivCollection = (index: number) => {
     let current_divs = [...divCollections];
-    current_divs[index] = {
-      ...current_divs[index],
+
+    current_divs[index]['features'].push({
       trait_selected: "",
       value_selected: "",
-    };
+      traits_values: [],
+    })
     setDivCollection(current_divs);
   };
   const setNumberOfNftNeededToDivCollection = (
@@ -580,9 +643,13 @@ export default function NewSide() {
 
     try {
       if (formData.sideImage) {
+
+
         const data = _.cloneDeep(formData);
 
-        data["conditions"]["requiered"] = onlyOneRequired;
+        console.log('channels["added"] :', channels["added"])
+        data["conditions"]["required"] = onlyOneRequired;
+
         data["conditions"] = JSON.stringify(data["conditions"]);
         data["NftTokenAddress"] = data["conditions"];
         const fd = new FormData();
@@ -602,26 +669,22 @@ export default function NewSide() {
 
         const conditionObject = JSON.parse(data["conditions"]);
 
-        const conditions = Object.keys(conditionObject).reduce(function (
-          prev: Metadata[],
-          key: string
-        ) {
-          if (key !== "requiered")
-            prev.push({
-              address: key,
-              traitProperty: conditionObject[key]["trait_type"],
-              traitValue: conditionObject[key]["trait_value"],
-              numberNeeded: conditionObject[key]["numberNeeded"]
-                ? conditionObject[key]["numberNeeded"]
-                : 1,
-              required: !onlyOneRequired,
-              side: newSide,
-            });
-          return prev;
-        },
-        []);
+        const conditions = Object.keys(conditionObject).reduce(function (prev: Metadata[], key: string) {
+          if (key !== 'required'){
+            for (let feature of conditionObject[key]['features'])
+              prev.push({
+                address: key,
+                traitProperty: feature['property'],
+                traitValue: feature['value'],
+                numberNeeded: (conditionObject[key]['numberNeeded']) ? conditionObject[key]['numberNeeded'] : 1,
+                required: !onlyOneRequired,
+                side: newSide,
+              });
+          }
 
-        console.log(conditions);
+          return prev;
+        }, []);
+
         const conditionsSaved = await apiService.savedMetadataConditions(
           conditions
         );
@@ -639,7 +702,7 @@ export default function NewSide() {
               Role.Admin
             );
             dispatch(updateProfiles(profile));
-          } catch (error) {}
+          } catch (error) { }
         }
         dispatch(addUserParsedSide(newSide));
         dispatch(updateSidesByUserCollections(null));
@@ -654,7 +717,6 @@ export default function NewSide() {
         window.location.reload();
       }
     } catch (error) {
-      console.log(error);
       toast.error("Error creating side.", { toastId: 3 });
     }
   };
@@ -679,12 +741,11 @@ export default function NewSide() {
           {steps.map((step: any, index: number) => {
             return (
               <TabItems
+                onClick={() => handleTabs(index)}
                 key={index}
-                className={`nav-link pl-5 pt-3 pb-3 ${
-                  step["active"] ? "active" : ""
-                } ${
-                  step["completed"] ? "completed" : ""
-                } sidebar-item text-secondary-dark`}
+                className={`nav-link pl-5 pt-3 pb-3 ${step["active"] ? "active" : ""
+                  } ${step["completed"] ? "completed" : ""
+                  } sidebar-item text-secondary-dark`}
               >
                 <i className={`${step["icon"]} mr-2`}></i>
                 {step["label"]}{" "}
@@ -706,6 +767,7 @@ export default function NewSide() {
                       currentSide={formData}
                       onChangeNewSideName={onChangeSideName}
                       onChangeNewSideImage={onChangeSideImage}
+                      onChangeNewSideDescription={onChangeSideDescription}
                       formError={formError}
                     />
                   </>
@@ -717,6 +779,7 @@ export default function NewSide() {
                       setSideTokenAddress={setSideTokenAddress}
                       setSidePropertyCondition={setSidePropertyCondition}
                       setSideValueCondition={setSideValueCondition}
+                      onRemoveFeature={onRemoveFeature}
                       addDivCollection={addDivCollection}
                       removeDivCollection={removeDivCollection}
                       addConditionToDivCollection={addConditionToDivCollection}
