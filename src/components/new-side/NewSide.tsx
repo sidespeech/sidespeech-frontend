@@ -25,70 +25,123 @@ import { Channel, ChannelType } from "../../models/Channel";
 import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
 import { sideAPI } from "../../services/side.service";
+import { breakpoints, size } from "../../helpers/breakpoints";
 
 const NewSideStyled = styled.div`
 width: 100%;
-.sidebar-title, .sidebar-item {
-  font-family : "Inter", sans-serif;
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  & .title {
+    margin: 0;
+    color: var(--text-secondary-dark);
+  }
 }
 
 .container-next-back {
   max-width: 536px;
 }
 
-nav{
+.tabs-wrapper_mobile {
   display: flex;
-  flex-wrap: wrap;
+  gap: 3rem;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 10px;
-  width: inherit;
+  justify-content: center;
+  padding: 0 2rem;
+  margin: 2rem 0 1rem 0;
+  ${breakpoints(size.lg, `{
+    display: none
+  }`)}
+  & .step-icon {
+    position: relative;
+    background-color: var(--bg-secondary-light);
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 2rem;
+    font-size: .7rem;
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translate(100%, -50%);
+      right: 0;
+      width: 3rem;
+      height: 1px;
+      background-color: var(--bg-primary-light);
+    }
+    &:last-of-type::after {
+      display: none;
+    }
+    &.active {
+      background-color: var(--primary);
+      color: var(--text-secondary-light);
+    }
+    &.completed {
+      background-color: var(--green);
+      color: var(--bg-secondary-light);
+      &::after {
+        background-color: var(--green);
+      }
+    }
+  }
 }
 
-.nav-link.active {
-  color: var(--primary) !important;
-  background-color: transparent !important;
-  border-right: 2px solid  var(--primary);
-}
-
-.nav-link.completed {
-  color: var(--green) !important;
-  background-color: transparent !important;
-}
-
-nav .nav-items {
-  display: flex;
-  flex: 1;
-}
-
-nav .nav-items li {
-  list-style: none;
-  padding: 0 15px;
-}
-
-nav .nav-items li a {
-  color: #fff;
-  font-size: 18px;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-nav .nav-items li a:hover {
-  color: #4f4f4f;
-}
-
-nav .menu-icon {
-  width: 40px;
-  text-align: center;
-  margin: 0 50px;
-  font-size: 18px;
-  color: #fff;
-  cursor: pointer;
+.container-left {
   display: none;
-}
-
-nav .menu-icon span {
-  display: none;
+  padding-left: 1rem;
+  ${breakpoints(size.lg, `{
+    display: flex;
+  }`)}
+  .tabs-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-left: 1rem;
+    margin-top: 1rem;
+    .nav-link {
+      width: 100%;
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+      & .step-icon {
+        background-color: var(--bg-secondary-light);
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 2rem;
+        font-size: .7rem;
+      }
+      &.active {
+        color: var(--primary) !important;
+        background-color: transparent !important;
+        border-right: 2px solid  var(--primary);
+        & .step-icon {
+          background-color: var(--primary);
+          color: var(--text-secondary-light);
+        }
+      }
+      &.completed {
+        color: var(--green) !important;
+        background-color: transparent !important;
+        & .step-icon {
+          background-color: var(--green);
+          color: var(--bg-secondary-light);
+        }
+      }
+      & .fa-check {
+        margin-left: .5rem;
+      }
+    }
+  }
 }
 
 .collection-icon-check {
@@ -661,42 +714,49 @@ export default function NewSide() {
 
   return (
     <NewSideStyled>
-      <nav>
-        <div className="menu-icon">
-          <span className="fas fa-bars"></span>
-        </div>
-        <div className="nav-items text-primary-light size-17">
-          <li>
-            <i className="fa fa-circle-plus mr-2"></i>{" "}
-            <label className="w-700"> Create Side </label>
-          </li>
-        </div>
-      </nav>
+      <div className="title-wrapper">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 15H11V11H15V9H11V5H9V9H5V11H9V15ZM10 20C8.61667 20 7.31667 19.7373 6.1 19.212C4.88333 18.6873 3.825 17.975 2.925 17.075C2.025 16.175 1.31267 15.1167 0.788 13.9C0.262667 12.6833 0 11.3833 0 10C0 8.61667 0.262667 7.31667 0.788 6.1C1.31267 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.31233 6.1 0.787C7.31667 0.262333 8.61667 0 10 0C11.3833 0 12.6833 0.262333 13.9 0.787C15.1167 1.31233 16.175 2.025 17.075 2.925C17.975 3.825 18.6873 4.88333 19.212 6.1C19.7373 7.31667 20 8.61667 20 10C20 11.3833 19.7373 12.6833 19.212 13.9C18.6873 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6873 13.9 19.212C12.6833 19.7373 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z" fill="#B4C1D2"/>
+          </svg>
+          <h2 className="title">Create Side</h2>
+      </div>
+
+      <div className="tabs-wrapper_mobile">
+        {steps.map((step: any) => (
+          <i className={`${step["icon"]} ${
+            step["active"] ? "active" : ""
+          } ${
+            step["completed"] ? "completed" : ""
+          } step-icon`} key={step["icon"]}></i>
+        ))}
+      </div>
 
       <div className="flex align-start w-100 text-left">
-        <ContainerLeft>
-          <label className="pl-4 sidebar-title  mb-2 mt-4">Steps</label>
-          {steps.map((step: any, index: number) => {
-            return (
-              <TabItems
-                key={index}
-                className={`nav-link pl-5 pt-3 pb-3 ${
-                  step["active"] ? "active" : ""
-                } ${
-                  step["completed"] ? "completed" : ""
-                } sidebar-item text-secondary-dark`}
-              >
-                <i className={`${step["icon"]} mr-2`}></i>
-                {step["label"]}{" "}
-                {step["completed"] ? (
-                  <i className="fa-solid fa-check ml-4"></i>
-                ) : null}
-              </TabItems>
-            );
-          })}
+        <ContainerLeft className="container-left">
+          <label className="sidebar-title">Steps</label>
+          <nav className="tabs-wrapper">
+            {steps.map((step: any, index: number) => {
+              return (
+                <TabItems
+                  key={index}
+                  className={`nav-link ${
+                    step["active"] ? "active" : ""
+                  } ${
+                    step["completed"] ? "completed" : ""
+                  } sidebar-item text-secondary-dark`}
+                >
+                  <i className={`${step["icon"]} step-icon mr-2`}></i>
+                  {step["label"]}{" "}
+                  {step["completed"] ? (
+                    <i className="fa-solid fa-check"></i>
+                  ) : null}
+                </TabItems>
+              );
+            })}
+          </nav>
         </ContainerLeft>
 
-        <Middle className="f-column w-100 pt-3 ml-5">
+        <Middle className="f-column w-100 pt-3 px-5">
           {steps.map((step: any, index: number) => {
             return (
               <div key={index}>
@@ -782,7 +842,7 @@ const FooterButtons = ({
   };
 
   return (
-    <div className="flex justify-between container-next-back">
+    <div className="flex justify-end container-next-back">
       {index > 0 && (
         <Button
           classes={"mt-4"}

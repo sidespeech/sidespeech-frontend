@@ -44,6 +44,12 @@ const DashboardStyled = styled.header`
       ${breakpoints(size.lg, `{
         display: flex;
       }`)};
+      .input-wrapper {
+        width: 90vw;
+        ${breakpoints(size.md, `{
+          width: 435px;
+        }`)}
+      }
     }
     & .mobile-toolbar {
       ${breakpoints(size.xs, `{display: flex;}`)};
@@ -113,20 +119,21 @@ const DashboardBanner = ({searchText, setSearchText}: DashboardBannerProps) => {
       <DashboardStyled className={`${pathname === '/search' ? 'search-page' : ''}`}>
           <div className={`desktop-toolbar ${pathname === '/search' ? 'search-page' : ''}`}>
             <h1>Search and Join a Side</h1>
-            <InputText 
-              bgColor="rgba(0, 0, 0, 0.2)"
-              color="var(--white)"
-              glass
-              height={43}
-              iconColor="#B4C1D2"
-              iconRightPos={{right: 16, top: 12}}
-              onChange={(ev: any) => setSearchText(ev.target.value)}
-              parentWidth="435px"
-              placeholder='Search by name or collection'
-              placeholderColor="var(--white)"
-              radius="10px"
-              value={searchText}
+            <div className="input-wrapper">
+              <InputText 
+                bgColor="rgba(0, 0, 0, 0.2)"
+                color="var(--white)"
+                glass
+                height={43}
+                iconColor="#B4C1D2"
+                iconRightPos={{right: 16, top: 12}}
+                onChange={(ev: any) => setSearchText(ev.target.value)}
+                placeholder='Search by name or collection'
+                placeholderColor="var(--white)"
+                radius="10px"
+                value={searchText}
               />
+            </div>
           </div>
 
           <div className={`mobile-toolbar ${pathname === '/search' ? 'search-page' : ''}`}>

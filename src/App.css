@@ -78,11 +78,11 @@
 }
 
 .upload-colony-image {
+  flex-shrink: 0;
   width: 70px;
   height: 70px;
   cursor: pointer;
   background: var(--bg-secondary-dark);
-  border: 2px dashed var(--bg-primary-light);
   border-radius: 100px;
   text-align: center;
   color: var(--bg-primary-light);
