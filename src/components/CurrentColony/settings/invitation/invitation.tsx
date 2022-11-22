@@ -109,7 +109,7 @@ export default function Invitation({
     }
 
   }
-  const sideLink = `https://sidespeech.com/side/${(Math.random() + 1).toString(36).substring(7)}`;
+  const sideLink = `https://sidespeech.com/side/invitation/${(Math.random() + 1).toString(36).substring(7)}`;
 
   const handleCopyWalletAddress = () => {
     navigator.clipboard.writeText(sideLink);

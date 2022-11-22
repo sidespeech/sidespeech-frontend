@@ -8,6 +8,12 @@ import { apiService } from "../../services/api.service";
 import DashboardPage from "../dashboard/DashboardPage";
 import OnBoarding from "./../OnBoarding/DefaultView";
 import { Side } from "../../models/Side";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  useParams
+} from "react-router-dom";
 
 interface ISeparatorHorizontal {
   borderColor?: string;
@@ -34,6 +40,17 @@ export default function DefaultView() {
   const navigate = useNavigate();
 
   let initialPage;
+
+  let { id } = useParams();
+  console.log('id :', id);
+
+  if (window.location.href.includes("side/invitation")) {
+    console.log('Invitation Page');
+    if (id?.length){
+      console.log('id in Invitation page:', id)
+    }
+
+  }
 
   if(userData.account === null || walletAddress == null) {
     initialPage = <Login />
