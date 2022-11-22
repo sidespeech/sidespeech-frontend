@@ -53,7 +53,6 @@ export default function AnnouncementItem({
 
   // This will handle sending an comment to the api.
   const handleComment = async (value: string) => {
-    console.log('value handleComment :', value)
 
     // This will need to be made dynamic.
     const creatorAddress = account;

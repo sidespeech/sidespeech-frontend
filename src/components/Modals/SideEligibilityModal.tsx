@@ -128,6 +128,7 @@ export default function SideEligibilityModal(
   };
 
   useEffect(() => {
+
     if (userCollectionsData) {
       const [res, isEligible] = checkUserEligibility(
         userCollectionsData,

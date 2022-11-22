@@ -621,7 +621,6 @@ export default function NewSide() {
         },
         []);
 
-        console.log(conditions);
         const conditionsSaved = await apiService.savedMetadataConditions(
           conditions
         );

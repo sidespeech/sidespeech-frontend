@@ -349,7 +349,6 @@ class apiService {
   }
 
   static async sendRequestPrivateSide(data: any): Promise<any> {
-    console.log("data :", data);
     const res = await superagent
       .post(`${BASE_URL}/invitation/request`)
       .send(data);

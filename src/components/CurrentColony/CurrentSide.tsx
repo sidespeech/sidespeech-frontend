@@ -28,6 +28,8 @@ import { Outlet, useOutletContext } from "react-router-dom";
 import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
 import { SideStatus } from "../../models/Side";
 import { toast } from "react-toastify";
+import { checkUserEligibility } from "../../helpers/utilities";
+import SideEligibilityModal from "../Modals/SideEligibilityModal";
 
 const CurrentSideStyled = styled.div`
   .selected-channel {
@@ -108,6 +110,8 @@ export default function CurrentSide() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [extend, setExtend] = useState<string>("");
   const [thread, setThread] = useState<Announcement | Poll | null>(null);
+  const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
+  const [sideEligibility, setSideEligibility] = useState<any>(null);
 
   useEffect(() => {
     if (!announcementId) setThread(null);
@@ -132,25 +136,44 @@ export default function CurrentSide() {
   useEffect(() => {
     async function getSide() {
       try {
-        if (id) {
-          const res = await sideAPI.getSideById(id);
+        const isConnectedLocalStorage = localStorage.getItem("userAccount");
+
+        // If user not connected
+        if (!isConnectedLocalStorage) navigate("/");
+        // If user connected and there is name Side in the url
+        else if (id) {
+          // Get Side data
+          const res = await sideAPI.getSideByName(id);
+          
+          const isInTheSide = userData['user']!['profiles'].find(item => item['side']['id'] === res['id']);
+
+          // If side is inactive
           if (res.status === SideStatus.inactive) {
             toast.info("This side is currently inactive", { toastId: 36 });
-            navigate("/");
           }
-          dispatch(setCurrentColony(res));
-          dispatch(
-            setSelectedChannel(
-              res.channels.find((c) => c.type === 0) || res.channels[0]
-            )
-          );
+
+          // If side is active and the user is already in the Side
+          else if (isInTheSide) {
+            dispatch(setCurrentColony(res));
+            dispatch(
+              setSelectedChannel(
+                res.channels.find((c) => c.type === 0) || res.channels[0]
+              )
+            );
+          } 
+
+          // If side is active but the user is not in the Side
+          else {
+            setSideEligibility(res);
+            setDisplayEligibility(true);
+          }
         }
       } catch (error) {
         console.error(error);
       }
     }
     getSide();
-  }, [id]);
+  }, [id, userData]);
 
   useEffect(() => {
     if (userData.user && currentSide) dispatch(setCurrentProfile(currentSide));
@@ -188,9 +211,15 @@ export default function CurrentSide() {
             <CreatePollModal showModal={setCreatePollModal} />
           )}
         </>
-      ) : (
-        <div>This side is currently inactive</div>
-      )}
+      ) : (displayEligibility && sideEligibility) ? (
+        <SideEligibilityModal
+        setDisplayLeaveSide={() => {}}
+        setDisplayEligibility={setDisplayEligibility}
+        selectedSide={sideEligibility}
+      />
+      ) :
+      <div>This side is currently inactive</div>
+      }
     </CurrentSideStyled>
   );
 }

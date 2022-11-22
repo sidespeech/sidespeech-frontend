@@ -20,6 +20,12 @@ export class sideAPI {
     return dtoToSide(res.body);
   }
 
+  // get side by name
+  static async getSideByName(name: string): Promise<Side> {
+    const res = await superagent.get(`${BASE_URL}/side/byname/${name}`);
+    return dtoToSide(res.body);
+  }
+
   // get all sides without channels
   static async getAllSides(
     userCollectionsData?: any,
@@ -123,7 +129,6 @@ export async function getSidesMetadata(
   userSides?: Side[]
 ): Promise<Side[]> {
   const sidesListWithoutCollections = dtoToSideList(sides);
-  console.log("sidesListWithoutCollections :", sidesListWithoutCollections);
   const sidesList: Side[] = await Promise.all(
     sidesListWithoutCollections.map(async (side) => {
       const conditions = Object.keys(side.conditions);
@@ -140,12 +145,10 @@ export async function getSidesMetadata(
         collectionsCount: count,
       };
       if (!_.isEmpty(userCollectionsData)) {
-        console.log(userCollectionsData, parsedSide);
         const [_, eligible] = checkUserEligibility(
           userCollectionsData,
           parsedSide
         );
-        console.log(eligible);
         parsedSide = {
           ...parsedSide,
           eligible,

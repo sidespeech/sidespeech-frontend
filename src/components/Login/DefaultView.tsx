@@ -41,17 +41,6 @@ export default function DefaultView() {
 
   let initialPage;
 
-  let { id } = useParams();
-  console.log('id :', id);
-
-  if (window.location.href.includes("side/invitation")) {
-    console.log('Invitation Page');
-    if (id?.length){
-      console.log('id in Invitation page:', id)
-    }
-
-  }
-
   if(userData.account === null || walletAddress == null) {
     initialPage = <Login />
   } else if(walletAddress) {
