@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { Profile } from "../../models/Profile";
+import { Profile, Role } from "../../models/Profile";
 import { Side } from "../../models/Side";
 import { User } from "../../models/User";
 import { apiService } from "../../services/api.service";
@@ -65,6 +65,10 @@ const LeavSideAsAdmin = ({
       if (side) {
         const users = await apiService.getUserFromSides([side]);
         setUsers(users);
+        const subadmin = side.profiles.filter(
+          (p) => p.role === Role.subadmin
+        )[0];
+        if (subadmin) setNewSubAdmin(subadmin.user.username);
       }
     }
     if (side) {
@@ -114,7 +118,7 @@ const LeavSideAsAdmin = ({
       <h4 className="leave-subtitle">Define a sub-admin user</h4>
 
       <p className="leave-description_secondary">
-        Search for a username or wallet address registered on SideSpeech
+        Search for a username registered on SideSpeech
       </p>
 
       <div className="flex align-center justify-between gap-20 mt-4">

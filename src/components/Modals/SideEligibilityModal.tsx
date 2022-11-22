@@ -39,16 +39,31 @@ const eligibilityTexts = {
 
 interface IEligibilityResultProps {
   isEligible: boolean;
+  info: boolean;
 }
 
 const EligibilityResult = styled.div<IEligibilityResultProps>`
   width: 100%;
   background-color: ${(props) =>
-    props.isEligible ? "var(--green-opacity)" : "var(--red-opacity)"};
+    props.info
+      ? "var(--primary-opacity)"
+      : props.isEligible
+      ? "var(--green-opacity)"
+      : "var(--red-opacity)"};
   border: 1px solid
-    ${(props) => (props.isEligible ? "var(--green)" : "var(--red)")};
+    ${(props) =>
+      props.info
+        ? "var(--primary)"
+        : props.isEligible
+        ? "var(--green)"
+        : "var(--red)"};
   & div:first-child {
-    color: ${(props) => (props.isEligible ? "var(--green)" : "var(--red)")};
+    color: ${(props) =>
+      props.info
+        ? "var(--primary)"
+        : props.isEligible
+        ? "var(--green)"
+        : "var(--red)"};
   }
   padding: 30px;
   border-radius: 10px;
@@ -60,6 +75,7 @@ interface ISideEligibilityModalProps {
   selectedSide: Side;
   setDisplayEligibility: React.Dispatch<React.SetStateAction<boolean>>;
   setDisplayLeaveSide: React.Dispatch<React.SetStateAction<boolean>>;
+  isSideAdmin?: boolean;
 }
 
 export default function SideEligibilityModal(
@@ -133,26 +149,52 @@ export default function SideEligibilityModal(
           </RoundedImageContainer>
           <h2>{props.selectedSide.name}</h2>
           <div className="text-center">{props.selectedSide.description}</div>
-          <EligibilityResult isEligible={isEligible}>
-            <div>
-              {isEligible ? (
-                <i className="fa-solid fa-circle-check mr-2"></i>
-              ) : (
-                <i className="fa-solid fa-circle-xmark mr-2"></i>
-              )}
-              {isEligible
-                ? eligibilityTexts.success.title
-                : props.selectedSide.status === SideStatus.inactive
-                ? eligibilityTexts.inactive.title
-                : eligibilityTexts.error.title}
-            </div>
-            <div>
-              {isEligible
-                ? eligibilityTexts.success.message
-                : props.selectedSide.status === SideStatus.inactive
-                ? eligibilityTexts.inactive.message
-                : eligibilityTexts.error.message}
-            </div>
+          <EligibilityResult
+            isEligible={
+              isEligible && props.selectedSide.status === SideStatus.active
+            }
+            info={
+              !props.isSideAdmin &&
+              props.selectedSide.status === SideStatus.inactive
+            }
+          >
+            {props.selectedSide.status === SideStatus.active ? (
+              <>
+                <div>
+                  {isEligible ? (
+                    <i className="fa-solid fa-circle-check mr-2"></i>
+                  ) : (
+                    <i className="fa-solid fa-circle-xmark mr-2"></i>
+                  )}
+                  {isEligible
+                    ? eligibilityTexts.success.title
+                    : eligibilityTexts.error.title}
+                </div>
+                <div>
+                  {isEligible
+                    ? eligibilityTexts.success.message
+                    : eligibilityTexts.error.message}
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  {!props.isSideAdmin ? (
+                    <i className="fa-solid fa-circle-info mr-2"></i>
+                  ) : (
+                    <i className="fa-solid fa-circle-xmark mr-2"></i>
+                  )}
+                  {!props.isSideAdmin
+                    ? "Inactive side"
+                    : eligibilityTexts.inactive.title}
+                </div>
+                <div>
+                  {!props.isSideAdmin
+                    ? " This side is currently inactive. Waiting for a new Administrator. Please try again later."
+                    : eligibilityTexts.inactive.message}
+                </div>
+              </>
+            )}
           </EligibilityResult>
           <Eligibility side={props.selectedSide} />
         </>
@@ -172,17 +214,22 @@ export default function SideEligibilityModal(
             onClick={handleJoinSide}
           />
         ) : (
-          <Button
-            classes="mt-3 ml-auto"
-            width="185px"
-            height={44}
-            background={"var(--disable)"}
-            children={"Choose a sub-admin"}
-            onClick={() => {
-              props.setDisplayLeaveSide(true);
-              props.setDisplayEligibility(false);
-            }}
-          />
+          <>
+            {" "}
+            {props.isSideAdmin && (
+              <Button
+                classes="mt-3 ml-auto"
+                width="185px"
+                height={44}
+                background={"var(--disable)"}
+                children={"Choose a sub-admin"}
+                onClick={() => {
+                  props.setDisplayLeaveSide(true);
+                  props.setDisplayEligibility(false);
+                }}
+              />
+            )}
+          </>
         )
       }
       title={undefined}

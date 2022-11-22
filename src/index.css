@@ -1,6 +1,7 @@
 :root {
   /* new styles */
   --primary: #705ce9; /* Main color */
+  --primary-opacity: #705ce91a; /* Main color */
   --red: #dc4964;
   --red-opacity: #dc49641a;
   --green: #36da80;

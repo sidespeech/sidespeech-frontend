@@ -185,6 +185,7 @@ export default function UserSides() {
             selectedSide={side}
             setDisplayEligibility={setDisplayModal}
             setDisplayLeaveSide={setDisplayLeaveSide}
+            isSideAdmin={isSideAdmin}
           />
         )}
         {displayLeaveSide && side && (
