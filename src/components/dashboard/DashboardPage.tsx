@@ -24,10 +24,10 @@ const DashboardPageStyled = styled.div`
   overflow-y: scroll;
   width: 100%;
   min-height: 100vh;
-  padding-bottom: 77px;
+  padding: 0 0 77px 0;
   ${breakpoints(size.lg, `
     {
-      padding-bottom: 0;
+      padding: 1rem;
     }
   `)}
   & > div {
@@ -41,6 +41,7 @@ const DashboardPageStyled = styled.div`
       width: 100%;
       height: 100%;
       overflow-x: hidden;
+      padding: 1rem;
       ${breakpoints(size.lg,`{
         padding: 0 1rem;
       }`)}
@@ -113,7 +114,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <DashboardPageStyled className="w-100 px-4 py-4">
+    <DashboardPageStyled>
       <DashboardBanner searchText={searchText} setSearchText={setSearchText} />
       <div className="flex w-100 gap-20">
         <DashboardLeftMenu currentTab={currentTab} setSearchText={setSearchText} tabKeys={tabKeys} />
