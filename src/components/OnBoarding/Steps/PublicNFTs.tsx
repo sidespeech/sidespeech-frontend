@@ -42,7 +42,7 @@ const initialStateUser = {
 };
 
 type ChildProps = {
-  updateCurrentStep: (step: string) => void;
+  updateCurrentStep: (step: number) => void;
 }
 
 export default function PublicNFTs({
@@ -117,7 +117,7 @@ export default function PublicNFTs({
   };
 
   const goBack = () => {
-    return updateCurrentStep("step 3");
+    return updateCurrentStep(3);
   };
 
   const onSubmit = async () => {

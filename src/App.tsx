@@ -69,7 +69,7 @@ function App() {
   }
   
   if (onBoarding) {
-    content =   <div className="middle-container f-column align-center onboarding" style={{width: "100%"}}>
+    content =   <div className='w-100'>
                   <Outlet></Outlet>
                 </div>;
   } else if (generalSettings) {

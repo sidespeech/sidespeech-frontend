@@ -17,7 +17,7 @@ import Settings from "./components/CurrentColony/settings/Settings";
 import NewSide from "./components/NewSide/NewSide";
 
 // Onboarding
-import OnBoarding from "./components/OnBoarding/DefaultView";
+import OnBoarding from "./components/OnBoarding/Onboarding";
 
 // General Settings
 import GeneralSettings from "./components/GeneralSettings/DefaultView";

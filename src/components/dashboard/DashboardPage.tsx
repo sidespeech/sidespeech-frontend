@@ -94,7 +94,7 @@ export default function DashboardPage() {
         try {
             setFeatureSidesLoading(true);
             const response = await sideAPI.getAllFeaturedSides(null, sides);
-            setFeaturedSides([...response, ...response,...response,...response]);
+            setFeaturedSides(response);
         } catch (error) {
             console.error(error);
             toast.error('Ooops! Something went wrong fetching the featured Sides', { toastId: getRandomId() });
