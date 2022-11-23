@@ -232,10 +232,7 @@ const initialStateSide = {
 const initialDivCollections = [
   {
     collection: "",
-    features: [{
-      trait_selected: "",
-      value_selected: "",
-    }],
+    features: [],
     traits_values: [],
     numberNeeded: 1,
     metadata: {}
@@ -515,13 +512,7 @@ export default function NewSide() {
 
   const onRemoveFeature = (index: number, findex: number) => {
       let current_divs = [...divCollections];
-
-      console.log('current_divs before :', current_divs)
-
       current_divs[index]['features'].splice(findex, 1);
-
-      console.log('current_divs after :', current_divs)
-
       setDivCollection(current_divs);
   };
 
