@@ -294,7 +294,6 @@ export default function NewSide() {
 
   useEffect(() => {
     if (userCollectionsData) {
-      console.log('userData :', userData)
       let collections = Object.values(userCollectionsData);
       setCollectionHolder(collections);
     }
@@ -331,14 +330,11 @@ export default function NewSide() {
 
     if (currentStep < tabIndex) {
       isValidate = await validatorSteps(currentStep, current_data)
-      // if (!isValidate || currentStep + 1 < tabIndex) return 
       const tabCompletedValidator = current_steps.find((item, index) => !item['completed'] && index < tabIndex && !item['active'])
-
       if (!isValidate || tabCompletedValidator) return
     }
 
     const currentStepsState = current_steps.map((item: any, map_i: number) => {
-      // if (!previous) {
       // Turn active or not for selected item
       item["active"] = map_i === tabIndex ? true : false;
       // Turn completed or not for previous or next items
@@ -399,6 +395,7 @@ export default function NewSide() {
     // Set conditions and checking if there is minimum one condition to continu to the other steps
     if (index === 1) {
       let current_divs = [...divCollections];
+      
       let conditions: any = {};
       for (let div of current_divs) {
         if (
@@ -425,6 +422,7 @@ export default function NewSide() {
         toast.error("You need to enter miminum one condition", { toastId: 3 });
         return false;
       }
+
       setFormData({ ...formData, conditions: conditions });
     }
 
@@ -502,6 +500,7 @@ export default function NewSide() {
     if (trait.trim().length) {
       let current_divs = [...divCollections];
       current_divs[index]['features'][findex]["trait_selected"] = trait;
+      current_divs[index]['features'][findex]["value_selected"] = "";
       setDivCollection(current_divs);
     }
   };
@@ -510,7 +509,19 @@ export default function NewSide() {
     const value = event.target.value;
     if (value.trim().length) {
       let current_divs = [...divCollections];
+
+      // Define value selected
       current_divs[index]['features'][findex]["value_selected"] = value;
+
+      // Adding the value as already used in the 'features' cell of it property
+      current_divs[index]["traits_values"] = current_divs[index]["traits_values"].map((item: any) => {
+        const valueUsed = item['values'].find((innerElem: any) => innerElem['value'] == value);
+        if (valueUsed) {
+          item["values_used"].push(valueUsed);
+        }
+        return item;
+      })
+
       setDivCollection(current_divs);
     }
   };
@@ -544,12 +555,19 @@ export default function NewSide() {
   const addConditionToDivCollection = (index: number) => {
     let current_divs = [...divCollections];
 
-    current_divs[index]['features'].push({
-      trait_selected: "",
-      value_selected: "",
-      traits_values: [],
-    })
-    setDivCollection(current_divs);
+    if (current_divs[index]['features'].length < MAX_NUMBER_OF_COLLECTIONS) {
+      current_divs[index]['features'].push({
+        trait_selected: "",
+        value_selected: "",
+        traits_values: [],
+      })
+      setDivCollection(current_divs);
+    } else {
+      toast.error(
+        "You can not create side with more than 5 features per collections.",
+        { toastId: 8 }
+      );
+    }
   };
   const setNumberOfNftNeededToDivCollection = (
     number: number,
@@ -804,12 +822,13 @@ export default function NewSide() {
             {steps.map((step: any, index: number) => {
               return (
                 <TabItems
+                  onClick={() => handleTabs(index)}
                   key={index}
                   className={`nav-link ${step["active"] ? "active" : ""
                     } ${step["completed"] ? "completed" : ""
                     } sidebar-item text-secondary-dark`}
                 >
-                  <i className={`${step["icon"]} step-icon mr-2`}></i>
+                  <i className={`${step["icon"]} step-icon`}></i>
                   {step["label"]}{" "}
                   {step["completed"] ? (
                     <i className="fa-solid fa-check"></i>
