@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Editor } from 'react-draft-wysiwyg';
+import { Editor } from "react-draft-wysiwyg";
 import _ from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -21,6 +21,7 @@ import websocketService from "../../../services/websocket.service";
 import MessageInput from "../../ui-components/MessageInput";
 import UserBadge from "../../ui-components/UserBadge";
 import MessageContent from "../../ui-components/MessageContent";
+import { fixURL } from "../../../helpers/utilities";
 
 interface IChatComponentProps {
   room: Room;
@@ -33,10 +34,12 @@ export default function ChatComponent(props: IChatComponentProps) {
 
   const userData = useSelector((state: RootState) => state.user);
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
 
   const [messages, setMessages] = useState<Message[]>([]);
 
   const handleSendMessage = (value: string) => {
+    console.log(value);
     websocketService.sendMessage(
       value,
       props.room.id,
@@ -58,7 +61,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 
   useEffect(() => {
     async function getRoomMessages() {
-      const messages = await apiService.getRoomMessages(selectedRoom?.id || '');
+      const messages = await apiService.getRoomMessages(selectedRoom?.id || "");
       setMessages(messages);
     }
     if (selectedRoom) getRoomMessages();
@@ -75,10 +78,21 @@ export default function ChatComponent(props: IChatComponentProps) {
     <>
       <div className="text-primary-light overflow-auto w-100 px-3 f-column-reverse">
         {_.orderBy(messages, ["timestamp"], ["desc"]).map((m: Message, i) => {
+          const profile = currentSide?.profiles.find(
+            (p) => p.user.accounts === m.sender
+          );
+          const url = profile?.profilePicture?.metadata?.image
+            ? fixURL(profile.profilePicture?.metadata?.image)
+            : "";
           return (
             <div className="annoucement-item" key={i}>
               <div className="flex justify-between w-100">
-                <UserBadge weight={700} fontSize={14} username={m.sender} />
+                <UserBadge
+                  weight={700}
+                  fontSize={14}
+                  avatar={url}
+                  username={profile?.user.username || ""}
+                />
                 <div
                   className="size-11 fw-500 open-sans"
                   style={{ color: "#7F8CA4" }}
@@ -86,9 +100,7 @@ export default function ChatComponent(props: IChatComponentProps) {
                   {format(m.timestamp * 1, "yyyy-mm-dd hh:mm")}
                 </div>
               </div>
-              <MessageContent
-                message={m.content}
-              />
+              <MessageContent message={m.content} />
             </div>
           );
         })}

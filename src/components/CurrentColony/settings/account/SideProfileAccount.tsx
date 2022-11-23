@@ -63,19 +63,23 @@ export default function SideProfileAccount({
 
   useEffect(() => {
     if (currentProfile?.profilePicture) {
-      setFormData({ ...formData, avatar: currentProfile.profilePicture });
+      setFormData({
+        ...formData,
+        avatar: currentProfile.profilePicture,
+        showNfts: currentProfile.showNfts,
+      });
     }
   }, [currentProfile?.profilePicture]);
 
-  const saveNftsProfilePicture = async () => {
+  const onSubmit = async () => {
     if (currentProfile && formData.avatar) {
       try {
-        const profile = await apiService.updateProfilePicture(
-          currentProfile.id,
-          formData.avatar
-        );
+        const profile = await apiService.updateProfile(currentProfile.id, {
+          showNfts: formData.showNfts,
+          profilePicture: formData.avatar,
+        });
         dispatch(updateCurrentProfile(profile));
-        toast.success("Profile avatar saved");
+        toast.success("Profile updated");
         setDisplayNftsCollection(false);
       } catch (error) {
         toast.error("error saving your profile avatar");
@@ -86,20 +90,21 @@ export default function SideProfileAccount({
 
   const leaveSide = async () => {
     try {
-      if (userData['currentProfile']) {
-        const res = await apiService.leaveSide(userData['currentProfile']);
-        if (res['error'])
-          toast.error(res['message']);
-        else{
-          window.location.reload()
-          toast.success(res['message']);
+      if (userData["currentProfile"]) {
+        const res = await apiService.leaveSide(userData["currentProfile"]);
+        if (res["error"]) toast.error(res["message"]);
+        else {
+          window.location.reload();
+          toast.success(res["message"]);
         }
       }
-
     } catch (error) {
       toast.error("Error when leaving the side");
     }
+  };
 
+  const handleShowNfts = async (value: boolean) => {
+    setFormData({ ...formData, showNfts: !value });
   };
 
   return (
@@ -107,7 +112,7 @@ export default function SideProfileAccount({
       <UserGeneralInformations
         formData={formData}
         setFormData={undefined}
-        onSubmit={saveNftsProfilePicture}
+        onSubmit={onSubmit}
         currentSide={currentSide}
         displayNftsCollection={displayNftsCollection}
         setDisplayNftsCollection={setDisplayNftsCollection}
@@ -127,6 +132,8 @@ export default function SideProfileAccount({
             setSelectedAvatar={(avatar: NFT) => {
               setFormData({ ...formData, avatar: avatar });
             }}
+            handleShowNfts={handleShowNfts}
+            formData={formData}
           />
         )}
     </div>
