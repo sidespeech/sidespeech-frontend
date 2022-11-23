@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
-import styled from 'styled-components';
+import styled from "styled-components";
 import _ from "lodash";
 import { toast } from "react-toastify";
 import { formatDistance } from "date-fns";
@@ -14,13 +14,19 @@ import { RootState } from "../../../redux/store/app.store";
 import { ChannelType } from "../../../models/Channel";
 import MessageContent from "../../ui-components/MessageContent";
 import Comments from "../shared-components/Comments";
-import { getRandomId, reduceWalletAddressForColor } from "../../../helpers/utilities";
+import {
+  fixURL,
+  getRandomId,
+  reduceWalletAddressForColor,
+} from "../../../helpers/utilities";
 import Accordion from "../../ui-components/Accordion";
 import { useNavigate, useParams } from "react-router-dom";
-import { subscribeToEvent, unSubscribeToEvent } from "../../../helpers/CustomEvent";
+import {
+  subscribeToEvent,
+  unSubscribeToEvent,
+} from "../../../helpers/CustomEvent";
 import { EventType } from "../../../constants/EventType";
 import websocketService from "../../../services/websocket.service";
-
 
 const AnnouncementItemStyled = styled.div`
   width: 100%;
@@ -43,13 +49,16 @@ export default function AnnouncementItem({
   announcement,
   authorizeComments,
   className,
-  isThread
+  isThread,
 }: AnnouncementItemProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const { id } = useParams();
 
-  const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+  const { selectedChannel, currentSide } = useSelector(
+    (state: RootState) => state.appDatas
+  );
   const { account } = useSelector((state: RootState) => state.user);
+  const [data, setData] = useState<any>({ profile: null, url: "" });
 
   // This will handle sending an comment to the api.
   const handleComment = async (value: string) => {
@@ -60,30 +69,42 @@ export default function AnnouncementItem({
         value,
         creatorAddress,
         announcement.id
-        );
-        setComments([...comments, newComment]);
-        websocketService.sendComment(newComment);
-      } catch (error) {
-       console.error(error);
-       toast.error('There has been an error when commenting this announcement', {toastId: getRandomId()}) 
-      }
-
-
+      );
+      setComments([...comments, newComment]);
+      websocketService.sendComment(newComment);
+    } catch (error) {
+      console.error(error);
+      toast.error("There has been an error when commenting this announcement", {
+        toastId: getRandomId(),
+      });
+    }
   };
 
-  const handleReceiveComment = useCallback(({ detail }: { detail: any }) => {
-    setComments([...detail['announcement']['comments'], detail]);
-  }, [selectedChannel]);
+  const handleReceiveComment = useCallback(
+    ({ detail }: { detail: any }) => {
+      setComments([...detail["announcement"]["comments"], detail]);
+    },
+    [selectedChannel]
+  );
 
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
     return () => {
-      unSubscribeToEvent(
-        EventType.RECEIVE_COMMENT,
-        handleReceiveComment
-      );
+      unSubscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
     };
   }, [comments, handleReceiveComment]);
+
+  useEffect(() => {
+    const profile = currentSide?.profiles.find(
+      (p) => p.user.accounts.toLowerCase() === announcement.creatorAddress.toLowerCase()
+    );
+    if (profile) {
+      const url = profile?.profilePicture?.metadata?.image
+        ? fixURL(profile.profilePicture?.metadata?.image)
+        : "";
+      setData({ profile: profile, url: url });
+    }
+  }, [currentSide]);
 
   return (
     <AnnouncementItemStyled className={`${className} f-column`}>
@@ -93,14 +114,18 @@ export default function AnnouncementItem({
           color={reduceWalletAddressForColor(announcement.creatorAddress)}
           weight={700}
           fontSize={14}
-          address={announcement.creatorAddress}
+          avatar={data.url}
+          username={data.profile?.user.username}
         />
-        <div className="size-11 fw-500 open-sans" style={{ color: "var(--text-secondary-dark)" }}>
+        <div
+          className="size-11 fw-500 open-sans"
+          style={{ color: "var(--text-secondary-dark)" }}
+        >
           {formatDistance(
-            new Date(Number.parseInt(announcement.timestamp)), 
-            new Date(), 
+            new Date(Number.parseInt(announcement.timestamp)),
+            new Date(),
             {
-              addSuffix: true
+              addSuffix: true,
             }
           )}
         </div>
@@ -108,16 +133,17 @@ export default function AnnouncementItem({
 
       <MessageContent message={announcement.content} />
 
-      {authorizeComments && selectedChannel && selectedChannel.type === ChannelType.Announcement && (
-        <Comments 
-          channel={announcement}
-          comments={comments}
-          isThread={!!isThread}
-          handleComment={handleComment}
-          sideId={id || ''}
-
-        />
-      )}
+      {authorizeComments &&
+        selectedChannel &&
+        selectedChannel.type === ChannelType.Announcement && (
+          <Comments
+            channel={announcement}
+            comments={comments}
+            isThread={!!isThread}
+            handleComment={handleComment}
+            sideId={id || ""}
+          />
+        )}
     </AnnouncementItemStyled>
   );
 }

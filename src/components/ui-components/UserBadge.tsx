@@ -27,6 +27,19 @@ const WalletAddress = styled.span<IWalletAddressProps>`
     props.color ? props.color : "var(--text-primary-light)"};
 `;
 
+const PictureRoundedContainer = styled.img<any>`
+  width: ${(props) => (props.width ? props.width : 20)}px;
+  height: ${(props) => (props.width ? props.width : 20)}px;
+  border-radius: ${(props) => (props.width ? props.width / 2 : 10)}px;
+  position: relative;
+  & > img {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 8px;
+  }
+`;
+
 export default function UserBadge({
   address,
   weight,
@@ -36,6 +49,7 @@ export default function UserBadge({
   connect,
   username,
   avatar,
+  width,
 }: {
   address?: string;
   weight: number;
@@ -45,22 +59,20 @@ export default function UserBadge({
   connect?: boolean;
   username?: string;
   avatar?: string | undefined;
+  width?: number;
 }) {
   return (
     <div className="flex align-center">
-      <img
-        className="profile-round-small mr-1"
+      <PictureRoundedContainer
+        width={width}
+        className="mr-1"
         title={address}
         src={avatar || defaultPP}
       />
       {/* {check && <img alt="verified" src={checkImg} />} */}
       {connect && (
-        <span
-          className="user-status"
-        >
-          <img 
-            src={connectionDot}
-          />
+        <span className="user-status">
+          <img src={connectionDot} />
         </span>
       )}
       <WalletAddress color={color} weight={weight} fontSize={fontSize}>

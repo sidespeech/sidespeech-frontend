@@ -150,15 +150,15 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
       const connectedAccount = window.ethereum.selectedAddress;
       // getting room for given profile id
       let room = currentProfile?.getRoom(profile.id);
-      if (!currentProfile || !connectedAccount) return;
+      if (!currentProfile || !connectedAccount || !user) return;
       // if room not exist in profile
       if (!room) {
         // creating the room
         room = await apiService.createRoom(currentProfile.id, profile.id);
         // add this room in the user websocket
         websocketService.addRoomToUsers(room.id, [
-          currentProfile.id,
-          profile.id,
+          user.id,
+          profile.user.id,
         ]);
         // add the room to profile
         dispatch(addRoomToProfile(room));

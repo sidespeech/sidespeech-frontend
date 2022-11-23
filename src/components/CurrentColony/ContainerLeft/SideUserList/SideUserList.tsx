@@ -112,7 +112,7 @@ export default function SideUserList({
                   avatar={url}
                   weight={400}
                   fontSize={11}
-                  address={p.username}
+                  username={p.user.username}
                   connect={status}
                 />
                 {isMe && <span className="ml-2">(you)</span>}
@@ -151,7 +151,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
   const [nft, setNft] = useState<NFT | null>(null);
 
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
-  const { currentProfile } = useSelector((state: RootState) => state.user);
+  const { currentProfile, user } = useSelector((state: RootState) => state.user);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -183,15 +183,15 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
       const connectedAccount = window.ethereum.selectedAddress;
       // getting room for given profile id
       let room = currentProfile?.getRoom(profile.id);
-      if (!currentProfile || !connectedAccount) return;
+      if (!currentProfile || !connectedAccount || !user) return;
       // if room not exist in profile
       if (!room) {
         // creating the room
         room = await apiService.createRoom(currentProfile.id, profile.id);
         // add this room in the user websocket
         websocketService.addRoomToUsers(room.id, [
-          currentProfile.id,
-          profile.id,
+          user.id,
+          profile.user.id,
         ]);
         // add the room to profile
         dispatch(addRoomToProfile(room));

@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputText from "./InputText";
-import styled from 'styled-components';
+import styled from "styled-components";
 // import { disconnect } from "../../redux/Slices/UserDataSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/app.store";
 import { Room } from "../../models/Room";
-import { fixURL, reduceWalletAddress, reduceWalletAddressForColor } from "../../helpers/utilities";
+import {
+  fixURL,
+  reduceWalletAddress,
+  reduceWalletAddressForColor,
+} from "../../helpers/utilities";
 import { Channel, ChannelType } from "../../models/Channel";
 import Icons from "./ChannelIcons";
 import { Announcement } from "../../models/Announcement";
 import { useNavigate } from "react-router-dom";
 import { Poll } from "../../models/Poll";
+import { Profile } from "../../models/Profile";
+import UserBadge from "./UserBadge";
 
 const MiddleContainerHeaderStyled = styled.div`
   width: 100%;
@@ -30,7 +36,7 @@ const MiddleContainerHeaderStyled = styled.div`
     font-weight: 400;
   }
 
-  & .left-side { 
+  & .left-side {
     width: 50%;
     .room-title,
     .channel-title {
@@ -48,7 +54,7 @@ const MiddleContainerHeaderStyled = styled.div`
       & svg {
         transform: scale(1.4);
         & > path {
-          fill: #B4C1D2;
+          fill: #b4c1d2;
         }
       }
     }
@@ -97,15 +103,22 @@ const MiddleContainerHeaderStyled = styled.div`
   }
 `;
 
-interface MiddleContainerHeaderProps { 
-  channel?: Channel | null; 
-  room?: Room | null; 
+interface MiddleContainerHeaderProps {
+  channel?: Channel | null;
+  room?: Room | null;
   setThread?: any;
   thread?: any;
 }
 
-export default function MiddleContainerHeader({ channel, room, setThread, thread }: MiddleContainerHeaderProps) {
+export default function MiddleContainerHeader({
+  channel,
+  room,
+  setThread,
+  thread,
+}: MiddleContainerHeaderProps) {
   const [displayProfile, setDisplayProfile] = useState<boolean>(false);
+  const [roomProfile, setRoomProfile] = useState<Profile | null>(null);
+  const [url, setUrl] = useState<string>("");
   const navigate = useNavigate();
 
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
@@ -115,34 +128,78 @@ export default function MiddleContainerHeader({ channel, room, setThread, thread
 
   const Icon = Icons[channel?.type || 0];
 
-  const currentUser = user?.profiles?.find((a) => a.side?.id === currentSide?.id);
+  useEffect(() => {
+    if (currentSide && room && currentProfile) {
+      const ids = room.profileIds;
+      const profile = currentSide.profiles.find(
+        (p) => ids.includes(p.id) && p.id !== currentProfile.id
+      );
+      if (profile) {
+        setRoomProfile(profile);
+      }
+    }
+  }, [currentSide, room, currentProfile]);
+
+  useEffect(() => {
+    if (roomProfile) {
+      const url = roomProfile.profilePicture?.metadata?.image
+        ? fixURL(roomProfile.profilePicture?.metadata?.image)
+        : "";
+      setUrl(url);
+    }
+  }, [roomProfile]);
 
   return (
     <MiddleContainerHeaderStyled className="middle-container-top">
       <div className="left-side">
         {thread && (
           <div className="user-info">
-            <button onClick={() => navigate(-1)} className="back-link flex align-center gap-20 pointer">
-              <svg className="arrow-icon ml-3" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M-2.29485e-07 5.25L9.13125 5.25L4.93125 1.05L6 -2.62268e-07L12 6L6 12L4.93125 10.95L9.13125 6.75L-2.95052e-07 6.75L-2.29485e-07 5.25Z" fill="white"/>
+            <button
+              onClick={() => navigate(-1)}
+              className="back-link flex align-center gap-20 pointer"
+            >
+              <svg
+                className="arrow-icon ml-3"
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M-2.29485e-07 5.25L9.13125 5.25L4.93125 1.05L6 -2.62268e-07L12 6L6 12L4.93125 10.95L9.13125 6.75L-2.95052e-07 6.75L-2.29485e-07 5.25Z"
+                  fill="white"
+                />
               </svg>
               <span>Back</span>
             </button>
             <img
               className="profile-round pointer"
-              style={{ backgroundColor: reduceWalletAddressForColor(thread?.creator || thread?.creatorAddress)}}
+              style={{
+                backgroundColor: reduceWalletAddressForColor(
+                  thread?.creator || thread?.creatorAddress
+                ),
+              }}
               alt=""
               src={thread?.creator || thread?.creatorAddress || ""}
             />
             <div className="user-name-address">
-              <p className="user-name size-14">{thread?.creator || thread?.creatorAddress}</p>
+              <p className="user-name size-14">
+                {thread?.creator || thread?.creatorAddress}
+              </p>
               <p className="user-address size-14">13 hours ago</p>
-            </div>  
+            </div>
           </div>
-        )} 
-        {!thread && room && !channel && (
+        )}
+        {!thread && room && !channel && roomProfile && (
           <h2 className="room-title">
-            {room.getRoomNameForUser(currentProfile?.username)}
+            <UserBadge
+              width={25}
+              avatar={url}
+              weight={700}
+              fontSize={14}
+              username={roomProfile.user.username}
+            />
           </h2>
         )}
         {!thread && channel && (
@@ -161,26 +218,32 @@ export default function MiddleContainerHeader({ channel, room, setThread, thread
           height={35}
           iconColor="var(--white)"
           iconRightPos={{ top: 6, right: 24 }}
-          iconSize={.88}
+          iconSize={0.88}
           maxWidth={300}
           onChange={undefined}
           padding={"0px 40px 0px 20px"}
           parentWidth={"300px"}
           placeholder={"Search"}
         />
-        
+
         <div className="user-info">
           <img
             onClick={() => setDisplayProfile(true)}
-            style={{ backgroundColor: reduceWalletAddressForColor(currentUser?.username || '')}}
+            style={{
+              backgroundColor: reduceWalletAddressForColor(
+                user?.username || ""
+              ),
+            }}
             className="profile-round pointer"
             alt=""
-            src={fixURL(currentUser?.profilePicture?.token_uri || "")}
+            src={fixURL(currentProfile?.profilePicture?.metadata.image || "")}
           />
           <div className="user-name-address">
-            <p className="user-name size-14">{currentUser?.username}</p>
-            <p className="user-address size-14">{reduceWalletAddress(currentUser?.username || '')}</p>
-          </div>  
+            <p className="user-name size-14">{user?.username}</p>
+            <p className="user-address size-14">
+              {reduceWalletAddress(user?.accounts || "")}
+            </p>
+          </div>
         </div>
       </div>
     </MiddleContainerHeaderStyled>

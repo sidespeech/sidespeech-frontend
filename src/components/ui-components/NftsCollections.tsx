@@ -108,9 +108,9 @@ export default function NftsCollections({
   const Header = () => {
     if (profile || showAvatarText) {
       return (
-        <div className="flex justify-between align-center">
+        <div className="flex justify-between align-center my-2">
           <p>Select your profile avatar</p>
-          <span className="flex align-center">
+        {profile &&  <span className="flex align-center">
             <span className="mr-2">Hide all NFTs</span>
             <Switch
               value={formData ? !formData.showNfts : true}
@@ -118,12 +118,12 @@ export default function NftsCollections({
               left={"YES"}
               onClick={handleShowNfts}
             />
-          </span>
+          </span>}
         </div>
       );
     } else {
       return (
-        <p>
+        <p className="my-2 float-left">
           My public NFTS (
           <span className="selected">
             {" "}
@@ -216,6 +216,7 @@ export default function NftsCollections({
     <div className="f-row my-nfts relative text-main">
       <Header />
       <InputText
+      className="mb-3"
         height={40}
         width="100%"
         bgColor="var(--bg-primary)"
