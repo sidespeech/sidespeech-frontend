@@ -25,6 +25,8 @@ import { toast } from "react-toastify";
 import { getRandomId } from "../../../helpers/utilities";
 import Accordion from "../../ui-components/Accordion";
 import { NotificationType } from "../../../models/Notification";
+import { breakpoints, size } from "../../../helpers/breakpoints";
+import Icons from '../../ui-components/ChannelIcons';
 
 interface CoverImgProps {
   backgroundImage?: string;
@@ -46,7 +48,7 @@ const SidebarStyled = styled.div`
   overflow-y: scroll;
 `;
 
-export default function CurrentSideLeft() {
+function CurrentSideLeftContent() {
   const { account } = useSelector((state: RootState) => state.user);
   // const [displayColonySettings, setDisplayColonySettings] = useState<boolean>(false);
   // const [displayNewChannelModal, setDisplayNewChannelModal] = useState<boolean>(false);
@@ -65,8 +67,6 @@ export default function CurrentSideLeft() {
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
   const { user } = useSelector((state: RootState) => state.user);
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
-
-  const navigate = useNavigate();
 
   const handleDisplayNewChannel = () => {
     if (isAdmin) {
@@ -195,30 +195,7 @@ export default function CurrentSideLeft() {
   if (!currentSide) return <>No side selected</>;
 
   return (
-    <ContainerLeft
-      backgroundColor="var(--bg-secondary-light)"
-      minWidth={210}
-      height={100}
-      paddingTop={0}
-    >
-      <CoverImg
-        backgroundImage={currentSide?.sideImage}
-        className="w-100 flex align-end justify-between px-2 py-2"
-      >
-        <div className="w-100 flex align-center justify-between">
-          <span className="fw-700 size-14 open-sans flex align-center text-secondary">
-            {currentSide.name}
-            {/* <img alt="check" className="ml-2" src={check} /> */}
-          </span>
-          <i
-            className="fa-solid fa-ellipsis pointer"
-            // onClick={handleDisplayColonySettings}
-            onClick={() => navigate(`/${currentSide['name']}/settings`)}
-            style={{ marginLeft: "auto" }}
-          ></i>
-        </div>
-      </CoverImg>
-
+    <>
       <SidebarStyled className="px-1">
         <Accordion
           AccordionButton={() => (
@@ -307,6 +284,144 @@ export default function CurrentSideLeft() {
           />
         </Accordion>
       </SidebarStyled>
-    </ContainerLeft>
+    </>
   );
+}
+
+const ContainerLeftStyled = styled.div`
+  .sidebar-desktop {
+    display: none;
+    ${breakpoints(size.lg, `{
+      display: flex;
+    }`)}
+  }
+  .toolbar-mobile {
+    .side-info-header-mobile {
+      width: 100%;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 1rem;
+    }
+    .toolbar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      width: 100%;
+      padding: .5rem 1rem;
+      background-color: var(--bg-secondary-light);
+      box-shadow: none;
+      border: none;
+      outline: none;
+      ${breakpoints(size.lg, `{
+        display: none;
+      }`)}
+      .menu-icon {
+        margin-right: 1rem;
+        &.back-arrow {
+          transform: rotate(90deg);
+        }
+      }
+      .icon {
+        & path {
+          fill: #B4C1D2;
+        }
+      }
+    }
+    .toolbar-content {
+      background-color: var(--bg-secondary-light);
+      transform: scaleY(0);
+      position: absolute;
+      &.open {
+        position: relative;
+        transform: scaleY(1);
+        min-height: calc(100vh - 77px - 6rem);
+      }
+    }
+  }
+`;
+
+export default function CurrentSideLeft() {
+  const navigate = useNavigate();
+
+  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
+
+  const [ isToolbarOpen, setIsToolbarOpen ] = useState<boolean>(false);
+
+  const Icon = Icons[selectedChannel?.type || 0];
+
+  return (
+    <ContainerLeftStyled>
+      <div className="sidebar-desktop">
+        <ContainerLeft
+          backgroundColor="var(--bg-secondary-light)"
+          minWidth={210}
+          height={100}
+          paddingTop={0}
+        >
+          <CoverImg
+            backgroundImage={currentSide?.sideImage}
+            className="w-100 flex align-end justify-between px-2 py-2"
+          >
+            <div className="w-100 flex align-center justify-between">
+              <span className="fw-700 size-14 open-sans flex align-center text-secondary">
+                {currentSide?.name}
+                {/* <img alt="check" className="ml-2" src={check} /> */}
+              </span>
+              <i
+                className="fa-solid fa-ellipsis pointer"
+                // onClick={handleDisplayColonySettings}
+                onClick={() => navigate(`/${currentSide?.['name']}/settings`)}
+                style={{ marginLeft: "auto" }}
+              ></i>
+            </div>
+          </CoverImg>
+
+          <CurrentSideLeftContent />
+        </ContainerLeft>
+      </div>
+
+      <div className="toolbar-mobile">
+        <button className="side-info-header-mobile">
+          <div className="title-img-wrapper">
+            {currentSide?.name}
+          </div>
+          
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.54134 15.7923V11.209H8.45801V13.0423H15.7913V13.959H8.45801V15.7923H7.54134ZM0.208008 13.959V13.0423H4.79134V13.959H0.208008ZM3.87467 10.2923V8.45898H0.208008V7.54232H3.87467V5.70898H4.79134V10.2923H3.87467ZM7.54134 8.45898V7.54232H15.7913V8.45898H7.54134ZM11.208 4.79232V0.208984H12.1247V2.04232H15.7913V2.95898H12.1247V4.79232H11.208ZM0.208008 2.95898V2.04232H8.45801V2.95898H0.208008Z" fill="#B4C1D2"/>
+          </svg>
+        </button>
+
+        <button onClick={() => setIsToolbarOpen(prevState => !prevState)} className="toolbar-wrapper">
+          {isToolbarOpen ? (
+            <>
+              <svg className="menu-icon back-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L0 6L6 0L7.06875 1.05L2.86875 5.25H12V6.75H2.86875L7.06875 10.95L6 12Z" fill="#B4C1D2" />
+              </svg>
+              <span className="text-secondary">Close</span>
+            </>
+          ) : ( 
+            <>
+              <svg className="menu-icon" width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 12V10H18V12H0ZM0 7V5H18V7H0ZM0 2V0H18V2H0Z" fill="#B4C1D2"/>
+              </svg>
+              <Icon className="icon" />
+              <span className="text-secondary">
+                {selectedChannel?.name}
+              </span>
+            </>
+          )}
+        </button>
+
+        <div onClick={() => setIsToolbarOpen(false)} className={`toolbar-content ${isToolbarOpen ? 'open' : ''}`}>
+          <CurrentSideLeftContent />
+        </div>
+      </div>
+    </ContainerLeftStyled>
+  )
 }

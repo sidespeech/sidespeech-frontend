@@ -105,6 +105,7 @@ const MiddleContainerHeaderStyled = styled.div`
 
 interface MiddleContainerHeaderProps {
   channel?: Channel | null;
+  className?: string;
   room?: Room | null;
   setThread?: any;
   thread?: any;
@@ -112,6 +113,7 @@ interface MiddleContainerHeaderProps {
 
 export default function MiddleContainerHeader({
   channel,
+  className,
   room,
   setThread,
   thread,
@@ -150,7 +152,7 @@ export default function MiddleContainerHeader({
   }, [roomProfile]);
 
   return (
-    <MiddleContainerHeaderStyled className="middle-container-top">
+    <MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>
       <div className="left-side">
         {thread && (
           <div className="user-info">

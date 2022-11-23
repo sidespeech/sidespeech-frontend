@@ -89,7 +89,10 @@ const Accordion = ({AccordionButton, children, hideOpenIcon, locked, openInitial
     <AccordionStyled className="" open={isAccordionExpanded}>
         <div 
             className={`accordion-btn px-2 py-2 text-secondary-light ${locked ? '' : 'pointer'}`}
-            onClick={locked ? () => {} : () => setIsAccordionExpanded(prevState => !prevState)}
+            onClick={locked ? () => {} : (ev) => {
+              ev.stopPropagation();
+              setIsAccordionExpanded(prevState => !prevState);
+            }}
         >
             <AccordionButton />
 
