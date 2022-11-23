@@ -213,7 +213,7 @@ export default function CurrentSideLeft() {
           <i
             className="fa-solid fa-ellipsis pointer"
             // onClick={handleDisplayColonySettings}
-            onClick={() => navigate(`/${currentSide["id"]}/settings`)}
+            onClick={() => navigate(`/${currentSide['name']}/settings`)}
             style={{ marginLeft: "auto" }}
           ></i>
         </div>

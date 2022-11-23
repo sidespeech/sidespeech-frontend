@@ -20,6 +20,12 @@ export class sideAPI {
     return dtoToSide(res.body);
   }
 
+  // get side by name
+  static async getSideByName(name: string): Promise<Side> {
+    const res = await superagent.get(`${BASE_URL}/side/byname/${name}`);
+    return dtoToSide(res.body);
+  }
+
   // get all sides without channels
   static async getAllSides(
     userCollectionsData?: any,

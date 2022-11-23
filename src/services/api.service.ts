@@ -347,6 +347,12 @@ class apiService {
     return res.body;
   }
 
+  static async getInvitationFromLink(id: string): Promise<any> {
+    const res = await superagent
+      .get(`${BASE_URL}/invitation/invitationLink/:${id}`)
+    return res.body;
+  }
+
   static async sendRequestPrivateSide(data: any): Promise<any> {
     const res = await superagent
       .post(`${BASE_URL}/invitation/request`)

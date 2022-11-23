@@ -8,6 +8,12 @@ import { apiService } from "../../services/api.service";
 import DashboardPage from "../dashboard/DashboardPage";
 import OnBoarding from "./../OnBoarding/DefaultView";
 import { Side } from "../../models/Side";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  useParams
+} from "react-router-dom";
 
 interface ISeparatorHorizontal {
   borderColor?: string;
