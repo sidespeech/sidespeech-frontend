@@ -156,7 +156,7 @@ export default function OnBoarding() {
       const onBoarding = await apiService.findOnBoarding(connectedWallet);
       if (!onBoarding) {
         //Redirect the user to the onboarding area.
-        // navigate("/");
+        navigate("/");
       } 
     }
   }
