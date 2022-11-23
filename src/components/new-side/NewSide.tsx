@@ -294,8 +294,8 @@ export default function NewSide() {
 
   useEffect(() => {
     if (userCollectionsData) {
+      console.log('userData :', userData)
       let collections = Object.values(userCollectionsData);
-      console.log('collections :', collections)
       setCollectionHolder(collections);
     }
   }, [userCollectionsData, userData]);
@@ -478,10 +478,14 @@ export default function NewSide() {
     if (address.trim().length) {
       let current_divs = [...divCollections];
       current_divs[index]["collection"] = address;
+
       current_divs[index]["traits_values"] = createPropertiesObject(address);
 
       const data = filteredCollections.find((item: Collection) => item['address'] === address);
       current_divs[index]["metadata"] = data
+
+      console.log('current_divs[index] :', current_divs[index]);
+
       setDivCollection(current_divs);
     }
   };
