@@ -14,6 +14,8 @@ import Spinner from "../ui-components/Spinner";
 import { Side } from "../../models/Side";
 import SideEligibilityModal from "../Modals/SideEligibilityModal";
 import { Link } from "react-router-dom";
+import emptyListImg from '../../assets/invitations_empty_screen_shape.svg';
+import { breakpoints, size } from "../../helpers/breakpoints";
 
 interface InvitationsStyledProps {}
 
@@ -21,6 +23,23 @@ const InvitationsStyled = styled.main<InvitationsStyledProps>`
   .title {
     margin-top: 0;
   }
+  .invitations-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    ${breakpoints(size.lg, `{
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }`)}
+    & .search-input {
+      width: 100%;
+      ${breakpoints(size.lg, `{
+        width: 40%;
+      }`)}
+    }
+  }
+
   .requests-list {
     position: relative;
     padding: 20px;
@@ -73,10 +92,11 @@ const InvitationsStyled = styled.main<InvitationsStyledProps>`
     min-height: 400px;
     color: var(--text-secondary);
     flex-direction: column;
-    background-image: url("../../assets/dashboard/invitations_empty_screen_shape.svg");
+    background-image: url(${emptyListImg});
     background-position: center center;
     background-size: contain;
     background-repeat: no-repeat;
+    margin: 80px 0;
   }
 
   .no-results p {
@@ -217,21 +237,21 @@ const Invitations = ({}: InvitationsProps) => {
       </h2>
 
       {/* Search Section */}
-      <div className="f-column">
-        <div className="flex align-center justify-between mr-5">
-          <InputText
-            placeholderColor="var(--placeholer)"
-            color="var(--placeholer)"
-            parentWidth={"40%"}
-            height={40}
-            width="85%"
-            bgColor="var(--bg-secondary-dark)"
-            glass={true}
-            iconRightPos={{ top: 12, right: 80 }}
-            placeholder={"Search"}
-            onChange={onFilterBySearchInput}
-            radius="5px"
-          />
+      <div className="invitations-toolbar">
+          <div className="search-input">
+            <InputText
+              placeholderColor="var(--placeholer)"
+              color="var(--placeholer)"
+              height={40}
+              bgColor="var(--bg-secondary-dark)"
+              glass={true}
+              iconRightPos={{ top: 12, right: 40 }}
+              placeholder={"Search"}
+              onChange={onFilterBySearchInput}
+              radius="5px"
+            />
+          </div>
+          
           <div className="flex align-center ">
             <span className="">Only verified collections</span>{" "}
             <CustomCheckbox
@@ -244,7 +264,6 @@ const Invitations = ({}: InvitationsProps) => {
               onClick={onFilterByEligibleSide}
             />
           </div>
-        </div>
       </div>
 
       {/* Invitations List **start */}

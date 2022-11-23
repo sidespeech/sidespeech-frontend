@@ -112,6 +112,12 @@ const FeatureSidesStyled = styled.div<ListStyledProps>`
   .title {
     margin-top: 0;
   }
+  .spinner-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
   .list-wrapper {
     position: relative;
     width: 100%;

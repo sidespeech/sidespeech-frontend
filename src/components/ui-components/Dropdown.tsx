@@ -12,7 +12,7 @@ const DropdownContainer = styled.div<any>`
   font-weight: ${(props) => (props.fontWeight ? props.fontWeight : "400")};
   width: ${(props) => (props.width ? props.width : "100%")};
   height: ${(props) => (props.height ? props.height : "44px")};
-  z-index: 500;
+  z-index: 5;
   & > button:first-child {
     ${(props) =>
       props.selected
