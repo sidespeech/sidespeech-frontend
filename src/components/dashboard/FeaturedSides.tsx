@@ -6,6 +6,7 @@ import { Side } from '../../models/Side';
 import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import Spinner from '../ui-components/Spinner';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg'
+import { breakpoints, size } from '../../helpers/breakpoints';
 
 
 const CARD_HEIGHT = 191;
@@ -19,7 +20,7 @@ const FeatureSideCardStyled = styled.div<CardStyledProps>`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  width: ${CARD_WIDTH}px;
+  width: 100%;
   height: ${CARD_HEIGHT}px;
   flex-shrink: 0;
   background-color: var(--bg-secondary);
@@ -36,6 +37,9 @@ const FeatureSideCardStyled = styled.div<CardStyledProps>`
   border-radius: 10px;
   padding: 1rem;
   cursor: pointer;
+  ${breakpoints(size.md, `{
+    width: ${CARD_WIDTH}px;
+  }`)}
   .collections {
     display: flex;
     gap: 5px;
@@ -170,11 +174,20 @@ const FeatureSidesStyled = styled.div<ListStyledProps>`
         display: flex;
         align-items: center;
         gap: 1rem;
-        width: ${(props) => (props.totalSides || 1) * CARD_WIDTH}px;
+        width: calc(${props => (props.totalSides || 1) * 100}% + ${props => (props.totalSides || 1) * 1}rem);
         transition: transform 0.3s ease;
-        transform: translateX(
-          -${(props) => (props.firstSide || 1 - 1) * CARD_WIDTH}px
-        );
+        transform: translateX(-${props => ((props.firstSide || 1 - 1) * (100 / (props.totalSides || 1)))}%);
+        ${props => breakpoints(size.md, `{
+          transform: translateX(
+            -${(props.firstSide || 1 - 1) * CARD_WIDTH}px
+          );
+        }`)}
+        ${props => breakpoints(size.md, `{
+          width: ${(props.totalSides || 1) * CARD_WIDTH}px;
+        }`)}
+        & > a {
+          width: 100%;
+        }
       }
     }
   }
@@ -254,7 +267,7 @@ const FeaturedSides = ({ featuredSides, sidesLoading }: FeatureSidesProps) => {
               className="prev-next-btn next-btn"
               disabled={
                 featuredSides.length < 3 ||
-                firstSideShowing === featuredSides.length - 2
+                firstSideShowing === featuredSides.length - 1
               }
               onClick={() => setFirstSideShowing((prevSide) => prevSide + 1)}
             >
