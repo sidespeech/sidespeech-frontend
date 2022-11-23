@@ -236,7 +236,7 @@ export default function MiddleContainerHeader({
             }}
             className="profile-round pointer"
             alt=""
-            src={fixURL(currentProfile?.profilePicture?.metadata.image || "")}
+            src={fixURL(currentProfile?.profilePicture?.metadata?.image || "")}
           />
           <div className="user-name-address">
             <p className="user-name size-14">{user?.username}</p>
