@@ -19,7 +19,7 @@ export class Collection {
   sides: Side[] = [];
   constructor(_data: any) {
     this.address = _data.address;
-    this.name = _data.name || _data.opensea.collectionName || "No name data";
+    this.name = _data.name || _data.opensea?.collectionName || "No name data";
     this.symbol = _data.symbol;
     this.tokenType = _data.tokenType;
     this.totalSupply = _data.totalSupply;
@@ -29,7 +29,7 @@ export class Collection {
     this.ownedCount = _data.ownedCount;
     this.media = _data.media;
     this.sideCount = 0;
-    this.opensea = _data.opensea
+    this.opensea = _data.opensea 
     this.sides = _data.sides || []
   }
 
