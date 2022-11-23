@@ -14,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./override.css";
 import "./index.css";
 import Settings from "./components/CurrentColony/settings/Settings";
-import NewSide from "./components/new-side/NewSide";
+import NewSide from "./components/NewSide/NewSide";
 
 // Onboarding
 import OnBoarding from "./components/OnBoarding/DefaultView";
@@ -42,7 +42,7 @@ ReactDOM.render(
       pauseOnHover
       toastStyle={{
         background: "var(--bg-secondary-dark)",
-        color: "white",
+        color: "white"
       }}
     />
     <React.StrictMode>
