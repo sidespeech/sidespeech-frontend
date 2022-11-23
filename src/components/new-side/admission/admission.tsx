@@ -314,7 +314,9 @@ export default function Admission({
                             onChange={(value: number) =>
                               setNumberOfNftNeededToDivCollection(value, i)
                             }
+                            collections={collections}
                             defaultValue={1}
+                            currentDiv={current}
                           />
                         </div>
                       </div>
