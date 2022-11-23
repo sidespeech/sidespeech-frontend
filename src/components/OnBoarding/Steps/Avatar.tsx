@@ -35,7 +35,7 @@ const initialStateUser = {
 };
 
 type ChildProps = {
-  updateCurrentStep: (step: string) => void;
+  updateCurrentStep: (step: number) => void;
 }
 
 export default function Avatar({
@@ -110,13 +110,13 @@ export default function Avatar({
   };
 
   const goBack = () => {
-    return updateCurrentStep("step 2");
+    return updateCurrentStep(2);
   };
 
   const onSubmit = async () => {
     try {
       
-      updateCurrentStep("step 4");
+      updateCurrentStep(4);
       dispatch(updateUser({ ...formData }));
 
     } catch (error) {

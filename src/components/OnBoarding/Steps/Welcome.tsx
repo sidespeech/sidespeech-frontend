@@ -1,21 +1,60 @@
 import React, { useEffect, useState } from "react";
-
-//redux
 import { useDispatch } from "react-redux";
-
-import {
-  updateUser
-} from "../../../redux/Slices/UserDataSlice";
-
-// service
+import { updateUser } from "../../../redux/Slices/UserDataSlice";
 import { apiService } from "../../../services/api.service";
-
-// ui component
 import Button from "../../ui-components/Button";
 import InputText from "../../ui-components/InputText";
-
-// other
 import { toast } from "react-toastify";
+import styled from 'styled-components';
+
+import greenCheckIcon from '../../../assets/check-green.svg';
+import dangerIcon from '../../../assets/dangerous.svg';
+import { breakpoints, size } from "../../../helpers/breakpoints";
+
+const WelcomeStyled = styled.div`
+  .wrapper {
+    gap: 1rem;
+    margin: 2rem 0;
+    padding: 0 2rem;
+    .input-wrapper {
+      margin: 0 auto;
+      width: 100%;
+      ${breakpoints(size.md, `{
+        width: 480px;
+      }`)}
+    }
+    .requirements {
+      margin-top: 30px;
+      & .rule {
+        display: inline-block;
+        margin: .5rem;
+        position: relative;
+        &:before {
+          content:'';
+          position: absolute;
+          width: 24px;
+          height: 24px;
+          background: url(${greenCheckIcon}) no-repeat;
+          background-size: 100%;
+          left: 0;
+          top: 0;
+        }
+    
+        &.error:before {
+          background: url(${dangerIcon}) no-repeat;
+          background-size: 100%;
+          width: 20px;
+          height: 20px;
+        }
+    
+        & p {
+          color: #b4c1d2;
+          margin: 0 2rem;
+        }
+      }
+    }
+  }
+`;
 
 export interface InitialStateUser {
   username: string;
@@ -32,7 +71,7 @@ const initialStateUser = {
 };
 
 type ChildProps = {
-  updateCurrentStep: (step: string) => void;
+  updateCurrentStep: (step: number) => void;
   updateChosenUsername: (username: string) => void;
  }
 
@@ -84,7 +123,7 @@ export default function Welcome({
     try {
 
       // Update the step to go to that we are on.
-      updateCurrentStep("step 2");
+      updateCurrentStep(2);
 
       // Update the set username...
       updateChosenUsername(formData.username);
@@ -107,14 +146,14 @@ export default function Welcome({
   };
 
   return (
-    <div className="f-row form-area">
+    <WelcomeStyled className="f-row form-area">
         
       {/* Username Section */}
-      <div className="f-column mt-5">
-        <div className="flex">
+      <div className="wrapper f-column">
+        <div className="input-wrapper">
           <InputText
             height={40}
-            width="25%"
+            width="100%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             color="#fff"
@@ -143,16 +182,18 @@ export default function Welcome({
       </div>
 
       {/* Submit Button */}
-      <Button
-        classes={"mt-5 mx-auto"}
-        width={"121px"}
-        height={44}
-        onClick={onSubmit}
-        radius={10}
-        color={"var(--text-primary-light)"}
-      >
-        Continue{" "}
-      </Button>
-    </div>
+      <div className="actions first-step">
+        <div />
+        <Button
+          width={"121px"}
+          height={44}
+          onClick={onSubmit}
+          radius={10}
+          color={"var(--text-primary-light)"}
+          >
+          Continue{" "}
+        </Button>
+      </div>
+    </WelcomeStyled>
   );
 }

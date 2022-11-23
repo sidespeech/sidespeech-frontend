@@ -6,7 +6,7 @@ import Login from "./Login";
 import { useNavigate } from "react-router";
 import { apiService } from "../../services/api.service";
 import DashboardPage from "../dashboard/DashboardPage";
-import OnBoarding from "./../OnBoarding/DefaultView";
+import OnBoarding from "../OnBoarding/Onboarding";
 import { Side } from "../../models/Side";
 import {
   BrowserRouter as Router,

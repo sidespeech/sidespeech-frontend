@@ -6,11 +6,99 @@ import { Side } from "../../../../models/Side";
 import facebook from "../../../../assets/facebook.svg";
 import twitter from "../../../../assets/twitter.svg";
 import linkedin from "../../../../assets/linkedin.svg";
-import "./invitation.css"
+import styled from 'styled-components'
 import { apiService } from "../../../../services/api.service";
 import { toast } from "react-toastify";
 import { Profile } from "../../../../models/Profile";
 import { State, Type } from "../../../../models/Invitation";
+import { breakpoints, size } from "../../../../helpers/breakpoints";
+
+const InvitationsStyled = styled.div`
+  width: 100%;
+  ${breakpoints(size.lg, `{
+    width: 60%;
+    max-width: 500px;
+  }`)}
+  .btn-copy {
+    margin-left: -23%;
+  }
+
+  .search-and-invite {
+      position: relative;
+      padding: 20px;
+      border-radius: 20px;
+      flex: 1.2;
+      background-color: var(--bg-secondary-dark);
+      width: 100%;
+  }
+
+  .user-list {
+      padding: 0 20px;
+      /* flex: 1.2; */
+      background-color: var(--bg-secondary-dark);
+      width: 100%;
+      height: 20rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+  }
+
+
+  .profile-image-user {
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+      background: var(--bg-secondary-dark);
+      border-radius: 100px;
+      text-align: center;
+      color: var(--bg-primary-light);
+      overflow: hidden;
+    }
+
+    .copy-link-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      margin: 1rem 0;
+      ${breakpoints(size.md, `{
+        display: grid;
+        grid-template-columns: 4fr 2fr;
+      }`)}
+      & button {
+        order: 3;
+        ${breakpoints(size.md, `{
+          order: 2;
+        }`)}
+      }
+      & label {
+        order: 2;
+        grid-column: 1/3;
+        ${breakpoints(size.md, `{
+          order: 3;
+        }`)}
+      }
+    }
+    .media-btns-wrapper {
+      ${breakpoints(size.md, `{
+        margin-top: 2rem;
+      }`)}
+      .media-btns {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1rem;
+        ${breakpoints(size.md, `{
+          justify-content: flex-start;
+        }`)}
+        .media-btn {
+          ${breakpoints(size.md, `{
+            max-width: 140px;
+          }`)}
+        }
+      }
+    }
+`;
 
 
 export default function Invitation({
@@ -117,7 +205,7 @@ export default function Invitation({
   };
 
   return (
-    <>
+    <InvitationsStyled>
 
       {/* Search and Invite Section */}
       <div className="text-primary-light mb-3 text fw-600">Search and invite</div>
@@ -125,12 +213,12 @@ export default function Invitation({
         <InputText
           placeholderColor="var(--placeholer)"
           color="var(--placeholer)"
-          parentWidth={"43rem"}
+          parentWidth={"100%"}
           height={45}
-          width="85%"
+          width="100%"
           bgColor="var(--bg-secondary-light)"
           glass={true}
-          iconRightPos={{ top: 12, right: 120 }}
+          iconRightPos={{ top: 12, right: 20 }}
           placeholder={"Search by username or wallet address "}
           onChange={undefined}
           radius="5px"
@@ -164,10 +252,10 @@ export default function Invitation({
       {/* Invitation Link Section */}
       <div className="f-column">
         <div className="text-primary-light mb-3 text fw-600">Invitation Link</div>
-        <div className="flex mt-2 align-center">
+        <div className="copy-link-wrapper">
           <InputText
             height={40}
-            parentWidth={"70%"}
+            parentWidth={"100%"}
             width="100%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
@@ -177,23 +265,25 @@ export default function Invitation({
             defaultValue={sideLink}
             radius="10px"
           />
-          <Button classes="cursor-pointer ml-4" width={"150px"} height={40} onClick={handleCopyWalletAddress} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><i className="fa-solid fa-copy mr-2"></i>Copy the link</Button>
+          <Button classes="cursor-pointer" width="100%" height={40} onClick={handleCopyWalletAddress} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}>
+            Copy the link
+          </Button>
+          <label className="text-primary-light">Copy this link and share it with your friends to invite them in this side</label>
         </div>
 
-        <label className="text-primary-light mt-4">Copy this link and share it with your friends to invite them in this side</label>
       </div>
 
       {/* Social Media Section*/}
-      <div className="f-column mt-5">
+      <div className="media-btns-wrapper f-column">
         <div className="text-primary-light mb-3 text fw-600">Share on social networks</div>
-        <div className="flex mt-2 align-center">
+        <div className="media-btns">
           {
             socialsMedia.map((social, index) =>
-              <Button key={index} classes="cursor-pointer mr-2" width={"100px"} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2" />{social.label}</Button>
+              <Button key={index} classes="media-btn cursor-pointer" width={"100%"} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2" />{social.label}</Button>
             )
           }
         </div>
       </div>
-    </>
+    </InvitationsStyled>
   );
 }
