@@ -11,6 +11,7 @@ import MessageInput from '../../ui-components/MessageInput';
 import UserBadge from '../../ui-components/UserBadge';
 import _ from 'lodash';
 import { Editor } from 'react-draft-wysiwyg';
+import { breakpoints, size } from '../../../helpers/breakpoints';
 
 const CommentsContainerStyled = styled.div`
   width: 100%;
@@ -20,10 +21,23 @@ const CommentsContainerStyled = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: 50vh;
   & .comments-scroll-container {
     overflow-y: scroll;
   }
+`;
+
+interface CommentInputStyledProps {
+  isThread?: boolean;
+}
+
+const CommentInputStyled = styled.div<CommentInputStyledProps>`
+  position: ${props => props.isThread ? 'absolute' : 'relative'};
+  bottom: 0;
+  width: ${props => props.isThread ? '90vw' : 'auto'};
+  z-index: 9;
+  ${props => breakpoints(size.lg, `{
+    width: ${props.isThread ? '67vw' : 'auto'};
+  }`)}
 `;
 
 interface CommentsProps {
@@ -42,6 +56,7 @@ const Comments = ({channel, comments, handleComment, isThread, sideId}: Comments
   return (
     <>
         <Accordion
+          style={{height: 'auto', flex: '1 0'}}
           AccordionButton={() => (
             <div className="flex align-center gap-20">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -117,7 +132,7 @@ const Comments = ({channel, comments, handleComment, isThread, sideId}: Comments
 
             </div>
           </CommentsContainerStyled>
-          <div>
+          <CommentInputStyled isThread={isThread}>
             <MessageInput
               id={`sendcomment-${channel.id}`}
               imageUpload
@@ -128,7 +143,7 @@ const Comments = ({channel, comments, handleComment, isThread, sideId}: Comments
               size={14}
               weight={600}
             />
-          </div>
+          </CommentInputStyled>
         </Accordion>
     </>
   )

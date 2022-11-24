@@ -126,6 +126,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
             {thread ? (
               <AnnouncementItem
                     announcement={thread}
+                    className="thread"
                     authorizeComments={selectedChannel?.authorizeComments}
                     isThread
                   />
