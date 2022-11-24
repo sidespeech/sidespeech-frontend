@@ -4,7 +4,7 @@ import { checkUserEligibility } from "../helpers/utilities";
 import { Side } from "../models/Side";
 import alchemyService from "./alchemy.service";
 import _ from "lodash";
-import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Informations";
+import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialStateSide } from "../components/NewSide/NewSide";
 
 

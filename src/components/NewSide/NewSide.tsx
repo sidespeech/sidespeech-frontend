@@ -5,12 +5,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import ContainerLeft from "../ui-components/ContainerLeft";
 import TabItems from "../ui-components/TabItems";
-import Informations from "../CurrentColony/settings/informations/Informations";
+import Informations from "../CurrentColony/settings/informations/informations";
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
 import Admission from "./admission/Admission";
-import Channels from "../CurrentColony/settings/channels/Channels";
-import Invitation from "../CurrentColony/settings/invitation/Invitation";
+import Channels from "../CurrentColony/settings/channels/channels";
+import Invitation from "../CurrentColony/settings/invitation/invitation";
 import { apiService } from "../../services/api.service";
 import {
   addUserParsedSide,
