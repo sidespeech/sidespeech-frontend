@@ -27,6 +27,10 @@ import { NotificationType } from "../../../models/Notification";
 const SidebarStyled = styled.div`
   max-height: 100vh;
   overflow-y: scroll;
+  .selected-channel {
+    border-radius: 7px;
+    background-color: var(--bg-primary);
+  }
 `;
 
 export default function CurrentSideLeftContent() {

@@ -27,7 +27,6 @@ const MiddleContainerHeaderStyled = styled.div`
   gap: 1rem;
   background-color: var(--bg-primary);
   height: 10vh;
-  width: calc(100vw - 71px - 210px);
   color: var(--text-secondary);
   padding: 0 2rem;
   &::placeholder {
@@ -150,6 +149,8 @@ export default function MiddleContainerHeader({
       setUrl(url);
     }
   }, [roomProfile]);
+
+  console.log(thread)
 
   return (
     <MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>

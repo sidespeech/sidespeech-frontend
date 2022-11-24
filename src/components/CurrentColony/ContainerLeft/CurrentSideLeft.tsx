@@ -29,13 +29,21 @@ const CoverImg = styled.div<CoverImgProps>`
 `;
 
 const ContainerLeftStyled = styled.div`
+  width: 100%;
+  ${breakpoints(size.lg, `{
+    max-width: 250px;
+  }`)}
   .sidebar-desktop {
     display: none;
+    width: 100%;
     ${breakpoints(size.lg, `{
       display: flex;
     }`)}
   }
   .toolbar-mobile {
+    ${breakpoints(size.lg, `{
+      display: none;
+    }`)}
     .side-info-header-mobile {
       width: 100%;
       background-color: transparent;
@@ -156,7 +164,7 @@ export default function CurrentSideLeft({
       <div className="sidebar-desktop">
         <ContainerLeft
           backgroundColor="var(--bg-secondary-light)"
-          minWidth={210}
+          width="100%"
           height={100}
           paddingTop={0}
         >

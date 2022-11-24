@@ -33,23 +33,32 @@ import SideEligibilityModal from "../Modals/SideEligibilityModal";
 import { breakpoints, size } from "../../helpers/breakpoints";
 
 const CurrentSideStyled = styled.div`
-  width: 100%;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   ${breakpoints(size.lg, `{
     flex-direction: row;
     align-items: flex-start;
+    width: calc(100vw - 70px);
   }`)}
-  .selected-channel {
-    border-radius: 10px;
-    background-color: var(--bg-primary);
+  .current-side-middle-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: calc(100vh - 8rem - 77px);
+    ${breakpoints(size.lg, `{
+      height: 100vh;
+    }`)}
   }
   .middle-container-center-colony {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     width: 100%;
     align-items: start;
+    flex-grow: 1;
     ${breakpoints(size.lg, `{
-      height: 90vh;
+      max-height: 100%;
     }`)}
   }
   .header-desktop {
@@ -57,9 +66,6 @@ const CurrentSideStyled = styled.div`
     ${breakpoints(size.lg, `{
       display: flex;
     }`)}
-  }
-  #announcement-list {
-    padding: 0px 1rem;
   }
 
   .profile-round-small > img {
@@ -212,7 +218,7 @@ export default function CurrentSide() {
             thread={thread}
           />
 
-          <div className="f-column w-100">
+          <div className="current-side-middle-container">
             <MiddleContainerHeader
               channel={selectedChannel}
               className="header-desktop"  

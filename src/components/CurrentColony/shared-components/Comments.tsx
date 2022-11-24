@@ -14,12 +14,13 @@ import { Editor } from 'react-draft-wysiwyg';
 
 const CommentsContainerStyled = styled.div`
   width: 100%;
-  padding-left: 47px;
+  padding-left: 2rem;
   overflow: hidden;
   gap: 10px;
   display: flex;
   flex-direction: column;
-  height: auto;
+  height: 100%;
+  max-height: 50vh;
   & .comments-scroll-container {
     overflow-y: scroll;
   }
@@ -116,7 +117,7 @@ const Comments = ({channel, comments, handleComment, isThread, sideId}: Comments
 
             </div>
           </CommentsContainerStyled>
-          <div style={{marginTop: 'auto'}}>
+          <div>
             <MessageInput
               id={`sendcomment-${channel.id}`}
               imageUpload

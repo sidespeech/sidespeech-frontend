@@ -18,8 +18,44 @@ import { Poll } from "../../../models/Poll";
 
 import { Role } from "../../../models/Profile";
 import styled from "styled-components";
+import { breakpoints, size } from "../../../helpers/breakpoints";
 
-
+const AnnouncementListStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 8rem - 77px);
+  ${breakpoints(size.lg, `{
+    max-height: calc(100vh - 4rem);
+  }`)}
+  padding: 1rem 0;
+  & .announcement-list {
+    position: relative;
+    width: 100%; 
+    padding: 0 1rem 1rem 1rem;
+    overflow: hidden;
+    &>div {
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: flex-start;
+      height: 100%;
+      overflow-y: scroll;
+    }
+    &.thread {
+      height: 100%;
+      &>div {
+        display: block;
+        overflow: hidden;
+      }
+    }
+  }
+  & .messages-input {
+    width: 100%;
+    padding: 0 1rem;
+  }
+`;
 
 interface AnnouncementListProps {
   announcementId?: string; 
@@ -80,35 +116,37 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
   };
 
   return (
-    <>
+    <AnnouncementListStyled>
       {announcements.length ? (
         <div
           id="announcement-list"
-          className="w-100 overflow-auto f-column-reverse"
+          className={`announcement-list ${thread ? 'thread' : ''}`}
         >
-          {thread ? (
-            <AnnouncementItem
-                  announcement={thread}
-                  authorizeComments={selectedChannel?.authorizeComments}
-                  isThread
-                />
-          ) : _.orderBy(announcements, ["timestamp"], ["desc"]).map(
-            (a: Announcement, i) => (
-                <AnnouncementItem
-                  announcement={a}
-                  authorizeComments={selectedChannel?.authorizeComments}
-                  className={i !== 0 ? 'border-bottom' : ''}
-                  key={a.id + getRandomId() + i}
-                />
-            )
-          )}
+          <div>
+            {thread ? (
+              <AnnouncementItem
+                    announcement={thread}
+                    authorizeComments={selectedChannel?.authorizeComments}
+                    isThread
+                  />
+            ) : _.orderBy(announcements, ["timestamp"], ["desc"]).map(
+              (a: Announcement, i) => (
+                  <AnnouncementItem
+                    announcement={a}
+                    authorizeComments={selectedChannel?.authorizeComments}
+                    className={i !== 0 ? 'border-bottom' : ''}
+                    key={a.id + getRandomId() + i}
+                  />
+              )
+            )}
+          </div>
         </div>
       ) : (
         <EmptyList selectedChannel={selectedChannel} />
       )}
       {(selectedChannel?.type !== 0 ||
         currentProfile && currentProfile.role === Role.Admin) && !thread && (
-        <div className="w-100" style={{ padding: "1rem", marginTop: "auto" }}>
+        <div className="messages-input">
           <MessageInput
             id="sendmessage"
             imageUpload
@@ -121,6 +159,6 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
           />
         </div>
       )}
-    </>
+    </AnnouncementListStyled>
   );
 }

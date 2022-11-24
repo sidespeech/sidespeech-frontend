@@ -30,7 +30,8 @@ import websocketService from "../../../services/websocket.service";
 
 const AnnouncementItemStyled = styled.div`
   width: 100%;
-  padding: 13px 16px 17px 16px;
+  height: 100%;
+  padding: 0 1rem;
   gap: 8px;
   color: var(--text-secondary);
   &.border-bottom {
@@ -107,7 +108,7 @@ export default function AnnouncementItem({
   }, [currentSide]);
 
   return (
-    <AnnouncementItemStyled className={`${className} f-column`}>
+    <AnnouncementItemStyled className={`${className || ''} f-column`}>
       <div className="flex w-100 gap-20">
         <UserBadge
           check
