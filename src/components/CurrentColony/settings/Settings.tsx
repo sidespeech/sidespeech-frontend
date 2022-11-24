@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import MembersList from "./members-list/members-list"
-import Channels from "./channels/Channels"
-import Invitation from "./invitation/Invitation"
+import Channels from "./channels/ChannelsTab"
+import Invitation from "./invitation/InvitationTab"
 import Informations from "./informations/Informations";
 import SideProfileAccount from "./account/SideProfileAccount"
 import Eligibility from "./eligibility/eligibility"

@@ -205,7 +205,12 @@ export default function CurrentSide() {
     <CurrentSideStyled>
       {currentSide?.status === SideStatus.active ? (
         <>
-          <CurrentSideLeft />
+          <CurrentSideLeft 
+            channel={selectedChannel} 
+            room={selectedRoom}
+            setThread={setThread}
+            thread={thread}
+          />
 
           <div className="f-column w-100">
             <MiddleContainerHeader
