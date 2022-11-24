@@ -469,7 +469,7 @@ export default function Admission({
                     )
                       : (
                         <div
-                          className="add-feature"
+                          className="add-feature mt-3"
                           onClick={() => addConditionToDivCollection(i)}
                         >
                           <button>
