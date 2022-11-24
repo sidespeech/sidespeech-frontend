@@ -395,7 +395,7 @@ export default function NewSide() {
     // Set conditions and checking if there is minimum one condition to continu to the other steps
     if (index === 1) {
       let current_divs = [...divCollections];
-      
+
       let conditions: any = {};
       for (let div of current_divs) {
         if (
@@ -499,8 +499,17 @@ export default function NewSide() {
     const trait = event.target.value;
     if (trait.trim().length) {
       let current_divs = [...divCollections];
+
+      const last_selected = current_divs[index]['features'][findex]["trait_selected"]
       current_divs[index]['features'][findex]["trait_selected"] = trait;
       current_divs[index]['features'][findex]["value_selected"] = "";
+
+      // Clear last selected property values used
+      current_divs[index]["traits_values"] = current_divs[index]["traits_values"].map((item: any) => {
+        if (last_selected === item['property']['value']) item["values_used"] = []
+        return item;
+      })
+
       setDivCollection(current_divs);
     }
   };
@@ -510,11 +519,17 @@ export default function NewSide() {
     if (value.trim().length) {
       let current_divs = [...divCollections];
 
+      console.log('findex :', findex)
+      console.log('index :', index)
+
       // Define value selected
       current_divs[index]['features'][findex]["value_selected"] = value;
 
       // Adding the value as already used in the 'features' cell of it property
       current_divs[index]["traits_values"] = current_divs[index]["traits_values"].map((item: any) => {
+
+        console.log('item :', item)
+
         const valueUsed = item['values'].find((innerElem: any) => innerElem['value'] == value);
         if (valueUsed) {
           item["values_used"].push(valueUsed);
@@ -772,14 +787,12 @@ export default function NewSide() {
         });
         if (users.length) await apiService.sendMultipleInvitations(users);
         if (user) {
-          try {
-            const profile = await apiService.joinSide(
-              user?.id,
-              newSide.id,
-              Role.Admin
-            );
-            dispatch(updateProfiles(profile));
-          } catch (error) { }
+          const profile = await apiService.joinSide(
+            user?.id,
+            newSide.id,
+            Role.Admin
+          );
+          dispatch(updateProfiles(profile));
         }
         dispatch(addUserParsedSide(newSide));
         dispatch(updateSidesByUserCollections(null));
