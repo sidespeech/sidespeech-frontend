@@ -27,6 +27,7 @@ const post = (url: string) => {
   return superagent.post(url).auth(token, { type: "bearer" });
 };
 class apiService {
+
   // Method that will manage sending the wallet connection.
   static async walletConnection(accounts: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
@@ -43,10 +44,11 @@ class apiService {
   }
 
   static async findExistingWallet(accounts: string) {
-    const checkUser = await superagent.get(
-      `${BASE_URL}/user/existing/${accounts}`
-    );
-
+    const checkUser = await superagent
+    .post(`${BASE_URL}/user/existing`)
+    .send({
+      accounts: accounts
+    })
     return checkUser.body;
   }
 

@@ -1,14 +1,10 @@
 // Default Imports
 import React, { useEffect, useState } from "react";
-
-// Routers
 import { useNavigate, redirect } from "react-router-dom";
 
 import { toast } from "react-toastify";
 
-import metamaskLogo from "../../assets/metamask.svg";
-
-// Slices
+// Redux Slices
 import {
   fetchUserDatas,
   disconnect,
@@ -24,8 +20,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/app.store";
 
 // Images
-import logo from "../../assets/logoComplete.svg";
-import walletConnectLogo from "../../assets/walletconnect.svg";
+import logoSmall from "../../assets/logo.svg";
+import walletIcon from "../../assets/wallet-icon.svg";
 
 // Web3 Imports
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -128,26 +124,12 @@ export default function Login() {
           navigate("/");
         }
 
-        // Check if the logged in doesn't user has a room
-        //  const currentProfiles = await apiService.getProfilesByUserId(user.accounts);
-
-        // if (!room && currentProfiles) {
-
-        //   // creating the room
-        //   room = await apiService.createRoom(currentProfile.id, profile.id);
-        //   // add this room in the user websocket
-        //   websocketService.addRoomToUsers(room.id, [currentProfile.id, profile.id]);
-        //   // add the room to profile
-        //   dispatch(addRoomToProfile(room));
-        // }
-
         // Dispatch the account that is connected to the redux slice.
         dispatch(connect({ account: accounts[0], user: user }));
         dispatch(fetchUserDatas(accounts[0]));
 
         // Set a local storage of the account
         localStorage.setItem("userAccount", accounts[0]);
-
         localStorage.setItem("jwtToken", user.token);
 
         // Listen for accounts being disconnected - this only seems to work for WalletConnect.
@@ -188,16 +170,21 @@ export default function Login() {
 
     return (
       <div
-        style={{ gap: 50 }}
+        style={{ gap: 5 }}
         className="connection-container f-column align-center justify-start"
       >
-        <img
-          src={walletConnectLogo}
-          alt="wallet connect"
-          style={{ marginTop: 89 }}
-        />
-        <Button classes="fw-700 size-18" onClick={() => connectWallet()}>
-          Connect your wallet
+        <h2 style={{color: "white", marginBottom: 30}}>Connect your wallet to take part in a slide</h2>
+        <Button 
+          classes="fw-700 size-18"  
+          width="170px"
+          onClick={() => connectWallet()}
+        >
+          <img 
+            src={walletIcon} 
+            style={{marginRight: 10}}
+            alt="Wallet Icon" 
+          />
+          Connect wallet
         </Button>
       </div>
     );
@@ -205,28 +192,12 @@ export default function Login() {
 
   return (
     <div className="f-column align-center my-auto">
-      <div style={{ marginBottom: 26 }}>
-        <img src={logo} alt="colony-logo" />
+      <div style={{ marginBottom: 30, textAlign: "center" }}>
+        <img src={logoSmall} alt="SideSpeech-logo" />
+        <h1 style={{marginTop: 0}}>SideSpeech</h1>
       </div>
       <div className="flex align-end">
         <ConnectWalletArea />
-      </div>
-      <div
-        className="flex justify-between text-secondary size-12 fw-400"
-        style={{
-          width: "calc(100% - 70px)",
-          padding: "0px 13px",
-          position: "absolute",
-          bottom: 10,
-          right: 0,
-        }}
-      >
-        <div className="flex">
-          <div>Privacy policy</div>
-          <div className="mx-2">|</div>
-          <div>Terms and Conditions</div>
-        </div>
-        <div> © Copyright 2022</div>
       </div>
     </div>
   );
