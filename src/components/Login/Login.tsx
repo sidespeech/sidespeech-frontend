@@ -66,6 +66,15 @@ export default function Login() {
       providerOptions, // required
     });
 
+    const randomNonce = function(length: number) {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for(var i = 0; i < length; i++) {
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      return text;
+    }
+
     // Method for wallet connection...
     const connectWallet = async () => {
       try {
@@ -78,29 +87,37 @@ export default function Login() {
         // Grab the accounts.
         const accounts = await library.listAccounts();
 
-        const existingUser = await apiService.findExistingWallet(accounts[0]);
-
-        // Create a signature variable.
-        let signature;
+        let signerAddr = "";
+        let signature = "";
 
         // If there are any accounts connected then send them to the API.
         if (accounts) {
-          // If there isn't an existing user then ensure that he signs the signature.
-          if (existingUser == undefined) {
+
+            let nonce;
+
+            if(!localStorage.getItem("nonce")) {
+              nonce = randomNonce(24);
+              localStorage.setItem("nonce", nonce);
+            } else {
+              nonce = localStorage.getItem("nonce");
+            }
+
             // Get Signer
             const signer = library.getSigner();
 
-            // Create the signer message
-            const signerMessage = "sidespeech";
-
-            // Create the signature signing message.
-            signature = await signer.signMessage(signerMessage);
+            const randomNonceString = nonce;
 
             // Grab the wallet address
             const address = await signer.getAddress();
 
+            // Create the signer message
+            const signerMessage = "Welcome to SideSpeech! Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees. Your authentication status will reset after 24 hours. Wallet address: "+address+ " Nonce: "+randomNonceString;
+
+            // Create the signature signing message.
+            signature = await signer.signMessage(signerMessage);
+
             // Get the signer address.
-            const signerAddr = ethers.utils.verifyMessage(
+            signerAddr = ethers.utils.verifyMessage(
               signerMessage,
               signature
             );
@@ -109,31 +126,34 @@ export default function Login() {
             if (signerAddr !== address) {
               return false;
             }
-          }
+
+            // Attempt to find an existing user by passing their address and the signature that they signed.
+            const existingUser = await apiService.findExistingWallet(accounts[0], signerMessage, signature);
+            
+            // Send the wallet to the api service.
+            const user = await apiService.walletConnection(accounts[0], signerMessage, signature);
+      
+            // Check if the existing user still needs to onboard or not.
+            if (existingUser == null) {
+              // Redirect the user to the onboarding area.
+              navigate("/onboarding");
+            } else {
+              // Redirect the user to the general settings page.
+              navigate("/");
+            }
+
+            // Dispatch the account that is connected to the redux slice.
+            dispatch(connect({ account: accounts[0], user: user }));
+            dispatch(fetchUserDatas(accounts[0]));
+
+            // Set a local storage of the account
+            localStorage.setItem("userAccount", accounts[0]);
+            localStorage.setItem("jwtToken", user.token);
+
+            // Listen for accounts being disconnected - this only seems to work for WalletConnect.
+            provider.on("disconnect", handleDisconnect);
+
         }
-
-        // Send the wallet to the api service.
-        const user = await apiService.walletConnection(accounts, signature);
-
-        // Check if the existing user still needs to onboard or not.
-        if (existingUser == undefined) {
-          // Redirect the user to the onboarding area.
-          navigate("/onboarding");
-        } else {
-          // Redirect the user to the general settings page.
-          navigate("/");
-        }
-
-        // Dispatch the account that is connected to the redux slice.
-        dispatch(connect({ account: accounts[0], user: user }));
-        dispatch(fetchUserDatas(accounts[0]));
-
-        // Set a local storage of the account
-        localStorage.setItem("userAccount", accounts[0]);
-        localStorage.setItem("jwtToken", user.token);
-
-        // Listen for accounts being disconnected - this only seems to work for WalletConnect.
-        provider.on("disconnect", handleDisconnect);
       } catch (err: any) {
         console.log("error", err, " message", err.message);
         if (
@@ -192,7 +212,7 @@ export default function Login() {
 
   return (
     <div className="f-column align-center my-auto">
-      <div style={{ marginBottom: 30, textAlign: "center" }}>
+      <div style={{ textAlign: "center" }}>
         <img src={logoSmall} alt="SideSpeech-logo" />
         <h1 style={{marginTop: 0}}>SideSpeech</h1>
       </div>

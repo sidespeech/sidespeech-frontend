@@ -107,7 +107,8 @@ export default function UserGeneralInformations({
 
   const logout = () => {
     dispatch(disconnect());
-    localStorage.clear();
+    localStorage.removeItem('userAccount');
+    localStorage.removeItem('jwtToken');
     navigate("/");
   };
 

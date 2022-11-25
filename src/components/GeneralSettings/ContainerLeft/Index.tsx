@@ -22,7 +22,8 @@ export default function IndexView() {
 
   const logout = () => {
     dispatch(disconnect());
-    localStorage.clear();
+    localStorage.removeItem('userAccount');
+    localStorage.removeItem('jwtToken');
     navigate("/");
   };
 

@@ -70,7 +70,8 @@ function App() {
       // Need to check if they visit any route and they aren't connected it sends then back to the login screen.
       if(window.location.pathname !== '/' && !window.ethereum.selectedAddress) {
         window.location.href = '/';
-        window.localStorage.clear();
+        localStorage.removeItem('userAccount');
+        localStorage.removeItem('jwtToken');
       } 
       
     }, 2500);
@@ -89,12 +90,10 @@ function App() {
     generalSettings = true;
   }
   
-  if (onBoarding) {
-    content =   <div className='w-100'>
-                  <Outlet></Outlet>
-                </div>;
-  } else if (generalSettings) {
-    content = <div style={{ display: "flex", width: "100%"}}>
+  if(account) {
+
+    if (generalSettings) {
+      content = <div style={{ display: "flex", width: "100%"}}>
                 <div className="left-container global">
                   <GeneralSettingsMenu />
                 </div>
