@@ -82,14 +82,10 @@ export default function NftsCollections({
   }, [collections]);
 
   useEffect(() => {
-    
-    console.log('selectedNfts :', selectedNfts);
-    console.log('collections :', collections);
-
     if (selectedNfts && selectedNfts.length > 0) {
       setGroupedNfts(_.groupBy(selectedNfts, "token_address"));
     }
-  }, [selectedNfts, collections]);
+  }, [selectedNfts]);
 
   //#region NFTS handlers
   const handleCollectionShowing = (position: any) => {
