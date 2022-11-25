@@ -120,7 +120,7 @@ export default function ChannelRow({
               width="100%"
               bgColor="var(--bg-secondary-dark)"
               glass={false}
-              placeholder={channel["name"]}
+              value={channel["name"]}
               onChange={(e: any) =>
                 onChangeName(e, index, placeholder ? true : false)
               }
