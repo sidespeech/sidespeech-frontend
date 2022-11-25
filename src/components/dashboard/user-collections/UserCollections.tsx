@@ -16,6 +16,7 @@ import { searchFiltersProps } from '../DashboardPage';
 // import Button from '../../ui-components/Button';
 import noResultsImg from '../../../assets/my_sides_empty_screen_shape.svg'
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import { sideAPI } from '../../../services/side.service';
 
 interface CollectionsStyledProps {
 
@@ -148,10 +149,18 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
     const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
     const [viewMode, setViewMode] = useState<string>('card');
 
+
     useEffect(() => {
+
+        // async function getSideCount(collection:Collection) {
+        //     const response = await sideAPI.getSidesByCollections([collection['address']]);
+        //     setAnnouncements(announcements);
+        // }
+
         if (userCollectionsData) {
             let filteredArray = _.orderBy(userCollectionsData, "name")
-            if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
+
+            // if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
             if (isOnlyVerifiedCollectionsChecked) filteredArray = filteredArray.filter(collection => collection.opensea?.safelistRequestStatus === 'verified');
             setFilteredCollections(filteredArray);
         }
@@ -231,7 +240,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
                     <div className="spinner">
                         <Spinner />
                     </div>
-                ) : !!userCollections.length ?
+                ) : userCollections.length ?
                         userCollections.map((collection: Collection) => (
                         <React.Fragment key={collection.address}>
                             {viewMode === 'card' && (

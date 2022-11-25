@@ -15,7 +15,7 @@ export class Collection {
   public numDistinctTokensOwned: number;
   public ownedCount: number;
   public media: any[];
-  public sideCount: number;
+  public sideCount: number|undefined;
   sides: Side[] = [];
   constructor(_data: any) {
     this.address = _data.address;

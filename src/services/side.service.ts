@@ -4,7 +4,7 @@ import { checkUserEligibility } from "../helpers/utilities";
 import { Side } from "../models/Side";
 import alchemyService from "./alchemy.service";
 import _ from "lodash";
-import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Informations";
+import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
 import { InitialStateSide } from "../components/NewSide/NewSide";
 
 
@@ -94,11 +94,11 @@ export class sideAPI {
   // get all sides for an array of collections
   static async getSidesByCollections(
     collections: string[]
-  ): Promise<{ contracts: string; count: number }> {
+  ): Promise<{ contracts: string; sides: any[] }> {
     const res = await superagent.get(
       `${BASE_URL}/side/collection/sidescount?contracts=${collections?.join(
         ","
-      )}`
+      )}`    
     );
     return res.body;
   }
