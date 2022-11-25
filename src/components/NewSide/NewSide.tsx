@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import ContainerLeft from "../ui-components/ContainerLeft";
 import TabItems from "../ui-components/TabItems";
-import Informations from "../CurrentColony/settings/informations/informations";
+import Informations from "../CurrentColony/settings/informations/Informations";
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
 import Admission from "./admission/Admission";
