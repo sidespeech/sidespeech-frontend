@@ -35,7 +35,6 @@ const PollsStyled = styled.div`
   }`
   )}
   &>div {
-    overflow-y: scroll;
   }
   .poll-item {
     padding: 1rem 0;
