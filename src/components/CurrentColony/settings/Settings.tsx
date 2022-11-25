@@ -183,6 +183,12 @@ const SettingsStyled = styled.div`
       border-left: 1px solid rgba(255,255,255,.1);
       padding: 0 2rem;
       flex-grow: 1;
+      &>div {
+        padding-bottom: 3rem;
+        ${breakpoints(size.lg, `{
+          padding-bottom: 0;
+        }`)}
+      }
   }
 `;
 

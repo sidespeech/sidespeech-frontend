@@ -129,7 +129,7 @@ const InformationsStyled = styled.div`
     display: flex;
     flex-direction: column-reverse;
     gap: 2rem;
-    margin: 2rem 0 5rem 0;
+    margin: 2rem 0 0 0;
     ${breakpoints(size.lg, `{
       flex-direction: column;
     }`)}
