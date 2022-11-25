@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import styled from 'styled-components'
 
 //redux
 import { useDispatch } from "react-redux";
@@ -16,6 +17,19 @@ import TextArea from "../../ui-components/TextArea";
 
 // other
 import { toast } from "react-toastify";
+import { breakpoints, size } from "../../../helpers/breakpoints";
+
+const BioStyled = styled.div`
+  padding: 0 2rem;
+  margin-top: 2rem;
+  .text-area-wrapper {
+    width: 100%;
+    ${breakpoints(size.md, `{
+      max-width: 480px;
+      margin: 0 auto;
+    }`)}  
+  }
+`;
 
 export interface InitialStateBio {
   bio: string;
@@ -32,7 +46,7 @@ const InitialStateBio = {
 };
 
 type ChildProps = {
-  updateCurrentStep: (step: string) => void;
+  updateCurrentStep: (step: number) => void;
 }
 
 export default function Bio({
@@ -75,7 +89,7 @@ export default function Bio({
       // await apiService.updateUser(user.id, formData)
       
       // Update the step to go to that we are on.
-      updateCurrentStep("step 3");
+      updateCurrentStep(3);
       
       dispatch(updateUser({ ...formData }));
     } catch (error) {
@@ -90,7 +104,7 @@ export default function Bio({
   //#region Form validation
 
   const goBack = () => {
-    return updateCurrentStep("step 1");
+    return updateCurrentStep(1);
   };
 
   const validateForm = () => {
@@ -98,13 +112,12 @@ export default function Bio({
   };
  
   return (
-    <div className="f-row form-area">
+    <BioStyled className="f-row form-area">
         
-      <div className="f-column mt-5">
-        <div className="flex">
+      <div className="">
+        <div className="text-area-wrapper">
           <TextArea
             height={120}
-            width="90%"
             bgColor="var(--bg-secondary-dark)"
             glass={false}
             placeholder={"Describe yourself"}
@@ -133,7 +146,7 @@ export default function Bio({
 
           {/* Submit Button */}
           <Button
-            classes={"mt-3 submit"}
+            classes={`mt-3 ${bioLength == 0 ? 'skip' : 'submit'}`}
             width={"159px"}
             height={44}
             onClick={onSubmit}
@@ -144,6 +157,6 @@ export default function Bio({
           </Button>
       </div>
      
-    </div>
+    </BioStyled>
   );
 }

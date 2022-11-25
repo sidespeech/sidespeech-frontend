@@ -89,10 +89,12 @@ function App() {
     generalSettings = true;
   }
   
-  if(account) {
-
-    if (generalSettings) {
-      content = <div style={{ display: "flex", width: "100%"}}>
+  if (onBoarding) {
+    content =   <div className='w-100'>
+                  <Outlet></Outlet>
+                </div>;
+  } else if (generalSettings) {
+    content = <div style={{ display: "flex", width: "100%"}}>
                 <div className="left-container global">
                   <GeneralSettingsMenu />
                 </div>

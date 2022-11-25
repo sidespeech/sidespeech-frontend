@@ -146,7 +146,7 @@ export function checkUserEligibility(
   const res: ElligibilityResponse = {};
 
   if (selectedSide) {
-    selectedSide.metadataSides.forEach((item) => {
+    selectedSide.metadataSides?.forEach((item) => {
       const tab = [];
       const token_address = item["metadata"]["address"];
       const collection = nfts[token_address];

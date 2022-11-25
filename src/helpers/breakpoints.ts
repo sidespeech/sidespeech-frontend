@@ -21,6 +21,5 @@ export const breakpoints = (
   values: string = '', // array of objects, e.g. [{ 800: 60 }, ...] <-- 800 (key) = screen breakpoint, 60 (value) = CSS prop breakpoint
   mediaQueryType: string = "min-width" // media query breakpoint type, i.e.: max-width, min-width, max-height, min-height
 ) => {
-    console.log(`@media screen and (${mediaQueryType}: ${screenBreakpoint}px) {${values}}`)
     return `@media screen and (${mediaQueryType}: ${screenBreakpoint}px) {${values}}`;
 };

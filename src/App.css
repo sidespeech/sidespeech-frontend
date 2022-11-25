@@ -3,13 +3,6 @@
   max-height: 100vh;
   display: flex;
   overflow: hidden;
-  padding-bottom: 77px;
-}
-
-@media screen and (min-width: 980px) {
-  .main-container {
-    padding: 0;
-  }
 }
 
 .containers-wrapper {
@@ -42,11 +35,13 @@
   align-items: center;
   background-color: var(--bg-primary);
   width: 100%;
+  padding-bottom: 77px;
 }
 
 @media screen and (min-width: 980px){
   .middle-container {
     width: calc(100% - 70px);
+    padding-bottom: 0;
   }
 }
 
@@ -114,7 +109,7 @@
   width: 100vw;  
   height: 77px;
   background-color: var(--bg-secondary);
-  z-index: 9999;
+  z-index: 9998;
 }
 
 @media screen and (min-width: 980px) {
