@@ -8,8 +8,8 @@ import TabItems from "../ui-components/TabItems";
 import Informations from "../CurrentColony/settings/informations/Informations";
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
-import Admission from "./admission/Admission";
 import Channels from "../CurrentColony/settings/channels/Channels";
+import Invitation from "../CurrentColony/settings/invitation/Invitation";
 import { apiService } from "../../services/api.service";
 import {
   addUserParsedSide,
@@ -25,7 +25,7 @@ import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
 import { sideAPI } from "../../services/side.service";
 import { breakpoints, size } from "../../helpers/breakpoints";
-import Invitation from "../CurrentColony/settings/invitation/Invitation";
+import Admission from "../NewSide/admission/Admission";
 
 const NewSideStyled = styled.div`
 width: 100%;
@@ -833,7 +833,7 @@ export default function NewSide() {
                   </>
                 ) : step["label"] === "Admission" && step["active"] ? (
                   <>
-                    <Admission
+                    <Admission 
                       divCollections={divCollections}
                       collections={collectionHolder}
                       setSideTokenAddress={setSideTokenAddress}
@@ -851,7 +851,7 @@ export default function NewSide() {
                     />
                   </>
                 ) : step["label"] === "Channels" && step["active"] ? (
-                  <div>
+                  <div style={{ maxWidth: "fit-content" }}>
                     <Channels
                       currentSide={currentSide}
                       channelsNewSide={channels}
