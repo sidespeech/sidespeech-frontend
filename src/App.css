@@ -111,7 +111,7 @@
   width: 100vw;  
   height: 77px;
   background-color: var(--bg-secondary);
-  z-index: 9998;
+  z-index: 9900;
 }
 
 @media screen and (min-width: 980px) {

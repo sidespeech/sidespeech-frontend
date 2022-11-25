@@ -27,7 +27,6 @@ const MiddleContainerHeaderStyled = styled.div`
   gap: 1rem;
   background-color: var(--bg-primary);
   height: 10vh;
-  width: calc(100vw - 71px - 210px);
   color: var(--text-secondary);
   padding: 0 2rem;
   &::placeholder {
@@ -105,6 +104,7 @@ const MiddleContainerHeaderStyled = styled.div`
 
 interface MiddleContainerHeaderProps {
   channel?: Channel | null;
+  className?: string;
   room?: Room | null;
   setThread?: any;
   thread?: any;
@@ -112,6 +112,7 @@ interface MiddleContainerHeaderProps {
 
 export default function MiddleContainerHeader({
   channel,
+  className,
   room,
   setThread,
   thread,
@@ -149,8 +150,10 @@ export default function MiddleContainerHeader({
     }
   }, [roomProfile]);
 
+  console.log(thread)
+
   return (
-    <MiddleContainerHeaderStyled className="middle-container-top">
+    <MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>
       <div className="left-side">
         {thread && (
           <div className="user-info">

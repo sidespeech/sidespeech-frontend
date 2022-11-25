@@ -147,7 +147,7 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 
     const handleNavigate = () => {
         if (!side.joined) return;
-        navigate(`/${side.id}`)
+        navigate(`/${side.name}`)
     }
 
     let alertsCount = 0;

@@ -9,8 +9,8 @@ import Informations from "../CurrentColony/settings/informations/informations";
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
 import Admission from "./admission/Admission";
-import Channels from "../CurrentColony/settings/channels/channels";
-import Invitation from "../CurrentColony/settings/invitation/invitation";
+import Channels from "../CurrentColony/settings/channels/ChannelsTab";
+import Invitation from "../CurrentColony/settings/invitation/InvitationTab";
 import { apiService } from "../../services/api.service";
 import {
   addUserParsedSide,
