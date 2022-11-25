@@ -146,12 +146,26 @@ export function checkUserEligibility(
   const res: ElligibilityResponse = {};
 
   if (selectedSide) {
+
+    let checkingWithAttribute = []
+    let checkingWithoutAttribute:any[] = []
+
+    for (let collection of selectedSide.collectionSides) {
+
+      const withAttributes = selectedSide['metadataSides'].filter(elem => elem["metadata"]["address"] === collection['collectionId'])
+      if (withAttributes.length) checkingWithAttribute.push(collection)
+      else checkingWithoutAttribute.push(collection)
+    }
+
     selectedSide.metadataSides?.forEach((item) => {
       const tab = [];
       const token_address = item["metadata"]["address"];
+
+      const collectionSide = selectedSide.collectionSides.find(elem => elem['collectionId'] === token_address)
       const collection = nfts[token_address];
+
       const condition = {
-        numberNeeded: item["numberNeeded"],
+        numberNeeded: collectionSide!["numberNeeded"],
         trait_type: item["metadata"]["traitProperty"],
         trait_value: item["metadata"]["traitValue"],
       };
@@ -177,10 +191,37 @@ export function checkUserEligibility(
       }
       res[token_address] = tab;
     });
+
+    console.log('checkingWithoutAttribute :', checkingWithoutAttribute)
+
+    selectedSide.collectionSides?.forEach((item) => {
+      const tab = [];
+      const token_address = item["collectionId"];
+      const collection = nfts[token_address];
+
+      console.log('item :', item)
+
+      if (checkingWithoutAttribute.includes(item)) {
+
+        const condition = {
+          numberNeeded: item["numberNeeded"],
+        };
+
+        console.log('condition :', condition)
+
+        if (collection) {
+          tab.push(validateNumberOfNfts(condition, collection));
+        } else {
+          return false
+        }
+
+        res[token_address] = tab;
+      }
+    });
   }
   let eligible = false;
   if (Object.keys(res).length > 0) {
-    eligible = isEligible(res, selectedSide.metadataSides);
+    eligible = isEligible(res, selectedSide['required']);
   }
   return [res, eligible];
 }
@@ -221,8 +262,8 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
   );
 }
 
-function isEligible(result: ElligibilityResponse, conditions: any): boolean {
-  if (conditions.find((item: any) => item["required"])) {
+function isEligible(result: ElligibilityResponse, required: boolean): boolean {
+  if (required) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>
       res.every((value) => value.type.includes("success"))

@@ -81,7 +81,7 @@ export default function Eligibility({ side }: { side: Side }) {
             if (v.type.includes("number")) return;
             const nft = v.usefulNfts ? v.usefulNfts[0] : null;
             const num = v.usefulNfts?.length - 1;
-            const collection = side.collections.find((c) => c.address === v.id);
+            const collection = (side.collectionSides.find((c) => c.collectionId === v.id))!['collection'];
             // const isError = v.type.includes("error");
             return (
               <>
@@ -97,7 +97,7 @@ export default function Eligibility({ side }: { side: Side }) {
                       {" "}
                       <span className="mr-2">-</span>
                       {collection?.name ||
-                        collection.opensea.collectionName}{" "}
+                        collection?.opensea?.collectionName}{" "}
                       {collection?.opensea?.safelistRequestStatus ===
                         OpenSeaRequestStatus.verified && (
                         <img

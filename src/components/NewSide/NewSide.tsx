@@ -216,6 +216,7 @@ export interface InitialStateSide {
   NftTokenAddress: string;
   conditions: any;
   creatorAddress: string | undefined;
+  required: boolean;
 }
 
 const initialStateSide = {
@@ -225,6 +226,7 @@ const initialStateSide = {
   NftTokenAddress: "",
   conditions: {},
   priv: false,
+  required: false,
   creatorAddress: window.ethereum?.selectedAddress,
 };
 
@@ -399,7 +401,7 @@ export default function NewSide() {
       let conditions: any = {};
       for (let div of current_divs) {
         if (
-          div["collection"].trim().length !== 0 && div["features"].length &&
+          div["collection"].trim().length !== 0 &&
           !(div["features"].find((item: any) => item["trait_selected"].trim().length == 0)) &&
           !(div["features"].find((item: any) => item["value_selected"].trim().length == 0))
         ) {
@@ -413,6 +415,9 @@ export default function NewSide() {
               value: feature["value_selected"]
             })
           }
+
+          console.log('conditions :', conditions)
+
         } else {
           toast.error("There is one or more conditions not completed", { toastId: 3 });
           return false;
@@ -739,18 +744,36 @@ export default function NewSide() {
 
         const data = _.cloneDeep(formData);
 
-        console.log('channels["added"] :', channels["added"])
+        // Save side entity ** start
         data["conditions"]["required"] = onlyOneRequired;
-
         data["conditions"] = JSON.stringify(data["conditions"]);
         data["NftTokenAddress"] = data["conditions"];
         const fd = new FormData();
         fd.append("file", formData["sideImage"]);
         data["sideImage"] = await apiService.uploadImage(fd);
         data["creatorAddress"] = user?.accounts;
-
+        data["required"] = !onlyOneRequired;
         const newSide = await sideAPI.createSide(data);
+        // Save side entity ** end
 
+        const conditionObject = JSON.parse(data["conditions"]);
+
+        const array = Object.keys(conditionObject);
+        array.pop();
+
+        const collections = await apiService.getManyCollectionsByAddress(array);
+    
+        const collectionToInsert = collections.map((elem) => {
+          return {
+            collectionId : elem['address'],
+            sideId : newSide['id'],
+            numberNeeded : conditionObject[elem['address']]['numberNeeded']
+          }
+        })
+
+        const collectionSide = await apiService.saveCollectionSide(collectionToInsert);
+
+        // Save channels entities ** start
         if (channels["added"].length) {
           let added = channels["added"].map((item: any) => {
             item["side"] = newSide;
@@ -758,18 +781,19 @@ export default function NewSide() {
           });
           const addedChannels = await apiService.createManyChannels(added);
         }
+        // Save channels entities ** end
 
-        const conditionObject = JSON.parse(data["conditions"]);
-
+        // Save metadata entities ** start
+        // const conditionObject = JSON.parse(data["conditions"]);
         const conditions = Object.keys(conditionObject).reduce(function (prev: Metadata[], key: string) {
-          if (key !== 'required') {
+          if (key !== 'required' && conditionObject[key]['features'].length) {
             for (let feature of conditionObject[key]['features'])
               prev.push({
                 address: key,
                 traitProperty: feature['property'],
                 traitValue: feature['value'],
-                numberNeeded: (conditionObject[key]['numberNeeded']) ? conditionObject[key]['numberNeeded'] : 1,
-                required: !onlyOneRequired,
+                // numberNeeded: (conditionObject[key]['numberNeeded']) ? conditionObject[key]['numberNeeded'] : 1,
+                // required: !onlyOneRequired,
                 side: newSide,
               });
           }
@@ -777,15 +801,21 @@ export default function NewSide() {
           return prev;
         }, []);
 
-        const conditionsSaved = await apiService.savedMetadataConditions(
-          conditions
-        );
+        console.log('conditions :', conditions)
+        
+        if (conditions.length)
+          await apiService.savedMetadataConditions(conditions);
+        // Save metadata entities ** end
 
+        // Save invitations entities ** start
         let users = userInvited.map((u: any) => {
           u["side"] = newSide;
           return u;
         });
         if (users.length) await apiService.sendMultipleInvitations(users);
+        // Save invitations entities ** end
+
+        // Save profile entity ** start
         if (user) {
           const profile = await apiService.joinSide(
             user?.id,
@@ -794,6 +824,8 @@ export default function NewSide() {
           );
           dispatch(updateProfiles(profile));
         }
+        // Save profile end ** start
+
         dispatch(addUserParsedSide(newSide));
         dispatch(updateSidesByUserCollections(null));
         toast.success(data.name + " has been created.", {
