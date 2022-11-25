@@ -8,7 +8,8 @@ const MobileMenuStyled = styled.nav`
   height: 100%;
   display: flex;
   align-items: center;
-  padding: 1rem;
+  justify-content: space-between;
+  padding: 1rem 2rem;
   .menu-tab {
     svg {
       path {

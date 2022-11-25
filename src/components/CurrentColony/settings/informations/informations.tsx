@@ -124,6 +124,21 @@ const InformationsStyled = styled.div`
   font-size: 16px;
   font-weight: 600;
   }
+
+  .edit-side-bottom {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2rem;
+    margin: 2rem 0 5rem 0;
+    ${breakpoints(size.lg, `{
+      flex-direction: column;
+    }`)}
+    & .save-btn {
+      ${breakpoints(size.lg, `{
+        max-width: 125px;
+      }`)}
+    }
+  }
 `;
 
 export interface InitialStateUpdateSide {
@@ -363,7 +378,7 @@ export default function Informations({
             </div>
             <Switch onClick={onChangePrivate} value={currentSide.priv} />
           </div>
-          <div className="size-8">
+          <div className="size-12">
             Only invited users will be able to join this Side. All invitations
             will be received as requests.
           </div>
@@ -372,10 +387,10 @@ export default function Informations({
 
       {/* Submit Button */}
       {!isNewSide ? (
-        <>
+        <div className="edit-side-bottom">
           <Button
-            classes={"my-3"}
-            width={"121px"}
+            classes="save-btn"
+            width={"100%"}
             height={44}
             onClick={updateSide}
             radius={10}
@@ -383,11 +398,12 @@ export default function Informations({
           >
             Save{" "}
           </Button>
+
           <LeavSideAsAdmin
             side={currentSide}
             handleLeaveSide={onSubmitLeaveSide}
           />
-        </>
+        </div>
       ) : null}
     </InformationsStyled>
   );
