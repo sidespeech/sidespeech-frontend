@@ -37,6 +37,7 @@ interface AccordionStyledProps {
 
 const AccordionStyled = styled.div<AccordionStyledProps>`
     width: 100%;
+    height: fit-content;
     .accordion-btn {
         display: flex;
         align-items: center;
@@ -77,19 +78,25 @@ const AccordionStyled = styled.div<AccordionStyledProps>`
 interface AccordionProps {
     AccordionButton: any;
     children?: any;
+    className?: string;
+    id?: string;
     hideOpenIcon?: boolean;
     locked?: boolean;
     openInitialState?: boolean;
+    style?: any;
 }
 
-const Accordion = ({AccordionButton, children, hideOpenIcon, locked, openInitialState = true}: AccordionProps) => {
+const Accordion = ({AccordionButton, children, className, id, hideOpenIcon, locked, openInitialState = true, style}: AccordionProps) => {
     const [isAccordionExpanded, setIsAccordionExpanded] = useState<boolean>(openInitialState);
 
   return (
-    <AccordionStyled className="" open={isAccordionExpanded}>
+    <AccordionStyled className={className} id={id} open={isAccordionExpanded} style={style}>
         <div 
             className={`accordion-btn px-2 py-2 text-secondary-light ${locked ? '' : 'pointer'}`}
-            onClick={locked ? () => {} : () => setIsAccordionExpanded(prevState => !prevState)}
+            onClick={locked ? () => {} : (ev) => {
+              ev.stopPropagation();
+              setIsAccordionExpanded(prevState => !prevState);
+            }}
         >
             <AccordionButton />
 

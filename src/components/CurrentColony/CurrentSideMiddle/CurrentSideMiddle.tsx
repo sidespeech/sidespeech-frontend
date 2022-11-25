@@ -20,7 +20,7 @@ export default function CurrentSideMiddle() {
   } = useMiddleSide();
 
   return (
-    <div className="middle-container-center-colony f-column justify-start">
+    <div className="middle-container-center-colony">
       {!selectedChannel && selectedRoom && (
         <ChatComponent room={selectedRoom} />
       )}

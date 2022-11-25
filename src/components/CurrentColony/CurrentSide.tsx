@@ -30,29 +30,42 @@ import { SideStatus } from "../../models/Side";
 import { toast } from "react-toastify";
 import { checkUserEligibility } from "../../helpers/utilities";
 import SideEligibilityModal from "../Modals/SideEligibilityModal";
+import { breakpoints, size } from "../../helpers/breakpoints";
 
 const CurrentSideStyled = styled.div`
-  .selected-channel {
-    border-radius: 10px;
-    background-color: var(--bg-primary);
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  ${breakpoints(size.lg, `{
+    flex-direction: row;
+    align-items: flex-start;
+    width: calc(100vw - 70px);
+  }`)}
+  .current-side-middle-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: calc(100vh - 8rem - 77px);
+    ${breakpoints(size.lg, `{
+      height: 100vh;
+    }`)}
   }
   .middle-container-center-colony {
-    height: 90vh;
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     width: 100%;
     align-items: start;
+    flex-grow: 1;
+    ${breakpoints(size.lg, `{
+      max-height: 100%;
+    }`)}
   }
-  .channel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    color: var(--text-secondary);
-    padding: 11px 11px 11px 27px;
-    border-bottom: 1px solid var(--bg-primary);
-  }
-  #announcement-list {
-    padding: 0px 1rem;
+  .header-desktop {
+    display: none;
+    ${breakpoints(size.lg, `{
+      display: flex;
+    }`)}
   }
 
   .profile-round-small > img {
@@ -195,14 +208,20 @@ export default function CurrentSide() {
   };
 
   return (
-    <CurrentSideStyled className="flex align-start w-100">
+    <CurrentSideStyled>
       {currentSide?.status === SideStatus.active ? (
         <>
-          <CurrentSideLeft />
+          <CurrentSideLeft 
+            channel={selectedChannel} 
+            room={selectedRoom}
+            setThread={setThread}
+            thread={thread}
+          />
 
-          <div className="f-column w-100">
+          <div className="current-side-middle-container">
             <MiddleContainerHeader
               channel={selectedChannel}
+              className="header-desktop"  
               room={selectedRoom}
               setThread={setThread}
               thread={thread}

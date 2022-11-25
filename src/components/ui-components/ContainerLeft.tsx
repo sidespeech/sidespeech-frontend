@@ -10,10 +10,12 @@ interface DivProps {
   paddingTop?: number;
   color?: string;
   backgroundColor?:string;
+  width?: string;
 }
 
 const ContainerLeft = styled.div<DivProps>`
   min-width: ${(props) => (props.minWidth ? props.minWidth : "200")}px;
+  width: ${(props) => (props.width ? props.width : "auto")};
   height: ${(props) => (props.height ? props.height : "92")}vh;
   display: ${(props) => (props.display ? props.display : "flex")};
   flex-direction: ${(props) => (props.flexDirection ? props.flexDirection : "column")};
