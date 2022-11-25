@@ -5,6 +5,7 @@ import { Side } from "../models/Side";
 import alchemyService from "./alchemy.service";
 import _ from "lodash";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Informations";
+
 import { InitialStateSide } from "../components/NewSide/NewSide";
 
 

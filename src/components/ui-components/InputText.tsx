@@ -219,7 +219,7 @@ const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
       {props.type === "date" && (
         <span
           className="absolute"
-          style={{ ...props.iconRightPos, color: props.color }}
+          style={{ ...props.iconRightPos, color: props.color,pointerEvents: "none"  }}
         >
           <svg
             style={{ transform: `scale(${props.iconSize || 1})` }}
