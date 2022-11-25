@@ -195,6 +195,7 @@ export default function Admission({
     const filtered = collections.filter(
       (c) => !selectedCollections.includes(c.address)
     );
+
     setFilteredCollections(filtered);
   }, [divCollections]);
 
@@ -314,7 +315,9 @@ export default function Admission({
                             onChange={(value: number) =>
                               setNumberOfNftNeededToDivCollection(value, i)
                             }
+                            collections={collections}
                             defaultValue={1}
+                            currentDiv={current}
                           />
                         </div>
                       </div>
@@ -351,10 +354,11 @@ export default function Admission({
                                       }
                                       options={
                                         current["traits_values"].length
-                                          ? [
+                                          ? 
+                                          [
                                             "Select trait",
                                             ...current["traits_values"].map(
-                                              (item: any) => item["property"]["label"]
+                                              (item: any) => item["property"]["value"]
                                             ),
                                           ]
                                           : ["Traits"]
@@ -373,29 +377,63 @@ export default function Admission({
                                       arrowPosition={{ top: 12, right: 15 }}
                                       values={
                                         current["traits_values"].length
-                                          ? [
+                                          ? 
+                                          (fcurrent["value_selected"]) ?
+                                          [
+                                            "Select value of trait",
+                                            fcurrent["value_selected"],
+                                            ...(current["traits_values"].reduce(
+                                              (prev: any, innerCurrent: any) => {
+                                                if (innerCurrent["property"]["value"] === fcurrent["trait_selected"])
+                                                  prev = innerCurrent['values'].filter(function(el:any) {
+                                                    if (innerCurrent['values_used'].indexOf(el) < 0)
+                                                      return el
+                                                  });
+                                                return prev
+                                            }, []).map((item: any) => item["value"]))
+                                          ] : 
+                                          [
                                             "",
-                                            ...(current["traits_values"].find(
-                                              (item: any) =>
-                                                item["property"]["value"] ===
-                                                fcurrent["trait_selected"]
-                                            ) || { values: [] })["values"].map(
-                                              (item: any) => item["value"]
-                                            ),
+                                            ...(current["traits_values"].reduce(
+                                              (prev: any, innerCurrent: any) => {
+                                                if (innerCurrent["property"]["value"] === fcurrent["trait_selected"])
+                                                  prev = innerCurrent['values'].filter(function(el:any) {
+                                                    if (innerCurrent['values_used'].indexOf(el) < 0)
+                                                      return el
+                                                  });
+                                                return prev
+                                            }, []).map((item: any) => item["value"]))
                                           ]
                                           : [""]
                                       }
                                       options={
                                         current["traits_values"].length
-                                          ? [
+                                          ? 
+                                          (fcurrent["value_selected"]) ?
+                                          [
                                             "Select value of trait",
-                                            ...(current["traits_values"].find(
-                                              (item: any) =>
-                                                item["property"]["value"] ===
-                                                fcurrent["trait_selected"]
-                                            ) || { values: [] })["values"].map(
-                                              (item: any) => item["label"]
-                                            ),
+                                            fcurrent["value_selected"],
+                                            ...(current["traits_values"].reduce(
+                                              (prev: any, innerCurrent: any) => {
+                                                if (innerCurrent["property"]["value"] === fcurrent["trait_selected"])
+                                                  prev = innerCurrent['values'].filter(function(el:any) {
+                                                    if (innerCurrent['values_used'].indexOf(el) < 0)
+                                                      return el
+                                                  });
+                                                return prev
+                                            }, []).map((item: any) => item["value"]))
+                                          ] : 
+                                          [
+                                            "Select value of trait",
+                                            ...(current["traits_values"].reduce(
+                                              (prev: any, innerCurrent: any) => {
+                                                if (innerCurrent["property"]["value"] === fcurrent["trait_selected"])
+                                                  prev = innerCurrent['values'].filter(function(el:any) {
+                                                    if (innerCurrent['values_used'].indexOf(el) < 0)
+                                                      return el
+                                                  });
+                                                return prev
+                                            }, []).map((item: any) => item["value"]))
                                           ]
                                           : ["Values"]
                                       }

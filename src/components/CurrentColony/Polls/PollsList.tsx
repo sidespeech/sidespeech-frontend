@@ -21,16 +21,32 @@ import { EventType } from "../../../constants/EventType";
 import PollItem from "./PollItem";
 import { Announcement } from "../../../models/Announcement";
 import { Role } from "../../../models/Profile";
+import { breakpoints, size } from "../../../helpers/breakpoints";
 
 const PollsStyled = styled.div`
   position: relative;
   width: 100%;
-  height: 100%;
   padding: 0px 1rem;
+  max-height: calc(100vh - 8rem - 77px);
+  ${breakpoints(
+    size.lg,
+    `{
+    max-height: calc(100vh - 4rem);
+  }`
+  )}
+  &>div {
+    overflow-y: scroll;
+  }
   .poll-item {
-    padding: 13px 16px 17px 16px;
+    padding: 1rem 0;
     width: 100%;
     height: auto;
+    ${breakpoints(
+      size.lg,
+      `{
+      padding: 1rem;
+    }`
+    )}
     &.border-top {
       border-top: 1px solid var(--bg-secondary-light);
     }
@@ -66,8 +82,34 @@ const PollsStyled = styled.div`
   }
   .create-poll-btn {
     position: fixed;
-    bottom: 2rem;
+    bottom: calc(77px + 2rem);
     right: 2rem;
+    width: auto;
+    padding: 0 1rem;
+    ${breakpoints(
+      size.lg,
+      `{
+      bottom: 2rem;
+      width: 174px;
+    }`
+    )}
+    & svg {
+      ${breakpoints(
+        size.lg,
+        `{
+        margin: .5rem;
+      }`
+      )}
+    }
+    & span {
+      display: none;
+      ${breakpoints(
+        size.lg,
+        `{
+        display: inline;
+      }`
+      )}
+    }
   }
 `;
 
@@ -231,11 +273,9 @@ export default function PollsList({
         <div className="w-100" style={{ padding: "11px", marginTop: "auto" }}>
           <Button
             classes="create-poll-btn"
-            width="174px"
             onClick={() => setCreatePollModal(true)}
           >
             <svg
-              className="mr-2"
               width="17"
               height="18"
               viewBox="0 0 17 18"
@@ -247,7 +287,7 @@ export default function PollsList({
                 fill="white"
               />
             </svg>
-            Create Poll
+            <span>Create Poll</span>
           </Button>
         </div>
       )}
