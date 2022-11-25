@@ -8,9 +8,6 @@ import TabItems from "../ui-components/TabItems";
 import Informations from "../CurrentColony/settings/informations/Information";
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
-import Admission from "./admission/Admission";
-import Channels from "../CurrentColony/settings/channels/ChannelsTab";
-import Invitation from "../CurrentColony/settings/invitation/InvitationTab";
 import { apiService } from "../../services/api.service";
 import {
   addUserParsedSide,
@@ -26,6 +23,9 @@ import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
 import { sideAPI } from "../../services/side.service";
 import { breakpoints, size } from "../../helpers/breakpoints";
+import Admission from "../NewSide/admission/Admission";
+import Invitation from "../CurrentColony/settings/invitation/InvitationTab";
+import Channels from "../CurrentColony/settings/channels/ChannelsTab";
 
 const NewSideStyled = styled.div`
 width: 100%;
@@ -319,22 +319,25 @@ export default function NewSide() {
         }
         setInvitationUsers(invitationsUsersObject);
       };
-      getInvitationUsers({ ...user });
+      getInvitationUsers({...user});
     }
   }, [user]);
 
   const handleTabs = async (tabIndex: number) => {
     let current_data = { ...formData };
     let current_steps = [...steps];
-    let isValidate: boolean;
+    let isValidate:boolean;
 
     if (currentStep < tabIndex) {
       isValidate = await validatorSteps(currentStep, current_data)
+      // if (!isValidate || currentStep + 1 < tabIndex) return 
       const tabCompletedValidator = current_steps.find((item, index) => !item['completed'] && index < tabIndex && !item['active'])
-      if (!isValidate || tabCompletedValidator) return
+
+      if (!isValidate || tabCompletedValidator) return 
     }
 
     const currentStepsState = current_steps.map((item: any, map_i: number) => {
+      // if (!previous) {
       // Turn active or not for selected item
       item["active"] = map_i === tabIndex ? true : false;
       // Turn completed or not for previous or next items
@@ -356,7 +359,7 @@ export default function NewSide() {
 
     if (!previous) {
       const isValidate = await validatorSteps(index, current_data)
-      if (!isValidate) return
+      if (!isValidate) return 
     }
 
     const currentStepsState = current_steps.map((item: any, map_i: number) => {
@@ -381,7 +384,7 @@ export default function NewSide() {
 
 
   // Functions to check mandatory data in steps
-  const validatorSteps = async (index: number, current_data: any) => {
+  const validatorSteps = async (index: number, current_data:any) => {
     // Checking if sideImage and name stored to continu to the other steps
     if (
       (index === 0 && !current_data["sideImage"]) ||
@@ -395,34 +398,32 @@ export default function NewSide() {
     // Set conditions and checking if there is minimum one condition to continu to the other steps
     if (index === 1) {
       let current_divs = [...divCollections];
-
       let conditions: any = {};
       for (let div of current_divs) {
         if (
-          div["collection"].trim().length !== 0 && div["features"].length &&
-          !(div["features"].find((item: any) => item["trait_selected"].trim().length == 0)) &&
-          !(div["features"].find((item: any) => item["value_selected"].trim().length == 0))
+          div["collection"].trim().length !== 0 &&
+          !(div["features"].find((item:any) => item["trait_selected"].trim().length == 0)) &&
+          !(div["features"].find((item:any) => item["value_selected"].trim().length == 0))
         ) {
 
-          conditions[div["collection"]] = { features: [] };
+          conditions[div["collection"]] = { features : []};
           conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
 
           for (let feature of div["features"]) {
             conditions[div["collection"]]['features'].push({
-              property: feature['trait_selected'],
-              value: feature["value_selected"]
+              property : feature['trait_selected'],
+              value : feature["value_selected"]
             })
           }
-        } else {
-          toast.error("There is one or more conditions not completed", { toastId: 3 });
-          return false;
+          // conditions[div["collection"]][div["trait_selected"]] =
+          //   div["value_selected"];
+          // conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
         }
       }
       if (Object.keys(conditions).length === 0) {
         toast.error("You need to enter miminum one condition", { toastId: 3 });
         return false;
       }
-
       setFormData({ ...formData, conditions: conditions });
     }
 
@@ -476,14 +477,10 @@ export default function NewSide() {
     if (address.trim().length) {
       let current_divs = [...divCollections];
       current_divs[index]["collection"] = address;
-
       current_divs[index]["traits_values"] = createPropertiesObject(address);
 
       const data = filteredCollections.find((item: Collection) => item['address'] === address);
       current_divs[index]["metadata"] = data
-
-      console.log('current_divs[index] :', current_divs[index]);
-
       setDivCollection(current_divs);
     }
   };
@@ -495,21 +492,11 @@ export default function NewSide() {
     return properties;
   }
 
-  const setSidePropertyCondition = (event: any, index: number, findex: number) => {
+  const setSidePropertyCondition = (event: any, index: number, findex:number) => {
     const trait = event.target.value;
     if (trait.trim().length) {
       let current_divs = [...divCollections];
-
-      const last_selected = current_divs[index]['features'][findex]["trait_selected"]
       current_divs[index]['features'][findex]["trait_selected"] = trait;
-      current_divs[index]['features'][findex]["value_selected"] = "";
-
-      // Clear last selected property values used
-      current_divs[index]["traits_values"] = current_divs[index]["traits_values"].map((item: any) => {
-        if (last_selected === item['property']['value']) item["values_used"] = []
-        return item;
-      })
-
       setDivCollection(current_divs);
     }
   };
@@ -518,33 +505,15 @@ export default function NewSide() {
     const value = event.target.value;
     if (value.trim().length) {
       let current_divs = [...divCollections];
-
-      console.log('findex :', findex)
-      console.log('index :', index)
-
-      // Define value selected
       current_divs[index]['features'][findex]["value_selected"] = value;
-
-      // Adding the value as already used in the 'features' cell of it property
-      current_divs[index]["traits_values"] = current_divs[index]["traits_values"].map((item: any) => {
-
-        console.log('item :', item)
-
-        const valueUsed = item['values'].find((innerElem: any) => innerElem['value'] == value);
-        if (valueUsed) {
-          item["values_used"].push(valueUsed);
-        }
-        return item;
-      })
-
       setDivCollection(current_divs);
     }
   };
 
   const onRemoveFeature = (index: number, findex: number) => {
-    let current_divs = [...divCollections];
-    current_divs[index]['features'].splice(findex, 1);
-    setDivCollection(current_divs);
+      let current_divs = [...divCollections];
+      current_divs[index]['features'].splice(findex, 1);
+      setDivCollection(current_divs);
   };
 
   // Add collection div in condition
@@ -570,33 +539,24 @@ export default function NewSide() {
   const addConditionToDivCollection = (index: number) => {
     let current_divs = [...divCollections];
 
-    if (current_divs[index]['features'].length < MAX_NUMBER_OF_COLLECTIONS) {
-      current_divs[index]['features'].push({
-        trait_selected: "",
-        value_selected: "",
-        traits_values: [],
-      })
-      setDivCollection(current_divs);
-    } else {
-      toast.error(
-        "You can not create side with more than 5 features per collections.",
-        { toastId: 8 }
-      );
-    }
+    current_divs[index]['features'].push({
+      trait_selected: "",
+      value_selected: "",
+      traits_values: [],
+    })
+    setDivCollection(current_divs);
   };
   const setNumberOfNftNeededToDivCollection = (
     number: number,
     index: number
   ) => {
     let current_divs = [...divCollections];
-    if (current_divs[index]['collection'].length) {
-      current_divs[index] = {
-        ...current_divs[index],
-        numberNeeded: number,
-      };
-      setDivCollection(current_divs);
-    }
+    current_divs[index] = {
+      ...current_divs[index],
+      numberNeeded: number,
+    };
 
+    setDivCollection(current_divs);
   };
 
   // Remove collection div in condition
@@ -762,7 +722,7 @@ export default function NewSide() {
         const conditionObject = JSON.parse(data["conditions"]);
 
         const conditions = Object.keys(conditionObject).reduce(function (prev: Metadata[], key: string) {
-          if (key !== 'required') {
+          if (key !== 'required'){
             for (let feature of conditionObject[key]['features'])
               prev.push({
                 address: key,
@@ -787,12 +747,14 @@ export default function NewSide() {
         });
         if (users.length) await apiService.sendMultipleInvitations(users);
         if (user) {
-          const profile = await apiService.joinSide(
-            user?.id,
-            newSide.id,
-            Role.Admin
-          );
-          dispatch(updateProfiles(profile));
+          try {
+            const profile = await apiService.joinSide(
+              user?.id,
+              newSide.id,
+              Role.Admin
+            );
+            dispatch(updateProfiles(profile));
+          } catch (error) { }
         }
         dispatch(addUserParsedSide(newSide));
         dispatch(updateSidesByUserCollections(null));
@@ -814,17 +776,19 @@ export default function NewSide() {
   return (
     <NewSideStyled>
       <div className="title-wrapper">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9 15H11V11H15V9H11V5H9V9H5V11H9V15ZM10 20C8.61667 20 7.31667 19.7373 6.1 19.212C4.88333 18.6873 3.825 17.975 2.925 17.075C2.025 16.175 1.31267 15.1167 0.788 13.9C0.262667 12.6833 0 11.3833 0 10C0 8.61667 0.262667 7.31667 0.788 6.1C1.31267 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.31233 6.1 0.787C7.31667 0.262333 8.61667 0 10 0C11.3833 0 12.6833 0.262333 13.9 0.787C15.1167 1.31233 16.175 2.025 17.075 2.925C17.975 3.825 18.6873 4.88333 19.212 6.1C19.7373 7.31667 20 8.61667 20 10C20 11.3833 19.7373 12.6833 19.212 13.9C18.6873 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6873 13.9 19.212C12.6833 19.7373 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z" fill="#B4C1D2" />
-        </svg>
-        <h2 className="title">Create Side</h2>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 15H11V11H15V9H11V5H9V9H5V11H9V15ZM10 20C8.61667 20 7.31667 19.7373 6.1 19.212C4.88333 18.6873 3.825 17.975 2.925 17.075C2.025 16.175 1.31267 15.1167 0.788 13.9C0.262667 12.6833 0 11.3833 0 10C0 8.61667 0.262667 7.31667 0.788 6.1C1.31267 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.31233 6.1 0.787C7.31667 0.262333 8.61667 0 10 0C11.3833 0 12.6833 0.262333 13.9 0.787C15.1167 1.31233 16.175 2.025 17.075 2.925C17.975 3.825 18.6873 4.88333 19.212 6.1C19.7373 7.31667 20 8.61667 20 10C20 11.3833 19.7373 12.6833 19.212 13.9C18.6873 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6873 13.9 19.212C12.6833 19.7373 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z" fill="#B4C1D2"/>
+          </svg>
+          <h2 className="title">Create Side</h2>
       </div>
 
       <div className="tabs-wrapper_mobile">
         {steps.map((step: any) => (
-          <i className={`${step["icon"]} ${step["active"] ? "active" : ""
-            } ${step["completed"] ? "completed" : ""
-            } step-icon`} key={step["icon"]}></i>
+          <i className={`${step["icon"]} ${
+            step["active"] ? "active" : ""
+          } ${
+            step["completed"] ? "completed" : ""
+          } step-icon`} key={step["icon"]}></i>
         ))}
       </div>
 
@@ -835,13 +799,14 @@ export default function NewSide() {
             {steps.map((step: any, index: number) => {
               return (
                 <TabItems
-                  onClick={() => handleTabs(index)}
                   key={index}
-                  className={`nav-link ${step["active"] ? "active" : ""
-                    } ${step["completed"] ? "completed" : ""
-                    } sidebar-item text-secondary-dark`}
+                  className={`nav-link ${
+                    step["active"] ? "active" : ""
+                  } ${
+                    step["completed"] ? "completed" : ""
+                  } sidebar-item text-secondary-dark`}
                 >
-                  <i className={`${step["icon"]} step-icon`}></i>
+                  <i className={`${step["icon"]} step-icon mr-2`}></i>
                   {step["label"]}{" "}
                   {step["completed"] ? (
                     <i className="fa-solid fa-check"></i>
@@ -868,7 +833,7 @@ export default function NewSide() {
                   </>
                 ) : step["label"] === "Admission" && step["active"] ? (
                   <>
-                    <Admission
+                    <Admission 
                       divCollections={divCollections}
                       collections={collectionHolder}
                       setSideTokenAddress={setSideTokenAddress}
@@ -886,7 +851,7 @@ export default function NewSide() {
                     />
                   </>
                 ) : step["label"] === "Channels" && step["active"] ? (
-                  <div>
+                  <div style={{ maxWidth: "fit-content" }}>
                     <Channels
                       currentSide={currentSide}
                       channelsNewSide={channels}
