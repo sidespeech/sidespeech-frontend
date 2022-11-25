@@ -67,6 +67,7 @@ export class Collection {
                 values: [
                   { label: attribute["value"], value: attribute["value"] },
                 ],
+                values_used : []
               });
             }
           }
