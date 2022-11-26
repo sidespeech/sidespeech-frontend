@@ -142,15 +142,17 @@ export default function UserSides() {
     const account = localStorage.getItem("userAccount");
     if (currentSide && account) getAndSetRoomNotifications(account);
 
-    const sideProfile = userData.user?.profiles.find(
-      (profile) => profile.side?.id === side?.id
-    );
-  
-    const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
-    SetIsSideAdmin(isSideAdminResponse);
-  }, [currentSide, userData]);
+    if (userData.user && side) {
+      const sideProfile = userData.user?.profiles.find(
+        (profile) => profile.side?.id === side?.id
+      );
 
-
+      const isSideAdminResponse =
+        sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
+      console.log(sideProfile, isSideAdmin);
+      SetIsSideAdmin(isSideAdminResponse);
+    }
+  }, [currentSide, userData, side]);
 
   return (
     <>
@@ -188,6 +190,7 @@ export default function UserSides() {
             setDisplayEligibility={setDisplayModal}
             setDisplayLeaveSide={setDisplayLeaveSide}
             isSideAdmin={isSideAdmin}
+            setSelectedSide={setSide}
           />
         )}
         {displayLeaveSide && side && (

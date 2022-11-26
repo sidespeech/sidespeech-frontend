@@ -5,12 +5,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import ContainerLeft from "../ui-components/ContainerLeft";
 import TabItems from "../ui-components/TabItems";
-import Informations from "../CurrentColony/settings/informations/informations";
+
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
 import Admission from "./admission/Admission";
-import Channels from "../CurrentColony/settings/channels/channels";
-import Invitation from "../CurrentColony/settings/invitation/invitation";
+import Channels from "../CurrentColony/settings/channels/ChannelsTab";
+import Invitation from "../CurrentColony/settings/invitation/InvitationTab";
 import { apiService } from "../../services/api.service";
 import {
   addUserParsedSide,
@@ -26,6 +26,7 @@ import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
 import { sideAPI } from "../../services/side.service";
 import { breakpoints, size } from "../../helpers/breakpoints";
+import Informations from "../CurrentColony/settings/informations/Information";
 
 const NewSideStyled = styled.div`
 width: 100%;

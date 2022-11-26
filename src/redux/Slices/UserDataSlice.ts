@@ -60,13 +60,16 @@ export const fetchUserDatas = createAsyncThunk(
   async (address: string, { dispatch, getState }) => {
     const nfts = await alchemyService.getUserNfts(address);
     const collections = await alchemyService.getUserCollections(address);
-
+    const data = await getSidesCountByCollection(
+      collections.map((elem) => elem["address"])
+    );
     await apiService.savedCollections(collections);
 
     let res: any = {};
     for (let nft of nfts) {
       const address = nft["token_address"];
       const existingObject = res[address];
+      
       if (existingObject) {
         existingObject.nfts.push(nft);
       } else {
@@ -74,10 +77,21 @@ export const fetchUserDatas = createAsyncThunk(
           (c: Collection) => c.address === address
         );
         res[address].nfts.push(nft);
+
+        // Get Side Count
+        if (data.sides) {
+          const numberSides = data["sides"].filter((item: Side) => {
+            return item["collections"].find(
+              (coll: Collection) => coll["address"] === address
+            );
+          });
+
+          res[address]["sideCount"] = numberSides.length;
+        } else {
+          res[address]["sideCount"] = 0;
+        }
       }
     }
-
-    dispatch(updateSidesByUserCollections(res));
     return res;
   }
 );
@@ -100,6 +114,11 @@ export const getSidesByCollection = createAsyncThunk(
     return response;
   }
 );
+
+export const getSidesCountByCollection = async (addresses: string[]) => {
+  const response = await sideAPI.getSidesByCollections(addresses);
+  return response;
+};
 
 export const addUserParsedSide = createAsyncThunk(
   "userData/addUserParsedSide",
@@ -201,17 +220,16 @@ export const userDataSlice = createSlice({
       state.userCollectionsData = { ...action.payload };
       state.userCollectionsLoading = false;
     });
-    builder.addCase(getSidesByCollection.pending, (state, action) => {
-      state.userCollectionsLoadingSides = true;
-    });
-    builder.addCase(getSidesByCollection.rejected, (state, action) => {
-      state.userCollectionsLoadingSides = false;
-    });
-    builder.addCase(getSidesByCollection.fulfilled, (state, action) => {
-      state.userCollectionsData[action.payload.contracts].sideCount =
-        action.payload.count;
-      state.userCollectionsLoadingSides = false;
-    });
+    // builder.addCase(getSidesByCollection.pending, (state, action) => {
+    //   state.userCollectionsLoadingSides = true;
+    // });
+    // builder.addCase(getSidesByCollection.rejected, (state, action) => {
+    //   state.userCollectionsLoadingSides = false;
+    // });
+    // builder.addCase(getSidesByCollection.fulfilled, (state, action) => {
+    //   state.userCollectionsData[action.payload.contracts].sideCount = action.payload.count;
+    //   state.userCollectionsLoadingSides = false;
+    // });
   },
 });
 

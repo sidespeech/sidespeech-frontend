@@ -1,12 +1,12 @@
 import superagent from "superagent";
 import { BASE_URL } from "../constants/constants";
 import { checkUserEligibility } from "../helpers/utilities";
-import { Side } from "../models/Side";
+import { Side, SideStatus } from "../models/Side";
 import alchemyService from "./alchemy.service";
 import _ from "lodash";
-import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/informations";
-import { InitialStateSide } from "../components/NewSide/NewSide";
 
+import { InitialStateSide } from "../components/NewSide/NewSide";
+import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Information";
 
 const post = (url: string) => {
   const token = localStorage.getItem("jwtToken");
@@ -94,7 +94,7 @@ export class sideAPI {
   // get all sides for an array of collections
   static async getSidesByCollections(
     collections: string[]
-  ): Promise<{ contracts: string; count: number }> {
+  ): Promise<{ contracts: string; sides: any[] }> {
     const res = await superagent.get(
       `${BASE_URL}/side/collection/sidescount?contracts=${collections?.join(
         ","
@@ -120,6 +120,13 @@ export class sideAPI {
   ): Promise<Side> {
     const res = await superagent.patch(`${BASE_URL}/side/${id}`).send(side);
     return res["body"]["side"];
+  }
+  static async updateSideStatus(status: SideStatus, id: string): Promise<Side> {
+    const res = await post(`${BASE_URL}/side/update-status`).send({
+      id: id,
+      status: status,
+    });
+    return new Side(res["body"]);
   }
 }
 
