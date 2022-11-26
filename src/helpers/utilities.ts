@@ -145,6 +145,9 @@ export function checkUserEligibility(
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
 
+  console.log('selectedSide :', selectedSide)
+  console.log('nfts :', nfts)
+
   if (selectedSide) {
 
     let checkingWithAttribute = []
@@ -156,6 +159,10 @@ export function checkUserEligibility(
       if (withAttributes.length) checkingWithAttribute.push(collection)
       else checkingWithoutAttribute.push(collection)
     }
+
+    console.log('checkingWithAttribute :', checkingWithAttribute)
+    console.log('checkingWithoutAttribute :', checkingWithoutAttribute)
+
 
     selectedSide.metadataSides?.forEach((item) => {
       const tab = [];
@@ -192,14 +199,11 @@ export function checkUserEligibility(
       res[token_address] = tab;
     });
 
-    console.log('checkingWithoutAttribute :', checkingWithoutAttribute)
 
     selectedSide.collectionSides?.forEach((item) => {
       const tab = [];
       const token_address = item["collectionId"];
       const collection = nfts[token_address];
-
-      console.log('item :', item)
 
       if (checkingWithoutAttribute.includes(item)) {
 
@@ -207,12 +211,10 @@ export function checkUserEligibility(
           numberNeeded: item["numberNeeded"],
         };
 
-        console.log('condition :', condition)
-
         if (collection) {
           tab.push(validateNumberOfNfts(condition, collection));
         } else {
-          return false
+          tab.push(validateNumberOfNfts(condition, {nfts : [], address : item["collectionId"]}));
         }
 
         res[token_address] = tab;
@@ -223,6 +225,9 @@ export function checkUserEligibility(
   if (Object.keys(res).length > 0) {
     eligible = isEligible(res, selectedSide['required']);
   }
+
+  console.log('res :', res)
+
   return [res, eligible];
 }
 
@@ -242,7 +247,7 @@ function validateNftsWithAttributes(
   );
 }
 
-function validateNumberOfNfts(condition: any, collection: Collection) {
+function validateNumberOfNfts(condition: any, collection: Collection | {nfts : any[], address : string}) {
   // verifying number of needed NFTS from the collection
   const number: number = Number.parseInt(condition["numberNeeded"]);
   const numberValidation = validateNumberOfNftsForCollection(
@@ -252,7 +257,7 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
   // creating response
   return createResponseObject(
     numberValidation,
-    [],
+    collection.nfts,
     `You need ${
       number - collection.nfts.length
     } nfts more to meet the condition.`,

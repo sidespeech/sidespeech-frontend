@@ -142,11 +142,6 @@ export default function SideEligibilityModal(
         userCollectionsData,
         props.selectedSide
       );
-
-      console.log('userCollectionsData :', userCollectionsData)
-      console.log('props.selectedSide :', props.selectedSide)
-      console.log('[res, isEligible] :', [res, isEligible])
-
       setIsEligible(isEligible);
       setDetails(res);
     }

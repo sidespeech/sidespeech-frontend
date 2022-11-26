@@ -149,6 +149,7 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
     const [viewMode, setViewMode] = useState<string>('card');
 
     useEffect(() => {
+        console.log('userCollectionsData :', userCollectionsData)
         if (userCollectionsData) {
             let filteredArray = _.orderBy(userCollectionsData, "name")
             if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
