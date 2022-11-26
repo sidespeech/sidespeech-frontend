@@ -4,9 +4,9 @@ import { checkUserEligibility } from "../helpers/utilities";
 import { Side } from "../models/Side";
 import alchemyService from "./alchemy.service";
 import _ from "lodash";
-import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Informations";
 
 import { InitialStateSide } from "../components/NewSide/NewSide";
+import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Information";
 
 
 const post = (url: string) => {

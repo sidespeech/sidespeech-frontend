@@ -1,6 +1,5 @@
 import { Vote } from "./../models/Vote";
 import superagent from "superagent";
-import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Informations";
 
 import { InitialStateSide } from "../components/NewSide/NewSide";
 import { BASE_URL } from "../constants/constants";
