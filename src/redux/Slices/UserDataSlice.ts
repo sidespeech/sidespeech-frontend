@@ -60,14 +60,16 @@ export const fetchUserDatas = createAsyncThunk(
   async (address: string, { dispatch, getState }) => {
     const nfts = await alchemyService.getUserNfts(address);
     const collections = await alchemyService.getUserCollections(address);
-
-    const data = await getSidesCountByCollection(collections.map(elem => elem['address']));
+    const data = await getSidesCountByCollection(
+      collections.map((elem) => elem["address"])
+    );
     await apiService.savedCollections(collections);
 
     let res: any = {};
     for (let nft of nfts) {
       const address = nft["token_address"];
       const existingObject = res[address];
+      
       if (existingObject) {
         existingObject.nfts.push(nft);
       } else {
@@ -77,11 +79,17 @@ export const fetchUserDatas = createAsyncThunk(
         res[address].nfts.push(nft);
 
         // Get Side Count
-        const numberSides = data['sides'].filter((item:Side) => {
-          return item['collections'].find((coll:Collection) => coll['address'] === address)
-        })
-        res[address]['sideCount'] = numberSides.length
+        if (data.sides) {
+          const numberSides = data["sides"].filter((item: Side) => {
+            return item["collections"].find(
+              (coll: Collection) => coll["address"] === address
+            );
+          });
 
+          res[address]["sideCount"] = numberSides.length;
+        } else {
+          res[address]["sideCount"] = 0;
+        }
       }
     }
     return res;
@@ -134,9 +142,9 @@ export const userDataSlice = createSlice({
 
       state.sides = action.payload.user.profiles
         ? action.payload.user.profiles.map((p: Profile) => {
-          p.side["profiles"] = [p];
-          return p.side;
-        })
+            p.side["profiles"] = [p];
+            return p.side;
+          })
         : [];
       state.redirectTo = action.payload.redirectTo;
 
