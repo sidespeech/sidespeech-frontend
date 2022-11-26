@@ -13,7 +13,7 @@ import { apiService } from "../../services/api.service";
 import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 // icon
-import nftIcon from "./../../assets/example-nft.svg";
+import nftIcon from "./../../assets/images/bad_image_loading@2x.svg";
 // models
 import { NFT } from "../../models/interfaces/nft";
 import { UserCollectionsData } from "../../models/interfaces/UserCollectionsData";

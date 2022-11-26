@@ -5,6 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import ContainerLeft from "../ui-components/ContainerLeft";
 import TabItems from "../ui-components/TabItems";
+import Informations from "../CurrentColony/settings/informations/Informations";
+
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
 import Admission from "./admission/Admission";
@@ -25,7 +27,6 @@ import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
 import { sideAPI } from "../../services/side.service";
 import { breakpoints, size } from "../../helpers/breakpoints";
-import Informations from "../CurrentColony/settings/informations/Information";
 
 const NewSideStyled = styled.div`
 width: 100%;
