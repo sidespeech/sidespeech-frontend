@@ -22,6 +22,8 @@ import {
   updateProfiles,
 } from "../../redux/Slices/UserDataSlice";
 import { State, Type } from "../../models/Invitation";
+import { sideAPI } from "../../services/side.service";
+import { useNavigate } from "react-router-dom";
 
 const eligibilityTexts = {
   success: {
@@ -79,12 +81,14 @@ interface ISideEligibilityModalProps {
   setDisplayEligibility: React.Dispatch<React.SetStateAction<boolean>>;
   setDisplayLeaveSide: React.Dispatch<React.SetStateAction<boolean>>;
   isSideAdmin?: boolean;
+  setSelectedSide?: React.Dispatch<React.SetStateAction<Side | null>>;
 }
 
 export default function SideEligibilityModal(
   props: ISideEligibilityModalProps
 ) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { userCollectionsData, user } = useSelector(
     (state: RootState) => state.user
@@ -136,7 +140,6 @@ export default function SideEligibilityModal(
   };
 
   useEffect(() => {
-
     if (userCollectionsData) {
       const [res, isEligible] = checkUserEligibility(
         userCollectionsData,
@@ -146,6 +149,24 @@ export default function SideEligibilityModal(
       setDetails(res);
     }
   }, [userCollectionsData]);
+
+  useEffect(() => {
+    async function updateSide() {
+      const side = await sideAPI.updateSideStatus(
+        SideStatus.active,
+        props.selectedSide.id
+      );
+      props.setDisplayEligibility(false);
+      navigate(side.name);
+    }
+    if (
+      isEligible &&
+      props.selectedSide.status === SideStatus.inactive &&
+      props.isSideAdmin
+    ) {
+      updateSide();
+    }
+  }, [isEligible, props.selectedSide, props.isSideAdmin]);
 
   if (!userCollectionsData) return null;
 
