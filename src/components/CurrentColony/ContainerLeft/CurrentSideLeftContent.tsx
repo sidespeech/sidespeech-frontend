@@ -34,7 +34,7 @@ const SidebarStyled = styled.div`
 `;
 
 export default function CurrentSideLeftContent() {
-  const { account } = useSelector((state: RootState) => state.user);
+  const { account, currentProfile } = useSelector((state: RootState) => state.user);
   // const [displayColonySettings, setDisplayColonySettings] = useState<boolean>(false);
   // const [displayNewChannelModal, setDisplayNewChannelModal] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -231,6 +231,7 @@ export default function CurrentSideLeftContent() {
             dots={dotsPrivateMessage}
             handleSelectedUser={handleSelectedUser}
             selectedUser={selectedUser}
+            isMembersList
           />
         </Accordion>
 
