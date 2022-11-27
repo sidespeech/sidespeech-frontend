@@ -15,6 +15,7 @@ import { ProfilePictureData, SpanElipsis } from "../../../GeneralSettings/Accoun
 import Button from "../../../ui-components/Button";
 import {
   fixURL,
+  getRandomId,
   reduceTokenId,
   reduceWalletAddress,
 } from "../../../../helpers/utilities";
@@ -69,14 +70,14 @@ export default function SideUserList({
       {currentSide?.profiles.map((p: Profile, index: number) => {
 
         let status;
-
+        const id = getRandomId();
         const isMe = p.id === currentProfile?.id;
         const room = currentProfile?.getRoom(p.id);
         const url = p.profilePicture?.metadata?.image
           ? fixURL(p.profilePicture?.metadata?.image)
           : undefined;  
        
-          if(usersStatus[index]) {
+          if(usersStatus[index] && usersStatus[index].user) {
             status = usersStatus[index].user.id == p.user.id ? true : false;
           } else {
             status = false;
@@ -85,7 +86,7 @@ export default function SideUserList({
           return (
           <>
             <ReactTooltip
-              id={p.id}
+              id={id}
               globalEventOff="click"
               place="right"
               className="tooltip-radius"
@@ -98,7 +99,7 @@ export default function SideUserList({
             <div
               data-tip
               data-event="click"
-              data-for={p.id}
+              data-for={id}
               key={index}
               onClick={
                 isMe ? () => {} : () => handleSelectedUser(p, currentProfile)
