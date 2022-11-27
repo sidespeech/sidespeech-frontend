@@ -5,8 +5,9 @@ import { Side, SideStatus } from "../models/Side";
 import alchemyService from "./alchemy.service";
 import _ from "lodash";
 
-import { InitialStateSide } from "../components/NewSide/NewSide";
+import { InitialChannelsState, InitialStateSide } from "../components/NewSide/NewSide";
 import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Information";
+import { User } from "../models/User";
 
 const post = (url: string) => {
   const token = localStorage.getItem("jwtToken");
@@ -109,8 +110,14 @@ export class sideAPI {
       .query({ name: name });
     return res.body.exist;
   }
+
   static async createSide(side: InitialStateSide): Promise<Side> {
     const res = await post(`${BASE_URL}/side`).send(side);
+    return new Side(res["body"]);
+  }
+
+  static async createFullSide(side: InitialStateSide, channels:InitialChannelsState, userInvited: any[]): Promise<Side> {
+    const res = await post(`${BASE_URL}/side/create`).send({side: side, channels: channels, userInvited: userInvited});
     return new Side(res["body"]);
   }
 

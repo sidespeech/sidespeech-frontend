@@ -24,6 +24,7 @@ import {
 import { State, Type } from "../../models/Invitation";
 import { sideAPI } from "../../services/side.service";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../ui-components/Spinner";
 
 const eligibilityTexts = {
   success: {
@@ -53,20 +54,20 @@ const EligibilityResult = styled.div<IEligibilityResultProps>`
     props.info
       ? "var(--primary-opacity)"
       : props.isEligible
-      ? "var(--green-opacity)"
-      : "var(--red-opacity)"};
+        ? "var(--green-opacity)"
+        : "var(--red-opacity)"};
   border: 1px solid
     ${(props) =>
-      props.info
-        ? "var(--primary)"
-        : props.isEligible
+    props.info
+      ? "var(--primary)"
+      : props.isEligible
         ? "var(--green)"
         : "var(--red)"};
   & div:first-child {
     color: ${(props) =>
-      props.info
-        ? "var(--primary)"
-        : props.isEligible
+    props.info
+      ? "var(--primary)"
+      : props.isEligible
         ? "var(--green)"
         : "var(--red)"};
   }
@@ -96,7 +97,7 @@ export default function SideEligibilityModal(
 
   const [isEligible, setIsEligible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [details, setDetails] = useState<any>([]);
+  const [details, setDetails] = useState<any>({});
 
   const handleJoinSide = async () => {
     if (!user) return;
@@ -173,61 +174,67 @@ export default function SideEligibilityModal(
   return (
     <Modal
       body={
-        <>
-          <RoundedImageContainer height="104px" width="104px" radius={60}>
-            <img src={props.selectedSide?.sideImage} width="100%" alt="side" />
-          </RoundedImageContainer>
-          <h2>{props.selectedSide.name}</h2>
-          <div className="text-center">{props.selectedSide.description}</div>
-          <EligibilityResult
-            isEligible={
-              isEligible && props.selectedSide.status === SideStatus.active
-            }
-            info={
-              !props.isSideAdmin &&
-              props.selectedSide.status === SideStatus.inactive
-            }
-          >
-            {props.selectedSide.status === SideStatus.active ? (
-              <>
-                <div>
-                  {isEligible ? (
-                    <i className="fa-solid fa-circle-check mr-2"></i>
-                  ) : (
-                    <i className="fa-solid fa-circle-xmark mr-2"></i>
-                  )}
-                  {isEligible
-                    ? eligibilityTexts.success.title
-                    : eligibilityTexts.error.title}
-                </div>
-                <div>
-                  {isEligible
-                    ? eligibilityTexts.success.message
-                    : eligibilityTexts.error.message}
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  {!props.isSideAdmin ? (
-                    <i className="fa-solid fa-circle-info mr-2"></i>
-                  ) : (
-                    <i className="fa-solid fa-circle-xmark mr-2"></i>
-                  )}
-                  {!props.isSideAdmin
-                    ? "Inactive side"
-                    : eligibilityTexts.inactive.title}
-                </div>
-                <div>
-                  {!props.isSideAdmin
-                    ? " This side is currently inactive. Waiting for a new Administrator. Please try again later."
-                    : eligibilityTexts.inactive.message}
-                </div>
-              </>
-            )}
-          </EligibilityResult>
-          <Eligibility side={props.selectedSide} />
-        </>
+
+        !isLoading ?
+          <>
+            <RoundedImageContainer height="104px" width="104px" radius={60}>
+              <img src={props.selectedSide?.sideImage} width="100%" alt="side" />
+            </RoundedImageContainer>
+            <h2>{props.selectedSide.name}</h2>
+            <div className="text-center">{props.selectedSide.description}</div>
+            <EligibilityResult
+              isEligible={
+                isEligible && props.selectedSide.status === SideStatus.active
+              }
+              info={
+                !props.isSideAdmin &&
+                props.selectedSide.status === SideStatus.inactive
+              }
+            >
+              {props.selectedSide.status === SideStatus.active ? (
+                <>
+                  <div>
+                    {isEligible ? (
+                      <i className="fa-solid fa-circle-check mr-2"></i>
+                    ) : (
+                      <i className="fa-solid fa-circle-xmark mr-2"></i>
+                    )}
+                    {isEligible
+                      ? eligibilityTexts.success.title
+                      : eligibilityTexts.error.title}
+                  </div>
+                  <div>
+                    {isEligible
+                      ? eligibilityTexts.success.message
+                      : eligibilityTexts.error.message}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    {!props.isSideAdmin ? (
+                      <i className="fa-solid fa-circle-info mr-2"></i>
+                    ) : (
+                      <i className="fa-solid fa-circle-xmark mr-2"></i>
+                    )}
+                    {!props.isSideAdmin
+                      ? "Inactive side"
+                      : eligibilityTexts.inactive.title}
+                  </div>
+                  <div>
+                    {!props.isSideAdmin
+                      ? " This side is currently inactive. Waiting for a new Administrator. Please try again later."
+                      : eligibilityTexts.inactive.message}
+                  </div>
+                </>
+              )}
+            </EligibilityResult>
+            <Eligibility side={props.selectedSide} />
+          </>
+          :
+          <div className="spinner-wrapper">
+            <Spinner />
+          </div>
       }
       footer={
         props.selectedSide.status === SideStatus.active ? (

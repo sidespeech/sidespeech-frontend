@@ -81,8 +81,8 @@ export const fetchUserDatas = createAsyncThunk(
         // Get Side Count
         if (data.sides) {
           const numberSides = data["sides"].filter((item: Side) => {
-            return item["collections"].find(
-              (coll: Collection) => coll["address"] === address
+            return item["collectionSides"].find(
+              (coll: any) => coll["collectionId"] === address
             );
           });
 

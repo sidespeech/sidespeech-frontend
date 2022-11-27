@@ -25,6 +25,12 @@ const ModalContainer = styled.div<IModalContainerProps>`
     display: flex;
     justify-content: center;
   }
+  .spinner-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
   .modal-content {
     height: 100%;
     width: 100%;

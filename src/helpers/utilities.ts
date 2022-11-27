@@ -145,25 +145,18 @@ export function checkUserEligibility(
 ): [ElligibilityResponse, boolean] {
   const res: ElligibilityResponse = {};
 
-  console.log('selectedSide :', selectedSide)
-  console.log('nfts :', nfts)
-
   if (selectedSide) {
-
     let checkingWithAttribute = []
     let checkingWithoutAttribute:any[] = []
 
+    // Filter conditons with and without attributes
     for (let collection of selectedSide.collectionSides) {
-
       const withAttributes = selectedSide['metadataSides'].filter(elem => elem["metadata"]["address"] === collection['collectionId'])
       if (withAttributes.length) checkingWithAttribute.push(collection)
       else checkingWithoutAttribute.push(collection)
     }
 
-    console.log('checkingWithAttribute :', checkingWithAttribute)
-    console.log('checkingWithoutAttribute :', checkingWithoutAttribute)
-
-
+    // Checking eligibilty with attributes
     selectedSide.metadataSides?.forEach((item) => {
       const tab = [];
       const token_address = item["metadata"]["address"];
@@ -191,7 +184,6 @@ export function checkUserEligibility(
         tab.push(validateNumberOfNfts(condition, collection));
 
         // if no nfts corresponding to the condition returning error response
-
         tab.push(
           validateNftsWithAttributes(filteredNfts, condition, collection)
         );
@@ -199,14 +191,13 @@ export function checkUserEligibility(
       res[token_address] = tab;
     });
 
-
+    // Checking eligibilty without attributes
     selectedSide.collectionSides?.forEach((item) => {
       const tab = [];
       const token_address = item["collectionId"];
       const collection = nfts[token_address];
 
       if (checkingWithoutAttribute.includes(item)) {
-
         const condition = {
           numberNeeded: item["numberNeeded"],
         };
@@ -221,13 +212,11 @@ export function checkUserEligibility(
       }
     });
   }
+  
   let eligible = false;
   if (Object.keys(res).length > 0) {
     eligible = isEligible(res, selectedSide['required']);
   }
-
-  console.log('res :', res)
-
   return [res, eligible];
 }
 
