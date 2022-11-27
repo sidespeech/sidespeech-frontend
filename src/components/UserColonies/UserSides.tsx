@@ -47,7 +47,6 @@ const UserSidesStyled = styled.div`
 `;
 
 export default function UserSides() {
-  const { id: currentSideId } = useParams();
   const navigate = useNavigate();
 
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
@@ -167,7 +166,7 @@ export default function UserSides() {
                 displaySide(c);
               }}
               className={`colony-badge pointer ${
-                currentSideId === c.id ? "active" : ""
+                currentSide?.name === c.name ? "active" : ""
               }`}
               key={c.id}
             >
