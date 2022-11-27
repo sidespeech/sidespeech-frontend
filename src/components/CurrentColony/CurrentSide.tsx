@@ -36,19 +36,25 @@ const CurrentSideStyled = styled.div`
   width: 100vw;
   display: flex;
   flex-direction: column;
-  ${breakpoints(size.lg, `{
+  ${breakpoints(
+    size.lg,
+    `{
     flex-direction: row;
     align-items: flex-start;
     width: calc(100vw - 70px);
-  }`)}
+  }`
+  )}
   .current-side-middle-container {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     height: calc(100vh - 8rem - 77px);
-    ${breakpoints(size.lg, `{
+    ${breakpoints(
+      size.lg,
+      `{
       height: 100vh;
-    }`)}
+    }`
+    )}
   }
   .middle-container-center-colony {
     display: flex;
@@ -57,15 +63,21 @@ const CurrentSideStyled = styled.div`
     width: 100%;
     align-items: start;
     flex-grow: 1;
-    ${breakpoints(size.lg, `{
+    ${breakpoints(
+      size.lg,
+      `{
       max-height: 100%;
-    }`)}
+    }`
+    )}
   }
   .header-desktop {
     display: none;
-    ${breakpoints(size.lg, `{
+    ${breakpoints(
+      size.lg,
+      `{
       display: flex;
-    }`)}
+    }`
+    )}
   }
 
   .profile-round-small > img {
@@ -123,7 +135,7 @@ export default function CurrentSide() {
     (state: RootState) => state.appDatas
   );
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
-  const userData = useSelector((state: RootState) => state.user);
+  const { user } = useSelector((state: RootState) => state.user);
 
   // const [displayEditChannelModal, setDisplayEditChannelModal] = useState<boolean>(false);
   const [createPollModal, setCreatePollModal] = useState<boolean>(false);
@@ -160,16 +172,14 @@ export default function CurrentSide() {
   useEffect(() => {
     async function getSide() {
       try {
-        const isConnectedLocalStorage = localStorage.getItem("userAccount");
-
-        // If user not connected
-        if (!isConnectedLocalStorage) navigate("/");
-        // If user connected and there is name Side in the url
-        else if (id) {
+        if (id && user) {
+          console.log(id, user);
           // Get Side data
           const res = await sideAPI.getSideByName(id);
-          
-          const isInTheSide = userData['user']!['profiles'].find(item => item['side']['id'] === res['id']);
+
+          const isInTheSide = user["profiles"].find(
+            (item) => item["side"]["id"] === res["id"]
+          );
 
           // If side is inactive
           if (res.status === SideStatus.inactive) {
@@ -179,12 +189,13 @@ export default function CurrentSide() {
           // If side is active and the user is already in the Side
           else if (isInTheSide) {
             dispatch(setCurrentColony(res));
+            dispatch(setCurrentProfile(res));
             dispatch(
               setSelectedChannel(
                 res.channels.find((c) => c.type === 0) || res.channels[0]
               )
             );
-          } 
+          }
 
           // If side is active but the user is not in the Side
           else {
@@ -196,12 +207,12 @@ export default function CurrentSide() {
         console.error(error);
       }
     }
-    getSide();
-  }, [id, userData]);
+    const isConnectedLocalStorage = localStorage.getItem("userAccount");
 
-  useEffect(() => {
-    if (userData.user && currentSide) dispatch(setCurrentProfile(currentSide));
-  }, [userData.user, currentSide]);
+    // If user not connected
+    if (!isConnectedLocalStorage) navigate("/");
+    else getSide();
+  }, [id, user]);
 
   const handleExtendComments = (id: string) => {
     setExtend(id === extend ? "" : id);
@@ -211,8 +222,8 @@ export default function CurrentSide() {
     <CurrentSideStyled>
       {currentSide?.status === SideStatus.active ? (
         <>
-          <CurrentSideLeft 
-            channel={selectedChannel} 
+          <CurrentSideLeft
+            channel={selectedChannel}
             room={selectedRoom}
             setThread={setThread}
             thread={thread}
@@ -221,7 +232,7 @@ export default function CurrentSide() {
           <div className="current-side-middle-container">
             <MiddleContainerHeader
               channel={selectedChannel}
-              className="header-desktop"  
+              className="header-desktop"
               room={selectedRoom}
               setThread={setThread}
               thread={thread}
@@ -241,15 +252,15 @@ export default function CurrentSide() {
             <CreatePollModal showModal={setCreatePollModal} />
           )}
         </>
-      ) : (displayEligibility && sideEligibility) ? (
+      ) : displayEligibility && sideEligibility ? (
         <SideEligibilityModal
-        setDisplayLeaveSide={() => {}}
-        setDisplayEligibility={setDisplayEligibility}
-        selectedSide={sideEligibility}
-      />
-      ) :
-      <div>This side is currently inactive</div>
-      }
+          setDisplayLeaveSide={() => {}}
+          setDisplayEligibility={setDisplayEligibility}
+          selectedSide={sideEligibility}
+        />
+      ) : (
+        <div>This side is currently inactive</div>
+      )}
     </CurrentSideStyled>
   );
 }

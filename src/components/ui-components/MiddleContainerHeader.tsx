@@ -151,8 +151,6 @@ export default function MiddleContainerHeader({
     }
   }, [roomProfile]);
 
-  console.log(thread)
-
   return (
     <MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>
       <div className="left-side">
