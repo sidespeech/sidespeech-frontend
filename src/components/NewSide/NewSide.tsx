@@ -183,33 +183,6 @@ const initialStateSteps = [
   },
 ];
 
-const initialSteps = [
-  {
-    label: "Informations",
-    icon: "fa-solid fa-1",
-    active: true,
-    completed: false,
-  },
-  {
-    label: "Admission",
-    icon: "fa-solid fa-2",
-    active: false,
-    completed: false,
-  },
-  {
-    label: "Channels",
-    icon: "fa-solid fa-3",
-    active: false,
-    completed: false,
-  },
-  {
-    label: "Invitation",
-    icon: "fa-solid fa-4",
-    active: false,
-    completed: false,
-  },
-];
-
 export interface InitialStateSide {
   sideImage: string | undefined;
   name: string;
@@ -217,7 +190,16 @@ export interface InitialStateSide {
   NftTokenAddress: string;
   conditions: any;
   creatorAddress: string | undefined;
+  required: boolean;
 }
+
+export interface InitialChannelsState {
+  currents: any[];
+  removed: any[];
+  added: any[];
+}
+
+
 
 const initialStateSide = {
   sideImage: undefined,
@@ -226,6 +208,7 @@ const initialStateSide = {
   NftTokenAddress: "",
   conditions: {},
   priv: false,
+  required: false,
   creatorAddress: window.ethereum?.selectedAddress,
 };
 
@@ -287,7 +270,7 @@ export default function NewSide() {
   const [onlyOneRequired, setOnlyOneRequired] = useState<boolean>(true);
 
   // Variables for Channels component
-  const [channels, setChannels] = useState<any>(initialChannelsState);
+  const [channels, setChannels] = useState<InitialChannelsState>(initialChannelsState);
 
   // Variables for Invitation component
   const [invitationUsers, setInvitationUsers] = useState<any>([]);
@@ -400,7 +383,7 @@ export default function NewSide() {
       let conditions: any = {};
       for (let div of current_divs) {
         if (
-          div["collection"].trim().length !== 0 && div["features"].length &&
+          div["collection"].trim().length !== 0 &&
           !(div["features"].find((item: any) => item["trait_selected"].trim().length == 0)) &&
           !(div["features"].find((item: any) => item["value_selected"].trim().length == 0))
         ) {
@@ -463,12 +446,14 @@ export default function NewSide() {
   };
 
   const onChangeSideImage = (event: any) => {
-    const file = event.target.files[0];
-    if (file.size > 500000) {
-      toast.error("The image size has to be smaller than 500ko.");
-      return;
+    if (event.target.files.length) {
+      const file = event.target.files[0];
+      if (file.size > 500000) {
+        toast.error("The image size has to be smaller than 500ko.");
+        return;
+      }
+      setFormData({ ...formData, sideImage: file });
     }
-    setFormData({ ...formData, sideImage: file });
   };
 
   // ----- Functions for Admission component **start
@@ -482,9 +467,6 @@ export default function NewSide() {
 
       const data = filteredCollections.find((item: Collection) => item['address'] === address);
       current_divs[index]["metadata"] = data
-
-      console.log('current_divs[index] :', current_divs[index]);
-
       setDivCollection(current_divs);
     }
   };
@@ -520,17 +502,11 @@ export default function NewSide() {
     if (value.trim().length) {
       let current_divs = [...divCollections];
 
-      console.log('findex :', findex)
-      console.log('index :', index)
-
       // Define value selected
       current_divs[index]['features'][findex]["value_selected"] = value;
 
       // Adding the value as already used in the 'features' cell of it property
       current_divs[index]["traits_values"] = current_divs[index]["traits_values"].map((item: any) => {
-
-        console.log('item :', item)
-
         const valueUsed = item['values'].find((innerElem: any) => innerElem['value'] == value);
         if (valueUsed) {
           item["values_used"].push(valueUsed);
@@ -735,66 +711,24 @@ export default function NewSide() {
     });
 
     try {
-      if (formData.sideImage) {
-
+      if (formData.sideImage && user) {
 
         const data = _.cloneDeep(formData);
 
-        console.log('channels["added"] :', channels["added"])
+        // Save side entity ** start
         data["conditions"]["required"] = onlyOneRequired;
-
         data["conditions"] = JSON.stringify(data["conditions"]);
         data["NftTokenAddress"] = data["conditions"];
         const fd = new FormData();
         fd.append("file", formData["sideImage"]);
         data["sideImage"] = await apiService.uploadImage(fd);
-        data["creatorAddress"] = user?.accounts;
+        data["creatorAddress"] = user.accounts;
+        data["required"] = !onlyOneRequired;
 
-        const newSide = await sideAPI.createSide(data);
 
-        if (channels["added"].length) {
-          let added = channels["added"].map((item: any) => {
-            item["side"] = newSide;
-            return item;
-          });
-          const addedChannels = await apiService.createManyChannels(added);
-        }
+        const newSide = await sideAPI.createFullSide(data, channels, userInvited);
+        // Save side entity ** end
 
-        const conditionObject = JSON.parse(data["conditions"]);
-
-        const conditions = Object.keys(conditionObject).reduce(function (prev: Metadata[], key: string) {
-          if (key !== 'required') {
-            for (let feature of conditionObject[key]['features'])
-              prev.push({
-                address: key,
-                traitProperty: feature['property'],
-                traitValue: feature['value'],
-                numberNeeded: (conditionObject[key]['numberNeeded']) ? conditionObject[key]['numberNeeded'] : 1,
-                required: !onlyOneRequired,
-                side: newSide,
-              });
-          }
-
-          return prev;
-        }, []);
-
-        const conditionsSaved = await apiService.savedMetadataConditions(
-          conditions
-        );
-
-        let users = userInvited.map((u: any) => {
-          u["side"] = newSide;
-          return u;
-        });
-        if (users.length) await apiService.sendMultipleInvitations(users);
-        if (user) {
-          const profile = await apiService.joinSide(
-            user?.id,
-            newSide.id,
-            Role.Admin
-          );
-          dispatch(updateProfiles(profile));
-        }
         dispatch(addUserParsedSide(newSide));
         dispatch(updateSidesByUserCollections(null));
         toast.success(data.name + " has been created.", {

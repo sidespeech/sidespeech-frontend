@@ -148,7 +148,6 @@ export default function UserSides() {
 
       const isSideAdminResponse =
         sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
-      console.log(sideProfile, isSideAdmin);
       SetIsSideAdmin(isSideAdminResponse);
     }
   }, [currentSide, userData, side]);

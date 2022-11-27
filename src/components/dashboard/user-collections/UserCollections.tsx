@@ -151,12 +151,6 @@ const UserCollections = ({setSearchFilters}: UserCollectionsProps) => {
 
 
     useEffect(() => {
-
-        // async function getSideCount(collection:Collection) {
-        //     const response = await sideAPI.getSidesByCollections([collection['address']]);
-        //     setAnnouncements(announcements);
-        // }
-
         if (userCollectionsData) {
             let filteredArray = _.orderBy(userCollectionsData, "name")
 

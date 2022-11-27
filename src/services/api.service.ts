@@ -470,6 +470,13 @@ class apiService {
       .query({ addresses });
     return res.body.map((b: any) => new Collection(b));
   }
+
+  static async saveCollectionSide(data: any[]) {
+    const res = await superagent
+      .post(`${BASE_URL}/collection-side/many`)
+      .send({ data: data });
+    return res;
+  }
 }
 
 export { apiService };

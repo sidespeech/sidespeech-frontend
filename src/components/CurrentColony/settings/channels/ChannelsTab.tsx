@@ -202,19 +202,16 @@ export default function Channels({
         const addedChannels = await apiService.createManyChannels(
           channels["added"]
         );
-        console.log("addedChannels :", addedChannels);
       }
       if (channels["removed"].length) {
         const removedChannels = await apiService.removeChannels(
           channels["removed"]
         );
-        console.log("removedChannels :", removedChannels);
       }
       if (channels["currents"].length) {
         const updatedChannels = await apiService.updateManyChannels(
           channels["currents"]
         );
-        console.log("updatedChannels :", updatedChannels);
       }
       toast.success(`Saved`, {
         toastId: 4,
