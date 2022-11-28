@@ -21,7 +21,7 @@ import {
 } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
 import { Collection } from "../../models/interfaces/collection";
-import _, { valuesIn } from "lodash";
+import _, { cloneDeep, valuesIn } from "lodash";
 import { Channel, ChannelType } from "../../models/Channel";
 import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
@@ -261,7 +261,9 @@ export default function NewSide() {
   const navigate = useNavigate();
 
   const currentSide = new Side({});
-  const [formData, setFormData] = useState<InitialStateSide>(initialStateSide);
+  const [formData, setFormData] = useState<InitialStateSide>(
+    cloneDeep(initialStateSide)
+  );
   const [formError, setFormError] = useState({
     name: { exist: false, length: false },
   });
@@ -271,12 +273,12 @@ export default function NewSide() {
 
   const userData = useSelector((state: RootState) => state.user);
 
-  const [steps, setSteps] = useState<any[]>(initialStateSteps);
+  const [steps, setSteps] = useState<any[]>(cloneDeep(initialStateSteps));
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   // Variables for Admission component
   const [divCollections, setDivCollection] = useState<any[]>(
-    initialDivCollections
+    cloneDeep(initialDivCollections)
   );
   const [collectionHolder, setCollectionHolder] = useState<Collection[]>([]);
   const [onlyOneRequired, setOnlyOneRequired] = useState<boolean>(true);
@@ -322,7 +324,7 @@ export default function NewSide() {
 
   const handleTabs = async (tabIndex: number) => {
     let current_data = { ...formData };
-    let current_steps = [...steps];
+    let current_steps = cloneDeep(steps);
     let isValidate: boolean;
 
     if (currentStep < tabIndex) {
@@ -351,7 +353,7 @@ export default function NewSide() {
     previous: boolean = false
   ) => {
     let current_data = { ...formData };
-    let current_steps = [...steps];
+    let current_steps = cloneDeep(steps);
 
     if (!previous) {
       const isValidate = await validatorSteps(index, current_data);
@@ -741,11 +743,6 @@ export default function NewSide() {
   // ----- Functions for Channels component **end
 
   const onSubmit = async () => {
-    setFormData({
-      ...formData,
-      creatorAddress: window.ethereum.selectedAddress,
-    });
-
     try {
       if (formData.sideImage && user) {
         const data = _.cloneDeep(formData);
@@ -772,11 +769,8 @@ export default function NewSide() {
           toastId: 4,
         });
 
-        setSteps(initialStateSteps);
-        setFormData(initialStateSide);
-
-        dispatch(refreshConnectedUser(user.accounts));
-
+        const refreshedUser = await apiService.getUserByAddress(user.accounts);
+        dispatch(updateUser(refreshedUser));
         navigate("/" + newSide.name);
       }
     } catch (error) {
