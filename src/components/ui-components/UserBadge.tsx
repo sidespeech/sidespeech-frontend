@@ -1,18 +1,18 @@
-import React, { useRef, useState } from "react";
+// import React, { useRef, useState } from "react";
 import {
   reduceWalletAddress,
-  reduceWalletAddressForColor,
+  // reduceWalletAddressForColor,
 } from "../../helpers/utilities";
-import checkImg from "../../assets/check.svg";
+// import checkImg from "../../assets/check.svg";
 import styled from "styled-components";
 import connectionDot from "../../assets/connection.svg";
-import Avatar, { ProfilePictureData } from "../GeneralSettings/Account/Avatar";
+// import Avatar, { ProfilePictureData } from "../GeneralSettings/Account/Avatar";
 import defaultPP from "../../assets/default-pp.webp";
-import copyAll from "../../assets/copy_all.svg";
-import hexagon from "../../assets/hexagon.svg";
-import check from "../../assets/check.svg";
-import ReactTooltip from "react-tooltip";
-import Button from "./Button";
+// import copyAll from "../../assets/copy_all.svg";
+// import hexagon from "../../assets/hexagon.svg";
+// import check from "../../assets/check.svg";
+// import ReactTooltip from "react-tooltip";
+// import Button from "./Button";
 interface IWalletAddressProps {
   weight: number;
   fontSize: number;

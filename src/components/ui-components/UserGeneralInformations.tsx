@@ -3,8 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { disconnect, updateUser } from "../../redux/Slices/UserDataSlice";
-// service
-import { apiService } from "../../services/api.service";
 // models
 import { User } from "../../models/User";
 // ui component
@@ -24,12 +22,35 @@ import {
 } from "../../helpers/utilities";
 import Eligibility from "../CurrentColony/settings/eligibility/eligibility";
 import styled from "styled-components";
-import { NFT } from "../../models/interfaces/nft";
-import { RootState } from "../../redux/store/app.store";
 import { Side } from "../../models/Side";
-import { Profile } from "../../models/Profile";
 import { InitialStateUser } from "../GeneralSettings/Account/GeneralSettingsAccount";
 import Avatar from "../GeneralSettings/Account/Avatar";
+import { breakpoints, size } from "../../helpers/breakpoints";
+
+const UserGeneralInformationsStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2rem;
+  & .user-info-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    ${breakpoints(size.md, `{
+      flex-direction: row;
+    }`)}
+  }
+  & .submitArea {
+    & .side-settings-submit-btn {
+      display: none;
+      ${breakpoints(size.lg, `{
+        display: block;
+      }`)}
+    }
+  }
+`;
+
 interface InitialErrorState {
   username: boolean;
   bio: boolean;
@@ -41,27 +62,29 @@ const initialStateError = {
 };
 
 interface IUserGeneralInformationsProps {
-  user?: User;
   currentSide?: Side;
-  userCollectionsData?: any;
-  formData: InitialStateUser;
-  setFormData: any;
-  onSubmit: any;
   displayNftsCollection?: boolean;
-  setDisplayNftsCollection?: any;
+  formData: InitialStateUser;
   leaveSide?:any;
+  onSubmit: any;
+  setDisplayNftsCollection?: any;
+  setFormData: any;
+  sideSettingsPage?: boolean;
+  user?: User;
+  userCollectionsData?: any;
 }
 
 export default function UserGeneralInformations({
-  user,
   currentSide,
-  userCollectionsData,
-  formData,
-  setFormData,
-  onSubmit,
   displayNftsCollection,
+  formData,
+  leaveSide,
+  onSubmit,
   setDisplayNftsCollection,
-  leaveSide
+  setFormData,
+  sideSettingsPage,
+  user,
+  userCollectionsData
 }: IUserGeneralInformationsProps) {
   const [errorData, setErrorData] =
     useState<InitialErrorState>(initialStateError);
@@ -107,13 +130,14 @@ export default function UserGeneralInformations({
 
   const logout = () => {
     dispatch(disconnect());
-    localStorage.clear();
+    localStorage.removeItem('userAccount');
+    localStorage.removeItem('jwtToken');
     navigate("/");
   };
 
   const renderAvatar = () => {
     return (
-      <div className="flex mb-4 align-center gap-20">
+      <div className="user-info-header">
         <Avatar nft={formData.avatar} collectionName={collectionName} />
         {!displayNftsCollection && !user && (
           <Button
@@ -178,7 +202,7 @@ export default function UserGeneralInformations({
 
   const renderConnectedWallet = () => {
     return (
-      <div className="f-column mt-5">
+      <div className="f-column">
         <div className="text-primary-light mb-3 text fw-600">
           Connected wallet
         </div>
@@ -212,7 +236,7 @@ export default function UserGeneralInformations({
     return (
       <>
         {currentSide && (
-          <div onClick={leaveSide} className="text-red mt-4 cursor-pointer">
+          <div onClick={leaveSide} className="text-red cursor-pointer">
             Leave the side
           </div>
         )}
@@ -221,7 +245,7 @@ export default function UserGeneralInformations({
   };
 
   return (
-    <div className="f-row flex-1" style={{maxWidth: "50%"}}>
+    <UserGeneralInformationsStyled>
       {renderAvatar()}
       {!currentSide && (
         <>
@@ -235,24 +259,26 @@ export default function UserGeneralInformations({
       {/* Eligibility Section */}
       {currentSide && <Eligibility side={currentSide} />}
 
-      {/* Wallet Section */}
-      {!currentSide && renderConnectedWallet()}
-      {currentSide && renderLeave()}
-
       {
-        <div className="submitArea mt-5">
+        <div className="submitArea">
           <Button
-            classes={"mb-3"}
-            width={"164px"}
-            height={44}
-            radius={10}
+            classes={sideSettingsPage ? 'side-settings-submit-btn' : ''}
             color={"var(--text-primary-light)"}
+            disabled={sideSettingsPage && !Object.keys(formData.avatar || {}).length}
+            height={44}
             onClick={onSubmit}
+            radius={10}
+            width={"164px"}
           >
             Save
           </Button>
         </div>
       }
-    </div>
+
+      {/* Wallet Section */}
+      {!currentSide && renderConnectedWallet()}
+      {currentSide && renderLeave()}
+
+    </UserGeneralInformationsStyled>
   );
 }

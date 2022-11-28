@@ -93,7 +93,10 @@ const OnBoardingStyled = styled.div`
   .nft-step {
     display: flex;
     width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
     height: 45vh;
+    padding-top: 1rem;
   }
   .my-nfts {
     max-width: 480px;

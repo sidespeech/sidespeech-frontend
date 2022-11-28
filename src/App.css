@@ -46,10 +46,8 @@
 }
 
 .connection-container {
-  width: 346px;
+  width: 100%;
   height: 390px;
-  border: 1px solid var(--bg-secondary-light);
-  background-color: var(--bg-secondary-light);
   border-radius: 10px;
 }
 

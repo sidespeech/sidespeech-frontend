@@ -8,7 +8,8 @@ const MobileMenuStyled = styled.nav`
   height: 100%;
   display: flex;
   align-items: center;
-  padding: 1rem;
+  justify-content: space-between;
+  padding: 1rem 2rem;
   .menu-tab {
     svg {
       path {
@@ -26,7 +27,10 @@ const MobileMenuStyled = styled.nav`
 const MobileMenu = () => {
   const { pathname } = useLocation();
 
-  const isActive = (path: string): boolean => pathname.includes(path);
+  const isActive = (path: string, exact?: boolean): boolean => {
+    if (exact) return pathname === path;
+    return pathname.includes(path);
+  }
   const username = useSelector((state: RootState) => state.user.user?.username)
 
   return (
@@ -42,7 +46,7 @@ const MobileMenu = () => {
         </svg>
       </Link>
 
-      <Link className={`menu-tab ${isActive('/') ? 'active' : ''}`} to="/">
+      <Link className={`menu-tab ${isActive('/', true) ? 'active' : ''}`} to="/">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10 6V0H18V6H10ZM0 10V0H8V10H0ZM10 18V8H18V18H10ZM0 18V12H8V18H0ZM2 8H6V2H2V8ZM12 16H16V10H12V16ZM12 4H16V2H12V4ZM2 16H6V14H2V16Z" />
         </svg>
