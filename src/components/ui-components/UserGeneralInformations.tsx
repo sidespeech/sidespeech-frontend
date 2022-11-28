@@ -41,6 +41,14 @@ const UserGeneralInformationsStyled = styled.div`
       flex-direction: row;
     }`)}
   }
+  & .submitArea {
+    & .side-settings-submit-btn {
+      display: none;
+      ${breakpoints(size.lg, `{
+        display: block;
+      }`)}
+    }
+  }
 `;
 
 interface InitialErrorState {
@@ -54,27 +62,29 @@ const initialStateError = {
 };
 
 interface IUserGeneralInformationsProps {
-  user?: User;
   currentSide?: Side;
-  userCollectionsData?: any;
-  formData: InitialStateUser;
-  setFormData: any;
-  onSubmit: any;
   displayNftsCollection?: boolean;
-  setDisplayNftsCollection?: any;
+  formData: InitialStateUser;
   leaveSide?:any;
+  onSubmit: any;
+  setDisplayNftsCollection?: any;
+  setFormData: any;
+  sideSettingsPage?: boolean;
+  user?: User;
+  userCollectionsData?: any;
 }
 
 export default function UserGeneralInformations({
-  user,
   currentSide,
-  userCollectionsData,
-  formData,
-  setFormData,
-  onSubmit,
   displayNftsCollection,
+  formData,
+  leaveSide,
+  onSubmit,
   setDisplayNftsCollection,
-  leaveSide
+  setFormData,
+  sideSettingsPage,
+  user,
+  userCollectionsData
 }: IUserGeneralInformationsProps) {
   const [errorData, setErrorData] =
     useState<InitialErrorState>(initialStateError);
@@ -251,11 +261,13 @@ export default function UserGeneralInformations({
       {
         <div className="submitArea">
           <Button
-            width={"164px"}
-            height={44}
-            radius={10}
+            classes={sideSettingsPage ? 'side-settings-submit-btn' : ''}
             color={"var(--text-primary-light)"}
+            disabled={sideSettingsPage && !Object.keys(formData.avatar || {}).length}
+            height={44}
             onClick={onSubmit}
+            radius={10}
+            width={"164px"}
           >
             Save
           </Button>

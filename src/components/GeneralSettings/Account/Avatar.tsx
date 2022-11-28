@@ -13,6 +13,7 @@ const AvatarStyled = styled.div`
   align-items: center;
   gap: 1rem;
   ${breakpoints(size.md, `{
+    align-items: flex-start;
     flex-direction: row;
   }`)}
   & label {
@@ -67,6 +68,7 @@ export default function Avatar({
     if (nft && nft.metadata && nft.metadata.image) {
       setUrl(fixURL(nft.metadata.image));
     }
+    else setUrl(defaultPP);
   }, [nft]);
 
   return (
@@ -82,12 +84,12 @@ export default function Avatar({
           alt="file-form"
         />
       </ProfileImage>
-      <div className="f-column">
+      <div className="f-column gap-10" style={{maxWidth: '235px'}}>
         <label className="fw-600">
           Choose an NFT from your wallet as your profile avatar
         </label>
         {collectionName && nft && (
-          <ProfilePictureData className="mt-3">
+          <ProfilePictureData className="">
             <img src={hexagon} className="mr-3" />
             <>
               <SpanElipsis className="mr-2 size-12">#{nft.token_id}</SpanElipsis>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styled from 'styled-components';
+import styled from "styled-components";
 import Button from "../../../ui-components/Button";
 import InputText from "../../../ui-components/InputText";
 import TextArea from "../../../ui-components/TextArea";
@@ -16,17 +16,24 @@ import { breakpoints, size } from "../../../../helpers/breakpoints";
 
 const InformationsStyled = styled.div`
   width: 100%;
-  ${breakpoints(size.lg, `{
+  ${breakpoints(
+    size.lg,
+    `{
     width: 60%;
     max-width: 500px;
-  }`)}
+  }`
+  )}
   .upload-colony-image {
     position: relative;
     .camera-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(0deg, rgba(24, 26, 43, 0.4), rgba(24, 26, 43, 0.4));
+      background: linear-gradient(
+        0deg,
+        rgba(24, 26, 43, 0.4),
+        rgba(24, 26, 43, 0.4)
+      );
       position: absolute;
       width: 100%;
       height: 100%;
@@ -41,10 +48,13 @@ const InformationsStyled = styled.div`
     background-color: var(--bg-secondary-light);
     border-radius: 10px;
     width: 181px;
-    padding: .88rem 1rem;
-    ${breakpoints(size.lg, `{
+    padding: 0.88rem 1rem;
+    ${breakpoints(
+      size.lg,
+      `{
       display: flex;
-    }`)}
+    }`
+    )}
   }
 
   .name-input_wrapper {
@@ -64,7 +74,7 @@ const InformationsStyled = styled.div`
   }
 
   .yellowDiv {
-    border: 2px solid #D29B52;
+    border: 2px solid #d29b52;
     border-radius: 5px;
     max-width: 600px;
     min-height: 300px;
@@ -73,17 +83,17 @@ const InformationsStyled = styled.div`
   }
 
   .fa-sign-out {
-    color: #D29B52;
+    color: #d29b52;
     margin-top: 18px;
   }
 
   .flex {
     display: flex;
   }
-  .yellowDiv button{
+  .yellowDiv button {
     background-color: transparent;
     border: none;
-    color: #D29B52;
+    color: #d29b52;
     font-size: 16px;
     font-weight: 600;
   }
@@ -110,7 +120,6 @@ const InformationsStyled = styled.div`
     font-size: 15px;
     color: #848a9b;
     font-weight: 500;
-  
   }
 
   .typ-sm {
@@ -118,11 +127,11 @@ const InformationsStyled = styled.div`
     justify-content: space-between;
   }
 
-  .typ-sm button{
-  cursor: pointer;
-  color: #ddd9d98c;
-  font-size: 16px;
-  font-weight: 600;
+  .typ-sm button {
+    cursor: pointer;
+    color: #ddd9d98c;
+    font-size: 16px;
+    font-weight: 600;
   }
 
   .edit-side-bottom {
@@ -167,7 +176,7 @@ export default function Informations({
   currentSide: any;
   onChangeNewSideName?: any;
   onChangeNewSideImage?: any;
-  onChangeNewSideDescription?:any;
+  onChangeNewSideDescription?: any;
   formError?: any;
 }) {
   const [formData, setFormData] = useState<InitialStateUpdateSide>(
@@ -207,7 +216,6 @@ export default function Informations({
     setFormData({ ...formData, name: name });
     if (isNewSide) onChangeNewSideName(event.target.value);
   };
-
 
   const onChangeSideDescription = (event: any) => {
     const description = event.target.value;
@@ -274,18 +282,32 @@ export default function Informations({
                   width: "inherit",
                   objectFit: "cover",
                 }}
-                src={(!window.location.href.includes("settings")) ? URL.createObjectURL(currentSide.sideImage) : currentSide.sideImage}
+                src={
+                  !window.location.href.includes("settings")
+                    ? URL.createObjectURL(currentSide.sideImage)
+                    : currentSide.sideImage
+                }
                 alt="file"
               />
             ) : (
               <></>
             )}
-            <span className="camera-icon">
-              <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 6V4H16V2H18V0H20V2H22V4H20V6H18ZM2 20C1.45 20 0.979333 19.8043 0.588 19.413C0.196 19.021 0 18.55 0 18V6C0 5.45 0.196 4.97933 0.588 4.588C0.979333 4.196 1.45 4 2 4H5.15L7 2H13V4H7.875L6.05 6H2V18H18V9H20V18C20 18.55 19.8043 19.021 19.413 19.413C19.021 19.8043 18.55 20 18 20H2ZM10 16.5C11.25 16.5 12.3127 16.0627 13.188 15.188C14.0627 14.3127 14.5 13.25 14.5 12C14.5 10.75 14.0627 9.68733 13.188 8.812C12.3127 7.93733 11.25 7.5 10 7.5C8.75 7.5 7.68733 7.93733 6.812 8.812C5.93733 9.68733 5.5 10.75 5.5 12C5.5 13.25 5.93733 14.3127 6.812 15.188C7.68733 16.0627 8.75 16.5 10 16.5ZM10 14.5C9.3 14.5 8.70833 14.2583 8.225 13.775C7.74167 13.2917 7.5 12.7 7.5 12C7.5 11.3 7.74167 10.7083 8.225 10.225C8.70833 9.74167 9.3 9.5 10 9.5C10.7 9.5 11.2917 9.74167 11.775 10.225C12.2583 10.7083 12.5 11.3 12.5 12C12.5 12.7 12.2583 13.2917 11.775 13.775C11.2917 14.2583 10.7 14.5 10 14.5Z" fill="white"/>
-              </svg>
-
-            </span>
+            {!(formData.sideImage && currentSide.sideImage) && (
+              <span className="camera-icon">
+                <svg
+                  width="22"
+                  height="20"
+                  viewBox="0 0 22 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 6V4H16V2H18V0H20V2H22V4H20V6H18ZM2 20C1.45 20 0.979333 19.8043 0.588 19.413C0.196 19.021 0 18.55 0 18V6C0 5.45 0.196 4.97933 0.588 4.588C0.979333 4.196 1.45 4 2 4H5.15L7 2H13V4H7.875L6.05 6H2V18H18V9H20V18C20 18.55 19.8043 19.021 19.413 19.413C19.021 19.8043 18.55 20 18 20H2ZM10 16.5C11.25 16.5 12.3127 16.0627 13.188 15.188C14.0627 14.3127 14.5 13.25 14.5 12C14.5 10.75 14.0627 9.68733 13.188 8.812C12.3127 7.93733 11.25 7.5 10 7.5C8.75 7.5 7.68733 7.93733 6.812 8.812C5.93733 9.68733 5.5 10.75 5.5 12C5.5 13.25 5.93733 14.3127 6.812 15.188C7.68733 16.0627 8.75 16.5 10 16.5ZM10 14.5C9.3 14.5 8.70833 14.2583 8.225 13.775C7.74167 13.2917 7.5 12.7 7.5 12C7.5 11.3 7.74167 10.7083 8.225 10.225C8.70833 9.74167 9.3 9.5 10 9.5C10.7 9.5 11.2917 9.74167 11.775 10.225C12.2583 10.7083 12.5 11.3 12.5 12C12.5 12.7 12.2583 13.2917 11.775 13.775C11.2917 14.2583 10.7 14.5 10 14.5Z"
+                    fill="white"
+                  />
+                </svg>
+              </span>
+            )}
           </div>
 
           <div className="text-primary-light fw-600 f-column align-center justify-center ml-3 size-11">
@@ -305,9 +327,7 @@ export default function Informations({
                 type={"file"}
                 onChange={onChangeSideImage}
               />
-              <div className="upload-img-btn">
-                Upload a new image
-              </div>
+              <div className="upload-img-btn">Upload a new image</div>
             </div>
           </div>
         </label>
@@ -331,8 +351,17 @@ export default function Informations({
           </div>
           {!formError?.name.exist && formData?.name.length > 3 && (
             <div className="success-message">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6.95 11.45L12.2375 6.1625L11.1875 5.1125L6.95 9.35L4.8125 7.2125L3.7625 8.2625L6.95 11.45ZM8 15.5C6.9625 15.5 5.9875 15.303 5.075 14.909C4.1625 14.5155 3.36875 13.9813 2.69375 13.3063C2.01875 12.6313 1.4845 11.8375 1.091 10.925C0.697 10.0125 0.5 9.0375 0.5 8C0.5 6.9625 0.697 5.9875 1.091 5.075C1.4845 4.1625 2.01875 3.36875 2.69375 2.69375C3.36875 2.01875 4.1625 1.48425 5.075 1.09025C5.9875 0.69675 6.9625 0.5 8 0.5C9.0375 0.5 10.0125 0.69675 10.925 1.09025C11.8375 1.48425 12.6313 2.01875 13.3063 2.69375C13.9813 3.36875 14.5155 4.1625 14.909 5.075C15.303 5.9875 15.5 6.9625 15.5 8C15.5 9.0375 15.303 10.0125 14.909 10.925C14.5155 11.8375 13.9813 12.6313 13.3063 13.3063C12.6313 13.9813 11.8375 14.5155 10.925 14.909C10.0125 15.303 9.0375 15.5 8 15.5Z" fill="#36DA81"/>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6.95 11.45L12.2375 6.1625L11.1875 5.1125L6.95 9.35L4.8125 7.2125L3.7625 8.2625L6.95 11.45ZM8 15.5C6.9625 15.5 5.9875 15.303 5.075 14.909C4.1625 14.5155 3.36875 13.9813 2.69375 13.3063C2.01875 12.6313 1.4845 11.8375 1.091 10.925C0.697 10.0125 0.5 9.0375 0.5 8C0.5 6.9625 0.697 5.9875 1.091 5.075C1.4845 4.1625 2.01875 3.36875 2.69375 2.69375C3.36875 2.01875 4.1625 1.48425 5.075 1.09025C5.9875 0.69675 6.9625 0.5 8 0.5C9.0375 0.5 10.0125 0.69675 10.925 1.09025C11.8375 1.48425 12.6313 2.01875 13.3063 2.69375C13.9813 3.36875 14.5155 4.1625 14.909 5.075C15.303 5.9875 15.5 6.9625 15.5 8C15.5 9.0375 15.303 10.0125 14.909 10.925C14.5155 11.8375 13.9813 12.6313 13.3063 13.3063C12.6313 13.9813 11.8375 14.5155 10.925 14.909C10.0125 15.303 9.0375 15.5 8 15.5Z"
+                  fill="#36DA81"
+                />
               </svg>
               Available
             </div>

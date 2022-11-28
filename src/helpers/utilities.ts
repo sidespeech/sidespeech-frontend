@@ -146,12 +146,27 @@ export function checkUserEligibility(
   const res: ElligibilityResponse = {};
 
   if (selectedSide) {
+    let checkingWithAttribute = []
+    let checkingWithoutAttribute:any[] = []
+
+    // Filter conditons with and without attributes
+    for (let collection of selectedSide.collectionSides) {
+      const withAttributes = selectedSide['metadataSides'].filter(elem => elem["metadata"]["address"] === collection['collectionId'])
+      if (withAttributes.length) checkingWithAttribute.push(collection)
+      else checkingWithoutAttribute.push(collection)
+    }
+
+    // Checking eligibilty with attributes
     selectedSide.metadataSides?.forEach((item) => {
       const tab = [];
       const token_address = item["metadata"]["address"];
+
+      const collectionSide = selectedSide.collectionSides.find(elem => elem['collectionId'] === token_address)
+      console.log(collectionSide, selectedSide)
       const collection = nfts[token_address];
+
       const condition = {
-        numberNeeded: item["numberNeeded"],
+        numberNeeded: collectionSide!["numberNeeded"],
         trait_type: item["metadata"]["traitProperty"],
         trait_value: item["metadata"]["traitValue"],
       };
@@ -170,17 +185,38 @@ export function checkUserEligibility(
         tab.push(validateNumberOfNfts(condition, collection));
 
         // if no nfts corresponding to the condition returning error response
-
         tab.push(
           validateNftsWithAttributes(filteredNfts, condition, collection)
         );
       }
       res[token_address] = tab;
     });
+
+    // Checking eligibilty without attributes
+    selectedSide.collectionSides?.forEach((item) => {
+      const tab = [];
+      const token_address = item["collectionId"];
+      const collection = nfts[token_address];
+
+      if (checkingWithoutAttribute.includes(item)) {
+        const condition = {
+          numberNeeded: item["numberNeeded"],
+        };
+
+        if (collection) {
+          tab.push(validateNumberOfNfts(condition, collection));
+        } else {
+          tab.push(validateNumberOfNfts(condition, {nfts : [], address : item["collectionId"]}));
+        }
+
+        res[token_address] = tab;
+      }
+    });
   }
+  
   let eligible = false;
   if (Object.keys(res).length > 0) {
-    eligible = isEligible(res, selectedSide.metadataSides);
+    eligible = isEligible(res, selectedSide['required']);
   }
   return [res, eligible];
 }
@@ -201,7 +237,7 @@ function validateNftsWithAttributes(
   );
 }
 
-function validateNumberOfNfts(condition: any, collection: Collection) {
+function validateNumberOfNfts(condition: any, collection: Collection | {nfts : any[], address : string}) {
   // verifying number of needed NFTS from the collection
   const number: number = Number.parseInt(condition["numberNeeded"]);
   const numberValidation = validateNumberOfNftsForCollection(
@@ -211,7 +247,7 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
   // creating response
   return createResponseObject(
     numberValidation,
-    [],
+    collection.nfts,
     `You need ${
       number - collection.nfts.length
     } nfts more to meet the condition.`,
@@ -221,8 +257,8 @@ function validateNumberOfNfts(condition: any, collection: Collection) {
   );
 }
 
-function isEligible(result: ElligibilityResponse, conditions: any): boolean {
-  if (conditions.find((item: any) => item["required"])) {
+function isEligible(result: ElligibilityResponse, required: boolean): boolean {
+  if (required) {
     // verifying if all collection are fully success
     return Object.values(result).every((res) =>
       res.every((value) => value.type.includes("success"))

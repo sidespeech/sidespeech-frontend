@@ -179,10 +179,10 @@ const Invitations = ({}: InvitationsProps) => {
       setIsLoading(true);
       let filtered = [...filteredInvitations].filter(
         (invitation: Invitation) => {
-          if (invitation["side"]["collections"].length) {
-            let isVerified = invitation["side"]["collections"].find(
-              (collection) => {
-                let opensea = JSON.parse(collection["opensea"]);
+          if (invitation["side"]["collectionSides"].length) {
+            let isVerified = invitation["side"]["collectionSides"].find(
+              (collection:any) => {
+                let opensea = JSON.parse(collection["collection"]["opensea"]);
                 if (opensea["safelistRequestStatus"] === "verified")
                   return collection;
               }
@@ -307,12 +307,12 @@ const Invitations = ({}: InvitationsProps) => {
                             fontSize={"12px"}
                             classes={"mr-2 override-width"}
                           >
-                            {invitation["side"]["collections"].length
-                              ? invitation["side"]["collections"][0]["name"]
+                            {invitation["side"]["collectionSides"].length
+                              ? invitation["side"]["collectionSides"][0]["collection"]["name"]
                               : "Collection Name"}{" "}
                             <i className="fa-solid fa-circle-check ml-2 text-blue"></i>
                           </Button>
-                          {invitation["side"]["collections"].length > 1 ? (
+                          {invitation["side"]["collectionSides"].length > 1 ? (
                             <Button
                               width={"50px"}
                               height={25}
@@ -321,7 +321,7 @@ const Invitations = ({}: InvitationsProps) => {
                               background={"var(--bg-secondary-light)"}
                               fontSize={"12px"}
                             >
-                              + {invitation["side"]["collections"].length - 1}
+                              + {invitation["side"]["collectionSides"].length - 1}
                             </Button>
                           ) : null}
                         </label>
