@@ -168,7 +168,7 @@ export default function SideProfileAccount({
 
   const handleCloseNftModal = () => {
     setFormData(prevValues => ({ ...prevValues, avatar: null }));
-    setDisplayNftsCollection(false)
+    setDisplayNftsCollection(false);
   }
 
   return (

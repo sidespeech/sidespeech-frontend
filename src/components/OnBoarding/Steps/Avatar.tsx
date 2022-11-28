@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-// CSS Import
-import "./../../GeneralSettings/DefaultView.css";
 
 import Button from "../../ui-components/Button";
 

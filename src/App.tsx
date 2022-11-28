@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import "./App.css";
@@ -9,7 +9,7 @@ import { Outlet } from "react-router-dom";
 
 // Components
 import GeneralSettingsMenu from "./components/GeneralSettings/ContainerLeft/Index";
-import UserColonies from "./components/UserColonies/UserSides";
+// import UserColonies from "./components/UserColonies/UserSides";
 // import SidesList from "./components/SidesList";
 
 // Images
@@ -25,7 +25,13 @@ import { getRandomId } from "./helpers/utilities";
 import MobileMenu from "./components/ui-components/MobileMenu";
 import DesktopMenu from "./components/ui-components/DesktopMenu";
 
+export interface GeneralSettingsAccountContext {
+  isSettingsMobileMenuOpen?: boolean;
+  setIsSettingsMobileMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 function App() {
+  const [isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpen] = useState<boolean>(false);
   const userData: any = useSelector((state: RootState) => state.user);
   const location = useLocation();
   const dispatch = useDispatch();
@@ -70,16 +76,20 @@ function App() {
   
   if (onBoarding) {
     content =   <div className='w-100'>
-                  <Outlet></Outlet>
+                  <Outlet />
                 </div>;
   } else if (generalSettings) {
     content = <div style={{ display: "flex", width: "100%"}}>
-                <div className="left-container global">
-                  <GeneralSettingsMenu />
-                </div>
-                <div className="general-settings">
-                  <Outlet></Outlet>
-                </div>
+                <GeneralSettingsMenu 
+                  isSettingsMobileMenuOpen={isSettingsMobileMenuOpen} 
+                  setIsSettingsMobileMenuOpen={setIsSettingsMobileMenuOpen}
+                />
+                <Outlet 
+                  context={{
+                    isSettingsMobileMenuOpen,
+                    setIsSettingsMobileMenuOpen
+                  }}
+                />
 
                 <div className="mobile-bottom-menu">
                   <MobileMenu />
@@ -91,7 +101,7 @@ function App() {
                   <DesktopMenu userData={userData} />
                 </div>
                 <div className="middle-container">
-                  <Outlet></Outlet>
+                  <Outlet />
                 </div>
 
                 <div className="mobile-bottom-menu">
@@ -101,6 +111,10 @@ function App() {
   }
 
   return <div className="main-container relative">{content}</div>;
+}
+
+export function useGeneralSettingsContext() {
+  return useOutletContext<GeneralSettingsAccountContext>();
 }
 
 export default App;

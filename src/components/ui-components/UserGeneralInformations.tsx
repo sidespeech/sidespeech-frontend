@@ -10,7 +10,6 @@ import Button from "../ui-components/Button";
 import InputText from "../ui-components/InputText";
 import TextArea from "../ui-components/TextArea";
 // icons
-import copyIcon from "./../../assets/copy-icon.svg";
 import closeWalletIcon from "./../../assets/close-wallet.svg";
 // other
 import { toast } from "react-toastify";
@@ -41,7 +40,40 @@ const UserGeneralInformationsStyled = styled.div`
       flex-direction: row;
     }`)}
   }
+  & .copy {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  & .closeWallet {
+    margin-left: 20px;
+    margin-top: 3px;
+  }
+  & .search-icon {
+    top: 70px;
+    right: 40px;
+    background: var(--bg-primary);
+  }
+  & .user-nfts-options {
+    ${breakpoints(size.lg, `{
+      display: none;
+    }`)}
+    & button {
+      background-color: var(--bg-secondary-light);
+      ${breakpoints(size.md, `{
+        max-width: 180px;
+      }`)}
+    }
+  }
   & .submitArea {
+    ${breakpoints(size.md, `{
+      max-width: 180px;
+    }`)}
     & .side-settings-submit-btn {
       display: none;
       ${breakpoints(size.lg, `{
@@ -156,7 +188,7 @@ export default function UserGeneralInformations({
 
   const renderUsername = () => {
     return (
-      <div className="f-column mt-5">
+      <div className="f-column">
         <div className="text-primary-light mb-3 text fw-600">Username</div>
         <InputText
           height={40}
@@ -178,7 +210,7 @@ export default function UserGeneralInformations({
 
   const renderBio = () => {
     return (
-      <div className="f-column mt-5">
+      <div className="f-column">
         <div className="text-primary-light mb-3 text fw-600">Bio</div>
         <TextArea
           height={120}
@@ -219,7 +251,10 @@ export default function UserGeneralInformations({
               radius="10px"
             />
             <div className="copy" onClick={handleCopyWalletAddress}>
-              <p>Copy</p> <img src={copyIcon} />
+              <p>Copy</p> 
+              <svg width="17" height="21" viewBox="0 0 17 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 20.8184C1.45 20.8184 0.979 20.6227 0.587 20.2314C0.195667 19.8394 0 19.3684 0 18.8184V4.81836H2V18.8184H13V20.8184H2ZM6 16.8184C5.45 16.8184 4.97933 16.6227 4.588 16.2314C4.196 15.8394 4 15.3684 4 14.8184V2.81836C4 2.26836 4.196 1.79736 4.588 1.40536C4.97933 1.01403 5.45 0.818359 6 0.818359H15C15.55 0.818359 16.021 1.01403 16.413 1.40536C16.8043 1.79736 17 2.26836 17 2.81836V14.8184C17 15.3684 16.8043 15.8394 16.413 16.2314C16.021 16.6227 15.55 16.8184 15 16.8184H6Z" fill="var(--primary)"/>
+              </svg>
             </div>
           </div>
 
@@ -230,6 +265,23 @@ export default function UserGeneralInformations({
       </div>
     );
   };
+
+  const renderUserNftsOptions = () => (
+    <div className="user-nfts-options">
+      <div className="text-primary-light mb-3 text fw-600">
+        Public NFTs
+      </div>
+      <div className="text-secondary-dark mb-3 text fw-600">
+        You have {formData.publicNfts?.length || 0} Public NFTs
+      </div>
+      <Button
+        onClick={() => setDisplayNftsCollection(true)}
+        width="100%"
+      >
+        Edit my public NFTs
+      </Button>
+    </div>
+  )
 
   const renderLeave = () => {
     return (
@@ -245,37 +297,39 @@ export default function UserGeneralInformations({
 
   return (
     <UserGeneralInformationsStyled>
-      {renderAvatar()}
-      {!currentSide && (
+      {!currentSide ? (
         <>
           {/* Username Section */}
           {renderUsername()}
           {/* Description Section */}
           {renderBio()}
         </>
-      )}
+      )
+      : renderAvatar()
+    }
 
       {/* Eligibility Section */}
       {currentSide && <Eligibility side={currentSide} />}
 
-      {
-        <div className="submitArea">
-          <Button
-            classes={sideSettingsPage ? 'side-settings-submit-btn' : ''}
-            color={"var(--text-primary-light)"}
-            disabled={sideSettingsPage && !Object.keys(formData.avatar || {}).length}
-            height={44}
-            onClick={onSubmit}
-            radius={10}
-            width={"164px"}
-          >
-            Save
-          </Button>
-        </div>
-      }
+      {!currentSide && renderConnectedWallet()}
+      
+      {!currentSide && renderUserNftsOptions()}
+      
+      <div className="submitArea">
+        <Button
+          classes={sideSettingsPage ? 'side-settings-submit-btn' : ''}
+          color={"var(--text-primary-light)"}
+          disabled={sideSettingsPage && !Object.keys(formData.avatar || {}).length}
+          height={44}
+          onClick={onSubmit}
+          radius={10}
+          width={"100%"}
+        >
+          Save
+        </Button>
+      </div>
 
       {/* Wallet Section */}
-      {!currentSide && renderConnectedWallet()}
       {currentSide && renderLeave()}
 
     </UserGeneralInformationsStyled>
