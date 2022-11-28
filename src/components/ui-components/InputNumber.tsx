@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { InputHTMLAttributes, useRef } from "react";
 import styled from "styled-components";
+import { toast } from "react-toastify";
 
 const InputNumber = styled.input`
   height: 44px;
@@ -30,17 +31,27 @@ lessDiv: {
   },
 };
 
-export default function CustomInputNumber({ onChange,defaultValue }: any) {
+export default function CustomInputNumber({ onChange,defaultValue, collections, currentDiv }: any) {
   const ref = useRef<HTMLInputElement>(null);
 
   const signClick = (value: number) => {
-    if (ref.current) {
+
+    // Checking if there is collection selected
+    if (!currentDiv || (ref.current && currentDiv['collection'].length)) {
+      const currentCollection = collections.find(elem => elem['address'] === currentDiv['collection'])
       const currentValue = ref.current.valueAsNumber;
-      const res = currentValue + value;
-      if (res < 0) return;
-      ref.current.valueAsNumber = res;
-      onChange(res);
-    }
+
+      // Checking if the user hold more than number selected
+      if (currentCollection['numDistinctTokensOwned'] > currentValue || value < 0) {
+        const res = currentValue + value;
+        if (res <= 0) {
+          toast.error("You need to choose minimum 1 quantity", { toastId: 8 });
+          return;
+        }
+        ref.current.valueAsNumber = res;
+        onChange(res);
+      } else toast.error(`You are holder of ${currentValue} NFT ${currentValue > 1 ? "s" : ""} from this collection`, { toastId: 8 });
+    } else toast.error("You need to choose collection first", { toastId: 9 });
   };
 
   return (

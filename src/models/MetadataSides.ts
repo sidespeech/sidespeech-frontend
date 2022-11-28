@@ -6,16 +6,12 @@ export class MetadataSides {
   metadata:Metadata;
   metadataId: string;
   sideId: string;
-  numberNeeded: number;
-  required: boolean;
   side: Side;
 
   constructor(_data: any) {
-    this.metadata = _data.id;
-    this.metadataId = _data.address;
-    this.sideId = _data.traitProperty;
-    this.numberNeeded = _data.numberNeeded;
-    this.required = _data.required;
+    this.metadata = _data.metadata;
+    this.metadataId = _data.metadataId;
+    this.sideId = _data.sideId;
     this.side = _data.side;
   }
 }

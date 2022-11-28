@@ -166,7 +166,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
       // selecting the room
       dispatch(setSelectedRoom(room));
       dispatch(setSelectedChannel(null));
-      navigate(`/${currentSide?.id}`);
+      navigate(`/${currentSide?.name}`);
     } catch (error) {
       console.error(error);
       toast.error("There has been an error opening the room", {
@@ -277,7 +277,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
                       <>
                         <span className="text-inactive">
                           {profile
-                            ? `https://side.xyz/${currentSide?.id}/profile/`
+                            ? `https://side.xyz/${currentSide?.name}/profile/`
                             : "https://side.xyz/user/"}
                           <span className="text-main">{username}</span>
                         </span>

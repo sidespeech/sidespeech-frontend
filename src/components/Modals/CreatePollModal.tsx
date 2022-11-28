@@ -141,7 +141,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
     }
   };
 
-  const valid = proposalTitle && endDate && question && Object.values(answers).filter(ans => ans.trim().length > 0).length >= 2;
+  const valid = proposalTitle && endDate && new Date(endDate).getTime() >= Date.now() && question && Object.values(answers).filter(ans => ans.trim().length > 0).length >= 2;
 
   return (
     <Modal

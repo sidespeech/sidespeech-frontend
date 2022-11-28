@@ -1,8 +1,7 @@
 // Cores
 import superagent from "superagent";
-import _ from "lodash";
 
-// Constants
+import { InitialStateSide } from "../components/NewSide/NewSide";
 import { BASE_URL } from "../constants/constants";
 
 // Models / Modals
@@ -307,11 +306,17 @@ class apiService {
   static async voteOnPoll(
     voterId: string,
     option_id: string,
-    timestamp: string
+    timestamp: string,
+    signature: string,
+    contractAddresses: string[]
   ): Promise<Vote> {
-    const res = await superagent
-      .post(`${BASE_URL}/vote`)
-      .send({ voterId, option_id, timestamp });
+    const res = await post(`${BASE_URL}/vote`).send({
+      voterId,
+      option_id,
+      timestamp,
+      signature,
+      contractAddresses,
+    });
     return new Vote(res.body);
   }
 
@@ -362,8 +367,9 @@ class apiService {
   }
 
   static async getInvitationFromLink(id: string): Promise<any> {
-    const res = await superagent
-      .get(`${BASE_URL}/invitation/invitationLink/:${id}`)
+    const res = await superagent.get(
+      `${BASE_URL}/invitation/invitationLink/:${id}`
+    );
     return res.body;
   }
 
@@ -476,6 +482,13 @@ class apiService {
       .get(`${BASE_URL}/collection/getMany`)
       .query({ addresses });
     return res.body.map((b: any) => new Collection(b));
+  }
+
+  static async saveCollectionSide(data: any[]) {
+    const res = await superagent
+      .post(`${BASE_URL}/collection-side/many`)
+      .send({ data: data });
+    return res;
   }
 }
 

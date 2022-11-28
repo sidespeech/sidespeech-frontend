@@ -47,7 +47,6 @@ const UserSidesStyled = styled.div`
 `;
 
 export default function UserSides() {
-  const { id: currentSideId } = useParams();
   const navigate = useNavigate();
 
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
@@ -142,15 +141,16 @@ export default function UserSides() {
     const account = localStorage.getItem("userAccount");
     if (currentSide && account) getAndSetRoomNotifications(account);
 
-    const sideProfile = userData.user?.profiles.find(
-      (profile) => profile.side?.id === side?.id
-    );
-  
-    const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
-    SetIsSideAdmin(isSideAdminResponse);
-  }, [currentSide, userData]);
+    if (userData.user && side) {
+      const sideProfile = userData.user?.profiles.find(
+        (profile) => profile.side?.id === side?.id
+      );
 
-
+      const isSideAdminResponse =
+        sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
+      SetIsSideAdmin(isSideAdminResponse);
+    }
+  }, [currentSide, userData, side]);
 
   return (
     <>
@@ -165,7 +165,7 @@ export default function UserSides() {
                 displaySide(c);
               }}
               className={`colony-badge pointer ${
-                currentSideId === c.id ? "active" : ""
+                currentSide?.name === c.name ? "active" : ""
               }`}
               key={c.id}
             >
@@ -188,6 +188,7 @@ export default function UserSides() {
             setDisplayEligibility={setDisplayModal}
             setDisplayLeaveSide={setDisplayLeaveSide}
             isSideAdmin={isSideAdmin}
+            setSelectedSide={setSide}
           />
         )}
         {displayLeaveSide && side && (

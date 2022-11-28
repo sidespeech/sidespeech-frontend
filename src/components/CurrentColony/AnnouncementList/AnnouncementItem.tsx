@@ -29,10 +29,18 @@ import { EventType } from "../../../constants/EventType";
 import websocketService from "../../../services/websocket.service";
 
 const AnnouncementItemStyled = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: 13px 16px 17px 16px;
-  gap: 8px;
+  height: fit-content;
+  padding: 0 1rem;
+  gap: .5rem;
   color: var(--text-secondary);
+  &.thread {
+    max-height: 100%;
+    overflow-y: scroll;
+    padding-bottom: 4rem;
+  }
   &.border-bottom {
     border-bottom: 1px solid var(--bg-secondary-light);
   }
@@ -107,7 +115,7 @@ export default function AnnouncementItem({
   }, [currentSide]);
 
   return (
-    <AnnouncementItemStyled className={`${className} f-column`}>
+    <AnnouncementItemStyled className={`${className || ''}`}>
       <div className="flex w-100 gap-20">
         <UserBadge
           check

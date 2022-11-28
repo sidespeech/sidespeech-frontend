@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { Poll } from "../../models/Poll";
 import { Profile } from "../../models/Profile";
 import UserBadge from "./UserBadge";
+import defaultPP from "../../assets/default-pp.webp"
 
 const MiddleContainerHeaderStyled = styled.div`
   width: 100%;
@@ -27,7 +28,6 @@ const MiddleContainerHeaderStyled = styled.div`
   gap: 1rem;
   background-color: var(--bg-primary);
   height: 10vh;
-  width: calc(100vw - 71px - 210px);
   color: var(--text-secondary);
   padding: 0 2rem;
   &::placeholder {
@@ -105,6 +105,7 @@ const MiddleContainerHeaderStyled = styled.div`
 
 interface MiddleContainerHeaderProps {
   channel?: Channel | null;
+  className?: string;
   room?: Room | null;
   setThread?: any;
   thread?: any;
@@ -112,6 +113,7 @@ interface MiddleContainerHeaderProps {
 
 export default function MiddleContainerHeader({
   channel,
+  className,
   room,
   setThread,
   thread,
@@ -144,13 +146,13 @@ export default function MiddleContainerHeader({
     if (roomProfile) {
       const url = roomProfile.profilePicture?.metadata?.image
         ? fixURL(roomProfile.profilePicture?.metadata?.image)
-        : "";
+        : defaultPP;
       setUrl(url);
     }
   }, [roomProfile]);
 
   return (
-    <MiddleContainerHeaderStyled className="middle-container-top">
+    <MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>
       <div className="left-side">
         {thread && (
           <div className="user-info">
@@ -236,7 +238,7 @@ export default function MiddleContainerHeader({
             }}
             className="profile-round pointer"
             alt=""
-            src={fixURL(currentProfile?.profilePicture?.metadata?.image || "")}
+            src={fixURL(currentProfile?.profilePicture?.metadata?.image || defaultPP)}
           />
           <div className="user-name-address">
             <p className="user-name size-14">{user?.username}</p>

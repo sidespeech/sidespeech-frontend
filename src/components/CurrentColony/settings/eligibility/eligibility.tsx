@@ -78,10 +78,10 @@ export default function Eligibility({ side }: { side: Side }) {
         {Object.values(details).map((d: any) => {
           const isError = d.find((item: any) => item.type.includes("error"));
           return d.map((v: any) => {
-            if (v.type.includes("number")) return;
+            if (v.type.includes("number") && d.length > 1) return;
             const nft = v.usefulNfts ? v.usefulNfts[0] : null;
             const num = v.usefulNfts?.length - 1;
-            const collection = side.collections.find((c) => c.address === v.id);
+            const collection = (side.collectionSides.find((c) => c.collectionId === v.id))!['collection'];
             // const isError = v.type.includes("error");
             return (
               <>
@@ -96,8 +96,7 @@ export default function Eligibility({ side }: { side: Side }) {
                     <div className="flex align-center">
                       {" "}
                       <span className="mr-2">-</span>
-                      {collection?.name ||
-                        collection.opensea.collectionName}{" "}
+                      {collection?.opensea?.collectionName || collection?.name } {" "}
                       {collection?.opensea?.safelistRequestStatus ===
                         OpenSeaRequestStatus.verified && (
                         <img
@@ -115,8 +114,8 @@ export default function Eligibility({ side }: { side: Side }) {
                     )}
                   </div>
                   <ConfitionItem>
-                    {v.type === "error-attributes" && <ErrorNft />}
-                    {v.type === "success-attributes" && (
+                    {v.type.includes("error") && <ErrorNft />}
+                    {v.type.includes("success") && (
                       <NftImage
                         src={fixURL(nft.metadata.image)}
                         alt="nft visual"
@@ -124,7 +123,7 @@ export default function Eligibility({ side }: { side: Side }) {
                     )}
 
                     <div className="f-column justify-evenly ml-3">
-                      {v.type === "success-attributes" && (
+                      {v.type.includes("success") && (
                         <div>
                           <span>
                             {collection.name} #{nft.token_id}{" "}

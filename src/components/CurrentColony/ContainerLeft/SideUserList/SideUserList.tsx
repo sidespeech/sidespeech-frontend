@@ -11,15 +11,22 @@ import defaultPP from "../../../../assets/default-pp.webp";
 import copyAll from "../../../../assets/copy_all.svg";
 import hexagon from "../../../../assets/hexagon.svg";
 import check from "../../../../assets/check.svg";
-import { ProfilePictureData, SpanElipsis } from "../../../GeneralSettings/Account/Avatar";
+import {
+  ProfilePictureData,
+  SpanElipsis,
+} from "../../../GeneralSettings/Account/Avatar";
 import Button from "../../../ui-components/Button";
 import {
   fixURL,
+  getRandomId,
   reduceTokenId,
   reduceWalletAddress,
 } from "../../../../helpers/utilities";
-import { subscribeToEvent, unSubscribeToEvent } from "../../../../helpers/CustomEvent";
-import { EventType } from "../../../../constants/EventType"; 
+import {
+  subscribeToEvent,
+  unSubscribeToEvent,
+} from "../../../../helpers/CustomEvent";
+import { EventType } from "../../../../constants/EventType";
 import { useNavigate } from "react-router-dom";
 import {
   setSelectedChannel,
@@ -37,10 +44,12 @@ export default function SideUserList({
   dots,
   handleSelectedUser,
   selectedUser,
+  isMembersList,
 }: {
   dots: any;
   handleSelectedUser: any;
   selectedUser: any;
+  isMembersList?: boolean;
 }) {
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const { currentProfile } = useSelector((state: RootState) => state.user);
@@ -49,16 +58,13 @@ export default function SideUserList({
 
   const handleUsersStatus = async (m: any) => {
     const { detail } = m;
-    setUsersStatus(detail)
+    setUsersStatus(detail);
   };
 
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
     return () => {
-      unSubscribeToEvent(
-        EventType.RECEIVE_USERS_STATUS,
-        handleUsersStatus
-      );
+      unSubscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
     };
   }, [usersStatus, handleUsersStatus]);
 
@@ -67,25 +73,26 @@ export default function SideUserList({
   return (
     <div className="f-column align-start w-100">
       {currentSide?.profiles.map((p: Profile, index: number) => {
-
         let status;
-
+        const id = getRandomId();
         const isMe = p.id === currentProfile?.id;
         const room = currentProfile?.getRoom(p.id);
+        if (isMembersList && room && !isMe) return;
+        if (!isMembersList && isMe) return;
         const url = p.profilePicture?.metadata?.image
           ? fixURL(p.profilePicture?.metadata?.image)
-          : undefined;  
-       
-          if(usersStatus[index]) {
-            status = usersStatus[index].user.id == p.user.id ? true : false;
-          } else {
-            status = false;
-          }
-        
-          return (
+          : undefined;
+
+        if (usersStatus[index] && usersStatus[index].user) {
+          status = usersStatus[index].user.id == p.user.id ? true : false;
+        } else {
+          status = false;
+        }
+
+        return (
           <>
             <ReactTooltip
-              id={p.id}
+              id={id}
               globalEventOff="click"
               place="right"
               className="tooltip-radius"
@@ -98,7 +105,7 @@ export default function SideUserList({
             <div
               data-tip
               data-event="click"
-              data-for={p.id}
+              data-for={id}
               key={index}
               onClick={
                 isMe ? () => {} : () => handleSelectedUser(p, currentProfile)
@@ -151,7 +158,9 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
   const [nft, setNft] = useState<NFT | null>(null);
 
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
-  const { currentProfile, user } = useSelector((state: RootState) => state.user);
+  const { currentProfile, user } = useSelector(
+    (state: RootState) => state.user
+  );
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -189,17 +198,14 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
         // creating the room
         room = await apiService.createRoom(currentProfile.id, profile.id);
         // add this room in the user websocket
-        websocketService.addRoomToUsers(room.id, [
-          user.id,
-          profile.user.id,
-        ]);
+        websocketService.addRoomToUsers(room.id, [user.id, profile.user.id]);
         // add the room to profile
         dispatch(addRoomToProfile(room));
       }
       // selecting the room
       dispatch(setSelectedRoom(room));
       dispatch(setSelectedChannel(null));
-      navigate(`/${currentSide?.id}`);
+      navigate(`/${currentSide?.name}`);
     } catch (error) {
       console.error(error);
       toast.error("There has been an error opening the room", {
@@ -225,9 +231,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
           <ProfilePictureData className="flex align-center text-main">
             <img src={hexagon} className="mr-3 size-12 fw-700" />
             <span title={nft?.token_id + " " + collection.name}>
-              <SpanElipsis className="mr-2">
-                #{nft &&nft.token_id}
-              </SpanElipsis>
+              <SpanElipsis className="mr-2">#{nft && nft.token_id}</SpanElipsis>
               <span className="">
                 {collection &&
                   (collection.name || collection.opensea?.collectionName)}

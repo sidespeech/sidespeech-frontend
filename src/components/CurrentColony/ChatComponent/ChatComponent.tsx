@@ -39,7 +39,6 @@ export default function ChatComponent(props: IChatComponentProps) {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const handleSendMessage = (value: string) => {
-    console.log(value);
     websocketService.sendMessage(
       value,
       props.room.id,

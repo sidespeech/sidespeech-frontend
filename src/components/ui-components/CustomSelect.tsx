@@ -5,6 +5,7 @@ interface ISelectContainer {
   width?: string;
   height?: string;
   radius?: string;
+  disable?: boolean;
 }
 
 interface ISelectCustom {
@@ -16,12 +17,14 @@ interface ISelectCustom {
 
 const SelectContainer = styled.div<ISelectContainer>`
   position: relative;
+  ${(props) => props.disable && "pointer-events: none;"}
+  ${(props) => props.disable && "opacity: 0.2;"}
   width: ${(props) => (props.width ? props.width : "148px")};
   height: ${(props) => (props.height ? props.height : "31px")};
   .select-custom {
     width: 100%;
     padding: 5px 0px 5px 12px;
-    border-radius: ${(props) => (props.radius ? props.radius : '25px')};
+    border-radius: ${(props) => (props.radius ? props.radius : "25px")};
     appearance: none;
     color: var(--text-secondary);
     text-align: left;
@@ -33,7 +36,7 @@ const SelectContainer = styled.div<ISelectContainer>`
   .select-custom:focus-visible {
     outline: none;
   }
-  
+
   .select-arrow {
     position: absolute;
     right: 7px;
@@ -85,6 +88,7 @@ export default function CustomSelect({
   bgColor,
   classes,
   style,
+  disable,
 }: {
   onChange: any;
   options: any[];
@@ -102,6 +106,7 @@ export default function CustomSelect({
   bgColor?: string;
   classes?: string;
   style?: any;
+  disable?: boolean;
 }) {
   const [selected, setSelected] = useState(false);
   // const [defautState, setDefautState] = useState(null);
@@ -125,6 +130,7 @@ export default function CustomSelect({
       height={height}
       radius={radius}
       className={classes}
+      disable={disable}
     >
       <SelectCustom
         fontSize={fontSize}
@@ -141,7 +147,11 @@ export default function CustomSelect({
         className="select-custom"
         value={value}
       >
-        {placeholder && <option value="" disabled selected>{placeholder}</option>}
+        {placeholder && (
+          <option value="" disabled selected>
+            {placeholder}
+          </option>
+        )}
         {options.map((o, index) => {
           return (
             <option key={index} value={values ? values[index] : index}>
@@ -150,10 +160,7 @@ export default function CustomSelect({
           );
         })}
       </SelectCustom>
-      <div
-        style={arrowPosition}
-        className="select-arrow"
-      >
+      <div style={arrowPosition} className="select-arrow">
         <i className="fa-solid fs-22 fa-angle-down"></i>
       </div>
     </SelectContainer>

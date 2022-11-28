@@ -9,180 +9,164 @@ import Informations from "../CurrentColony/settings/informations/informations";
 import { Side } from "../../models/Side";
 import Button from "../ui-components/Button";
 import Admission from "./admission/Admission";
-import Channels from "../CurrentColony/settings/channels/Channels"; 
-import Invitation from "../CurrentColony/settings/invitation/invitation";
+import Channels from "../CurrentColony/settings/channels/ChannelsTab";
+import Invitation from "../CurrentColony/settings/invitation/InvitationTab";
 import { apiService } from "../../services/api.service";
 import {
   addUserParsedSide,
+  refreshConnectedUser,
   updateProfiles,
   updateSidesByUserCollections,
   updateUser,
 } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
 import { Collection } from "../../models/interfaces/collection";
-import _, { valuesIn } from "lodash";
+import _, { cloneDeep, valuesIn } from "lodash";
 import { Channel, ChannelType } from "../../models/Channel";
 import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
 import { sideAPI } from "../../services/side.service";
 import { breakpoints, size } from "../../helpers/breakpoints";
+import Informations from "../CurrentColony/settings/informations/Information";
 
 const NewSideStyled = styled.div`
-width: 100%;
-.title-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  & .title {
-    margin: 0;
-    color: var(--text-secondary-dark);
-  }
-}
-
-.container-next-back {
   width: 100%;
-  ${breakpoints(size.lg, `{
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    & .title {
+      margin: 0;
+      color: var(--text-secondary-dark);
+    }
+  }
+
+  .container-next-back {
+    width: 100%;
+    ${breakpoints(
+      size.lg,
+      `{
     width: 60%;
     max-width: 500px;
-  }`)}
-}
+  }`
+    )}
+  }
 
-.tabs-wrapper_mobile {
-  display: flex;
-  gap: 3rem;
-  align-items: center;
-  justify-content: center;
-  padding: 0 2rem;
-  margin: 2rem 0 1rem 0;
-  ${breakpoints(size.lg, `{
-    display: none
-  }`)}
-  & .step-icon {
-    position: relative;
-    background-color: var(--bg-secondary-light);
+  .tabs-wrapper_mobile {
     display: flex;
-    flex-shrink: 0;
+    gap: 3rem;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 2rem;
-    font-size: .7rem;
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      transform: translate(100%, -50%);
-      right: 0;
-      width: 3rem;
-      height: 1px;
-      background-color: var(--bg-primary-light);
-    }
-    &:last-of-type::after {
-      display: none;
-    }
-    &.active {
-      background-color: var(--primary);
-      color: var(--text-secondary-light);
-    }
-    &.completed {
-      background-color: var(--green);
-      color: var(--bg-secondary-light);
-      &::after {
-        background-color: var(--green);
-      }
-    }
-  }
-}
-
-.container-left {
-  display: none;
-  padding-left: 1rem;
-  ${breakpoints(size.lg, `{
-    display: flex;
-  }`)}
-  .tabs-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding-left: 1rem;
-    margin-top: 1rem;
-    .nav-link {
-      width: 100%;
+    padding: 0 2rem;
+    margin: 2rem 0 1rem 0;
+    ${breakpoints(
+      size.lg,
+      `{
+    display: none
+  }`
+    )}
+    & .step-icon {
+      position: relative;
+      background-color: var(--bg-secondary-light);
       display: flex;
-      gap: .5rem;
+      flex-shrink: 0;
       align-items: center;
-      & .step-icon {
-        background-color: var(--bg-secondary-light);
-        display: flex;
-        flex-shrink: 0;
-        align-items: center;
-        justify-content: center;
-        width: 2rem;
-        height: 2rem;
-        border-radius: 2rem;
-        font-size: .7rem;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 2rem;
+      font-size: 0.7rem;
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        transform: translate(100%, -50%);
+        right: 0;
+        width: 3rem;
+        height: 1px;
+        background-color: var(--bg-primary-light);
+      }
+      &:last-of-type::after {
+        display: none;
       }
       &.active {
-        color: var(--primary) !important;
-        background-color: transparent !important;
-        border-right: 2px solid  var(--primary);
-        & .step-icon {
-          background-color: var(--primary);
-          color: var(--text-secondary-light);
-        }
+        background-color: var(--primary);
+        color: var(--text-secondary-light);
       }
       &.completed {
-        color: var(--green) !important;
-        background-color: transparent !important;
-        & .step-icon {
+        background-color: var(--green);
+        color: var(--bg-secondary-light);
+        &::after {
           background-color: var(--green);
-          color: var(--bg-secondary-light);
         }
-      }
-      & .fa-check {
-        margin-left: .5rem;
       }
     }
   }
-}
 
-.collection-icon-check {
-  color: #0d6efd;
-}
+  .container-left {
+    display: none;
+    padding-left: 1rem;
+    ${breakpoints(
+      size.lg,
+      `{
+    display: flex;
+  }`
+    )}
+    .tabs-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding-left: 1rem;
+      margin-top: 1rem;
+      .nav-link {
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        & .step-icon {
+          background-color: var(--bg-secondary-light);
+          display: flex;
+          flex-shrink: 0;
+          align-items: center;
+          justify-content: center;
+          width: 2rem;
+          height: 2rem;
+          border-radius: 2rem;
+          font-size: 0.7rem;
+        }
+        &.active {
+          color: var(--primary) !important;
+          background-color: transparent !important;
+          border-right: 2px solid var(--primary);
+          & .step-icon {
+            background-color: var(--primary);
+            color: var(--text-secondary-light);
+          }
+        }
+        &.completed {
+          color: var(--green) !important;
+          background-color: transparent !important;
+          & .step-icon {
+            background-color: var(--green);
+            color: var(--bg-secondary-light);
+          }
+        }
+        & .fa-check {
+          margin-left: 0.5rem;
+        }
+      }
+    }
+  }
+
+  .collection-icon-check {
+    color: #0d6efd;
+  }
 `;
 
 const MAX_NUMBER_OF_COLLECTIONS = 5;
 
 const initialStateSteps = [
-  {
-    label: "Informations",
-    icon: "fa-solid fa-1",
-    active: true,
-    completed: false,
-  },
-  {
-    label: "Admission",
-    icon: "fa-solid fa-2",
-    active: false,
-    completed: false,
-  },
-  {
-    label: "Channels",
-    icon: "fa-solid fa-3",
-    active: false,
-    completed: false,
-  },
-  {
-    label: "Invitation",
-    icon: "fa-solid fa-4",
-    active: false,
-    completed: false,
-  },
-];
-
-const initialSteps = [
   {
     label: "Informations",
     icon: "fa-solid fa-1",
@@ -216,6 +200,13 @@ export interface InitialStateSide {
   NftTokenAddress: string;
   conditions: any;
   creatorAddress: string | undefined;
+  required: boolean;
+}
+
+export interface InitialChannelsState {
+  currents: any[];
+  removed: any[];
+  added: any[];
 }
 
 const initialStateSide = {
@@ -225,6 +216,7 @@ const initialStateSide = {
   NftTokenAddress: "",
   conditions: {},
   priv: false,
+  required: false,
   creatorAddress: window.ethereum?.selectedAddress,
 };
 
@@ -235,28 +227,33 @@ const initialDivCollections = [
     features: [],
     traits_values: [],
     numberNeeded: 1,
-    metadata: {}
+    metadata: {},
   },
 ];
 
 const initialChannelsState = {
   currents: [],
   removed: [],
-  added: [{
-    name: "Announcement",
-    isVisible: true,
-    type: ChannelType.Announcement,
-    authorizeComments: false,
-  }],
+  added: [
+    {
+      name: "Announcement",
+      isVisible: true,
+      type: ChannelType.Announcement,
+      authorizeComments: false,
+    },
+  ],
 };
 
 const Middle = styled.div`
   overflow: scroll;
   height: calc(100vh - 62px - 77px);
   padding-bottom: calc(2rem + 77px);
-  ${breakpoints(size.lg, `{
+  ${breakpoints(
+    size.lg,
+    `{
     height: calc(100vh - 62px);
-  }`)}
+  }`
+  )}
 `;
 
 export default function NewSide() {
@@ -264,7 +261,9 @@ export default function NewSide() {
   const navigate = useNavigate();
 
   const currentSide = new Side({});
-  const [formData, setFormData] = useState<InitialStateSide>(initialStateSide);
+  const [formData, setFormData] = useState<InitialStateSide>(
+    cloneDeep(initialStateSide)
+  );
   const [formError, setFormError] = useState({
     name: { exist: false, length: false },
   });
@@ -274,19 +273,19 @@ export default function NewSide() {
 
   const userData = useSelector((state: RootState) => state.user);
 
-  const [steps, setSteps] = useState<any[]>(initialStateSteps);
+  const [steps, setSteps] = useState<any[]>(cloneDeep(initialStateSteps));
   const [currentStep, setCurrentStep] = useState<number>(0);
-
 
   // Variables for Admission component
   const [divCollections, setDivCollection] = useState<any[]>(
-    initialDivCollections
+    cloneDeep(initialDivCollections)
   );
   const [collectionHolder, setCollectionHolder] = useState<Collection[]>([]);
   const [onlyOneRequired, setOnlyOneRequired] = useState<boolean>(true);
 
   // Variables for Channels component
-  const [channels, setChannels] = useState<any>(initialChannelsState);
+  const [channels, setChannels] =
+    useState<InitialChannelsState>(initialChannelsState);
 
   // Variables for Invitation component
   const [invitationUsers, setInvitationUsers] = useState<any>([]);
@@ -319,29 +318,29 @@ export default function NewSide() {
         }
         setInvitationUsers(invitationsUsersObject);
       };
-      getInvitationUsers({...user});
+      getInvitationUsers({ ...user });
     }
   }, [user]);
 
   const handleTabs = async (tabIndex: number) => {
     let current_data = { ...formData };
-    let current_steps = [...steps];
-    let isValidate:boolean;
+    let current_steps = cloneDeep(steps);
+    let isValidate: boolean;
 
     if (currentStep < tabIndex) {
-      isValidate = await validatorSteps(currentStep, current_data)
-      // if (!isValidate || currentStep + 1 < tabIndex) return 
-      const tabCompletedValidator = current_steps.find((item, index) => !item['completed'] && index < tabIndex && !item['active'])
-
-      if (!isValidate || tabCompletedValidator) return 
+      isValidate = await validatorSteps(currentStep, current_data);
+      const tabCompletedValidator = current_steps.find(
+        (item, index) =>
+          !item["completed"] && index < tabIndex && !item["active"]
+      );
+      if (!isValidate || tabCompletedValidator) return;
     }
 
     const currentStepsState = current_steps.map((item: any, map_i: number) => {
-      // if (!previous) {
       // Turn active or not for selected item
       item["active"] = map_i === tabIndex ? true : false;
       // Turn completed or not for previous or next items
-      item["completed"] = (map_i < tabIndex || item["completed"]) ? true : false;
+      item["completed"] = map_i < tabIndex || item["completed"] ? true : false;
       return item;
     });
 
@@ -353,13 +352,12 @@ export default function NewSide() {
     index: number,
     previous: boolean = false
   ) => {
-
     let current_data = { ...formData };
-    let current_steps = [...steps];
+    let current_steps = cloneDeep(steps);
 
     if (!previous) {
-      const isValidate = await validatorSteps(index, current_data)
-      if (!isValidate) return 
+      const isValidate = await validatorSteps(index, current_data);
+      if (!isValidate) return;
     }
 
     const currentStepsState = current_steps.map((item: any, map_i: number) => {
@@ -382,9 +380,8 @@ export default function NewSide() {
     setSteps(currentStepsState);
   };
 
-
   // Functions to check mandatory data in steps
-  const validatorSteps = async (index: number, current_data:any) => {
+  const validatorSteps = async (index: number, current_data: any) => {
     // Checking if sideImage and name stored to continu to the other steps
     if (
       (index === 0 && !current_data["sideImage"]) ||
@@ -398,32 +395,39 @@ export default function NewSide() {
     // Set conditions and checking if there is minimum one condition to continu to the other steps
     if (index === 1) {
       let current_divs = [...divCollections];
+
       let conditions: any = {};
       for (let div of current_divs) {
         if (
           div["collection"].trim().length !== 0 &&
-          !(div["features"].find((item:any) => item["trait_selected"].trim().length == 0)) &&
-          !(div["features"].find((item:any) => item["value_selected"].trim().length == 0))
+          !div["features"].find(
+            (item: any) => item["trait_selected"].trim().length == 0
+          ) &&
+          !div["features"].find(
+            (item: any) => item["value_selected"].trim().length == 0
+          )
         ) {
-
-          conditions[div["collection"]] = { features : []};
+          conditions[div["collection"]] = { features: [] };
           conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
 
           for (let feature of div["features"]) {
-            conditions[div["collection"]]['features'].push({
-              property : feature['trait_selected'],
-              value : feature["value_selected"]
-            })
+            conditions[div["collection"]]["features"].push({
+              property: feature["trait_selected"],
+              value: feature["value_selected"],
+            });
           }
-          // conditions[div["collection"]][div["trait_selected"]] =
-          //   div["value_selected"];
-          // conditions[div["collection"]]["numberNeeded"] = div["numberNeeded"];
+        } else {
+          toast.error("There is one or more conditions not completed", {
+            toastId: 3,
+          });
+          return false;
         }
       }
       if (Object.keys(conditions).length === 0) {
         toast.error("You need to enter miminum one condition", { toastId: 3 });
         return false;
       }
+
       setFormData({ ...formData, conditions: conditions });
     }
 
@@ -437,7 +441,7 @@ export default function NewSide() {
         return false;
       }
     }
-    return true
+    return true;
   };
 
   // Functions for information component
@@ -452,7 +456,7 @@ export default function NewSide() {
     setFormData({ ...formData, description: text });
   };
 
-  const validateForm = async () => { };
+  const validateForm = async () => {};
 
   // validate the name, return true if name is valid;
   const validateName = async (name: string) => {
@@ -463,24 +467,33 @@ export default function NewSide() {
   };
 
   const onChangeSideImage = (event: any) => {
-    const file = event.target.files[0];
-    if (file.size > 500000) {
-      toast.error("The image size has to be smaller than 500ko.");
-      return;
+    if (event.target.files.length) {
+      const file = event.target.files[0];
+      if (file.size > 500000) {
+        toast.error("The image size has to be smaller than 500ko.");
+        return;
+      }
+      setFormData({ ...formData, sideImage: file });
     }
-    setFormData({ ...formData, sideImage: file });
   };
 
   // ----- Functions for Admission component **start
-  const setSideTokenAddress = async (address: string, index: number, filteredCollections: any) => {
+  const setSideTokenAddress = async (
+    address: string,
+    index: number,
+    filteredCollections: any
+  ) => {
     setFormData({ ...formData, NftTokenAddress: address });
     if (address.trim().length) {
       let current_divs = [...divCollections];
       current_divs[index]["collection"] = address;
+
       current_divs[index]["traits_values"] = createPropertiesObject(address);
 
-      const data = filteredCollections.find((item: Collection) => item['address'] === address);
-      current_divs[index]["metadata"] = data
+      const data = filteredCollections.find(
+        (item: Collection) => item["address"] === address
+      );
+      current_divs[index]["metadata"] = data;
       setDivCollection(current_divs);
     }
   };
@@ -492,11 +505,29 @@ export default function NewSide() {
     return properties;
   }
 
-  const setSidePropertyCondition = (event: any, index: number, findex:number) => {
+  const setSidePropertyCondition = (
+    event: any,
+    index: number,
+    findex: number
+  ) => {
     const trait = event.target.value;
     if (trait.trim().length) {
       let current_divs = [...divCollections];
-      current_divs[index]['features'][findex]["trait_selected"] = trait;
+
+      const last_selected =
+        current_divs[index]["features"][findex]["trait_selected"];
+      current_divs[index]["features"][findex]["trait_selected"] = trait;
+      current_divs[index]["features"][findex]["value_selected"] = "";
+
+      // Clear last selected property values used
+      current_divs[index]["traits_values"] = current_divs[index][
+        "traits_values"
+      ].map((item: any) => {
+        if (last_selected === item["property"]["value"])
+          item["values_used"] = [];
+        return item;
+      });
+
       setDivCollection(current_divs);
     }
   };
@@ -505,15 +536,31 @@ export default function NewSide() {
     const value = event.target.value;
     if (value.trim().length) {
       let current_divs = [...divCollections];
-      current_divs[index]['features'][findex]["value_selected"] = value;
+
+      // Define value selected
+      current_divs[index]["features"][findex]["value_selected"] = value;
+
+      // Adding the value as already used in the 'features' cell of it property
+      current_divs[index]["traits_values"] = current_divs[index][
+        "traits_values"
+      ].map((item: any) => {
+        const valueUsed = item["values"].find(
+          (innerElem: any) => innerElem["value"] == value
+        );
+        if (valueUsed) {
+          item["values_used"].push(valueUsed);
+        }
+        return item;
+      });
+
       setDivCollection(current_divs);
     }
   };
 
   const onRemoveFeature = (index: number, findex: number) => {
-      let current_divs = [...divCollections];
-      current_divs[index]['features'].splice(findex, 1);
-      setDivCollection(current_divs);
+    let current_divs = [...divCollections];
+    current_divs[index]["features"].splice(findex, 1);
+    setDivCollection(current_divs);
   };
 
   // Add collection div in condition
@@ -525,7 +572,7 @@ export default function NewSide() {
         traits_values: [],
         features: [],
         numberNeeded: 1,
-        metadata: {}
+        metadata: {},
       });
       setDivCollection(current_divs);
     } else {
@@ -539,24 +586,32 @@ export default function NewSide() {
   const addConditionToDivCollection = (index: number) => {
     let current_divs = [...divCollections];
 
-    current_divs[index]['features'].push({
-      trait_selected: "",
-      value_selected: "",
-      traits_values: [],
-    })
-    setDivCollection(current_divs);
+    if (current_divs[index]["features"].length < MAX_NUMBER_OF_COLLECTIONS) {
+      current_divs[index]["features"].push({
+        trait_selected: "",
+        value_selected: "",
+        traits_values: [],
+      });
+      setDivCollection(current_divs);
+    } else {
+      toast.error(
+        "You can not create side with more than 5 features per collections.",
+        { toastId: 8 }
+      );
+    }
   };
   const setNumberOfNftNeededToDivCollection = (
     number: number,
     index: number
   ) => {
     let current_divs = [...divCollections];
-    current_divs[index] = {
-      ...current_divs[index],
-      numberNeeded: number,
-    };
-
-    setDivCollection(current_divs);
+    if (current_divs[index]["collection"].length) {
+      current_divs[index] = {
+        ...current_divs[index],
+        numberNeeded: number,
+      };
+      setDivCollection(current_divs);
+    }
   };
 
   // Remove collection div in condition
@@ -688,85 +743,35 @@ export default function NewSide() {
   // ----- Functions for Channels component **end
 
   const onSubmit = async () => {
-    setFormData({
-      ...formData,
-      creatorAddress: window.ethereum.selectedAddress,
-    });
-
     try {
-      if (formData.sideImage) {
-
-
+      if (formData.sideImage && user) {
         const data = _.cloneDeep(formData);
 
-        console.log('channels["added"] :', channels["added"])
+        // Save side entity ** start
         data["conditions"]["required"] = onlyOneRequired;
-
         data["conditions"] = JSON.stringify(data["conditions"]);
         data["NftTokenAddress"] = data["conditions"];
         const fd = new FormData();
         fd.append("file", formData["sideImage"]);
         data["sideImage"] = await apiService.uploadImage(fd);
-        data["creatorAddress"] = user?.accounts;
+        data["creatorAddress"] = user.accounts;
+        data["required"] = !onlyOneRequired;
 
-        const newSide = await sideAPI.createSide(data);
-
-        if (channels["added"].length) {
-          let added = channels["added"].map((item: any) => {
-            item["side"] = newSide;
-            return item;
-          });
-          const addedChannels = await apiService.createManyChannels(added);
-        }
-
-        const conditionObject = JSON.parse(data["conditions"]);
-
-        const conditions = Object.keys(conditionObject).reduce(function (prev: Metadata[], key: string) {
-          if (key !== 'required'){
-            for (let feature of conditionObject[key]['features'])
-              prev.push({
-                address: key,
-                traitProperty: feature['property'],
-                traitValue: feature['value'],
-                numberNeeded: (conditionObject[key]['numberNeeded']) ? conditionObject[key]['numberNeeded'] : 1,
-                required: !onlyOneRequired,
-                side: newSide,
-              });
-          }
-
-          return prev;
-        }, []);
-
-        const conditionsSaved = await apiService.savedMetadataConditions(
-          conditions
+        const newSide = await sideAPI.createFullSide(
+          data,
+          channels,
+          userInvited
         );
+        // Save side entity ** end
 
-        let users = userInvited.map((u: any) => {
-          u["side"] = newSide;
-          return u;
-        });
-        if (users.length) await apiService.sendMultipleInvitations(users);
-        if (user) {
-          try {
-            const profile = await apiService.joinSide(
-              user?.id,
-              newSide.id,
-              Role.Admin
-            );
-            dispatch(updateProfiles(profile));
-          } catch (error) { }
-        }
-        dispatch(addUserParsedSide(newSide));
         dispatch(updateSidesByUserCollections(null));
         toast.success(data.name + " has been created.", {
           toastId: 4,
         });
 
-        setSteps(initialStateSteps);
-        setFormData(initialStateSide);
-
-        navigate(`/`);
-        window.location.reload();
+        const refreshedUser = await apiService.getUserByAddress(user.accounts);
+        dispatch(updateUser(refreshedUser));
+        navigate("/" + newSide.name);
       }
     } catch (error) {
       toast.error("Error creating side.", { toastId: 3 });
@@ -776,19 +781,29 @@ export default function NewSide() {
   return (
     <NewSideStyled>
       <div className="title-wrapper">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 15H11V11H15V9H11V5H9V9H5V11H9V15ZM10 20C8.61667 20 7.31667 19.7373 6.1 19.212C4.88333 18.6873 3.825 17.975 2.925 17.075C2.025 16.175 1.31267 15.1167 0.788 13.9C0.262667 12.6833 0 11.3833 0 10C0 8.61667 0.262667 7.31667 0.788 6.1C1.31267 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.31233 6.1 0.787C7.31667 0.262333 8.61667 0 10 0C11.3833 0 12.6833 0.262333 13.9 0.787C15.1167 1.31233 16.175 2.025 17.075 2.925C17.975 3.825 18.6873 4.88333 19.212 6.1C19.7373 7.31667 20 8.61667 20 10C20 11.3833 19.7373 12.6833 19.212 13.9C18.6873 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6873 13.9 19.212C12.6833 19.7373 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z" fill="#B4C1D2"/>
-          </svg>
-          <h2 className="title">Create Side</h2>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9 15H11V11H15V9H11V5H9V9H5V11H9V15ZM10 20C8.61667 20 7.31667 19.7373 6.1 19.212C4.88333 18.6873 3.825 17.975 2.925 17.075C2.025 16.175 1.31267 15.1167 0.788 13.9C0.262667 12.6833 0 11.3833 0 10C0 8.61667 0.262667 7.31667 0.788 6.1C1.31267 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.31233 6.1 0.787C7.31667 0.262333 8.61667 0 10 0C11.3833 0 12.6833 0.262333 13.9 0.787C15.1167 1.31233 16.175 2.025 17.075 2.925C17.975 3.825 18.6873 4.88333 19.212 6.1C19.7373 7.31667 20 8.61667 20 10C20 11.3833 19.7373 12.6833 19.212 13.9C18.6873 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6873 13.9 19.212C12.6833 19.7373 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z"
+            fill="#B4C1D2"
+          />
+        </svg>
+        <h2 className="title">Create Side</h2>
       </div>
 
       <div className="tabs-wrapper_mobile">
         {steps.map((step: any) => (
-          <i className={`${step["icon"]} ${
-            step["active"] ? "active" : ""
-          } ${
-            step["completed"] ? "completed" : ""
-          } step-icon`} key={step["icon"]}></i>
+          <i
+            className={`${step["icon"]} ${step["active"] ? "active" : ""} ${
+              step["completed"] ? "completed" : ""
+            } step-icon`}
+            key={step["icon"]}
+          ></i>
         ))}
       </div>
 
@@ -799,14 +814,13 @@ export default function NewSide() {
             {steps.map((step: any, index: number) => {
               return (
                 <TabItems
+                  onClick={() => handleTabs(index)}
                   key={index}
-                  className={`nav-link ${
-                    step["active"] ? "active" : ""
-                  } ${
+                  className={`nav-link ${step["active"] ? "active" : ""} ${
                     step["completed"] ? "completed" : ""
                   } sidebar-item text-secondary-dark`}
                 >
-                  <i className={`${step["icon"]} step-icon mr-2`}></i>
+                  <i className={`${step["icon"]} step-icon`}></i>
                   {step["label"]}{" "}
                   {step["completed"] ? (
                     <i className="fa-solid fa-check"></i>
