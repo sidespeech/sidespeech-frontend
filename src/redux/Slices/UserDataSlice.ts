@@ -54,6 +54,13 @@ export const flattenChannels = (array: any, key: string) => {
 function uniqByFilter<T>(array: T[]) {
   return array.filter((value, index) => array.indexOf(value) === index);
 }
+export const refreshConnectedUser = createAsyncThunk(
+  "userData/refreshConnectedUser",
+  async (account: string, { dispatch, getState }) => {
+    const user = await apiService.getUserByAddress(account);
+    dispatch(updateUser(user));
+  }
+);
 
 export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
@@ -69,7 +76,7 @@ export const fetchUserDatas = createAsyncThunk(
     for (let nft of nfts) {
       const address = nft["token_address"];
       const existingObject = res[address];
-      
+
       if (existingObject) {
         existingObject.nfts.push(nft);
       } else {

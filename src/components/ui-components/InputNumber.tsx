@@ -42,7 +42,7 @@ export default function CustomInputNumber({ onChange,defaultValue, collections, 
       const currentValue = ref.current.valueAsNumber;
 
       // Checking if the user hold more than number selected
-      if (currentCollection['numDistinctTokensOwned'] > currentValue) {
+      if (currentCollection['numDistinctTokensOwned'] > currentValue || value < 0) {
         const res = currentValue + value;
         if (res <= 0) {
           toast.error("You need to choose minimum 1 quantity", { toastId: 8 });
@@ -51,7 +51,7 @@ export default function CustomInputNumber({ onChange,defaultValue, collections, 
         ref.current.valueAsNumber = res;
         onChange(res);
       } else toast.error(`You are holder of ${currentValue} NFT ${currentValue > 1 ? "s" : ""} from this collection`, { toastId: 8 });
-    } else toast.error("You need to choose collection first", { toastId: 8 });
+    } else toast.error("You need to choose collection first", { toastId: 9 });
   };
 
   return (
