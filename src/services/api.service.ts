@@ -1,7 +1,6 @@
 // Cores
 import superagent from "superagent";
-
-import { InitialStateSide } from "../components/NewSide/NewSide";
+import _ from "lodash";
 import { BASE_URL } from "../constants/constants";
 
 // Models / Modals
