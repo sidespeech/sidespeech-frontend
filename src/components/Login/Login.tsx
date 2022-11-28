@@ -66,14 +66,15 @@ export default function Login() {
       providerOptions, // required
     });
 
-    const randomNonce = function(length: number) {
+    const randomNonce = function (length: number) {
       var text = "";
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      for(var i = 0; i < length; i++) {
-          text += possible.charAt(Math.floor(Math.random() * possible.length));
+      var possible =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
       }
       return text;
-    }
+    };
 
     // Method for wallet connection...
     const connectWallet = async () => {
@@ -92,67 +93,74 @@ export default function Login() {
 
         // If there are any accounts connected then send them to the API.
         if (accounts) {
+          let nonce;
 
-            let nonce;
+          if (!localStorage.getItem("nonce")) {
+            nonce = randomNonce(24);
+            localStorage.setItem("nonce", nonce);
+          } else {
+            nonce = localStorage.getItem("nonce");
+          }
 
-            if(!localStorage.getItem("nonce")) {
-              nonce = randomNonce(24);
-              localStorage.setItem("nonce", nonce);
-            } else {
-              nonce = localStorage.getItem("nonce");
-            }
+          // Get Signer
+          const signer = library.getSigner();
 
-            // Get Signer
-            const signer = library.getSigner();
+          const randomNonceString = nonce;
 
-            const randomNonceString = nonce;
+          // Grab the wallet address
+          const address = await signer.getAddress();
 
-            // Grab the wallet address
-            const address = await signer.getAddress();
+          // Create the signer message
+          const signerMessage =
+            "Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: " +
+            address +
+            "  \n \n  Nonce: " +
+            randomNonceString;
 
-            // Create the signer message
-            const signerMessage = "Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: "+address+ "  \n \n  Nonce: "+randomNonceString;
+          // Create the signature signing message.
+          signature = await signer.signMessage(signerMessage);
 
-            // Create the signature signing message.
-            signature = await signer.signMessage(signerMessage);
+          // Get the signer address.
+          signerAddr = ethers.utils.verifyMessage(signerMessage, signature);
 
-            // Get the signer address.
-            signerAddr = ethers.utils.verifyMessage(
-              signerMessage,
-              signature
-            );
+          // Check if the signer address is the same as the connected address.
+          if (signerAddr !== address) {
+            return false;
+          }
 
-            // Check if the signer address is the same as the connected address.
-            if (signerAddr !== address) {
-              return false;
-            }
+          // Attempt to find an existing user by passing their address and the signature that they signed.
+          const existingUser = await apiService.findExistingWallet(
+            accounts[0],
+            signerMessage,
+            signature
+          );
 
-            // Attempt to find an existing user by passing their address and the signature that they signed.
-            const existingUser = await apiService.findExistingWallet(accounts[0], signerMessage, signature);
-            
-            // Send the wallet to the api service.
-            const user = await apiService.walletConnection(accounts[0], signerMessage, signature);
-      
-            // Check if the existing user still needs to onboard or not.
-            if (existingUser == null) {
-              // Redirect the user to the onboarding area.
-              navigate("/onboarding");
-            } else {
-              // Redirect the user to the general settings page.
-              navigate("/");
-            }
+          // Send the wallet to the api service.
+          const user = await apiService.walletConnection(
+            accounts[0],
+            signerMessage,
+            signature
+          );
 
-            // Dispatch the account that is connected to the redux slice.
-            dispatch(connect({ account: accounts[0], user: user }));
-            dispatch(fetchUserDatas(accounts[0]));
+          // Check if the existing user still needs to onboard or not.
+          if (existingUser == null) {
+            // Redirect the user to the onboarding area.
+            navigate("/onboarding");
+          } else {
+            // Redirect the user to the general settings page.
+            navigate("/");
+          }
 
-            // Set a local storage of the account
-            localStorage.setItem("userAccount", accounts[0]);
-            localStorage.setItem("jwtToken", user.token);
+          // Dispatch the account that is connected to the redux slice.
+          dispatch(connect({ account: accounts[0], user: user }));
+          dispatch(fetchUserDatas(accounts[0]));
 
-            // Listen for accounts being disconnected - this only seems to work for WalletConnect.
-            provider.on("disconnect", handleDisconnect);
+          // Set a local storage of the account
+          localStorage.setItem("userAccount", accounts[0]);
+          localStorage.setItem("jwtToken", user.token);
 
+          // Listen for accounts being disconnected - this only seems to work for WalletConnect.
+          provider.on("disconnect", handleDisconnect);
         }
       } catch (err: any) {
         console.log("error", err, " message", err.message);
@@ -193,17 +201,15 @@ export default function Login() {
         style={{ gap: 5 }}
         className="connection-container f-column align-center justify-start"
       >
-        <h2 style={{color: "white", marginBottom: 30}}>Connect your wallet to take part in a slide</h2>
-        <Button 
-          classes="fw-700 size-18"  
+        <h2 style={{ color: "white", marginBottom: 30 }}>
+          Connect your wallet to take part in a slide
+        </h2>
+        <Button
+          classes="fw-700 size-18"
           width="170px"
           onClick={() => connectWallet()}
         >
-          <img 
-            src={walletIcon} 
-            style={{marginRight: 10}}
-            alt="Wallet Icon" 
-          />
+          <img src={walletIcon} style={{ marginRight: 10 }} alt="Wallet Icon" />
           Connect wallet
         </Button>
       </div>
@@ -214,7 +220,7 @@ export default function Login() {
     <div className="f-column align-center my-auto">
       <div style={{ textAlign: "center" }}>
         <img src={logoSmall} alt="SideSpeech-logo" />
-        <h1 style={{marginTop: 0}}>SideSpeech</h1>
+        <h1 style={{ marginTop: 0 }}>SideSpeech</h1>
       </div>
       <div className="flex align-end">
         <ConnectWalletArea />
