@@ -157,7 +157,7 @@ export default function Login() {
         if (
           typeof err !== "undefined" &&
           typeof err.message !== "undefined" &&
-          err.message.includes("User Rejected")
+          err.message.includes("user rejected")
         ) {
           toast.error("You rejected the request", {
             toastId: 6,
