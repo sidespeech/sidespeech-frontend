@@ -7,7 +7,6 @@ import Invitation from "./invitation/InvitationTab";
 import Informations from "./informations/Information";
 import SideProfileAccount from "./account/SideProfileAccount";
 import Requests from "./requests/requests";
-import "./Settings.css";
 import { RootState } from "../../../redux/store/app.store";
 import ContainerLeft from "../../ui-components/ContainerLeft";
 import TabItems from "../../ui-components/TabItems";
