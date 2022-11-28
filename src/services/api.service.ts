@@ -21,8 +21,6 @@ import { Metadata } from "../models/Metadata";
 
 // Components
 import { InitialStateUser } from "../components/GeneralSettings/Account/GeneralSettingsAccount";
-import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Information";
-import { InitialStateSide } from "../components/NewSide/NewSide";
 
 
 // Create an API Service class

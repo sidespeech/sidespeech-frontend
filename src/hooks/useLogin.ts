@@ -51,16 +51,25 @@ export default function useLogin() {
     // If there are any accounts connected then send them to the API.
     if (accounts) {
 
+      let nonce;
+
+      if(!localStorage.getItem("nonce")) {
+        nonce = randomNonce(24);
+        localStorage.setItem("nonce", nonce);
+      } else {
+        nonce = localStorage.getItem("nonce");
+      }
+
       // Get Signer
       const signer = library.getSigner();
 
-      const randomNonceString = randomNonce(24);
-
+      const randomNonceString = nonce;
+      
       // Grab the wallet address
       const address = await signer.getAddress();
 
       // Create the signer message
-      const signerMessage = "Welcome to SideSpeech! Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees. Your authentication status will reset after 24 hours. Wallet address:"+address+ " Nonce: "+randomNonceString;
+      const signerMessage = "Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: "+address+ "  \n \n  Nonce: "+randomNonceString;
 
       // Create the signature signing message.
       signature = await signer.signMessage(signerMessage);

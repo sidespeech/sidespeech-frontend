@@ -111,7 +111,7 @@ export default function Login() {
             const address = await signer.getAddress();
 
             // Create the signer message
-            const signerMessage = "Welcome to SideSpeech! Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees. Your authentication status will reset after 24 hours. Wallet address: "+address+ " Nonce: "+randomNonceString;
+            const signerMessage = "Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: "+address+ "  \n \n  Nonce: "+randomNonceString;
 
             // Create the signature signing message.
             signature = await signer.signMessage(signerMessage);
