@@ -6,7 +6,6 @@ import _ from "lodash";
 import { toast } from "react-toastify";
 import { formatDistance } from "date-fns";
 
-import { apiService } from "../../../services/api.service";
 import { Announcement } from "../../../models/Announcement";
 import { Comment } from "../../../models/Comment";
 import UserBadge from "../../ui-components/UserBadge";
@@ -26,7 +25,8 @@ import {
   unSubscribeToEvent,
 } from "../../../helpers/CustomEvent";
 import { EventType } from "../../../constants/EventType";
-import websocketService from "../../../services/websocket.service";
+import websocketService from "../../../services/websocket-services/websocket.service";
+import commentService from "../../../services/api-services/comment.service";
 
 const AnnouncementItemStyled = styled.div`
   display: flex;
@@ -73,7 +73,7 @@ export default function AnnouncementItem({
     // This will need to be made dynamic.
     const creatorAddress = account;
     try {
-      const newComment = await apiService.sendComment(
+      const newComment = await commentService.sendComment(
         value,
         creatorAddress,
         announcement.id

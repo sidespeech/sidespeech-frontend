@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../redux/store/app.store";
 import { useNavigate } from "react-router";
-import { apiService } from "../../services/api.service";
 import Welcome from "./Steps/Welcome";
 import Bio from "./Steps/Bio";
 import PublicNFTs from "./Steps/PublicNFTs";
@@ -11,6 +10,7 @@ import Avatar from "./Steps/Avatar";
 
 import logoComplete from "./../../assets/logoComplete.svg";
 import { breakpoints, size } from "../../helpers/breakpoints";
+import userService from "../../services/api-services/user.service";
 
 const OnBoardingStyled = styled.div`
   display: flex;
@@ -156,7 +156,7 @@ export default function OnBoarding() {
     if(connectedWallet == null) {
       navigate('/');
     } else {
-      const onBoarding = await apiService.findOnBoarding(connectedWallet);
+      const onBoarding = await userService.findOnBoarding(connectedWallet);
       if (!onBoarding) {
         //Redirect the user to the onboarding area.
         navigate("/");

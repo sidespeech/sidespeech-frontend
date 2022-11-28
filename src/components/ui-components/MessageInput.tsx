@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { Editor } from "react-draft-wysiwyg";
 import { convertToRaw, EditorState, Modifier } from "draft-js";
 import { draftToMarkdown } from "markdown-draft-js";
-import { apiService } from "../../services/api.service";
 
 import boldIcon from "../../assets/bold.svg";
 import codeIcon from "../../assets/code.svg";
@@ -26,6 +25,7 @@ import GifsModule from "./GifsModule";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { getBase64, getRandomId } from "../../helpers/utilities";
+import filesService from "../../services/api-services/files.service";
 
 interface MessageInputPropsType {
   bgColor?: string;
@@ -361,7 +361,7 @@ const MessageInput = forwardRef(
 
         const formData = new FormData();
         formData.append("file", image);
-        const uploadedUrl = await apiService.uploadImage(formData);
+        const uploadedUrl = await filesService.uploadImage(formData);
         if (uploadedUrl) {
           const imageMarkdown = `![${image.name}](${uploadedUrl} "${image.name}")`;
 

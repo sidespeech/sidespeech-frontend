@@ -7,7 +7,6 @@ import { getRandomId, paginateArray } from '../../helpers/utilities';
 import { Collection } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
-import { getSidesMetadata, sideAPI } from '../../services/side.service';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import CustomSelect from '../ui-components/CustomSelect';
@@ -16,11 +15,12 @@ import SideCardItem from './shared-components/SideCardItem';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg'
 import { searchFiltersProps } from './DashboardPage';
 import PaginationControls from '../ui-components/PaginationControls';
-import { apiService } from '../../services/api.service';
 import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
 import { EventType } from '../../constants/EventType';
 import { Announcement } from '../../models/Announcement';
 import { breakpoints, size } from '../../helpers/breakpoints';
+import notificationService from '../../services/api-services/notification.service';
+import { getSidesMetadata } from '../../services/api-services/side.service';
 
 interface MySidesStyledProps {}
 
@@ -175,7 +175,7 @@ useEffect(() => {
 
 const getAndSetRoomNotifications = useCallback(async (account: string) => {
   try {
-    const notifications = await apiService.getNotification(account);
+    const notifications = await notificationService.getNotification(account);
     for (let notification of notifications) {
         setMessagesBySide((prevState: any) => [...prevState, notification]);
     }

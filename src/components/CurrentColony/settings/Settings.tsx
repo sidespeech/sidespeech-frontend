@@ -10,7 +10,6 @@ import Requests from "./requests/requests";
 import { RootState } from "../../../redux/store/app.store";
 import ContainerLeft from "../../ui-components/ContainerLeft";
 import TabItems from "../../ui-components/TabItems";
-import { apiService } from "../../../services/api.service";
 import {
   setCurrentColony,
   setSelectedChannel,
@@ -19,10 +18,11 @@ import {
 import { Dot } from "../../ui-components/styled-components/shared-styled-components";
 import { Role } from "../../../models/Profile";
 import { State, Type } from "../../../models/Invitation";
-import { sideAPI } from "../../../services/side.service";
 import styled from 'styled-components';
 import InputText from "../../ui-components/InputText";
 import { breakpoints, size } from "../../../helpers/breakpoints";
+import userService from "../../../services/api-services/user.service";
+import sideService from "../../../services/api-services/side.service";
 
 const SettingsStyled = styled.div`
   width: 100%;    
@@ -270,7 +270,7 @@ export default function Settings() {
   const handleTabs = (tabName: any) => {
     async function getSide() {
       if (currentSide) {
-        const res = await sideAPI.getSideById(currentSide["id"]);
+        const res = await sideService.getSideById(currentSide["id"]);
         dispatch(setCurrentColony(res));
         dispatch(
           setSelectedChannel(
@@ -309,7 +309,7 @@ export default function Settings() {
   // Getting request for display notification :
   const getRequestsUsers = async (requestsOrdered: any[]) => {
     let ids = requestsOrdered.map((invitation: any) => invitation["senderId"]);
-    const users = (await apiService.getUsersByIds(ids)).reduce(
+    const users = (await userService.getUsersByIds(ids)).reduce(
       (prev: any, current: any, index: number) => {
         let obj = {
           accounts: "",

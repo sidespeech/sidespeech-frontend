@@ -4,11 +4,12 @@ import InputText from "../../../ui-components/InputText";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import "./requests.css";
-import { apiService } from "../../../../services/api.service";
 import CustomCheckbox from "../../../ui-components/CustomCheckbox";
 import moment from 'moment'
 import { Side } from "../../../../models/Side";
 import { State, Type } from "../../../../models/Invitation";
+import userService from "../../../../services/api-services/user.service";
+import invitationService from "../../../../services/api-services/invitation.service";
 
 
 
@@ -27,7 +28,7 @@ export default function Requests({
 
   const getRequestsUsers = async (requestsOrdered: any[]) => {
     let ids = requestsOrdered.map((invitation: any) => invitation['senderId']);
-    const users = (await apiService.getUsersByIds(ids)).reduce((prev: any, current: any, index: number) => {
+    const users = (await userService.getUsersByIds(ids)).reduce((prev: any, current: any, index: number) => {
 
       let obj = { accounts: '', created_at: '', image: '', id: '', user_id: '' };
       const current_request = requestsOrdered.find(item => item['senderId'] === current['id']);
@@ -51,8 +52,7 @@ export default function Requests({
   }, [currentSide, userData]);
 
   const onAccept = async (request:any, index:number) => {
-    let res = await apiService.acceptRequest({id : request['id'] });
-    // let res = await apiService.updateInvitationState(request['id'], State.Accepted);
+    let res = await invitationService.acceptRequest({id : request['id'] });
     let newRequests = [...requests]
     newRequests.splice(index, 1);
     setRequests(newRequests)
@@ -60,7 +60,7 @@ export default function Requests({
   };
 
   const onDecline = async (request:any, index:number) => {
-    let res = await apiService.updateInvitationState(request['id'], State.Declined);
+    let res = await invitationService.updateInvitationState(request['id'], State.Declined);
     let newRequests = [...requests]
     newRequests.splice(index, 1);
     setRequests(newRequests)

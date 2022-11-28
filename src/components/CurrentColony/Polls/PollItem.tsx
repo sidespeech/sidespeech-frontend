@@ -13,10 +13,10 @@ import UserBadge from "../../ui-components/UserBadge";
 import Comments from "../shared-components/Comments";
 import { Comment } from "../../../models/Comment";
 import { toast } from "react-toastify";
-import { apiService } from "../../../services/api.service";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/app.store";
 import { sum } from "lodash";
+import pollService from "../../../services/api-services/poll.service";
 
 const PollItemStyled = styled.div`
   .poll-override article {
@@ -88,7 +88,7 @@ const PollItem = ({
     // This will need to be made dynamic.
     const creatorAddress = account;
     try {
-      const newComment = await apiService.commentPoll(
+      const newComment = await pollService.commentPoll(
         value,
         creatorAddress,
         poll.id

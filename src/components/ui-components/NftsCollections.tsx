@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../../redux/Slices/UserDataSlice";
 // service / utilities
 import { fixURL } from "../../helpers/utilities";
-import { apiService } from "../../services/api.service";
 // ui component
 import InputText from "../ui-components/InputText";
 import Switch from "../ui-components/Switch";
@@ -21,6 +20,7 @@ import _ from "lodash";
 import { FadeLoader } from "react-spinners";
 import styled from 'styled-components';
 import { breakpoints, size } from "../../helpers/breakpoints";
+import userService from "../../services/api-services/user.service";
 
 const NftsCollectionsStyled = styled.div`
   position: relative;
@@ -377,7 +377,7 @@ export default function NftsCollections({
     try {
       if (selectedNfts) {
         const nftsList = _.flatten(Object.values(selectedNfts));
-        await apiService.updateUserPublicNfts(user.id, nftsList);
+        await userService.updateUserPublicNfts(user.id, nftsList);
         dispatch(updateUser({ publicNfts: nftsList }));
         toast.success("Settings have been updated.", {
           toastId: 5,

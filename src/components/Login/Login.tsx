@@ -29,12 +29,12 @@ import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 
 // API / Socket Services
-import { apiService } from "../../services/api.service";
-import websocketService from "../../services/websocket.service";
+import websocketService from "../../services/websocket-services/websocket.service";
 
 // Stylings
 import styled from "styled-components";
 import Button from "../ui-components/Button";
+import userService from "../../services/api-services/user.service";
 
 export const SeparatorVertical = styled.div`
   min-height: 415px;
@@ -128,10 +128,10 @@ export default function Login() {
             }
 
             // Attempt to find an existing user by passing their address and the signature that they signed.
-            const existingUser = await apiService.findExistingWallet(accounts[0], signerMessage, signature);
+            const existingUser = await userService.findExistingWallet(accounts[0], signerMessage, signature);
             
             // Send the wallet to the api service.
-            const user = await apiService.walletConnection(accounts[0], signerMessage, signature);
+            const user = await userService.walletConnection(accounts[0], signerMessage, signature);
       
             // Check if the existing user still needs to onboard or not.
             if (existingUser == null) {

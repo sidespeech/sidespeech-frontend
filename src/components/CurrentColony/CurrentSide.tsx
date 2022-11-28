@@ -13,13 +13,11 @@ import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
 // import InputText from "../ui-components/InputText";
 import _ from "lodash";
-// import { apiService } from "../../services/api.service";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 // import websocketService from "../../services/websocket.service";
-import { sideAPI } from "../../services/side.service";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { Poll } from "../../models/Poll";
@@ -31,6 +29,7 @@ import { toast } from "react-toastify";
 // import { checkUserEligibility } from "../../helpers/utilities";
 import SideEligibilityModal from "../Modals/SideEligibilityModal";
 import { breakpoints, size } from "../../helpers/breakpoints";
+import sideService from "../../services/api-services/side.service";
 
 const CurrentSideStyled = styled.div`
   width: 100vw;
@@ -181,7 +180,7 @@ export default function CurrentSide() {
       try {
         if (id && user) {
           // Get Side data
-          const res = await sideAPI.getSideByName(id);
+          const res = await sideService.getSideByName(id);
 
           const isInTheSide = user["profiles"].find(
             (item) => item["side"]["id"] === res["id"]

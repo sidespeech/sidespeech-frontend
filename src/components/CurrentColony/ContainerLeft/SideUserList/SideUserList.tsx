@@ -32,13 +32,14 @@ import {
   setSelectedChannel,
   setSelectedProfile,
 } from "../../../../redux/Slices/AppDatasSlice";
-import { apiService } from "../../../../services/api.service";
 import { Collection } from "../../../../models/interfaces/collection";
 import { NFT } from "../../../../models/interfaces/nft";
-import websocketService from "../../../../services/websocket.service";
+import websocketService from "../../../../services/websocket-services/websocket.service";
 import { addRoomToProfile } from "../../../../redux/Slices/UserDataSlice";
 import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
 import { toast } from "react-toastify";
+import collectionService from "../../../../services/api-services/collection.service";
+import roomService from "../../../../services/api-services/room.service";
 
 export default function SideUserList({
   dots,
@@ -167,7 +168,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 
   useEffect(() => {
     async function getCollection(address: string) {
-      const collection = await apiService.getCollectionByAddress(address);
+      const collection = await collectionService.getCollectionByAddress(address);
       setCollection(collection);
     }
     if (
@@ -196,7 +197,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
       // if room not exist in profile
       if (!room) {
         // creating the room
-        room = await apiService.createRoom(currentProfile.id, profile.id);
+        room = await roomService.createRoom(currentProfile.id, profile.id);
         // add this room in the user websocket
         websocketService.addRoomToUsers(room.id, [user.id, profile.user.id]);
         // add the room to profile
