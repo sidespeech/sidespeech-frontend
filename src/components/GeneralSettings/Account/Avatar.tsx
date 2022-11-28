@@ -5,8 +5,26 @@ import { NFT } from "../../../models/interfaces/nft";
 
 import defaultPP from "../../../assets/default-pp.webp";
 import hexagon from "../../../assets/hexagon.svg";
+import { breakpoints, size } from "../../../helpers/breakpoints";
 
-const ProfileLabel = styled.label`
+const AvatarStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  ${breakpoints(size.md, `{
+    align-items: flex-start;
+    flex-direction: row;
+  }`)}
+  & label {
+    text-align: center;
+    ${breakpoints(size.md, `{
+      text-align: left;
+    }`)}
+  }
+`;
+
+const ProfileImage = styled.div`
   min-width: 70px;
   min-height: 70px;
   max-width: 70px;
@@ -50,11 +68,12 @@ export default function Avatar({
     if (nft && nft.metadata && nft.metadata.image) {
       setUrl(fixURL(nft.metadata.image));
     }
+    else setUrl(defaultPP);
   }, [nft]);
 
   return (
-    <div className="flex align-center">
-      <ProfileLabel className="f-column align-center justify-center">
+    <AvatarStyled>
+      <ProfileImage className="flex align-center justify-center">
         <img
           style={{
             height: "100%",
@@ -64,13 +83,13 @@ export default function Avatar({
           src={url}
           alt="file-form"
         />
-      </ProfileLabel>
-      <div className="f-column ml-3">
-        <label className="text-primary-light fw-600 f-column align-center justify-center ">
+      </ProfileImage>
+      <div className="f-column gap-10" style={{maxWidth: '235px'}}>
+        <label className="fw-600">
           Choose an NFT from your wallet as your profile avatar
         </label>
         {collectionName && nft && (
-          <ProfilePictureData className="mt-3">
+          <ProfilePictureData className="">
             <img src={hexagon} className="mr-3" />
             <>
               <SpanElipsis className="mr-2 size-12">#{nft.token_id}</SpanElipsis>
@@ -79,6 +98,6 @@ export default function Avatar({
           </ProfilePictureData>
         )}
       </div>
-    </div>
+    </AvatarStyled>
   );
 }

@@ -63,8 +63,8 @@ const NewSideStyled = styled.div`
     ${breakpoints(
       size.lg,
       `{
-    display: none
-  }`
+        display: none
+      }`
     )}
     & .step-icon {
       position: relative;
@@ -110,8 +110,8 @@ const NewSideStyled = styled.div`
     ${breakpoints(
       size.lg,
       `{
-    display: flex;
-  }`
+        display: flex;
+      }`
     )}
     .tabs-wrapper {
       display: flex;
@@ -124,16 +124,22 @@ const NewSideStyled = styled.div`
         display: flex;
         gap: 0.5rem;
         align-items: center;
-        & .step-icon {
-          background-color: var(--bg-secondary-light);
+        justify-content: space-between;
+        &>div {
           display: flex;
-          flex-shrink: 0;
+          gap: 0.5rem;
           align-items: center;
-          justify-content: center;
-          width: 2rem;
-          height: 2rem;
-          border-radius: 2rem;
-          font-size: 0.7rem;
+          & .step-icon {
+            background-color: var(--bg-secondary-light);
+            display: flex;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+          }
         }
         &.active {
           color: var(--primary) !important;
@@ -820,10 +826,12 @@ export default function NewSide() {
                     step["completed"] ? "completed" : ""
                   } sidebar-item text-secondary-dark`}
                 >
-                  <i className={`${step["icon"]} step-icon`}></i>
-                  {step["label"]}{" "}
+                  <div>
+                    <i className={`${step["icon"]} step-icon`}></i>
+                    {step["label"]}{" "}
+                  </div>
                   {step["completed"] ? (
-                    <i className="fa-solid fa-check"></i>
+                    <i className="fa-solid fa-check mr-2"></i>
                   ) : null}
                 </TabItems>
               );

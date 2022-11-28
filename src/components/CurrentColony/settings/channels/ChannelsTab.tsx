@@ -14,15 +14,15 @@ import { breakpoints, size } from "../../../../helpers/breakpoints";
 
 const ChannelsStyled = styled.div`
   width: 100%;
-  ${breakpoints(
-    size.lg,
-    `{
-    width: 60%;
-    max-width: 500px;
-  }`
-  )}
   .add-channel-btn {
     max-width: 500px;
+  }
+  .save-btn {
+    margin-top: 2rem;
+    max-width: 500px;
+    ${breakpoints(size.lg, `{
+      max-width: 150px;
+    }`)}
   }
 `;
 
@@ -316,12 +316,12 @@ export default function Channels({
         {/* Submit Button */}
         {!channelsNewSide ? (
           <Button
-            width={"159px"}
+            width={"100%"}
+            classes="save-btn"
             height={46}
             onClick={onSubmit}
             radius={10}
             color={"var(--text-primary-light)"}
-            classes={"mt-4"}
           >
             Save{" "}
           </Button>

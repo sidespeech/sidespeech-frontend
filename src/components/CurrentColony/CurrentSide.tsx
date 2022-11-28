@@ -25,10 +25,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Poll } from "../../models/Poll";
 
 import { Outlet, useOutletContext } from "react-router-dom";
-import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
+// import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
 import { SideStatus } from "../../models/Side";
 import { toast } from "react-toastify";
-import { checkUserEligibility } from "../../helpers/utilities";
+// import { checkUserEligibility } from "../../helpers/utilities";
 import SideEligibilityModal from "../Modals/SideEligibilityModal";
 import { breakpoints, size } from "../../helpers/breakpoints";
 
