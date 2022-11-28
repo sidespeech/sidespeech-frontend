@@ -209,6 +209,7 @@ export default function CurrentSide() {
     }
     const isConnectedLocalStorage = localStorage.getItem("userAccount");
 
+    console.log(currentSide, isConnectedLocalStorage);
     // If user not connected
     if (!isConnectedLocalStorage) navigate("/");
     else getSide();
