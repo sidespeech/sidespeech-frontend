@@ -190,13 +190,20 @@ export const userDataSlice = createSlice({
         (profile) => profile.side.id !== action.payload
       );
     },
-    setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
-      const userprofiles = state.user?.profiles;
-      if (state.user && userprofiles) {
-        const profile = userprofiles.find((p) => {
-          return p.side.id === action.payload.id;
-        });
-        state.currentProfile = profile;
+    setCurrentProfile: (
+      state: UserData,
+      action: PayloadAction<Side | null>
+    ) => {
+      if (action.payload) {
+        const userprofiles = state.user?.profiles;
+        if (state.user && userprofiles) {
+          const profile = userprofiles.find((p) => {
+            return p.side.id === action.payload?.id;
+          });
+          state.currentProfile = profile;
+        }
+      } else {
+        state.currentProfile = undefined;
       }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {

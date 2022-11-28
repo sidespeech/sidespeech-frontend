@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventType } from "../../constants/EventType";
 import {
@@ -18,6 +18,7 @@ import { Profile, Role } from "../../models/Profile";
 import { NotificationType } from "../../models/Notification";
 import SideEligibilityModal from "../Modals/SideEligibilityModal";
 import LeaveSideConfirmationModal from "../Modals/LeaveSideConfirmationModal";
+import { setSettingsOpen } from "../../redux/Slices/AppDatasSlice";
 
 const UserSidesStyled = styled.div`
   .colony-badge {
@@ -48,8 +49,11 @@ const UserSidesStyled = styled.div`
 
 export default function UserSides() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const { currentSide, settingsOpen } = useSelector(
+    (state: RootState) => state.appDatas
+  );
   const userData = useSelector((state: RootState) => state.user);
   const [isSideAdmin, SetIsSideAdmin] = useState<any>(null);
   const [displayModal, setDisplayModal] = useState<boolean>(false);

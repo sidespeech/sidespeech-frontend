@@ -50,6 +50,7 @@ nav{
 nav .nav-items {
     display: flex;
     flex: 1;
+    align-items: center;
 }
 
 nav .nav-items li {

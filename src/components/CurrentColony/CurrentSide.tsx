@@ -131,7 +131,7 @@ type ContextMiddleSide = {
 
 export default function CurrentSide() {
   const { announcementId, id } = useParams();
-  const { currentSide, selectedChannel } = useSelector(
+  const { currentSide, selectedChannel, settingsOpen } = useSelector(
     (state: RootState) => state.appDatas
   );
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
@@ -170,10 +170,16 @@ export default function CurrentSide() {
   }, [announcements]);
 
   useEffect(() => {
+    return () => {
+      dispatch(setCurrentColony(null));
+      dispatch(setCurrentProfile(null));
+    };
+  }, []);
+
+  useEffect(() => {
     async function getSide() {
       try {
         if (id && user) {
-          console.log(id, user);
           // Get Side data
           const res = await sideAPI.getSideByName(id);
 
@@ -223,12 +229,14 @@ export default function CurrentSide() {
     <CurrentSideStyled>
       {currentSide?.status === SideStatus.active ? (
         <>
-          <CurrentSideLeft
-            channel={selectedChannel}
-            room={selectedRoom}
-            setThread={setThread}
-            thread={thread}
-          />
+          {!settingsOpen && (
+            <CurrentSideLeft
+              channel={selectedChannel}
+              room={selectedRoom}
+              setThread={setThread}
+              thread={thread}
+            />
+          )}
 
           <div className="current-side-middle-container">
             <MiddleContainerHeader
