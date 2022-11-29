@@ -70,7 +70,7 @@ const Comments = ({channel, comments, handleComment, isThread, sideId}: Comments
                   background="var(--bg-secondary-light)"
                   fontSize="12px"
                   height={30}
-                  onClick={() => navigate(`/${sideId}/thread/${channel.id}`)}
+                  onClick={() => navigate(`/side/${sideId}/thread/${channel.id}`)}
                   radius={7}
                   width="160px"
                 >

@@ -106,7 +106,7 @@ const SidesListMobileMenu = ({currentSide, onClose, open}: SidesListMobileMenuPr
                 <h2>Sides</h2>
                 <div className="sides-list">
                     {userData.sides.map(side => (
-                        <Link to={`/${side.name}`} key={side.id} className={`side-item ${currentSide?.id === side.id ? 'active' : ''}`}>
+                        <Link to={`/side/${side.name}`} key={side.id} className={`side-item ${currentSide?.id === side.id ? 'active' : ''}`}>
                             <div className="side-image">
                                 <img src={side.sideImage} alt="" />
                             </div>

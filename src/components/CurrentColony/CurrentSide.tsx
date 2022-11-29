@@ -35,6 +35,21 @@ const CurrentSideStyled = styled.div`
     width: calc(100vw - 70px);
   }`
   )}
+  .left-side-desktop {
+    display: none;
+    ${breakpoints(size.lg, `{
+      display: block;
+      width: 100%;
+      max-width: 250px;
+      flex-shrink: 0;
+    }`)}
+  }
+  .left-side-mobile {
+    width: 100%;
+    ${breakpoints(size.lg, `{
+      display: none;
+    }`)}
+  }
   .current-side-middle-container {
     display: flex;
     flex-direction: column;
@@ -225,12 +240,9 @@ export default function CurrentSide() {
       {currentSide?.status === SideStatus.active ? (
         <>
           {!settingsOpen && (
-            <CurrentSideLeft
-              channel={selectedChannel}
-              room={selectedRoom}
-              setThread={setThread}
-              thread={thread}
-            />
+            <div className="left-side-desktop">
+              <CurrentSideLeft />
+            </div>
           )}
 
           <div className="current-side-middle-container">
@@ -243,6 +255,11 @@ export default function CurrentSide() {
               setThread={setThread}
               thread={thread}
             />
+            {!settingsOpen && (
+              <div className="left-side-mobile">
+                <CurrentSideLeft />
+              </div>
+            )}
             <Outlet
               context={{
                 announcementId,
