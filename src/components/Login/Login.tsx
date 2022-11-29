@@ -29,12 +29,12 @@ import Web3Modal from "web3modal";
 import { ethers } from "ethers";
 
 // API / Socket Services
-import { apiService } from "../../services/api.service";
-import websocketService from "../../services/websocket.service";
+import websocketService from "../../services/websocket-services/websocket.service";
 
 // Stylings
 import styled from "styled-components";
 import Button from "../ui-components/Button";
+import userService from "../../services/api-services/user.service";
 
 export const SeparatorVertical = styled.div`
   min-height: 415px;
@@ -93,74 +93,67 @@ export default function Login() {
 
         // If there are any accounts connected then send them to the API.
         if (accounts) {
-          let nonce;
 
-          if (!localStorage.getItem("nonce")) {
-            nonce = randomNonce(24);
-            localStorage.setItem("nonce", nonce);
-          } else {
-            nonce = localStorage.getItem("nonce");
-          }
+            let nonce;
 
-          // Get Signer
-          const signer = library.getSigner();
+            if(!localStorage.getItem("nonce")) {
+              nonce = randomNonce(24);
+              localStorage.setItem("nonce", nonce);
+            } else {
+              nonce = localStorage.getItem("nonce");
+            }
 
-          const randomNonceString = nonce;
+            // Get Signer
+            const signer = library.getSigner();
 
-          // Grab the wallet address
-          const address = await signer.getAddress();
+            const randomNonceString = nonce;
 
-          // Create the signer message
-          const signerMessage =
-            "Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: " +
-            address +
-            "  \n \n  Nonce: " +
-            randomNonceString;
+            // Grab the wallet address
+            const address = await signer.getAddress();
 
-          // Create the signature signing message.
-          signature = await signer.signMessage(signerMessage);
+            // Create the signer message
+            const signerMessage = "Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: "+address+ "  \n \n  Nonce: "+randomNonceString;
 
-          // Get the signer address.
-          signerAddr = ethers.utils.verifyMessage(signerMessage, signature);
+            // Create the signature signing message.
+            signature = await signer.signMessage(signerMessage);
 
-          // Check if the signer address is the same as the connected address.
-          if (signerAddr !== address) {
-            return false;
-          }
+            // Get the signer address.
+            signerAddr = ethers.utils.verifyMessage(
+              signerMessage,
+              signature
+            );
 
-          // Attempt to find an existing user by passing their address and the signature that they signed.
-          const existingUser = await apiService.findExistingWallet(
-            accounts[0],
-            signerMessage,
-            signature
-          );
+            // Check if the signer address is the same as the connected address.
+            if (signerAddr !== address) {
+              return false;
+            }
 
-          // Send the wallet to the api service.
-          const user = await apiService.walletConnection(
-            accounts[0],
-            signerMessage,
-            signature
-          );
+            // Attempt to find an existing user by passing their address and the signature that they signed.
+            const existingUser = await userService.findExistingWallet(accounts[0], signerMessage, signature);
+            
+            // Send the wallet to the api service.
+            const user = await userService.walletConnection(accounts[0], signerMessage, signature);
+      
+            // Check if the existing user still needs to onboard or not.
+            if (existingUser == null) {
+              // Redirect the user to the onboarding area.
+              navigate("/onboarding");
+            } else {
+              // Redirect the user to the general settings page.
+              navigate("/");
+            }
 
-          // Check if the existing user still needs to onboard or not.
-          if (existingUser == null) {
-            // Redirect the user to the onboarding area.
-            navigate("/onboarding");
-          } else {
-            // Redirect the user to the general settings page.
-            navigate("/");
-          }
+            // Dispatch the account that is connected to the redux slice.
+            dispatch(connect({ account: accounts[0], user: user }));
+            dispatch(fetchUserDatas(accounts[0]));
 
-          // Dispatch the account that is connected to the redux slice.
-          dispatch(connect({ account: accounts[0], user: user }));
-          dispatch(fetchUserDatas(accounts[0]));
+            // Set a local storage of the account
+            localStorage.setItem("userAccount", accounts[0]);
+            localStorage.setItem("jwtToken", user.token);
 
-          // Set a local storage of the account
-          localStorage.setItem("userAccount", accounts[0]);
-          localStorage.setItem("jwtToken", user.token);
+            // Listen for accounts being disconnected - this only seems to work for WalletConnect.
+            provider.on("disconnect", handleDisconnect);
 
-          // Listen for accounts being disconnected - this only seems to work for WalletConnect.
-          provider.on("disconnect", handleDisconnect);
         }
       } catch (err: any) {
         console.log("error", err, " message", err.message);

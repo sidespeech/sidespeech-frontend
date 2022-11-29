@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Web3Modal from "web3modal";
 import { connect, fetchUserDatas } from "../redux/Slices/UserDataSlice";
-import { apiService } from "../services/api.service";
+import userService from "../services/api-services/user.service";
 
 export default function useLogin() {
   const dispatch = useDispatch();
@@ -82,10 +82,10 @@ export default function useLogin() {
         return false;
       }
 
-      const existingUser = await apiService.findExistingWallet(signature, signerMessage, signerAddr);
+      const existingUser = await userService.findExistingWallet(signature, signerMessage, signerAddr);
 
       // Send the wallet to the api service.
-      const user = await apiService.walletConnection(accounts, signerMessage, signature);
+      const user = await userService.walletConnection(accounts, signerMessage, signature);
 
       // Dispatch the account that is connected to the redux slice.
       dispatch(connect({ account: accounts[0], user: user }));

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { apiService } from "../../../../services/api.service";
 import {
   updateCurrentProfile,
   UserData,
@@ -18,6 +17,7 @@ import { Collection } from "../../../../models/interfaces/collection";
 import _ from "lodash";
 import { breakpoints, size } from "../../../../helpers/breakpoints";
 import Button from "../../../ui-components/Button";
+import profileService from "../../../../services/api-services/profile.service";
 
 const SideProfileAccountStyled = styled.div`
   // position: relative;
@@ -133,7 +133,7 @@ export default function SideProfileAccount({
   const onSubmit = async () => {
     if (currentProfile && formData.avatar) {
       try {
-        const profile = await apiService.updateProfile(currentProfile.id, {
+        const profile = await profileService.updateProfile(currentProfile.id, {
           showNfts: formData.showNfts,
           profilePicture: formData.avatar,
         });
@@ -150,7 +150,7 @@ export default function SideProfileAccount({
   const leaveSide = async () => {
     try {
       if (userData["currentProfile"]) {
-        const res = await apiService.leaveSide(userData["currentProfile"]);
+        const res = await profileService.leaveSide(userData["currentProfile"]);
         if (res["error"]) toast.error(res["message"]);
         else {
           window.location.reload();

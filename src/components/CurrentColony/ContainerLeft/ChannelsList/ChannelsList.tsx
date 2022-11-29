@@ -12,7 +12,6 @@ import { Channel, ChannelType } from "../../../../models/Channel";
 // import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
 // import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
 import { RootState } from "../../../../redux/store/app.store";
-// import { apiService } from "../../../../services/api.service";
 import { Dot } from "../../../ui-components/styled-components/shared-styled-components";
 import Icons from '../../../ui-components/ChannelIcons';
 

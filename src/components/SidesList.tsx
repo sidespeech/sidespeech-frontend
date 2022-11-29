@@ -16,10 +16,10 @@ import SideEligibilityModal from "./Modals/SideEligibilityModal";
 import { RootState } from "../redux/store/app.store";
 
 // API's
-import { sideAPI } from "../services/side.service";
 
 // Stylings
 import "./SidesList.css";
+import sideService from "../services/api-services/side.service";
 
 export default function SidesList() {
   const { account, user, userCollectionsData } = useSelector(
@@ -34,7 +34,7 @@ export default function SidesList() {
 
   useEffect(() => {
     async function getAllSides() {
-      const sides = await sideAPI.getAllSides();
+      const sides = await sideService.getAllSides();
       setSides(sides);
       setfilteredSides(sides);
     }

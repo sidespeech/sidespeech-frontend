@@ -12,16 +12,16 @@ import GeneralSettingsMenu from "./components/GeneralSettings/ContainerLeft/Inde
 
 // Images
 
-import websocketService from "./services/websocket.service";
+import websocketService from "./services/websocket-services/websocket.service";
 
 // Redux
 import { connect, fetchUserDatas } from "./redux/Slices/UserDataSlice";
 
 // API's
-import { apiService } from "./services/api.service";
 import { getRandomId } from "./helpers/utilities";
 import MobileMenu from "./components/ui-components/MobileMenu";
 import DesktopMenu from "./components/ui-components/DesktopMenu";
+import userService from "./services/api-services/user.service";
 
 export interface GeneralSettingsAccountContext {
   isSettingsMobileMenuOpen?: boolean;
@@ -48,7 +48,7 @@ function App() {
     
     async function getUser(account: string) {
       try {
-        const user = await apiService.getUserByAddress(account);
+        const user = await userService.getUserByAddress(account);
         dispatch(connect({ account: account, user: user }));
         dispatch(fetchUserDatas(account));
         setAccountStatus(true);

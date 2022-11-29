@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiService } from "../../services/api.service";
 import logo from "../../assets/logo.svg";
 import { fixURL } from "../../helpers/utilities";
 import { User } from "../../models/User";
@@ -27,10 +26,13 @@ import useLogin from "../../hooks/useLogin";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/app.store";
 import { Profile } from "../../models/Profile";
-import websocketService from "../../services/websocket.service";
+import websocketService from "../../services/websocket-services/websocket.service";
 import { addRoomToProfile } from "../../redux/Slices/UserDataSlice";
 import { setSelectedRoom } from "../../redux/Slices/ChatSlice";
 import { setSelectedChannel } from "../../redux/Slices/AppDatasSlice";
+import userService from "../../services/api-services/user.service";
+import collectionService from "../../services/api-services/collection.service";
+import roomService from "../../services/api-services/room.service";
 
 interface IDataCard {
   background: string;
@@ -88,12 +90,12 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
   useEffect(() => {
     async function getUserData() {
       if (username) {
-        const user = await apiService.getUserPublicData(username);
+        const user = await userService.getUserPublicData(username);
         if (user.publicNfts) {
           const addresses = Object.keys(
             _.groupBy(user.publicNfts, "token_address")
           );
-          const collections = await apiService.getManyCollectionsByAddress(
+          const collections = await collectionService.getManyCollectionsByAddress(
             addresses
           );
           setCollections(collections);
@@ -154,7 +156,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
       // if room not exist in profile
       if (!room) {
         // creating the room
-        room = await apiService.createRoom(currentProfile.id, profile.id);
+        room = await roomService.createRoom(currentProfile.id, profile.id);
         // add this room in the user websocket
         websocketService.addRoomToUsers(room.id, [
           user.id,

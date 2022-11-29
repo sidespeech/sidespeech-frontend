@@ -16,7 +16,6 @@ import { searchFiltersProps } from '../DashboardPage';
 // import Button from '../../ui-components/Button';
 import noResultsImg from '../../../assets/my_sides_empty_screen_shape.svg'
 import { breakpoints, size } from '../../../helpers/breakpoints';
-import { sideAPI } from '../../../services/side.service';
 
 interface CollectionsStyledProps {
 

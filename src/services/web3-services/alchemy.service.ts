@@ -3,12 +3,12 @@ import {
   ALCHEMY_API_KEY,
   ALCHEMY_BASE_URL,
   ALCHEMY_NETWORK,
-} from "../constants/constants";
+} from "../../constants/constants";
 import {
   alchemyNftModelToSideNftModel,
   alchemyNftsModelToSideNftsModel,
-} from "../helpers/utilities";
-import { Collection } from "../models/interfaces/collection";
+} from "../../helpers/utilities";
+import { Collection } from "../../models/interfaces/collection";
 
 // // Print owner's wallet address:
 // const ownerAddr = "0xshah.eth";

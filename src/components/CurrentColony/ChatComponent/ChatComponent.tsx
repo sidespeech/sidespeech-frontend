@@ -16,12 +16,12 @@ import { Message, Room } from "../../../models/Room";
 // } from "../../../redux/Slices/ChatSlice";
 import { userDataSlice } from "../../../redux/Slices/UserDataSlice";
 import { RootState } from "../../../redux/store/app.store";
-import { apiService } from "../../../services/api.service";
-import websocketService from "../../../services/websocket.service";
+import websocketService from "../../../services/websocket-services/websocket.service";
 import MessageInput from "../../ui-components/MessageInput";
 import UserBadge from "../../ui-components/UserBadge";
 import MessageContent from "../../ui-components/MessageContent";
 import { fixURL } from "../../../helpers/utilities";
+import roomService from "../../../services/api-services/room.service";
 
 interface IChatComponentProps {
   room: Room;
@@ -60,7 +60,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 
   useEffect(() => {
     async function getRoomMessages() {
-      const messages = await apiService.getRoomMessages(selectedRoom?.id || "");
+      const messages = await roomService.getRoomMessages(selectedRoom?.id || "");
       setMessages(messages);
     }
     if (selectedRoom) getRoomMessages();
