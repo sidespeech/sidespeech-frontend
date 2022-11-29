@@ -58,10 +58,7 @@ export default function TableRow({
           </span>
           <span className="fw-400 size-12 ml-2 text-primary-light">
             {user["username"].length > 25
-              ? user["username"].replace(
-                  user["username"].substring(4, 34),
-                  "..."
-                )
+              ? reduceWalletAddress(user["username"])
               : user["username"]}
           </span>
         </div>

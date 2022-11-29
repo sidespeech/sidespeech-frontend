@@ -13,6 +13,7 @@ import { State, Type } from "../../../../models/Invitation";
 import { breakpoints, size } from "../../../../helpers/breakpoints";
 import userService from "../../../../services/api-services/user.service";
 import invitationService from "../../../../services/api-services/invitation.service";
+import { fixURL, reduceWalletAddress } from "../../../../helpers/utilities";
 
 const InvitationsStyled = styled.div`
   width: 100%;
@@ -158,12 +159,14 @@ export default function Invitation({
           for (let userInvite of users) {
             if (user['id'] !== userInvite['id'])
               invitationsUsersObject.push({
-                name: (userInvite['username']) ? `${userInvite['username']} (${userInvite['accounts']})` : userInvite['accounts'],
+                name: (userInvite['username']) ? `${userInvite['username']} (${reduceWalletAddress(userInvite['accounts'])})` : userInvite['accounts'],
                 invited: (userInvite['invitations'].find((item:any) => item['sideId'] === currentSide['id'])) ? true : false,
                 recipient: userInvite,
                 sender: user
               })
+            console.log(getAvatarPicture(userInvite['userAvatar']))
           }
+          console.log('invitationsUsersObject :', invitationsUsersObject)
           setUsersInvite(invitationsUsersObject)
         }
         getInvitationUsers(userData['user']);
@@ -191,6 +194,7 @@ export default function Invitation({
         setUsersInvite(users);
       }
     } else {
+      console.log('user :', user)
       delete user['sender']['profiles'];
 
       let object = {
@@ -209,11 +213,17 @@ export default function Invitation({
     }
 
   }
-  const sideLink = `https://sidespeech.com/side/invitation/${(Math.random() + 1).toString(36).substring(7)}`;
+  const sideLink = `https://sidespeech.com/side/${currentSide['name']}`;
 
   const handleCopyWalletAddress = () => {
     navigator.clipboard.writeText(sideLink);
     toast.success("Link copied successfuly.", { toastId: 1 });
+  };
+
+  const getAvatarPicture = (userAvatar:string) => {
+    const jsonAvatar = JSON.parse(userAvatar);
+    const image = fixURL(jsonAvatar['metadata']['image'])
+    return image
   };
 
   return (
@@ -242,7 +252,7 @@ export default function Invitation({
                 <div className="flex">
                   <label className="profile-image-user f-column align-center justify-center">
                     <img style={{ height: "inherit", width: "inherit", objectFit: "cover" }}
-                      src="https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80"
+                      src={getAvatarPicture(user['recipient']['userAvatar'])}
                       alt="file"
                     />
                   </label>
