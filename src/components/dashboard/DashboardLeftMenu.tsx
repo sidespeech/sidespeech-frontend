@@ -32,7 +32,7 @@ const DashboardLeftMenuStyled = styled.aside`
             border-radius: 10px;
             color: var(--text-secondary-dark);
             transition: background-color .3s ease;
-            ${breakpoints(size.lg, `{ margin: 1rem 0;}`)};
+            ${breakpoints(size.lg, `{ padding: 1rem 0;}`)};
             & svg {
                 margin-right: 1rem;
                 opacity: .4;

@@ -66,14 +66,15 @@ export default function Login() {
       providerOptions, // required
     });
 
-    const randomNonce = function(length: number) {
+    const randomNonce = function (length: number) {
       var text = "";
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      for(var i = 0; i < length; i++) {
-          text += possible.charAt(Math.floor(Math.random() * possible.length));
+      var possible =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
       }
       return text;
-    }
+    };
 
     // Method for wallet connection...
     const connectWallet = async () => {
@@ -193,17 +194,15 @@ export default function Login() {
         style={{ gap: 5 }}
         className="connection-container f-column align-center justify-start"
       >
-        <h2 style={{color: "white", marginBottom: 30}}>Connect your wallet to take part in a slide</h2>
-        <Button 
-          classes="fw-700 size-18"  
+        <h2 style={{ color: "white", marginBottom: 30 }}>
+          Connect your wallet to take part in a slide
+        </h2>
+        <Button
+          classes="fw-700 size-18"
           width="170px"
           onClick={() => connectWallet()}
         >
-          <img 
-            src={walletIcon} 
-            style={{marginRight: 10}}
-            alt="Wallet Icon" 
-          />
+          <img src={walletIcon} style={{ marginRight: 10 }} alt="Wallet Icon" />
           Connect wallet
         </Button>
       </div>
@@ -214,7 +213,7 @@ export default function Login() {
     <div className="f-column align-center my-auto">
       <div style={{ textAlign: "center" }}>
         <img src={logoSmall} alt="SideSpeech-logo" />
-        <h1 style={{marginTop: 0}}>SideSpeech</h1>
+        <h1 style={{ marginTop: 0 }}>SideSpeech</h1>
       </div>
       <div className="flex align-end">
         <ConnectWalletArea />
