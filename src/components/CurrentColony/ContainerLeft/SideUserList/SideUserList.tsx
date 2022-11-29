@@ -206,7 +206,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
       // selecting the room
       dispatch(setSelectedRoom(room));
       dispatch(setSelectedChannel(null));
-      navigate(`/${currentSide?.name}`);
+      navigate(`/side/${currentSide?.name}`);
     } catch (error) {
       console.error(error);
       toast.error("There has been an error opening the room", {
@@ -247,7 +247,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
             width={"117px"}
             onClick={() => {
               dispatch(setSelectedProfile(profile));
-              navigate(`profile/${profile.user.username}`);
+              navigate(`/user/${profile.user.username}`);
             }}
             height={44}
             background={"rgba(125, 166, 220, 0.1)"}

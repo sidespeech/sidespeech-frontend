@@ -70,7 +70,7 @@ export default function UserSides() {
       setSide(side);
       setDisplayModal(true);
     } else {
-      navigate(side.name);
+      navigate("side/" + side.name);
     }
   };
 

@@ -27,7 +27,8 @@ const AnnouncementListStyled = styled.div`
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  max-height: calc(100vh - 8rem - 77px);
+  min-height: calc(100vh - 6rem - 77px);
+  max-height: calc(100vh - 6rem - 77px);
   ${breakpoints(size.lg, `{
     max-height: calc(100vh - 4rem);
   }`)}
