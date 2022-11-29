@@ -334,8 +334,7 @@ class apiService {
   }
 
   static async getUserFromSides(sides: Side[]): Promise<any> {
-    const res = await superagent
-      .post(`${BASE_URL}/user/side`)
+    const res = await post(`${BASE_URL}/user/side`)
       .send({ sides: sides });
     return res.body.users;
   }
@@ -418,15 +417,13 @@ class apiService {
   }
 
   static async getUsersByIds(ids: string[]): Promise<any> {
-    const res = await superagent
-      .post(`${BASE_URL}/user/ids`)
+    const res = await post(`${BASE_URL}/user/ids`)
       .send({ ids: ids });
     return res.body;
   }
 
   static async updateSubAdmin(name: string, sideId: string): Promise<any> {
-    const res = await superagent
-      .post(`${BASE_URL}/user/subadmin`)
+    const res = await post(`${BASE_URL}/user/subadmin`)
       .send({ sideId: sideId, name: name });
     return res.body;
   }
