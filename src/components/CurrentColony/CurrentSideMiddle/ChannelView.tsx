@@ -35,8 +35,8 @@ export default function ChannelView() {
               thread={thread}
             />
           )}
-          {selectedChannel.type === ChannelType.Textual && selectedRoom && (
-            <ChatComponent room={selectedRoom} />
+          {selectedChannel.type === ChannelType.Textual && (
+            <AnnouncementList thread={undefined}  />
           )}
         </>
       )}

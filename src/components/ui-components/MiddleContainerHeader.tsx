@@ -14,11 +14,12 @@ import {
 import { Channel, ChannelType } from "../../models/Channel";
 import Icons from "./ChannelIcons";
 import { Announcement } from "../../models/Announcement";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Poll } from "../../models/Poll";
 import { Profile } from "../../models/Profile";
 import UserBadge from "./UserBadge";
-import defaultPP from "../../assets/default-pp.webp"
+import defaultPP from "../../assets/default-pp.webp";
+import { SeparatorVertical } from "../Login/Login";
 
 const MiddleContainerHeaderStyled = styled.div`
   width: 100%;
@@ -39,11 +40,16 @@ const MiddleContainerHeaderStyled = styled.div`
   & .left-side {
     width: 50%;
     .room-title,
-    .channel-title {
+    .channel-title,
+    .settings {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
+    }
+    .settings {
+      .settings-items {
+      }
     }
     .channel-title {
       display: flex;
@@ -66,39 +72,48 @@ const MiddleContainerHeaderStyled = styled.div`
     justify-content: flex-end;
     gap: 1rem;
     width: 50%;
-  }
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-shrink: 0;
-    height: 100%;
-    .back-link {
-      background-color: transparent;
-      border: none;
-      outline: none;
-      box-shadow: none;
-      padding: 0;
-      .arrow-icon {
-        transform: rotate(180deg);
-      }
-    }
-    .profile-round {
-      flex-shrink: 0;
-      margin: 0;
-    }
-    .user-name-address {
+    .user-info {
       display: flex;
-      flex-direction: column;
-      .user-name {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100px;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+      height: 100%;
+      .back-link {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        padding: 0;
+        .arrow-icon {
+          transform: rotate(180deg);
+        }
       }
-      .user-address {
-        color: var(--text-secondary-dark);
+      .profile-round {
+        flex-shrink: 0;
+        margin: 0;
       }
+      .user-name-address {
+        display: flex;
+        flex-direction: column;
+        .user-name {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100px;
+        }
+        .user-address {
+          color: var(--text-secondary-dark);
+        }
+      }
+    }
+    & .settings-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background-color: var(--bg-secondary-light);
+      border-radius: 100px;
+      padding: .5rem;
     }
   }
 `;
@@ -123,7 +138,9 @@ export default function MiddleContainerHeader({
   const [url, setUrl] = useState<string>("");
   const navigate = useNavigate();
 
-  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const { currentSide, settingsOpen } = useSelector(
+    (state: RootState) => state.appDatas
+  );
   const { user, currentProfile } = useSelector(
     (state: RootState) => state.user
   );
@@ -152,8 +169,11 @@ export default function MiddleContainerHeader({
   }, [roomProfile]);
 
   return (
-    <MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>
+    <MiddleContainerHeaderStyled
+      className={`middle-container-top ${className}`}
+    >
       <div className="left-side">
+        {}
         {thread && (
           <div className="user-info">
             <button
@@ -204,11 +224,28 @@ export default function MiddleContainerHeader({
             />
           </h2>
         )}
-        {!thread && channel && (
+        {!thread && channel && !settingsOpen && (
           <div className="channel-title">
             <Icon className="mr-3" />
             <h2>{channel.name}</h2>
           </div>
+        )}
+        {settingsOpen && currentSide && (
+          <nav>
+            <div className="menu-icon">
+              <span className="fas fa-bars"></span>
+            </div>
+            <div className="nav-items text-primary-light size-22">
+              <li className="flex align-center">
+                <i className="fa fa-sliders mr-2"></i>{" "}
+                <label className="navTitle fw-700"> {currentSide.name} </label>
+                <i className="ml-2 fa-solid fa-circle-check collection-icon-check ml-3"></i>
+                <label>
+                  <span className="mx-3">|</span> Preference
+                </label>
+              </li>
+            </div>
+          </nav>
         )}
       </div>
 
@@ -238,7 +275,9 @@ export default function MiddleContainerHeader({
             }}
             className="profile-round pointer"
             alt=""
-            src={fixURL(currentProfile?.profilePicture?.metadata?.image || defaultPP)}
+            src={fixURL(
+              currentProfile?.profilePicture?.metadata?.image || defaultPP
+            )}
           />
           <div className="user-name-address">
             <p className="user-name size-14">{user?.username}</p>
@@ -247,6 +286,12 @@ export default function MiddleContainerHeader({
             </p>
           </div>
         </div>
+
+        <Link className="settings-btn" to={`/${currentSide?.['name']}/settings`}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.54134 15.7923V11.209H8.45801V13.0423H15.7913V13.959H8.45801V15.7923H7.54134ZM0.208008 13.959V13.0423H4.79134V13.959H0.208008ZM3.87467 10.2923V8.45898H0.208008V7.54232H3.87467V5.70898H4.79134V10.2923H3.87467ZM7.54134 8.45898V7.54232H15.7913V8.45898H7.54134ZM11.208 4.79232V0.208984H12.1247V2.04232H15.7913V2.95898H12.1247V4.79232H11.208ZM0.208008 2.95898V2.04232H8.45801V2.95898H0.208008Z" fill="#B4C1D2"/>
+          </svg>
+        </Link>
       </div>
     </MiddleContainerHeaderStyled>
   );

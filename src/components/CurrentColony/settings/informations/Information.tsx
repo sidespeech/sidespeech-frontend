@@ -5,14 +5,14 @@ import InputText from "../../../ui-components/InputText";
 import TextArea from "../../../ui-components/TextArea";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { apiService } from "../../../../services/api.service";
 import { Side } from "../../../../models/Side";
 import Switch from "../../../ui-components/Switch";
-import { sideAPI } from "../../../../services/side.service";
 import LeavSideAsAdmin from "../../../ui-components/LeavSideAsAdmin";
 import { removeSide } from "../../../../redux/Slices/UserDataSlice";
 import { useNavigate } from "react-router-dom";
 import { breakpoints, size } from "../../../../helpers/breakpoints";
+import profileService from "../../../../services/api-services/profile.service";
+import sideService from "../../../../services/api-services/side.service";
 
 const InformationsStyled = styled.div`
   width: 100%;
@@ -133,6 +133,21 @@ const InformationsStyled = styled.div`
     font-size: 16px;
     font-weight: 600;
   }
+
+  .edit-side-bottom {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2rem;
+    margin: 2rem 0 0 0;
+    ${breakpoints(size.lg, `{
+      flex-direction: column;
+    }`)}
+    & .save-btn {
+      ${breakpoints(size.lg, `{
+        max-width: 125px;
+      }`)}
+    }
+  }
 `;
 
 export interface InitialStateUpdateSide {
@@ -220,7 +235,7 @@ export default function Informations({
         delete formData["sideImage"];
       }
       if (!currentSide["id"]) return;
-      const updatedSide = await sideAPI.updateSide(formData, currentSide["id"]);
+      const updatedSide = await sideService.updateSide(formData, currentSide["id"]);
       toast.success(formData.name + " has been updated.", {
         toastId: 4,
       });
@@ -231,7 +246,7 @@ export default function Informations({
   };
 
   const onSubmitLeaveSide = async () => {
-    let result = await apiService.leaveSide(userData["currentProfile"]);
+    let result = await profileService.leaveSide(userData["currentProfile"]);
     if (result["error"]) toast.error(result["message"], { toastId: 3 });
     else {
       toast.success(result["message"], { toastId: 4 });
@@ -392,7 +407,7 @@ export default function Informations({
             </div>
             <Switch onClick={onChangePrivate} value={currentSide.priv} />
           </div>
-          <div className="size-8">
+          <div className="size-12">
             Only invited users will be able to join this Side. All invitations
             will be received as requests.
           </div>
@@ -401,10 +416,10 @@ export default function Informations({
 
       {/* Submit Button */}
       {!isNewSide ? (
-        <>
+        <div className="edit-side-bottom">
           <Button
-            classes={"my-3"}
-            width={"121px"}
+            classes="save-btn"
+            width={"100%"}
             height={44}
             onClick={updateSide}
             radius={10}
@@ -412,11 +427,12 @@ export default function Informations({
           >
             Save{" "}
           </Button>
+
           <LeavSideAsAdmin
             side={currentSide}
             handleLeaveSide={onSubmitLeaveSide}
           />
-        </>
+        </div>
       ) : null}
     </InformationsStyled>
   );

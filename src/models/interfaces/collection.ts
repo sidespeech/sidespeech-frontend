@@ -1,4 +1,4 @@
-import alchemyService from "../../services/alchemy.service";
+import alchemyService from "../../services/web3-services/alchemy.service";
 import { Side } from "../Side";
 import { NFT } from "./nft";
 

@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { RootState } from "../../redux/store/app.store";
 import Login from "./Login";
 import { useNavigate } from "react-router";
-import { apiService } from "../../services/api.service";
 import DashboardPage from "../dashboard/DashboardPage";
 import OnBoarding from "../OnBoarding/Onboarding";
 import { Side } from "../../models/Side";
@@ -14,6 +13,7 @@ import {
   Link,
   useParams
 } from "react-router-dom";
+import userService from "../../services/api-services/user.service";
 
 interface ISeparatorHorizontal {
   borderColor?: string;
@@ -46,7 +46,7 @@ export default function DefaultView() {
   } else if(walletAddress) {
 
     const checkOnBoarding = async () => {
-      const onBoarding = await apiService.findOnBoarding(walletAddress);
+      const onBoarding = await userService.findOnBoarding(walletAddress);
 
       if (onBoarding) {
         //Redirect the user to the onboarding area.

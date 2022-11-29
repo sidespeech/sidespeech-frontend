@@ -42,7 +42,7 @@ ReactDOM.render(
       pauseOnHover
       toastStyle={{
         background: "var(--bg-secondary-dark)",
-        color: "white"
+        color: "white",
       }}
     />
     <React.StrictMode>
@@ -56,10 +56,10 @@ ReactDOM.render(
             <Route path="new-side" element={<NewSide />} />
             <Route path=":id" element={<CurrentColony />}>
               <Route path="profile/:username" element={<UserProfile />} />
-              <Route index element={<CurrentSideMiddle />} />
+              <Route path="settings" element={<Settings />} />
               <Route path="thread/:announcementId" element={<ChannelView />} />
+              <Route index element={<CurrentSideMiddle />} />
             </Route>
-            <Route path=":id/settings" element={<Settings />} />
             <Route path="/onboarding" element={<OnBoarding />} />
             <Route
               path="/general-settings"

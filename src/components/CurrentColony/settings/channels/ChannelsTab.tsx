@@ -5,24 +5,24 @@ import InputText from "../../../ui-components/InputText";
 import UserLine from "../../../ui-components/UserLine";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { apiService } from "../../../../services/api.service";
 import ChannelRow from "./ChannelRow";
 import { Channel, ChannelType } from "../../../../models/Channel";
 import { Side } from "../../../../models/Side";
 import _ from "lodash";
 import { breakpoints, size } from "../../../../helpers/breakpoints";
+import channelService from "../../../../services/api-services/channel.service";
 
 const ChannelsStyled = styled.div`
   width: 100%;
-  ${breakpoints(
-    size.lg,
-    `{
-    width: 60%;
-    max-width: 500px;
-  }`
-  )}
   .add-channel-btn {
     max-width: 500px;
+  }
+  .save-btn {
+    margin-top: 2rem;
+    max-width: 500px;
+    ${breakpoints(size.lg, `{
+      max-width: 150px;
+    }`)}
   }
 `;
 
@@ -202,17 +202,17 @@ export default function Channels({
   const onSubmit = async () => {
     try {
       if (channels["added"].length) {
-        const addedChannels = await apiService.createManyChannels(
+        const addedChannels = await channelService.createManyChannels(
           channels["added"]
         );
       }
       if (channels["removed"].length) {
-        const removedChannels = await apiService.removeChannels(
+        const removedChannels = await channelService.removeChannels(
           channels["removed"]
         );
       }
       if (channels["currents"].length) {
-        const updatedChannels = await apiService.updateManyChannels(
+        const updatedChannels = await channelService.updateManyChannels(
           channels["currents"]
         );
       }
@@ -316,12 +316,12 @@ export default function Channels({
         {/* Submit Button */}
         {!channelsNewSide ? (
           <Button
-            width={"159px"}
+            width={"100%"}
+            classes="save-btn"
             height={46}
             onClick={onSubmit}
             radius={10}
             color={"var(--text-primary-light)"}
-            classes={"mt-4"}
           >
             Save{" "}
           </Button>

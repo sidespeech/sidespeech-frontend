@@ -8,20 +8,23 @@ export interface AppDatas {
   currentSide: Side | null;
   selectedChannel: Channel | null;
   selectedProfile: Profile | null;
+  settingsOpen: boolean;
 }
 
 const initialState: AppDatas = {
   currentSide: null,
   selectedChannel: null,
   selectedProfile: null,
+  settingsOpen: false,
 };
 
 export const appDatasSlice = createSlice({
   name: "appDatas",
   initialState,
   reducers: {
-    setCurrentColony: (state: AppDatas, action: PayloadAction<Side>) => {
-      state.currentSide = { ...action.payload };
+    setCurrentColony: (state: AppDatas, action: PayloadAction<Side | null>) => {
+      if (action.payload) state.currentSide = { ...action.payload };
+      else state.currentSide = null;
     },
     setSelectedChannel: (
       state: AppDatas,
@@ -53,6 +56,9 @@ export const appDatasSlice = createSlice({
         ];
       }
     },
+    setSettingsOpen: (state: AppDatas, action: PayloadAction<boolean>) => {
+      state.settingsOpen = action.payload;
+    },
   },
 });
 
@@ -63,6 +69,7 @@ export const {
   updateChannel,
   addChannel,
   setSelectedProfile,
+  setSettingsOpen,
 } = appDatasSlice.actions;
 
 export default appDatasSlice.reducer;

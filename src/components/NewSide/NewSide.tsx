@@ -10,7 +10,6 @@ import Button from "../ui-components/Button";
 import Admission from "./admission/Admission";
 import Channels from "../CurrentColony/settings/channels/ChannelsTab";
 import Invitation from "../CurrentColony/settings/invitation/InvitationTab";
-import { apiService } from "../../services/api.service";
 import {
   addUserParsedSide,
   refreshConnectedUser,
@@ -24,9 +23,11 @@ import _, { cloneDeep, valuesIn } from "lodash";
 import { Channel, ChannelType } from "../../models/Channel";
 import { Profile, Role } from "../../models/Profile";
 import { Metadata } from "../../models/Metadata";
-import { sideAPI } from "../../services/side.service";
 import { breakpoints, size } from "../../helpers/breakpoints";
 import Informations from "../CurrentColony/settings/informations/Information";
+import userService from "../../services/api-services/user.service";
+import filesService from "../../services/api-services/files.service";
+import sideService from "../../services/api-services/side.service";
 
 const NewSideStyled = styled.div`
   width: 100%;
@@ -62,8 +63,8 @@ const NewSideStyled = styled.div`
     ${breakpoints(
       size.lg,
       `{
-    display: none
-  }`
+        display: none
+      }`
     )}
     & .step-icon {
       position: relative;
@@ -109,8 +110,8 @@ const NewSideStyled = styled.div`
     ${breakpoints(
       size.lg,
       `{
-    display: flex;
-  }`
+        display: flex;
+      }`
     )}
     .tabs-wrapper {
       display: flex;
@@ -123,16 +124,22 @@ const NewSideStyled = styled.div`
         display: flex;
         gap: 0.5rem;
         align-items: center;
-        & .step-icon {
-          background-color: var(--bg-secondary-light);
+        justify-content: space-between;
+        &>div {
           display: flex;
-          flex-shrink: 0;
+          gap: 0.5rem;
           align-items: center;
-          justify-content: center;
-          width: 2rem;
-          height: 2rem;
-          border-radius: 2rem;
-          font-size: 0.7rem;
+          & .step-icon {
+            background-color: var(--bg-secondary-light);
+            display: flex;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+          }
         }
         &.active {
           color: var(--primary) !important;
@@ -301,7 +308,7 @@ export default function NewSide() {
     if (user && user.profiles) {
       const getInvitationUsers = async (user: any) => {
         let userSides = user.profiles.map((p: Profile) => p.side);
-        let users = await apiService.getUserFromSides(userSides);
+        let users = await userService.getUserFromSides(userSides);
         let invitationsUsersObject = [];
         delete user["profiles"];
         for (let userInvite of users) {
@@ -459,7 +466,7 @@ export default function NewSide() {
 
   // validate the name, return true if name is valid;
   const validateName = async (name: string) => {
-    const exist = await sideAPI.isSideNameExist(name);
+    const exist = await sideService.isSideNameExist(name);
     const inValidLength = !(name.length < 50 && name.length > 3);
     setFormError({ ...formError, name: { exist, length: inValidLength } });
     return !(exist || inValidLength);
@@ -752,11 +759,11 @@ export default function NewSide() {
         data["NftTokenAddress"] = data["conditions"];
         const fd = new FormData();
         fd.append("file", formData["sideImage"]);
-        data["sideImage"] = await apiService.uploadImage(fd);
+        data["sideImage"] = await filesService.uploadImage(fd);
         data["creatorAddress"] = user.accounts;
         data["required"] = !onlyOneRequired;
 
-        const newSide = await sideAPI.createFullSide(
+        const newSide = await sideService.createFullSide(
           data,
           channels,
           userInvited
@@ -768,7 +775,7 @@ export default function NewSide() {
           toastId: 4,
         });
 
-        const refreshedUser = await apiService.getUserByAddress(user.accounts);
+        const refreshedUser = await userService.getUserByAddress(user.accounts);
         dispatch(updateUser(refreshedUser));
         navigate("/" + newSide.name);
       }
@@ -819,10 +826,12 @@ export default function NewSide() {
                     step["completed"] ? "completed" : ""
                   } sidebar-item text-secondary-dark`}
                 >
-                  <i className={`${step["icon"]} step-icon`}></i>
-                  {step["label"]}{" "}
+                  <div>
+                    <i className={`${step["icon"]} step-icon`}></i>
+                    {step["label"]}{" "}
+                  </div>
                   {step["completed"] ? (
-                    <i className="fa-solid fa-check"></i>
+                    <i className="fa-solid fa-check mr-2"></i>
                   ) : null}
                 </TabItems>
               );

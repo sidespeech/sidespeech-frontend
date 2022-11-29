@@ -5,9 +5,9 @@ import check from "../../assets/check.svg";
 import { first } from "lodash";
 import Button from "./Button";
 import { Side } from "../../models/Side";
-import { apiService } from "../../services/api.service";
 import { Profile } from "../../models/Profile";
 import defaultPP from "../../assets/default-pp.webp";
+import profileService from "../../services/api-services/profile.service";
 
 export default function TableRow({
   side,
@@ -34,7 +34,7 @@ export default function TableRow({
   useEffect(() => {}, []);
 
   const onClickEject = async (user: any) => {
-    await apiService.removeProfile(user["id"]);
+    await profileService.removeProfile(user["id"]);
     window.location.reload();
   };
 

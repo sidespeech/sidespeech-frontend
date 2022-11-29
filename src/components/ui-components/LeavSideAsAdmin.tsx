@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Profile, Role } from "../../models/Profile";
 import { Side } from "../../models/Side";
 import { User } from "../../models/User";
-import { apiService } from "../../services/api.service";
+import userService from "../../services/api-services/user.service";
 import Button from "./Button";
 import InputText from "./InputText";
 
@@ -63,7 +63,7 @@ const LeavSideAsAdmin = ({
   useEffect(() => {
     async function getSideUsers() {
       if (side) {
-        const users = await apiService.getUserFromSides([side]);
+        const users = await userService.getUserFromSides([side]);
         setUsers(users);
         const subadmin = side.profiles.filter(
           (p) => p.role === Role.subadmin
@@ -83,7 +83,7 @@ const LeavSideAsAdmin = ({
   const leaveSide = async () => {
     try {
       if (side) {
-        await apiService.updateSubAdmin(newSubAdmin, side.id);
+        await userService.updateSubAdmin(newSubAdmin, side.id);
         handleLeaveSide();
       }
     } catch (error) {

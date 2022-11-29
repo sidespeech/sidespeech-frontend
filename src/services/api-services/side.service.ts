@@ -1,38 +1,40 @@
 import superagent from "superagent";
-import { BASE_URL } from "../constants/constants";
-import { checkUserEligibility } from "../helpers/utilities";
-import { Side, SideStatus } from "../models/Side";
-import alchemyService from "./alchemy.service";
 import _ from "lodash";
+import { InitialStateUpdateSide } from "../../components/CurrentColony/settings/informations/Information";
+import {
+  InitialStateSide,
+  InitialChannelsState,
+} from "../../components/NewSide/NewSide";
+import { BASE_URL } from "../../constants/constants";
+import { checkUserEligibility } from "../../helpers/utilities";
+import { Side, SideStatus } from "../../models/Side";
+import alchemyService from "../web3-services/alchemy.service";
+import { BaseApiService } from "./base-api.service";
 
-import { InitialChannelsState, InitialStateSide } from "../components/NewSide/NewSide";
-import { InitialStateUpdateSide } from "../components/CurrentColony/settings/informations/Information";
-import { User } from "../models/User";
-
-const post = (url: string) => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) return superagent.post(url);
-  return superagent.post(url).auth(token, { type: "bearer" });
-};
-export class sideAPI {
+let instance: SideService;
+class SideService extends BaseApiService {
+  static getInstance() {
+    if (!instance) instance = new SideService();
+    return instance;
+  }
   // get side by Id
-  static async getSideById(id: string): Promise<Side> {
-    const res = await superagent.get(`${BASE_URL}/side/${id}`);
+  async getSideById(id: string): Promise<Side> {
+    const res = await this.get(`${BASE_URL}/side/${id}`);
     return dtoToSide(res.body);
   }
 
   // get side by name
-  static async getSideByName(name: string): Promise<Side> {
-    const res = await superagent.get(`${BASE_URL}/side/byname/${name}`);
+  async getSideByName(name: string): Promise<Side> {
+    const res = await this.get(`${BASE_URL}/side/byname/${name}`);
     return dtoToSide(res.body);
   }
 
   // get all sides without channels
-  static async getAllSides(
+  async getAllSides(
     userCollectionsData?: any,
     userSides?: Side[]
   ): Promise<Side[]> {
-    const res = await superagent.get(`${BASE_URL}/side`);
+    const res = await this.get(`${BASE_URL}/side`);
     const sidesList = await getSidesMetadata(
       res.body,
       userCollectionsData,
@@ -42,13 +44,13 @@ export class sideAPI {
   }
 
   // get all sides by search string
-  static async getSidesBySearchValue(
+  async getSidesBySearchValue(
     searchValue: string,
     collections?: string,
     userCollectionsData?: any,
     userSides?: Side[]
   ): Promise<Side[]> {
-    const res = await superagent.get(
+    const res = await this.get(
       `${BASE_URL}/side/search?searchValue=${searchValue}&collections=${
         collections && collections !== "all" ? collections : ""
       }`
@@ -62,14 +64,12 @@ export class sideAPI {
   }
 
   // get all sides by search string
-  static async getSidesByOwner(
+  async getSidesByOwner(
     address: string,
     userCollectionsData?: any,
     userSides?: Side[]
   ): Promise<Side[]> {
-    const res = await superagent.get(
-      `${BASE_URL}/side/owner?address=${address}`
-    );
+    const res = await this.get(`${BASE_URL}/side/owner?address=${address}`);
     const sidesList = await getSidesMetadata(
       res.body,
       userCollectionsData,
@@ -79,11 +79,11 @@ export class sideAPI {
   }
 
   // get all featured sides
-  static async getAllFeaturedSides(
+  async getAllFeaturedSides(
     userCollectionsData?: any,
     userSides?: Side[]
   ): Promise<Side[]> {
-    const res = await superagent.get(`${BASE_URL}/side/featured`);
+    const res = await this.get(`${BASE_URL}/side/featured`);
     const sidesList = await getSidesMetadata(
       res.body,
       userCollectionsData,
@@ -93,10 +93,10 @@ export class sideAPI {
   }
 
   // get all sides for an array of collections
-  static async getSidesByCollections(
+  async getSidesByCollections(
     collections: string[]
   ): Promise<{ contracts: string; sides: any[] }> {
-    const res = await superagent.get(
+    const res = await this.get(
       `${BASE_URL}/side/collection/sidescount?contracts=${collections?.join(
         ","
       )}`
@@ -104,38 +104,44 @@ export class sideAPI {
     return res.body;
   }
 
-  static async isSideNameExist(name: string): Promise<boolean> {
-    const res = await superagent
-      .get(`${BASE_URL}/side/name/exist`)
-      .query({ name: name });
+  async isSideNameExist(name: string): Promise<boolean> {
+    const res = await this.get(`${BASE_URL}/side/name/exist`).query({
+      name: name,
+    });
     return res.body.exist;
   }
 
-  static async createSide(side: InitialStateSide): Promise<Side> {
-    const res = await post(`${BASE_URL}/side`).send(side);
+  async createSide(side: InitialStateSide): Promise<Side> {
+    const res = await this.post(`${BASE_URL}/side`).send(side);
     return new Side(res["body"]);
   }
 
-  static async createFullSide(side: InitialStateSide, channels:InitialChannelsState, userInvited: any[]): Promise<Side> {
-    const res = await post(`${BASE_URL}/side/create`).send({side: side, channels: channels, userInvited: userInvited});
-    return new Side(res["body"]);
-  }
-
-  static async updateSide(
-    side: InitialStateUpdateSide,
-    id: string
+  async createFullSide(
+    side: InitialStateSide,
+    channels: InitialChannelsState,
+    userInvited: any[]
   ): Promise<Side> {
-    const res = await superagent.patch(`${BASE_URL}/side/${id}`).send(side);
+    const res = await this.post(`${BASE_URL}/side/create`).send({
+      side: side,
+      channels: channels,
+      userInvited: userInvited,
+    });
+    return new Side(res["body"]);
+  }
+
+  async updateSide(side: InitialStateUpdateSide, id: string): Promise<Side> {
+    const res = await this.patch(`${BASE_URL}/side/${id}`).send(side);
     return res["body"]["side"];
   }
-  static async updateSideStatus(status: SideStatus, id: string): Promise<Side> {
-    const res = await post(`${BASE_URL}/side/update-status`).send({
+  async updateSideStatus(status: SideStatus, id: string): Promise<Side> {
+    const res = await this.post(`${BASE_URL}/side/update-status`).send({
       id: id,
       status: status,
     });
     return new Side(res["body"]);
   }
 }
+export default SideService.getInstance();
 
 export async function getSidesMetadata(
   sides: any[],

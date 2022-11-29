@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { Editor } from "react-draft-wysiwyg";
 import { convertToRaw, EditorState, Modifier } from "draft-js";
 import { draftToMarkdown } from "markdown-draft-js";
-import { apiService } from "../../services/api.service";
 
 import boldIcon from "../../assets/bold.svg";
 import codeIcon from "../../assets/code.svg";
@@ -26,6 +25,7 @@ import GifsModule from "./GifsModule";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { getBase64, getRandomId } from "../../helpers/utilities";
+import filesService from "../../services/api-services/files.service";
 
 interface MessageInputPropsType {
   bgColor?: string;
@@ -227,6 +227,8 @@ const MessageInputStyled = styled.div`
     z-index: 9;
     & .toolbar-button {
       background: transparent;
+      flex-shrink: 0;
+      border-radius: 100px;
       &[disabled] {
         opacity: .3;
         cursor: default;
@@ -359,7 +361,7 @@ const MessageInput = forwardRef(
 
         const formData = new FormData();
         formData.append("file", image);
-        const uploadedUrl = await apiService.uploadImage(formData);
+        const uploadedUrl = await filesService.uploadImage(formData);
         if (uploadedUrl) {
           const imageMarkdown = `![${image.name}](${uploadedUrl} "${image.name}")`;
 
@@ -585,7 +587,7 @@ const MessageInput = forwardRef(
                 }}
                 type="file"
               />
-              <div
+              <button
                 className="toolbar-button"
                 onClick={() => {
                   if (isGiphyOpen) setIsGiphyOpen(false);
@@ -605,7 +607,7 @@ const MessageInput = forwardRef(
                     d="M11.7953 0V2H2.51535V16H16.9509V7H19.0131V16C19.0131 16.55 18.8114 17.021 18.4079 17.413C18.0037 17.8043 17.518 18 16.9509 18H2.51535C1.94824 18 1.46258 17.8043 1.05839 17.413C0.654879 17.021 0.453125 16.55 0.453125 16V2C0.453125 1.45 0.654879 0.979 1.05839 0.587C1.46258 0.195667 1.94824 0 2.51535 0H11.7953ZM16.9509 0V2H19.0131V4H16.9509V6H14.8887V4H12.8265V2H14.8887V0H16.9509ZM3.54646 14H15.9198L12.0531 9L8.95979 13L6.63979 10L3.54646 14Z"
                   />
                 </svg>
-              </div>
+              </button>
             </label>
           )}
 

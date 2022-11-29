@@ -13,24 +13,23 @@ import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
 // import InputText from "../ui-components/InputText";
 import _ from "lodash";
-// import { apiService } from "../../services/api.service";
 import ChatComponent from "./ChatComponent/ChatComponent";
 import { Announcement } from "../../models/Announcement";
 import { ChannelType } from "../../models/Channel";
 import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
 // import websocketService from "../../services/websocket.service";
-import { sideAPI } from "../../services/side.service";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { Poll } from "../../models/Poll";
 
 import { Outlet, useOutletContext } from "react-router-dom";
-import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
+// import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
 import { SideStatus } from "../../models/Side";
 import { toast } from "react-toastify";
-import { checkUserEligibility } from "../../helpers/utilities";
+// import { checkUserEligibility } from "../../helpers/utilities";
 import SideEligibilityModal from "../Modals/SideEligibilityModal";
 import { breakpoints, size } from "../../helpers/breakpoints";
+import sideService from "../../services/api-services/side.service";
 
 const CurrentSideStyled = styled.div`
   width: 100vw;
@@ -131,7 +130,7 @@ type ContextMiddleSide = {
 
 export default function CurrentSide() {
   const { announcementId, id } = useParams();
-  const { currentSide, selectedChannel } = useSelector(
+  const { currentSide, selectedChannel, settingsOpen } = useSelector(
     (state: RootState) => state.appDatas
   );
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
@@ -170,12 +169,18 @@ export default function CurrentSide() {
   }, [announcements]);
 
   useEffect(() => {
+    return () => {
+      dispatch(setCurrentColony(null));
+      dispatch(setCurrentProfile(null));
+    };
+  }, []);
+
+  useEffect(() => {
     async function getSide() {
       try {
         if (id && user) {
-          console.log(id, user);
           // Get Side data
-          const res = await sideAPI.getSideByName(id);
+          const res = await sideService.getSideByName(id);
 
           const isInTheSide = user["profiles"].find(
             (item) => item["side"]["id"] === res["id"]
@@ -223,12 +228,14 @@ export default function CurrentSide() {
     <CurrentSideStyled>
       {currentSide?.status === SideStatus.active ? (
         <>
-          <CurrentSideLeft
-            channel={selectedChannel}
-            room={selectedRoom}
-            setThread={setThread}
-            thread={thread}
-          />
+          {!settingsOpen && (
+            <CurrentSideLeft
+              channel={selectedChannel}
+              room={selectedRoom}
+              setThread={setThread}
+              thread={thread}
+            />
+          )}
 
           <div className="current-side-middle-container">
             <MiddleContainerHeader

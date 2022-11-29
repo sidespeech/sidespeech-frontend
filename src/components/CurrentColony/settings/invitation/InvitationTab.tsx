@@ -7,11 +7,12 @@ import facebook from "../../../../assets/facebook.svg";
 import twitter from "../../../../assets/twitter.svg";
 import linkedin from "../../../../assets/linkedin.svg";
 import styled from 'styled-components'
-import { apiService } from "../../../../services/api.service";
 import { toast } from "react-toastify";
 import { Profile } from "../../../../models/Profile";
 import { State, Type } from "../../../../models/Invitation";
 import { breakpoints, size } from "../../../../helpers/breakpoints";
+import userService from "../../../../services/api-services/user.service";
+import invitationService from "../../../../services/api-services/invitation.service";
 
 const InvitationsStyled = styled.div`
   width: 100%;
@@ -92,9 +93,20 @@ const InvitationsStyled = styled.div`
           justify-content: flex-start;
         }`)}
         .media-btn {
+          font-size: .75rem;
           ${breakpoints(size.md, `{
+            font-size: .88rem;
             max-width: 140px;
           }`)}
+          & img {
+            height: 15px;
+            width: 15px;
+            object-fit: cover;
+            ${breakpoints(size.md, `{
+              height: 25px;
+              width: 25px;
+            }`)}
+          }          
         }
       }
     }
@@ -141,7 +153,7 @@ export default function Invitation({
       if (userData && userData['user'] && userData['user']['profiles']) {
         const getInvitationUsers = async (user: any) => {
           let userSides = user.profiles.map((p: Profile) => p.side);
-          let users = await apiService.getUserFromSides(userSides);
+          let users = await userService.getUserFromSides(userSides);
           let invitationsUsersObject = []
           for (let userInvite of users) {
             if (user['id'] !== userInvite['id'])
@@ -189,7 +201,7 @@ export default function Invitation({
         invitationLink: sideLink,
         side: currentSide
       }
-      await apiService.sendSingleInvitation(object);
+      await invitationService.sendSingleInvitation(object);
 
       let users = [...usersInvite]
       users[index]['invited'] = true
@@ -220,7 +232,7 @@ export default function Invitation({
           glass={true}
           iconRightPos={{ top: 12, right: 20 }}
           placeholder={"Search by username or wallet address "}
-          onChange={undefined}
+          onChange={() => {}}
           radius="5px"
         />
         <div className="f-column user-list mt-3">
@@ -279,7 +291,19 @@ export default function Invitation({
         <div className="media-btns">
           {
             socialsMedia.map((social, index) =>
-              <Button key={index} classes="media-btn cursor-pointer" width={"100%"} height={40} onClick={undefined} radius={10} background={'var(--bg-secondary-light)'} color={'var(--text-primary-light)'}><img src={social.icon} className="mr-2" />{social.label}</Button>
+              <Button 
+                key={index} 
+                classes="media-btn" 
+                width={"100%"} 
+                height={40} 
+                onClick={undefined} 
+                radius={10} 
+                background={'var(--bg-secondary-light)'} 
+                color={'var(--text-primary-light)'}
+              >
+                <img src={social.icon} className="mr-2" />
+                {social.label}
+              </Button>
             )
           }
         </div>

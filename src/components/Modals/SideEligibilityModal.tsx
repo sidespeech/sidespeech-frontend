@@ -10,7 +10,6 @@ import { NFT } from "../../models/interfaces/nft";
 import { Role } from "../../models/Profile";
 import { Side, SideStatus } from "../../models/Side";
 import { RootState } from "../../redux/store/app.store";
-import { apiService } from "../../services/api.service";
 import Button from "../ui-components/Button";
 import Modal from "../ui-components/Modal";
 import { RoundedImageContainer } from "../ui-components/styled-components/shared-styled-components";
@@ -22,9 +21,11 @@ import {
   updateProfiles,
 } from "../../redux/Slices/UserDataSlice";
 import { State, Type } from "../../models/Invitation";
-import { sideAPI } from "../../services/side.service";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../ui-components/Spinner";
+import invitationService from "../../services/api-services/invitation.service";
+import sideService from "../../services/api-services/side.service";
+import profileService from "../../services/api-services/profile.service";
 
 const eligibilityTexts = {
   success: {
@@ -54,20 +55,20 @@ const EligibilityResult = styled.div<IEligibilityResultProps>`
     props.info
       ? "var(--primary-opacity)"
       : props.isEligible
-        ? "var(--green-opacity)"
-        : "var(--red-opacity)"};
+      ? "var(--green-opacity)"
+      : "var(--red-opacity)"};
   border: 1px solid
     ${(props) =>
-    props.info
-      ? "var(--primary)"
-      : props.isEligible
+      props.info
+        ? "var(--primary)"
+        : props.isEligible
         ? "var(--green)"
         : "var(--red)"};
   & div:first-child {
     color: ${(props) =>
-    props.info
-      ? "var(--primary)"
-      : props.isEligible
+      props.info
+        ? "var(--primary)"
+        : props.isEligible
         ? "var(--green)"
         : "var(--red)"};
   }
@@ -113,9 +114,9 @@ export default function SideEligibilityModal(
           recipient: props.selectedSide["creatorAddress"],
           side: props.selectedSide,
         };
-        await apiService.sendRequestPrivateSide(object);
+        await invitationService.sendRequestPrivateSide(object);
       } else {
-        const profile = await apiService.joinSide(
+        const profile = await profileService.joinSide(
           user.id,
           props.selectedSide.id,
           Role.User
@@ -153,7 +154,7 @@ export default function SideEligibilityModal(
 
   useEffect(() => {
     async function updateSide() {
-      const side = await sideAPI.updateSideStatus(
+      const side = await sideService.updateSideStatus(
         SideStatus.active,
         props.selectedSide.id
       );
@@ -174,11 +175,14 @@ export default function SideEligibilityModal(
   return (
     <Modal
       body={
-
-        !isLoading ?
+        !isLoading ? (
           <>
             <RoundedImageContainer height="104px" width="104px" radius={60}>
-              <img src={props.selectedSide?.sideImage} width="100%" alt="side" />
+              <img
+                src={props.selectedSide?.sideImage}
+                width="100%"
+                alt="side"
+              />
             </RoundedImageContainer>
             <h2>{props.selectedSide.name}</h2>
             <div className="text-center">{props.selectedSide.description}</div>
@@ -231,10 +235,11 @@ export default function SideEligibilityModal(
             </EligibilityResult>
             <Eligibility side={props.selectedSide} />
           </>
-          :
+        ) : (
           <div className="spinner-wrapper">
             <Spinner />
           </div>
+        )
       }
       footer={
         props.selectedSide.status === SideStatus.active ? (

@@ -15,10 +15,10 @@ import {
   updateUser,
 } from "../../../redux/Slices/UserDataSlice";
 import { toast } from "react-toastify";
-import { apiService } from "../../../services/api.service";
 import Button from "../../ui-components/Button";
 import UserGeneralInformations from "../../ui-components/UserGeneralInformations";
 import NftsCollections from "../../ui-components/NftsCollections";
+import userService from "../../../services/api-services/user.service";
 
 export interface InitialStateUser {
   username?: string;
@@ -113,7 +113,7 @@ export default function GeneralSettingsAccount() {
   const onSubmit = async () => {
     if (!user) return;
     try {
-      const updatedUser = await apiService.updateUser(user.id, formData);
+      const updatedUser = await userService.updateUser(user.id, formData);
       dispatch(updateUser(updatedUser));
       toast.success(updatedUser.username + " has been updated.", {
         toastId: 4,
