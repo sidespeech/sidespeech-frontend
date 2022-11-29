@@ -278,7 +278,7 @@ export default function CurrentSideLeft({
               )}
             </div>
             
-            <Link onClick={(ev) => ev.stopPropagation()} to={`/${currentSide?.['name']}/settings`}>
+            <Link onClick={(ev) => ev.stopPropagation()} to={`/side/${currentSide?.['name']}/settings`}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7.54134 15.7923V11.209H8.45801V13.0423H15.7913V13.959H8.45801V15.7923H7.54134ZM0.208008 13.959V13.0423H4.79134V13.959H0.208008ZM3.87467 10.2923V8.45898H0.208008V7.54232H3.87467V5.70898H4.79134V10.2923H3.87467ZM7.54134 8.45898V7.54232H15.7913V8.45898H7.54134ZM11.208 4.79232V0.208984H12.1247V2.04232H15.7913V2.95898H12.1247V4.79232H11.208ZM0.208008 2.95898V2.04232H8.45801V2.95898H0.208008Z" fill="#B4C1D2"/>
               </svg>
