@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { formatDistance } from 'date-fns';
 
-import { apiService } from '../../../services/api.service';
 import { Announcement } from '../../../models/Announcement';
 import { Comment } from '../../../models/Comment';
 import UserBadge from '../../ui-components/UserBadge';
@@ -14,10 +13,12 @@ import { ChannelType } from '../../../models/Channel';
 import MessageContent from '../../ui-components/MessageContent';
 import Comments from '../shared-components/Comments';
 import { fixURL, getRandomId, reduceWalletAddressForColor } from '../../../helpers/utilities';
-import { useParams } from 'react-router-dom';
+import Accordion from '../../ui-components/Accordion';
+import { useNavigate, useParams } from 'react-router-dom';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
 import { EventType } from '../../../constants/EventType';
-import websocketService from '../../../services/websocket.service';
+import websocketService from '../../../services/websocket-services/websocket.service';
+import commentService from '../../../services/api-services/comment.service';
 
 const AnnouncementItemStyled = styled.div`
     display: flex;
@@ -62,7 +63,7 @@ export default function AnnouncementItem({
         // This will need to be made dynamic.
         const creatorAddress = account;
         try {
-            const newComment = await apiService.sendComment(value, creatorAddress, announcement.id);
+            const newComment = await commentService.sendComment(value, creatorAddress, announcement.id);
             setComments([...comments, newComment]);
             websocketService.sendComment(newComment);
         } catch (error) {

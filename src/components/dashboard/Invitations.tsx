@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Invitation, State } from '../../models/Invitation';
 import { User } from '../../models/User';
 import { RootState } from '../../redux/store/app.store';
-import { apiService } from '../../services/api.service';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import InputText from '../ui-components/InputText';
@@ -16,6 +15,7 @@ import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import { Link } from 'react-router-dom';
 import emptyListImg from '../../assets/invitations_empty_screen_shape.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
+import invitationService from '../../services/api-services/invitation.service';
 
 interface InvitationsStyledProps {}
 
@@ -146,8 +146,8 @@ const Invitations = ({}: InvitationsProps) => {
     const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
     const getInvitations = async (user: User) => {
-        let invitations = (await apiService.getPendingInvitationsByRecipient(user['id'])).map((item: any) => {
-            item['eligibility'] = checkUserEligibility(userData['userCollectionsData'], item['side']);
+        let invitations = (await invitationService.getPendingInvitationsByRecipient(user['id'])).map((item: any) => {
+            item['eligibility'] = checkUserEligibility(userData?.['userCollectionsData'], item['side']);
             return item;
         });
         setInvitations(invitations);
@@ -160,7 +160,7 @@ const Invitations = ({}: InvitationsProps) => {
 
     const onDecline = async (invitation: Invitation, index: number) => {
         setIsLoading(true);
-        await apiService.updateInvitationState(invitation['id']!, State.Declined);
+        await invitationService.updateInvitationState(invitation['id']!, State.Declined);
         if (userData && userData['user']) await getInvitations(userData['user']);
         setIsLoading(false);
         window.location.reload();
@@ -168,7 +168,7 @@ const Invitations = ({}: InvitationsProps) => {
 
     const onAccept = async (invitation: Invitation, index: number) => {
         setIsLoading(true);
-        await apiService.acceptInvitation(invitation);
+        await invitationService.acceptInvitation(invitation);
         if (userData && userData['user']) await getInvitations(userData['user']);
         setIsLoading(false);
         window.location.reload();

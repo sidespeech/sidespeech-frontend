@@ -7,8 +7,7 @@ import { Profile } from '../../../models/Profile';
 import { setSelectedChannel } from '../../../redux/Slices/AppDatasSlice';
 import { setSelectedRoom } from '../../../redux/Slices/ChatSlice';
 import { RootState } from '../../../redux/store/app.store';
-import { apiService } from '../../../services/api.service';
-import websocketService from '../../../services/websocket.service';
+import websocketService from '../../../services/websocket-services/websocket.service';
 import ChannelsList from './ChannelsList/ChannelsList';
 import SideUserList from './SideUserList/SideUserList';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
@@ -19,6 +18,8 @@ import { toast } from 'react-toastify';
 import { getRandomId } from '../../../helpers/utilities';
 import Accordion from '../../ui-components/Accordion';
 import { NotificationType } from '../../../models/Notification';
+import roomService from '../../../services/api-services/room.service';
+import notificationService from '../../../services/api-services/notification.service';
 
 const SidebarStyled = styled.div`
     max-height: 100vh;
@@ -68,7 +69,7 @@ export default function CurrentSideLeftContent() {
             // if room not exist in profile
             if (!room) {
                 // creating the room
-                room = await apiService.createRoom(currentProfile.id, profile.id);
+                room = await roomService.createRoom(currentProfile.id, profile.id);
                 // add this room in the user websocket
                 websocketService.addRoomToUsers(room.id, [user.id, profile.user.id]);
                 // add the room to profile
@@ -102,7 +103,7 @@ export default function CurrentSideLeftContent() {
 
     // Function to get notification from db and assign them to the state variable
     async function getAndSetRoomNotifications(account: string, from_ws = false) {
-        const notifications = await apiService.getNotification(account!);
+        const notifications = await notificationService.getNotification(account!);
 
         let dotsPrivateMessageCopy: any = {};
         let dotsChannelCopy: any = { ...dotsChannel };
@@ -112,14 +113,14 @@ export default function CurrentSideLeftContent() {
                     dotsChannelCopy[notification.name] += 1;
                 else if (selectedChannel && notification['name'] === selectedChannel!.id) {
                     dotsChannelCopy[notification['name']] = 0;
-                    await apiService.deleteNotification(selectedChannel!.id, account!);
+                    await notificationService.deleteNotification(selectedChannel!.id, account!);
                 } else dotsChannelCopy[notification['name']] = 1;
             } else {
                 if (!selectedRoom && notification['name'] in dotsPrivateMessageCopy) {
                     dotsPrivateMessageCopy[notification.name] += 1;
                 } else if (selectedRoom && notification['name'] === selectedRoom!.id) {
                     dotsPrivateMessageCopy[notification['name']] = 0;
-                    await apiService.deleteNotification(selectedRoom!.id, account!);
+                    await notificationService.deleteNotification(selectedRoom!.id, account!);
                 } else dotsPrivateMessageCopy[notification['name']] = 1;
             }
         }

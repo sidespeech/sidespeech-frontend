@@ -1,18 +1,13 @@
 // Default Imports
-import React, { useEffect, useState } from 'react';
-import { useNavigate, redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 
 // Redux Slices
-import { fetchUserDatas, disconnect, connect, addRoomToProfile } from '../../redux/Slices/UserDataSlice';
-
-// Modals
-import { Profile } from '../../models/Profile';
+import { fetchUserDatas, connect } from '../../redux/Slices/UserDataSlice';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../redux/store/app.store';
 
 // Images
 import logoSmall from '../../assets/logo.svg';
@@ -23,13 +18,10 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
 
-// API / Socket Services
-import { apiService } from '../../services/api.service';
-import websocketService from '../../services/websocket.service';
-
 // Stylings
 import styled from 'styled-components';
 import Button from '../ui-components/Button';
+import userService from '../../services/api-services/user.service';
 
 export const SeparatorVertical = styled.div`
     min-height: 415px;
@@ -41,7 +33,6 @@ export default function Login() {
     // Setup constants for dispatch, navigate and selector methods
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const redirection = useSelector((state: RootState) => state.redirect);
 
     function ConnectWalletArea() {
         // This is the all of the providers that are needed...
@@ -123,10 +114,10 @@ export default function Login() {
                     }
 
                     // Attempt to find an existing user by passing their address and the signature that they signed.
-                    const existingUser = await apiService.findExistingWallet(accounts[0], signerMessage, signature);
+                    const existingUser = await userService.findExistingWallet(accounts[0], signerMessage, signature);
 
                     // Send the wallet to the api service.
-                    const user = await apiService.walletConnection(accounts[0], signerMessage, signature);
+                    const user = await userService.walletConnection(accounts[0], signerMessage, signature);
 
                     // Check if the existing user still needs to onboard or not.
                     if (existingUser == null) {
@@ -178,7 +169,6 @@ export default function Login() {
             // Reload the page to ensure logged out.
             window.location.reload();
         };
-
         return (
             <div style={{ gap: 5 }} className="connection-container f-column align-center justify-start">
                 <h2 style={{ color: 'white', marginBottom: 30 }}>Connect your wallet to take part in a slide</h2>

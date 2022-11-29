@@ -1,17 +1,20 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { UserTokensData } from '../../models/UserTokensData';
-import websocketService from '../../services/websocket.service';
+import websocketService from '../../services/websocket-services/websocket.service';
 import { Room } from '../../models/Room';
 import { User } from '../../models/User';
 import { Profile } from '../../models/Profile';
 import { Side } from '../../models/Side';
 import { UserCollectionsData } from '../../models/interfaces/UserCollectionsData';
 import { Collection } from '../../models/interfaces/collection';
-import alchemyService from '../../services/alchemy.service';
-import { getSidesMetadata, sideAPI } from '../../services/side.service';
-import { apiService } from '../../services/api.service';
+import alchemyService from '../../services/web3-services/alchemy.service';
+import { RootState } from '../store/app.store';
+import { Metadata } from '../../models/Metadata';
+import collectionService from '../../services/api-services/collection.service';
+import userService from '../../services/api-services/user.service';
+import sideService, { getSidesMetadata } from '../../services/api-services/side.service';
 
 export interface UserData {
     user: User | null;
@@ -51,7 +54,7 @@ function uniqByFilter<T>(array: T[]) {
 export const refreshConnectedUser = createAsyncThunk(
     'userData/refreshConnectedUser',
     async (account: string, { dispatch, getState }) => {
-        const user = await apiService.getUserByAddress(account);
+        const user = await userService.getUserByAddress(account);
         dispatch(updateUser(user));
     }
 );
@@ -62,7 +65,7 @@ export const fetchUserDatas = createAsyncThunk(
         const nfts = await alchemyService.getUserNfts(address);
         const collections = await alchemyService.getUserCollections(address);
         const data = await getSidesCountByCollection(collections.map((elem) => elem['address']));
-        await apiService.savedCollections(collections);
+        await collectionService.savedCollections(collections);
 
         let res: any = {};
         for (let nft of nfts) {
@@ -85,9 +88,9 @@ export const fetchUserDatas = createAsyncThunk(
                 } else {
                     res[address]['sideCount'] = 0;
                 }
+                return res;
             }
         }
-        return res;
     }
 );
 
@@ -105,13 +108,13 @@ export const updateSidesByUserCollections = createAsyncThunk(
 export const getSidesByCollection = createAsyncThunk(
     'userData/getSidesByCollection',
     async (address: string, { dispatch, getState }) => {
-        const response = await sideAPI.getSidesByCollections([address]);
+        const response = await sideService.getSidesByCollections([address]);
         return response;
     }
 );
 
 export const getSidesCountByCollection = async (addresses: string[]) => {
-    const response = await sideAPI.getSidesByCollections(addresses);
+    const response = await sideService.getSidesByCollections(addresses);
     return response;
 };
 

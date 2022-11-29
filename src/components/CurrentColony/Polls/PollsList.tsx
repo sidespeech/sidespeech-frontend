@@ -10,7 +10,6 @@ import { ethers } from 'ethers';
 
 import { Poll } from '../../../models/Poll';
 import { RootState } from '../../../redux/store/app.store';
-import { apiService } from '../../../services/api.service';
 import EmptyList from '../shared-components/EmptyList';
 import Button from '../../ui-components/Button';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
@@ -19,6 +18,8 @@ import PollItem from './PollItem';
 import { Announcement } from '../../../models/Announcement';
 import { Role } from '../../../models/Profile';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import voteService from '../../../services/api-services/vote.service';
+import channelService from '../../../services/api-services/channel.service';
 
 const PollsStyled = styled.div`
     position: relative;
@@ -133,7 +134,7 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
                 return false;
             } else {
                 if (currentSide) {
-                    const voteOnPoll = await apiService.voteOnPoll(
+                    const voteOnPoll = await voteService.voteOnPoll(
                         window.ethereum.selectedAddress,
                         callbackData.optionId,
                         Date.now().toString(),
@@ -154,7 +155,7 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
     const getChannelPolls = useCallback(async () => {
         if (!selectedChannel) return;
         try {
-            const polls = await apiService.getChannelPolls(selectedChannel.id);
+            const polls = await channelService.getChannelPolls(selectedChannel.id);
             setPolls(polls);
         } catch (error) {
             toast.error('Error fetching polls', { toastId: 10 });

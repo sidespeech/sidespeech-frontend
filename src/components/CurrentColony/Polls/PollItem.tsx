@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { compareAsc, format, formatDistance } from 'date-fns';
 import { LeafPoll } from 'react-leaf-polls';
@@ -10,11 +10,11 @@ import UserBadge from '../../ui-components/UserBadge';
 import Comments from '../shared-components/Comments';
 import { Comment } from '../../../models/Comment';
 import { toast } from 'react-toastify';
-import { apiService } from '../../../services/api.service';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/app.store';
 import { sum } from 'lodash';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import pollService from '../../../services/api-services/poll.service';
 
 const PollItemStyled = styled.div`
     display: flex;
@@ -130,7 +130,7 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
         // This will need to be made dynamic.
         const creatorAddress = account;
         try {
-            const newComment = await apiService.commentPoll(value, creatorAddress, poll.id);
+            const newComment = await pollService.commentPoll(value, creatorAddress, poll.id);
             setComments([...comments, newComment]);
         } catch (error) {
             console.error(error);

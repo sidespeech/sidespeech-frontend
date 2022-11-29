@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { fixURL, getRoleColor, reduceWalletAddress } from '../../helpers/utilities';
+import { fixURL, getRoleColor } from '../../helpers/utilities';
 import CustomSelect from './CustomSelect';
-import check from '../../assets/check.svg';
-import { first } from 'lodash';
 import Button from './Button';
 import { Side } from '../../models/Side';
-import { apiService } from '../../services/api.service';
 import { Profile } from '../../models/Profile';
 import defaultPP from '../../assets/default-pp.webp';
+import profileService from '../../services/api-services/profile.service';
 
 export default function TableRow({ side, user }: { side: Side; user: Profile }) {
     const [isCreator, setIsCreator] = useState<boolean>(false);
@@ -27,7 +25,7 @@ export default function TableRow({ side, user }: { side: Side; user: Profile }) 
     useEffect(() => {}, []);
 
     const onClickEject = async (user: any) => {
-        await apiService.removeProfile(user['id']);
+        await profileService.removeProfile(user['id']);
         window.location.reload();
     };
 

@@ -8,15 +8,15 @@ import DashboardLeftMenu from "./DashboardLeftMenu";
 import Invitations from "./Invitations";
 import MySides from "./MySides";
 import Search from "./Search";
-import { apiService } from "../../services/api.service";
 import { Collection } from "../../models/interfaces/collection";
 import { Side } from "../../models/Side";
-import { sideAPI } from "../../services/side.service";
 import { toast } from "react-toastify";
 import { getRandomId } from "../../helpers/utilities";
 import { RootState } from "../../redux/store/app.store";
 import { useSelector } from "react-redux";
 import { breakpoints, size } from "../../helpers/breakpoints";
+import collectionService from "../../services/api-services/collection.service";
+import sideService from "../../services/api-services/side.service";
 
 const DashboardPageStyled = styled.div`
   display: flex;
@@ -93,7 +93,7 @@ export default function DashboardPage() {
     async function getAllFeaturedSides() {
         try {
             setFeatureSidesLoading(true);
-            const response = await sideAPI.getAllFeaturedSides(null, sides);
+            const response = await sideService.getAllFeaturedSides(null, sides);
             setFeaturedSides(response);
         } catch (error) {
             console.error(error);
@@ -107,7 +107,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const getCollections = async () => {
-      const response = await apiService.getAllCollections();
+      const response = await collectionService.getAllCollections();
       setAllCollections(response);      
     };
     getCollections();

@@ -5,14 +5,14 @@ import InputText from '../../../ui-components/InputText';
 import TextArea from '../../../ui-components/TextArea';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { apiService } from '../../../../services/api.service';
 import { Side } from '../../../../models/Side';
 import Switch from '../../../ui-components/Switch';
-import { sideAPI } from '../../../../services/side.service';
 import LeavSideAsAdmin from '../../../ui-components/LeavSideAsAdmin';
 import { removeSide } from '../../../../redux/Slices/UserDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
+import profileService from '../../../../services/api-services/profile.service';
+import sideService from '../../../../services/api-services/side.service';
 
 const InformationsStyled = styled.div`
     width: 100%;
@@ -235,7 +235,7 @@ export default function Informations({
                 delete formData['sideImage'];
             }
             if (!currentSide['id']) return;
-            const updatedSide = await sideAPI.updateSide(formData, currentSide['id']);
+            const updatedSide = await sideService.updateSide(formData, currentSide['id']);
             toast.success(formData.name + ' has been updated.', {
                 toastId: 4
             });
@@ -246,7 +246,7 @@ export default function Informations({
     };
 
     const onSubmitLeaveSide = async () => {
-        let result = await apiService.leaveSide(userData['currentProfile']);
+        let result = await profileService.leaveSide(userData['currentProfile']);
         if (result['error']) toast.error(result['message'], { toastId: 3 });
         else {
             toast.success(result['message'], { toastId: 4 });

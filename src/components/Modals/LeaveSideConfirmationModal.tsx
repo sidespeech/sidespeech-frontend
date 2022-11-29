@@ -5,8 +5,7 @@ import { getRandomId } from "../../helpers/utilities";
 import { Side } from "../../models/Side";
 import { removeSide } from "../../redux/Slices/UserDataSlice";
 import { RootState } from "../../redux/store/app.store";
-import { apiService } from "../../services/api.service";
-import { sideAPI } from "../../services/side.service";
+import profileService from "../../services/api-services/profile.service";
 import Button from "../ui-components/Button";
 import LeavSideAsAdmin from "../ui-components/LeavSideAsAdmin";
 import Modal from "../ui-components/Modal";
@@ -38,7 +37,7 @@ export default function LeaveSideConfirmationModal(
 
       setIsLoading(true);
       if (!sideProfile) throw new Error("No Side Profile");
-      await apiService.leaveSide(sideProfile);
+      await profileService.leaveSide(sideProfile);
       dispatch(removeSide(props.side.id));
       toast.success(`We are sorry to see you leave Side ${props.side.name}`, {
         toastId: getRandomId(),

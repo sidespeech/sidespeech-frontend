@@ -15,12 +15,12 @@ import Modal from '../ui-components/Modal';
 // import { Poll } from "../../models/Poll";
 
 // API Service
-import { apiService } from '../../services/api.service';
 import { trigger } from '../../helpers/CustomEvent';
 import { EventType } from '../../constants/EventType';
 import InputText from '../ui-components/InputText';
 import TextArea from '../ui-components/TextArea';
 import { getRandomId } from '../../helpers/utilities';
+import pollService from '../../services/api-services/poll.service';
 
 const CreatePollModalStyled = styled.div`
     display: flex;
@@ -125,7 +125,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
             setIsLoading(true);
             if (!selectedChannel) throw new Error('No channel selected');
             // Grab values from Poll.
-            const createThePoll = await apiService.createPoll(
+            const createThePoll = await pollService.createPoll(
                 selectedChannel?.id,
                 window.ethereum.selectedAddress,
                 proposalTitle,

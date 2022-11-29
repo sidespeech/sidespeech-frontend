@@ -12,7 +12,7 @@ import {
     updateUser
 } from '../../../redux/Slices/UserDataSlice';
 import { toast } from 'react-toastify';
-import { apiService } from '../../../services/api.service';
+
 // import Button from "../../ui-components/Button";
 import UserGeneralInformations from '../../ui-components/UserGeneralInformations';
 import NftsCollections from '../../ui-components/NftsCollections';
@@ -20,6 +20,7 @@ import { Icons, PageTitle } from '../DefaultView';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import Button from '../../ui-components/Button';
 import { useGeneralSettingsContext } from '../../../App';
+import userService from '../../../services/api-services/user.service';
 
 const GeneralSettingsAccountStyled = styled.div`
     width: 100%;
@@ -193,7 +194,7 @@ export default function GeneralSettingsAccount() {
     const onSubmit = async () => {
         if (!user) return;
         try {
-            const updatedUser = await apiService.updateUser(user.id, formData);
+            const updatedUser = await userService.updateUser(user.id, formData);
             dispatch(updateUser(updatedUser));
             toast.success(updatedUser.username + ' has been updated.', {
                 toastId: 4

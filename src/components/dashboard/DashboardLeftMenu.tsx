@@ -6,7 +6,7 @@ import { breakpoints, size } from '../../helpers/breakpoints';
 import { checkUserEligibility } from '../../helpers/utilities';
 import { User } from '../../models/User';
 import { RootState } from '../../redux/store/app.store';
-import { apiService } from '../../services/api.service';
+import invitationService from '../../services/api-services/invitation.service';
 import Button from '../ui-components/Button';
 import { Dot } from '../ui-components/styled-components/shared-styled-components';
 
@@ -94,7 +94,7 @@ const DashboardLeftMenu = ({
     const [invitations, setInvitations] = useState<any[]>([]);
 
     const getInvitations = async (user: User) => {
-        const pendingInvitations = await apiService.getPendingInvitationsByRecipient(user['id']);
+        const pendingInvitations = await invitationService.getPendingInvitationsByRecipient(user['id']);
         let invitations = pendingInvitations.map((item: any) => {
             item['eligibility'] = checkUserEligibility(userData['userCollectionsData'], item['side']);
             return item;

@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../ui-components/Button';
 
 // service
-import { apiService } from '../../../services/api.service';
 
 // Example NFT icon.
 import { RootState } from '../../../redux/store/app.store';
@@ -19,6 +18,7 @@ import { updateUser } from '../../../redux/Slices/UserDataSlice';
 import { toast } from 'react-toastify';
 
 import { useNavigate } from 'react-router-dom';
+import userService from '../../../services/api-services/user.service';
 
 export interface InitialStateUser {
     username?: string;
@@ -113,7 +113,7 @@ export default function PublicNFTs({ updateCurrentStep }: ChildProps) {
         if (!user) return;
 
         try {
-            const updatedUser = await apiService.updateUser(user.id, formData);
+            const updatedUser = await userService.updateUser(user.id, formData);
             dispatch(updateUser(updatedUser));
 
             toast.success('Congratulations you are now onboarded', {

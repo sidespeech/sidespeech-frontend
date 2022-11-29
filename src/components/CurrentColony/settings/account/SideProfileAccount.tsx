@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { apiService } from '../../../../services/api.service';
 import { updateCurrentProfile, UserData } from '../../../../redux/Slices/UserDataSlice';
 import { RootState } from '../../../../redux/store/app.store';
 import styled from 'styled-components';
 import { NFT } from '../../../../models/interfaces/nft';
-import { fixURL } from '../../../../helpers/utilities';
 import { Side } from '../../../../models/Side';
 import { toast } from 'react-toastify';
 import NftsCollections from '../../../ui-components/NftsCollections';
@@ -15,6 +13,7 @@ import { Collection } from '../../../../models/interfaces/collection';
 import _ from 'lodash';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
 import Button from '../../../ui-components/Button';
+import profileService from '../../../../services/api-services/profile.service';
 
 const SideProfileAccountStyled = styled.div`
     // position: relative;
@@ -133,7 +132,7 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
     const onSubmit = async () => {
         if (currentProfile && formData.avatar) {
             try {
-                const profile = await apiService.updateProfile(currentProfile.id, {
+                const profile = await profileService.updateProfile(currentProfile.id, {
                     showNfts: formData.showNfts,
                     profilePicture: formData.avatar
                 });
@@ -150,7 +149,7 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
     const leaveSide = async () => {
         try {
             if (userData['currentProfile']) {
-                const res = await apiService.leaveSide(userData['currentProfile']);
+                const res = await profileService.leaveSide(userData['currentProfile']);
                 if (res['error']) toast.error(res['message']);
                 else {
                     window.location.reload();

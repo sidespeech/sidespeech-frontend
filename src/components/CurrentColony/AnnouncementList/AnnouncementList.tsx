@@ -6,9 +6,8 @@ import _ from 'lodash';
 import { Announcement } from '../../../models/Announcement';
 import AnnouncementItem from './AnnouncementItem';
 import { RootState } from '../../../redux/store/app.store';
-import { apiService } from '../../../services/api.service';
 import MessageInput from '../../ui-components/MessageInput';
-import websocketService from '../../../services/websocket.service';
+import websocketService from '../../../services/websocket-services/websocket.service';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
 import { EventType } from '../../../constants/EventType';
 import { getRandomId } from '../../../helpers/utilities';
@@ -18,6 +17,8 @@ import EmptyList from '../shared-components/EmptyList';
 import { Role } from '../../../models/Profile';
 import styled from 'styled-components';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import channelService from '../../../services/api-services/channel.service';
+import announcementService from '../../../services/api-services/announcement.service';
 
 const AnnouncementListStyled = styled.div`
     display: flex;
@@ -96,7 +97,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
     useEffect(() => {
         async function getChannelAnnouncements() {
             const announcements = selectedChannel
-                ? await apiService.getChannelAnnouncements(selectedChannel.id || '')
+                ? await channelService.getChannelAnnouncements(selectedChannel.id || '')
                 : [];
             setAnnouncements(announcements);
         }
@@ -107,7 +108,11 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
         // This will need to be made dynamic.
         const creatorAddress = account;
         if (!selectedChannel) return;
-        const newAnnouncement = await apiService.createAnnouncement(value, creatorAddress, selectedChannel.id || '');
+        const newAnnouncement = await announcementService.createAnnouncement(
+            value,
+            creatorAddress,
+            selectedChannel.id || ''
+        );
         setAnnouncements([...announcements, newAnnouncement]);
         websocketService.sendAnnouncement(newAnnouncement);
     };

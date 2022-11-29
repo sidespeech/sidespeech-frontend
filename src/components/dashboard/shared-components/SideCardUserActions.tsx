@@ -6,7 +6,6 @@ import { getRandomId } from '../../../helpers/utilities';
 import { Role } from '../../../models/Profile';
 import { Side } from '../../../models/Side';
 import { removeSide } from '../../../redux/Slices/UserDataSlice';
-import { apiService } from '../../../services/api.service';
 import LeaveSideConfirmationModal from '../../Modals/LeaveSideConfirmationModal';
 import Button from '../../ui-components/Button';
 import LeavSideAsAdmin from '../../ui-components/LeavSideAsAdmin';

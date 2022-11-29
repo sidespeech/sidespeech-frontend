@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../../redux/Slices/UserDataSlice';
-import { apiService } from '../../../services/api.service';
 import Button from '../../ui-components/Button';
 import InputText from '../../ui-components/InputText';
 import { toast } from 'react-toastify';
@@ -10,6 +9,7 @@ import styled from 'styled-components';
 import greenCheckIcon from '../../../assets/check-green.svg';
 import dangerIcon from '../../../assets/dangerous.svg';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import userService from '../../../services/api-services/user.service';
 
 const WelcomeStyled = styled.div`
     .wrapper {
@@ -94,17 +94,16 @@ export default function Welcome({ updateCurrentStep, updateChosenUsername }: Chi
 
         const re = new RegExp('^[a-zA-Z0-9]*$');
         const isValid = re.test(username);
-
-        // Setting state of the special characters.
-        isValid ? setSpecialCharacters(true) : setSpecialCharacters(false);
-
         // Setting state of the min characters.
         username.length >= 5 && username.length <= 15 ? setMinMaxCharacters(true) : setMinMaxCharacters(false);
 
         if (minMaxCharacters) {
-            const checkUsername = await apiService.findExistingUsername(username);
+            const checkUsername = await userService.findExistingUsername(username);
             !checkUsername ? setAvailableUsername(true) : setAvailableUsername(false);
         }
+
+        // Setting state of the special characters.
+        isValid ? setSpecialCharacters(true) : setSpecialCharacters(false);
 
         setFormData({ ...formData, username: username });
     };

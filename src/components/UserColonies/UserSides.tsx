@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { EventType } from '../../constants/EventType';
 import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
 import { Announcement } from '../../models/Announcement';
 import { RootState } from '../../redux/store/app.store';
-// import { flattenChannels } from "../../redux/Slices/UserDataSlice";
 import { Side, SideStatus } from '../../models/Side';
-// import { Channel } from "diagnostics_channel";
 import { Dot } from '../ui-components/styled-components/shared-styled-components';
-import { apiService } from '../../services/api.service';
 import { Profile, Role } from '../../models/Profile';
 import { NotificationType } from '../../models/Notification';
 import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
-import { setSettingsOpen } from '../../redux/Slices/AppDatasSlice';
+import notificationService from '../../services/api-services/notification.service';
 
 const UserSidesStyled = styled.div`
     .colony-badge {
@@ -98,7 +95,7 @@ export default function UserSides() {
 
     // Function to get notification from db and assign them to the state variable
     async function getAndSetRoomNotifications(account: string) {
-        const notifications = await apiService.getNotification(account!);
+        const notifications = await notificationService.getNotification(account!);
         let dots_object: any = { ...dots };
 
         const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
