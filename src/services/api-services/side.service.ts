@@ -63,7 +63,6 @@ class SideService extends BaseApiService {
     return sidesList;
   }
 
-  // get all sides by search string
   async getSidesByOwner(
     address: string,
     userCollectionsData?: any,
