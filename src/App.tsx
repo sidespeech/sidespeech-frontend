@@ -67,7 +67,7 @@ function App() {
       if (connectedWallet) {
         console.log("Wallet is connected to: ", connectedWallet);
         setAccount(connectedWallet);
-        getUser(account);
+        getUser(connectedWallet);
       } else {
          console.log("Wallet is not connected");
       }
