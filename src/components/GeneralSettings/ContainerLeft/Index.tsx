@@ -187,7 +187,8 @@ export default function IndexView({
   const logout = () => {
     setIsSettingsMobileMenuOpen?.(false);
     dispatch(disconnect());
-    localStorage.clear();
+    localStorage.removeItem('userAccount');
+    localStorage.removeItem('jwtToken');
     navigate("/");
   };
 

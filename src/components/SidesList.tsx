@@ -1,14 +1,25 @@
-import React, { useEffect, useState } from "react";
+// Cores
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { reduceWalletAddress } from "../helpers/utilities";
-import { Side } from "../models/Side";
-import { RootState } from "../redux/store/app.store";
-import InputText from "./ui-components/InputText";
-import "./SidesList.css";
-import { sideAPI } from "../services/side.service";
 import _ from "lodash";
+
+// Utilities / UI
+import { reduceWalletAddress } from "../helpers/utilities";
 import Button from "./ui-components/Button";
+import InputText from "./ui-components/InputText";
+
+// Models / Modals
+import { Side } from "../models/Side";
 import SideEligibilityModal from "./Modals/SideEligibilityModal";
+
+// Redux
+import { RootState } from "../redux/store/app.store";
+
+// API's
+import { sideAPI } from "../services/side.service";
+
+// Stylings
+import "./SidesList.css";
 
 export default function SidesList() {
   const { account, user, userCollectionsData } = useSelector(

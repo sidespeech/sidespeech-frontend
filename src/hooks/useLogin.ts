@@ -26,6 +26,15 @@ export default function useLogin() {
     providerOptions, // required
   });
 
+  const randomNonce = function(length: number) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for(var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  }
+
   const connectWallet = async () => {
     // Open the connector
     const provider = await web3Modal.connect();
@@ -36,38 +45,47 @@ export default function useLogin() {
     // Grab the accounts.
     const accounts = await library.listAccounts();
 
-    const existingUser = await apiService.findExistingWallet(accounts[0]);
-
-    let signature;
+    let signerAddr = "";
+    let signature = "";
 
     // If there are any accounts connected then send them to the API.
     if (accounts) {
-      // If there isn't an existing user then ensure that he signs the signature.
-      if (existingUser == undefined) {
-        // Get Signer
-        const signer = library.getSigner();
 
-        // Create the signer message
-        const signerMessage = "sidespeech";
+      let nonce;
 
-        // Create the signature signing message.
-        signature = await signer.signMessage(signerMessage);
-
-        // Grab the wallet address
-        const address = await signer.getAddress();
-
-        // Get the signer address.
-        const signerAddr = ethers.utils.verifyMessage(signerMessage, signature);
-
-        // Check if the signer address is the same as the connected address.
-        if (signerAddr !== address) {
-          return false;
-        }
+      if(!localStorage.getItem("nonce")) {
+        nonce = randomNonce(24);
+        localStorage.setItem("nonce", nonce);
+      } else {
+        nonce = localStorage.getItem("nonce");
       }
 
-      // Send the wallet to the api service.
-      const user = await apiService.walletConnection(accounts, signature);
+      // Get Signer
+      const signer = library.getSigner();
 
+      const randomNonceString = nonce;
+      
+      // Grab the wallet address
+      const address = await signer.getAddress();
+
+      // Create the signer message
+      const signerMessage = "Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: "+address+ "  \n \n  Nonce: "+randomNonceString;
+
+      // Create the signature signing message.
+      signature = await signer.signMessage(signerMessage);
+
+      // Get the signer address.
+      signerAddr = ethers.utils.verifyMessage(signerMessage, signature);
+
+      // Check if the signer address is the same as the connected address.
+      if (signerAddr !== address) {
+        return false;
+      }
+
+      const existingUser = await apiService.findExistingWallet(signature, signerMessage, signerAddr);
+
+      // Send the wallet to the api service.
+      const user = await apiService.walletConnection(accounts, signerMessage, signature);
 
       // Dispatch the account that is connected to the redux slice.
       dispatch(connect({ account: accounts[0], user: user }));
@@ -83,8 +101,8 @@ export default function useLogin() {
     provider.on("disconnect", handleDisconnect);
   };
   const handleDisconnect = async () => {
-    // Clear all the local storage.
-    localStorage.clear();
+    localStorage.removeItem('userAccount');
+    localStorage.removeItem('jwtToken');
 
     // Reload the page to ensure logged out.
     window.location.reload();

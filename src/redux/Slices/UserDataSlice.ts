@@ -168,6 +168,12 @@ export const userDataSlice = createSlice({
     },
     updateUser: (state: UserData, action: PayloadAction<any>) => {
       state.user = { ...state.user, ...action.payload };
+      state.sides = action.payload.profiles
+        ? action.payload.profiles.map((p: Profile) => {
+            p.side["profiles"] = [p];
+            return p.side;
+          })
+        : [];
     },
     updateProfiles: (state: UserData, action: PayloadAction<any>) => {
       if (state.user) {
@@ -184,13 +190,20 @@ export const userDataSlice = createSlice({
         (profile) => profile.side.id !== action.payload
       );
     },
-    setCurrentProfile: (state: UserData, action: PayloadAction<Side>) => {
-      const userprofiles = state.user?.profiles;
-      if (state.user && userprofiles) {
-        const profile = userprofiles.find((p) => {
-          return p.side.id === action.payload.id;
-        });
-        state.currentProfile = profile;
+    setCurrentProfile: (
+      state: UserData,
+      action: PayloadAction<Side | null>
+    ) => {
+      if (action.payload) {
+        const userprofiles = state.user?.profiles;
+        if (state.user && userprofiles) {
+          const profile = userprofiles.find((p) => {
+            return p.side.id === action.payload?.id;
+          });
+          state.currentProfile = profile;
+        }
+      } else {
+        state.currentProfile = undefined;
       }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import AnnouncementList from "./AnnouncementList/AnnouncementList";
 import MiddleContainerHeader from "../ui-components/MiddleContainerHeader";
 import CurrentSideLeft from "./ContainerLeft/CurrentSideLeft";
 import {
@@ -9,26 +8,18 @@ import {
   setSelectedChannel,
 } from "../../redux/Slices/AppDatasSlice";
 import { RootState } from "../../redux/store/app.store";
-import Button from "../ui-components/Button";
 import CreatePollModal from "../Modals/CreatePollModal";
-// import InputText from "../ui-components/InputText";
 import _ from "lodash";
-// import { apiService } from "../../services/api.service";
-import ChatComponent from "./ChatComponent/ChatComponent";
 import { Announcement } from "../../models/Announcement";
-import { ChannelType } from "../../models/Channel";
-import { setCurrentProfile, connect } from "../../redux/Slices/UserDataSlice";
-// import websocketService from "../../services/websocket.service";
+import { setCurrentProfile } from "../../redux/Slices/UserDataSlice";
 import { sideAPI } from "../../services/side.service";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { Poll } from "../../models/Poll";
 
 import { Outlet, useOutletContext } from "react-router-dom";
-// import CurrentSideMiddle from "./CurrentSideMiddle/CurrentSideMiddle";
 import { SideStatus } from "../../models/Side";
 import { toast } from "react-toastify";
-// import { checkUserEligibility } from "../../helpers/utilities";
 import SideEligibilityModal from "../Modals/SideEligibilityModal";
 import { breakpoints, size } from "../../helpers/breakpoints";
 
@@ -44,6 +35,21 @@ const CurrentSideStyled = styled.div`
     width: calc(100vw - 70px);
   }`
   )}
+  .left-side-desktop {
+    display: none;
+    ${breakpoints(size.lg, `{
+      display: block;
+      width: 100%;
+      max-width: 250px;
+      flex-shrink: 0;
+    }`)}
+  }
+  .left-side-mobile {
+    width: 100%;
+    ${breakpoints(size.lg, `{
+      display: none;
+    }`)}
+  }
   .current-side-middle-container {
     display: flex;
     flex-direction: column;
@@ -71,7 +77,8 @@ const CurrentSideStyled = styled.div`
     )}
   }
   .header-desktop {
-    display: none;
+    display: flex;
+    padding: 1rem;
     ${breakpoints(
       size.lg,
       `{
@@ -121,17 +128,19 @@ const CurrentSideStyled = styled.div`
 `;
 
 type ContextMiddleSide = {
-  selectedRoom: any;
-  selectedChannel: any;
   announcementId: any;
-  setThread: any;
+  isMobileMenuOpen: boolean;
+  selectedChannel: any;
+  selectedRoom: any;
+  setCreatePollModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setThread: React.Dispatch<React.SetStateAction<Announcement | Poll | null>>;
   thread: any;
-  setCreatePollModal: any;
 };
 
 export default function CurrentSide() {
   const { announcementId, id } = useParams();
-  const { currentSide, selectedChannel } = useSelector(
+  const { currentSide, selectedChannel, settingsOpen } = useSelector(
     (state: RootState) => state.appDatas
   );
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
@@ -148,6 +157,7 @@ export default function CurrentSide() {
   const [thread, setThread] = useState<Announcement | Poll | null>(null);
   const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
   const [sideEligibility, setSideEligibility] = useState<any>(null);
+  const [isMobileSettingsMenuOpen, setIsMobileSettingsMenuOpen] = useState<boolean>(true);
 
   useEffect(() => {
     if (!announcementId) setThread(null);
@@ -170,10 +180,16 @@ export default function CurrentSide() {
   }, [announcements]);
 
   useEffect(() => {
+    return () => {
+      dispatch(setCurrentColony(null));
+      dispatch(setCurrentProfile(null));
+    };
+  }, []);
+
+  useEffect(() => {
     async function getSide() {
       try {
         if (id && user) {
-          console.log(id, user);
           // Get Side data
           const res = await sideAPI.getSideByName(id);
 
@@ -223,29 +239,37 @@ export default function CurrentSide() {
     <CurrentSideStyled>
       {currentSide?.status === SideStatus.active ? (
         <>
-          <CurrentSideLeft
-            channel={selectedChannel}
-            room={selectedRoom}
-            setThread={setThread}
-            thread={thread}
-          />
+          {!settingsOpen && (
+            <div className="left-side-desktop">
+              <CurrentSideLeft />
+            </div>
+          )}
 
           <div className="current-side-middle-container">
             <MiddleContainerHeader
               channel={selectedChannel}
               className="header-desktop"
+              isMobileSettingsMenuOpen={isMobileSettingsMenuOpen}
               room={selectedRoom}
+              setIsMobileSettingsMenuOpen={setIsMobileSettingsMenuOpen}
               setThread={setThread}
               thread={thread}
             />
+            {!settingsOpen && (
+              <div className="left-side-mobile">
+                <CurrentSideLeft />
+              </div>
+            )}
             <Outlet
               context={{
-                selectedRoom,
-                selectedChannel,
                 announcementId,
+                isMobileMenuOpen: isMobileSettingsMenuOpen,
+                selectedChannel,
+                selectedRoom,
+                setCreatePollModal,
+                setIsMobileMenuOpen: setIsMobileSettingsMenuOpen,
                 setThread,
                 thread,
-                setCreatePollModal,
               }}
             />
           </div>

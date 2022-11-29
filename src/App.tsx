@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useOutletContext } from "react-router-dom";
+import { Link, useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import "./App.css";
@@ -9,8 +9,6 @@ import { Outlet } from "react-router-dom";
 
 // Components
 import GeneralSettingsMenu from "./components/GeneralSettings/ContainerLeft/Index";
-// import UserColonies from "./components/UserColonies/UserSides";
-// import SidesList from "./components/SidesList";
 
 // Images
 
@@ -30,18 +28,21 @@ export interface GeneralSettingsAccountContext {
   setIsSettingsMobileMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const accountInitialState = localStorage.getItem("userAccount") && localStorage.getItem("jwtToken") && window.ethereum.selectedAddress ? window.ethereum.selectedAddress : null;
+
 function App() {
   const [isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpen] = useState<boolean>(false);
+  const [account, setAccount] = useState<string>(accountInitialState)
+  const [accountStatus, setAccountStatus] = useState<boolean>(false);
   const userData: any = useSelector((state: RootState) => state.user);
+  
   const location = useLocation();
   const dispatch = useDispatch();
 
-  let onBoarding = false;
-  let generalSettings = false;
-  let content;
+  const onBoarding = location.pathname.indexOf("/onboarding") > -1;
+  let generalSettings = location.pathname.indexOf("/general-settings") > -1;
 
   useEffect(() => {
-    let account = localStorage.getItem("userAccount") || null;
 
     websocketService.connectToWebSocket();
     
@@ -50,36 +51,52 @@ function App() {
         const user = await apiService.getUserByAddress(account);
         dispatch(connect({ account: account, user: user }));
         dispatch(fetchUserDatas(account));
+        setAccountStatus(true);
       } catch (error) {
        console.error(error);
        toast.error('Ooops! Something went wrong fetching your account data', { toastId: getRandomId() });
+       setAccountStatus(false);
       }
     }
-    if (!!window.ethereum?.selectedAddress) {
-      account = window.ethereum.selectedAddress;
-    }
 
+    if (!!window.ethereum?.selectedAddress) {
+      setAccount(window.ethereum.selectedAddress);
+    }
+    
     if (account) {
+      console.log('has connected account');
       getUser(account);
     }
+
+    // This is needed because MetaMask doesn't trigger a callback if somebody manually disconnects.
+    const interval = setInterval(() => {
+
+      // Need to check if they visit any route and they aren't connected it sends then back to the login screen.
+      if(window.location.pathname !== '/' && !window.ethereum.selectedAddress) {
+        window.location.href = '/';
+        localStorage.removeItem('userAccount');
+        localStorage.removeItem('jwtToken');
+      } 
+      
+    }, 2500);
+
     return () => {
+      clearInterval(interval)
       websocketService.deconnectWebsocket();
     };
   }, []);
-
-  if (location.pathname.indexOf("/onboarding") > -1) {
-    onBoarding = true;
-  }
-  if (location.pathname.indexOf("/general-settings") > -1) {
-    generalSettings = true;
-  }
   
-  if (onBoarding) {
-    content =   <div className='w-100'>
-                  <Outlet />
-                </div>;
-  } else if (generalSettings) {
-    content = <div style={{ display: "flex", width: "100%"}}>
+  return (
+    <div className="main-container relative">
+      {onBoarding ? (
+          <div 
+            className={`${onBoarding ? "onboarding" : ""} middle-container f-column align-center `}
+            style={{width: "100%"}}
+            >
+            <Outlet></Outlet>
+          </div>
+        ) : generalSettings ? (
+              <div style={{ display: "flex", width: "100%"}}>
                 <GeneralSettingsMenu 
                   isSettingsMobileMenuOpen={isSettingsMobileMenuOpen} 
                   setIsSettingsMobileMenuOpen={setIsSettingsMobileMenuOpen}
@@ -94,23 +111,23 @@ function App() {
                 <div className="mobile-bottom-menu">
                   <MobileMenu />
                 </div>
-              </div>;
-  } else {
-    content = <div className="containers-wrapper">
+              </div>
+            ) : (
+              <div className="containers-wrapper">
                 <div className="left-container">
                   <DesktopMenu userData={userData} />
                 </div>
                 <div className="middle-container">
-                  <Outlet />
+                  <Outlet></Outlet>
                 </div>
-
                 <div className="mobile-bottom-menu">
                   <MobileMenu />
                 </div>
-              </div>;
-  }
-
-  return <div className="main-container relative">{content}</div>;
+              </div>
+            )
+      }
+    </div>
+  );
 }
 
 export function useGeneralSettingsContext() {

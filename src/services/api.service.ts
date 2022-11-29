@@ -1,8 +1,10 @@
-import { Vote } from "./../models/Vote";
+// Cores
 import superagent from "superagent";
-
-import { InitialStateSide } from "../components/NewSide/NewSide";
+import _ from "lodash";
 import { BASE_URL } from "../constants/constants";
+
+// Models / Modals
+import { Vote } from "./../models/Vote";
 import { Announcement } from "../models/Announcement";
 import { Channel, ChannelType } from "../models/Channel";
 import { Comment } from "../models/Comment";
@@ -15,9 +17,11 @@ import { Notification } from "../models/Notification";
 import { Poll } from "../models/Poll";
 import { Invitation } from "../models/Invitation";
 import { Collection } from "../models/interfaces/collection";
-import _ from "lodash";
 import { Metadata } from "../models/Metadata";
+
+// Components
 import { InitialStateUser } from "../components/GeneralSettings/Account/GeneralSettingsAccount";
+
 
 // Create an API Service class
 
@@ -27,14 +31,16 @@ const post = (url: string) => {
   return superagent.post(url).auth(token, { type: "bearer" });
 };
 class apiService {
+
   // Method that will manage sending the wallet connection.
-  static async walletConnection(accounts: any, signature: any): Promise<User> {
+  static async walletConnection(accounts: any, signerMessage: any, signature: any): Promise<User> {
     const retrieveNFTs = "";
     const createUser = await superagent
       .post(`${BASE_URL}/user`)
       .send({
-        accounts: accounts[0],
+        accounts: accounts,
         publicNfts: retrieveNFTs,
+        signerMessage: signerMessage,
         signature: signature,
       })
       .set("accept", "json");
@@ -42,11 +48,15 @@ class apiService {
     return new User(createUser.body);
   }
 
-  static async findExistingWallet(accounts: string) {
-    const checkUser = await superagent.get(
-      `${BASE_URL}/user/existing/${accounts}`
-    );
-
+  // Attempt to find an existing wallet with the wallet address and the signature of that wallet.
+  static async findExistingWallet( userWallet: string, signerMessage: string, signature: string ) {
+    const checkUser = await superagent
+    .post(`${BASE_URL}/user/existing`)
+    .send({
+      userWallet: userWallet,
+      signerMessage: signerMessage,
+      signature: signature
+    })
     return checkUser.body;
   }
 

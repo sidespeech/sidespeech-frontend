@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import MembersList from "./members-list/members-list"
-import Channels from "./channels/ChannelsTab"
+import MembersList from "./members-list/members-list";
+import Channels from "./channels/ChannelsTab";
 import Invitation from "./invitation/InvitationTab";
 import Informations from "./informations/Information";
 import SideProfileAccount from "./account/SideProfileAccount";
-// import Eligibility from "./eligibility/eligibility";
 import Requests from "./requests/requests";
 import { RootState } from "../../../redux/store/app.store";
 import ContainerLeft from "../../ui-components/ContainerLeft";
 import TabItems from "../../ui-components/TabItems";
 import { apiService } from "../../../services/api.service";
-import { setCurrentColony, setSelectedChannel } from "../../../redux/Slices/AppDatasSlice";
+import {
+  setCurrentColony,
+  setSelectedChannel,
+  setSettingsOpen,
+} from "../../../redux/Slices/AppDatasSlice";
 import { Dot } from "../../ui-components/styled-components/shared-styled-components";
 import { Role } from "../../../models/Profile";
 import { State, Type } from "../../../models/Invitation";
@@ -20,6 +23,7 @@ import { sideAPI } from "../../../services/side.service";
 import styled from 'styled-components';
 import InputText from "../../ui-components/InputText";
 import { breakpoints, size } from "../../../helpers/breakpoints";
+import { useMiddleSide } from "../CurrentSide";
 
 const SettingsStyled = styled.div`
   width: 100%;    
@@ -29,101 +33,6 @@ const SettingsStyled = styled.div`
     width: 35px;
   }
 
-  .desktop-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 2rem;
-    width: inherit;
-    & .menu-btn {
-      background-color: transparent;
-      border: none;
-      outline: none;
-      box-shadow: none;
-      ${breakpoints(size.lg, `{
-        display: none;
-      }`)}
-      &.arrow-icon svg {
-        transform: rotate(180deg);
-      }
-    }
-    & .side-image {
-      width: 36px;
-      height: 36px;
-      border-radius: 36px;
-      background-color: var(--bg-secondary-dark);
-      ${breakpoints(size.lg, `{
-        display: none;
-      }`)}
-      & > img {
-        width: 100%;
-        object-fit: cover;
-      }
-    }
-    & .page-title {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      & .settings-icon {
-        display: none;
-        ${breakpoints(size.lg, `{
-          display: block;
-        }`)}
-      }
-      & h2 {
-        display: flex;
-        align-items: center;
-        font-weight: 700 !important;
-        gap: 1rem;
-        & span {
-          display: none;
-          position: relative;
-          padding-left: 1rem;
-          line-height: 1;
-          font-weight: 400;
-          ${breakpoints(size.lg, `{
-            display: inline;
-          }`)}
-          &::before  {
-            position: absolute;
-            content: '';
-            top: 0;
-            left: 0;
-            border-left: 3px solid  var(--text-primary-light);
-            height: 100%;
-          }
-        }
-      }
-    }
-    
-    & .input-avatar-wrapper {
-      display: none; 
-      align-items: center;
-      gap: 1rem;
-      min-width: 18% !important;
-      ${breakpoints(size.lg, `{
-        display: flex;
-      }`)}
-    }    
-  }
-
-  .profileInfo {
-    & img {
-      border-radius: 50%;
-      -webkit-border-radius: 50%;
-      -moz-border-radius: 50%;
-      -ms-border-radius: 50%;
-      -o-border-radius: 50%;
-    }
-    & p {
-        padding-left: 15px;
-        padding-right: 12px;
-    }
-  
-    & button {
-        padding: 4px 8px;
-    }
-  }
   .sidebar {
     position: absolute;
     width: 100%;
@@ -244,31 +153,30 @@ const initialStateTabs = {
       items: [
         { active: false, Icon: Icons['account'], label: "Account" },
         // { active: false, icon: "fa-solid fa-circle-check", label: "Eligibility" }
-      ]
-    }
-  ]
-
+      ],
+    },
+  ],
 };
 
-export default function Settings(
-) {
-
+export default function Settings() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { currentSide } = useSelector((state: RootState) => state.appDatas);
+  const { currentSide, settingsOpen } = useSelector(
+    (state: RootState) => state.appDatas
+  );
   const userData = useSelector((state: RootState) => state.user);
 
   const [tabs, setTabs] = useState<any>(initialStateTabs);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(true);
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useMiddleSide();
 
-  // Requests notifications : 
+  // Requests notifications :
   const [requests, setRequests] = useState<any[]>([]);
 
   const handleTabs = (tabName: any) => {
     async function getSide() {
       if (currentSide) {
-        const res = await sideAPI.getSideById(currentSide['id']);
+        const res = await sideAPI.getSideById(currentSide["id"]);
         dispatch(setCurrentColony(res));
         dispatch(
           setSelectedChannel(
@@ -279,10 +187,10 @@ export default function Settings(
     }
     getSide();
 
-    let currentTabState = { ...tabs }
-    for (const submenu of tabs['menu']) {
-      for (const data of submenu['items']) {
-        data['active'] = (data['label'] === tabName) ? true : false
+    let currentTabState = { ...tabs };
+    for (const submenu of tabs["menu"]) {
+      for (const data of submenu["items"]) {
+        data["active"] = data["label"] === tabName ? true : false;
       }
     }
     setTabs(currentTabState);
@@ -292,30 +200,47 @@ export default function Settings(
     if (!currentSide) {
       navigate(`/`);
     } else {
-      (userData && userData['currentProfile'] && userData['currentProfile']['role'] === Role.Admin) ?
-        handleTabs('Informations') : handleTabs('Account');
+      !settingsOpen && dispatch(setSettingsOpen(true));
+      userData &&
+      userData["currentProfile"] &&
+      userData["currentProfile"]["role"] === Role.Admin
+        ? handleTabs("Informations")
+        : handleTabs("Account");
     }
+    return () => {
+      dispatch(setSettingsOpen(false));
+    };
   }, []);
-
 
   // Getting request for display notification :
   const getRequestsUsers = async (requestsOrdered: any[]) => {
-    let ids = requestsOrdered.map((invitation: any) => invitation['senderId']);
-    const users = (await apiService.getUsersByIds(ids)).reduce((prev: any, current: any, index: number) => {
+    let ids = requestsOrdered.map((invitation: any) => invitation["senderId"]);
+    const users = (await apiService.getUsersByIds(ids)).reduce(
+      (prev: any, current: any, index: number) => {
+        let obj = {
+          accounts: "",
+          created_at: "",
+          image: "",
+          id: "",
+          user_id: "",
+        };
+        const current_request = requestsOrdered.find(
+          (item) => item["senderId"] === current["id"]
+        );
 
-      let obj = { accounts: '', created_at: '', image: '', id: '', user_id: '' };
-      const current_request = requestsOrdered.find(item => item['senderId'] === current['id']);
+        obj["accounts"] = current["accounts"];
+        obj["created_at"] = current_request["created_at"];
+        obj["id"] = current_request["id"];
+        obj["user_id"] = current["id"];
+        obj["image"] =
+          "https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80";
 
-      obj['accounts'] = current['accounts'];
-      obj['created_at'] = current_request['created_at'];
-      obj['id'] = current_request['id'];
-      obj['user_id'] = current['id'];
-      obj['image'] = 'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80';
+        prev.push(obj);
 
-      prev.push(obj);
-
-      return prev
-    }, []);
+        return prev;
+      },
+      []
+    );
     setRequests(users);
   };
 
@@ -324,83 +249,29 @@ export default function Settings(
   }, [currentSide, userData]);
 
   const updateRequestNotifications = async () => {
-    if (currentSide && userData && userData['user']) {
-      let requestsOrdered = currentSide['invitations'].filter((invitation: any) => invitation['type'] === Type.Request && invitation['state'] === State.Pending);
+    if (currentSide && userData && userData["user"]) {
+      let requestsOrdered = currentSide["invitations"].filter(
+        (invitation: any) =>
+          invitation["type"] === Type.Request &&
+          invitation["state"] === State.Pending
+      );
       getRequestsUsers(requestsOrdered);
     }
-  }
+  };
 
   return (
     <SettingsStyled>
-      {currentSide ? (
-        <header className="desktop-header">
-          <div className="page-title">
-            <svg className="settings-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7.54134 15.7923V11.209H8.45801V13.0423H15.7913V13.959H8.45801V15.7923H7.54134ZM0.208008 13.959V13.0423H4.79134V13.959H0.208008ZM3.87467 10.2923V8.45898H0.208008V7.54232H3.87467V5.70898H4.79134V10.2923H3.87467ZM7.54134 8.45898V7.54232H15.7913V8.45898H7.54134ZM11.208 4.79232V0.208984H12.1247V2.04232H15.7913V2.95898H12.1247V4.79232H11.208ZM0.208008 2.95898V2.04232H8.45801V2.95898H0.208008Z" fill="#B4C1D2"/>
-            </svg>
-            {!isMobileMenuOpen && (
-              <button onClick={() => setIsMobileMenuOpen(true)} className="menu-btn arrow-icon">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M-2.29485e-07 5.25L9.13125 5.25L4.93125 1.05L6 -2.62268e-07L12 6L6 12L4.93125 10.95L9.13125 6.75L-2.95052e-07 6.75L-2.29485e-07 5.25Z"
-                    fill="white"
-                    />
-                </svg>
-              </button>
-            )}
-            <div className="side-image">
-              <img src={currentSide.sideImage} alt="" />
-            </div>
-            <h2 className="navTitle"> {currentSide.name} 
-              <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6.5 0.625C6.97396 0.625 7.39714 0.74349 7.76953 0.980469C8.14193 1.21745 8.43815 1.5306 8.6582 1.91992C9.08138 1.78451 9.50456 1.76758 9.92773 1.86914C10.3509 1.9707 10.7402 2.19076 11.0957 2.5293C11.4173 2.86784 11.6289 3.2487 11.7305 3.67188C11.832 4.11198 11.8236 4.54362 11.7051 4.9668C12.0944 5.18685 12.4076 5.48307 12.6445 5.85547C12.8815 6.22786 13 6.65104 13 7.125C13 7.59896 12.8815 8.02214 12.6445 8.39453C12.4076 8.76693 12.0944 9.06315 11.7051 9.2832C11.959 10.1634 11.7559 10.9759 11.0957 11.7207C10.7402 12.0423 10.3509 12.2539 9.92773 12.3555C9.50456 12.457 9.08138 12.4486 8.6582 12.3301C8.43815 12.7194 8.14193 13.0326 7.76953 13.2695C7.39714 13.5065 6.97396 13.625 6.5 13.625C6.02604 13.625 5.60286 13.5065 5.23047 13.2695C4.85807 13.0326 4.56185 12.7194 4.3418 12.3301C3.91862 12.4486 3.48698 12.457 3.04688 12.3555C2.6237 12.2708 2.24284 12.0592 1.9043 11.7207C1.24414 10.9759 1.04102 10.1634 1.29492 9.2832C0.905599 9.06315 0.592448 8.76693 0.355469 8.39453C0.11849 8.02214 0 7.59896 0 7.125C0 6.65104 0.11849 6.22786 0.355469 5.85547C0.592448 5.48307 0.905599 5.18685 1.29492 4.9668C1.15951 4.54362 1.14258 4.11198 1.24414 3.67188C1.3457 3.2487 1.56576 2.86784 1.9043 2.5293C2.24284 2.19076 2.6237 1.9707 3.04688 1.86914C3.48698 1.78451 3.91862 1.80143 4.3418 1.91992C4.56185 1.5306 4.85807 1.21745 5.23047 0.980469C5.60286 0.74349 6.02604 0.625 6.5 0.625ZM8.9375 6.3125C9.19141 6.04167 9.19141 5.76237 8.9375 5.47461C8.66667 5.23763 8.38737 5.23763 8.09961 5.47461L5.6875 7.88672L4.67188 6.89648C4.40104 6.65951 4.12174 6.65951 3.83398 6.89648C3.59701 7.18424 3.59701 7.46354 3.83398 7.73438L5.25586 9.15625C5.54362 9.41016 5.82292 9.41016 6.09375 9.15625L8.9375 6.3125Z" fill="#705CE9"/>
-              </svg>
-              <span>Preferences</span>
-            </h2>
-          </div>
-
-          {isMobileMenuOpen && (
-            <button onClick={() => navigate(-1)} className="menu-btn close-icon">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1.8668 13.096L0.904297 12.1335L6.03763 7.00013L0.904297 1.8668L1.8668 0.904297L7.00013 6.03763L12.1335 0.904297L13.096 1.8668L7.96263 7.00013L13.096 12.1335L12.1335 13.096L7.00013 7.96263L1.8668 13.096Z" fill="#B4C1D2"/>
-              </svg>
-            </button>
-          )}
-
-          <div className="input-avatar-wrapper">
-            <div className="input-wrapper">
-              <InputText 
-                bgColor="rgba(0, 0, 0, 0.2)"
-                color="var(--white)"
-                glass
-                height={43}
-                iconColor="#B4C1D2"
-                iconRightPos={{right: 16, top: 12}}
-                onChange={(ev: any) => console.log(ev.target.value)}
-                placeholder='Search'
-                placeholderColor="var(--white)"
-                radius="100px"
-                value={''}
-              />
-            </div>
-            <img
-              className="avatar"
-              src="https://www.w3schools.com/howto/img_avatar2.png"
-              alt="Avatar"
-            />
-          </div>
-        </header>
-      ) : null}
-
       {currentSide ? (
         <div className="flex align-start w-100">
           <div className={`sidebar ${!isMobileMenuOpen ? 'closed' : ''}`}>
             {tabs["menu"].map((submenu: any, index: number) => {
               return (
-                // 
-                (submenu['admin'] === true) ?
-                  ((userData && userData['currentProfile'] && userData['currentProfile']['role'] === 0) ?
-                    ( <div key={index} className="mt-2">
+                //
+                submenu["admin"] === true ? (
+                  userData &&
+                  userData["currentProfile"] &&
+                  userData["currentProfile"]["role"] === 0 ? (
+                    <div key={index} className="mt-2">
                       <label className="pl-4 sidebar-title">
                         {submenu["title"]}
                       </label>
@@ -469,16 +340,38 @@ export default function Settings(
             {tabs["menu"].map((submenu: any, index: number) => {
               return (
                 <div key={index}>
-                  {submenu['items'].map((subtitle: any, index: number) => {
-                    return (
-                      (subtitle['label'] == 'Informations' && subtitle['active']) ? <Informations currentSide={currentSide} userData={userData} /> :
-                        (subtitle['label'] == 'Members' && subtitle['active']) ? <MembersList currentSide={currentSide} /> :
-                          (subtitle['label'] == 'Requests' && subtitle['active']) ? <Requests currentSide={currentSide} userData={userData} updateRequestNotifications={updateRequestNotifications}/> :
-                            (subtitle['label'] == 'Channels' && subtitle['active']) ? <Channels currentSide={currentSide} /> :
-                              (subtitle['label'] == 'Invitation' && subtitle['active']) ? <Invitation currentSide={currentSide} userData={userData} /> :
-                                (subtitle['label'] == 'Account' && subtitle['active']) ? <SideProfileAccount currentSide={currentSide} userData={userData} /> : null
-                                  // (subtitle['label'] == 'Eligibility' && subtitle['active']) ? <Eligibility currentSide={currentSide} /> : null
-                    );
+                  {submenu["items"].map((subtitle: any, index: number) => {
+                    return subtitle["label"] == "Informations" &&
+                      subtitle["active"] ? (
+                      <Informations
+                        currentSide={currentSide}
+                        userData={userData}
+                      />
+                    ) : subtitle["label"] == "Members" && subtitle["active"] ? (
+                      <MembersList currentSide={currentSide} />
+                    ) : subtitle["label"] == "Requests" &&
+                      subtitle["active"] ? (
+                      <Requests
+                        currentSide={currentSide}
+                        userData={userData}
+                        updateRequestNotifications={updateRequestNotifications}
+                      />
+                    ) : subtitle["label"] == "Channels" &&
+                      subtitle["active"] ? (
+                      <Channels currentSide={currentSide} />
+                    ) : subtitle["label"] == "Invitation" &&
+                      subtitle["active"] ? (
+                      <Invitation
+                        currentSide={currentSide}
+                        userData={userData}
+                      />
+                    ) : subtitle["label"] == "Account" && subtitle["active"] ? (
+                      <SideProfileAccount
+                        currentSide={currentSide}
+                        userData={userData}
+                      />
+                    ) : null;
+                    // (subtitle['label'] == 'Eligibility' && subtitle['active']) ? <Eligibility currentSide={currentSide} /> : null
                   })}
                 </div>
               );
