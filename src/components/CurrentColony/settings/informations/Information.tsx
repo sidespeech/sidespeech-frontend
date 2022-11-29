@@ -203,8 +203,8 @@ export default function Informations({
 
   const onChangeSideImage = (event: any) => {
     const file = event.target.files[0];
-    if (file.size > 500000) {
-      toast.error("The image size has to be smaller than 500ko.");
+    if (file.size > 5245329) {
+      toast.error("The image size has to be smaller than 5mb");
       return;
     }
     setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
@@ -372,7 +372,7 @@ export default function Informations({
         )}
         {formError?.name.length && (
           <div className="mt-3 text-red">
-            Side name has to be between 3 and 50 character.
+            Side name has to be between 4 and 50 character.
           </div>
         )}
       </div>
