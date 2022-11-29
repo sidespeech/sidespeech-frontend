@@ -59,29 +59,22 @@ function App() {
       }
     }
 
-    if (!!window.ethereum?.selectedAddress) {
-      setAccount(window.ethereum.selectedAddress);
-    }
-    
-    if (account) {
-      console.log('has connected account');
-      getUser(account);
-    }
+    // This is needed because the metamask extension connection isn't picked up on just normal useEffect after refresh.
+    window.onload = (event) => {
 
-    // This is needed because MetaMask doesn't trigger a callback if somebody manually disconnects.
-    const interval = setInterval(() => {
+      const connectedWallet = window.ethereum.selectedAddress ? window.ethereum.selectedAddress : null;
 
-      // Need to check if they visit any route and they aren't connected it sends then back to the login screen.
-      if(window.location.pathname !== '/' && !window.ethereum.selectedAddress) {
-        window.location.href = '/';
-        localStorage.removeItem('userAccount');
-        localStorage.removeItem('jwtToken');
-      } 
-      
-    }, 2500);
+      if (connectedWallet) {
+        console.log("Wallet is connected to: ", connectedWallet);
+        setAccount(connectedWallet);
+        getUser(account);
+      } else {
+         console.log("Wallet is not connected");
+      }
+
+    };
 
     return () => {
-      clearInterval(interval)
       websocketService.deconnectWebsocket();
     };
   }, []);
