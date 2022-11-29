@@ -22,7 +22,7 @@ const PollItemStyled = styled.div`
     width: 100%;
     height: fit-content;
     gap: 0.5rem;
-    color: var(--text-secondary);
+    color: var(--text);
     padding: 1rem;
     ${breakpoints(
         size.lg,
@@ -31,7 +31,7 @@ const PollItemStyled = styled.div`
           }`
     )}
     &.border-top {
-        border-top: 1px solid var(--bg-secondary-light);
+        border-top: 1px solid var(--disable);
     }
     .poll-item_container {
         width: 350px;
@@ -92,7 +92,7 @@ const PollItemStyled = styled.div`
         width: 14px;
         height: 14px;
         border-radius: 14px;
-        border: 1px solid var(--text-secondary);
+        border: 1px solid var(--text);
     }
     .poll-override article ._3gEzx ._is6ww p {
         padding: 0;
@@ -141,9 +141,9 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
     };
 
     const customTheme = {
-        textColor: 'var(--text-secondary)',
+        textColor: 'var(--text)',
         mainColor: 'var(--primary)',
-        backgroundColor: 'var(--bg-secondary-light)',
+        backgroundColor: 'var(--disable)',
         alignment: 'center'
     };
 
@@ -177,7 +177,7 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
                         fontSize={14}
                         address={poll.creator}
                     />
-                    <div className="size-11 fw-500 open-sans" style={{ color: 'var(--text-secondary-dark)' }}>
+                    <div className="size-11 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
                         {formatDistance(new Date(Number.parseInt(poll.createdAt || '2022-09-11')), new Date(), {
                             addSuffix: true
                         })}
@@ -202,7 +202,7 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
                         )}
                     </div>
 
-                    <p className="size-13 fw-500 open-sans" style={{ color: 'var(--text-secondary-dark)' }}>
+                    <p className="size-13 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
                         {participants} participants
                     </p>
                 </div>

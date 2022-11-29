@@ -24,16 +24,16 @@ const AnnouncementItemStyled = styled.div`
     flex-direction: column;
     width: 100%;
     height: fit-content;
-    padding: 0 1rem;
+    padding: 1rem 1rem 0 1rem;
     gap: 0.5rem;
-    color: var(--text-secondary);
+    color: var(--text);
     &.thread {
         max-height: 100%;
         overflow-y: scroll;
         padding-bottom: 4rem;
     }
     &.border-bottom {
-        border-bottom: 1px solid var(--bg-secondary-light);
+        border-bottom: 1px solid var(--disable);
     }
 `;
 
@@ -109,7 +109,7 @@ export default function AnnouncementItem({
                     avatar={data.url}
                     username={data.profile?.user.username}
                 />
-                <div className="size-11 fw-500 open-sans" style={{ color: 'var(--text-secondary-dark)' }}>
+                <div className="size-11 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
                     {formatDistance(new Date(Number.parseInt(announcement.timestamp)), new Date(), {
                         addSuffix: true
                     })}

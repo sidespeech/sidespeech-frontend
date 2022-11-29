@@ -19,16 +19,16 @@ const PaginationControlsStyled = styled.div<PaginationControlsStyledProps>`
         & svg {
             margin: 0 1rem;
             & path {
-                fill: var(--text-secondary);
+                fill: var(--text);
             }
         }
         &:disabled {
             pointer-events: none;
         }
         &.prev-next-btn:disabled {
-            color: var(--text-secondary-dark);
+            color: var(--inactive);
             & svg path {
-                fill: var(--text-secondary-dark);
+                fill: var(--inactive);
             }
         }
         &.page-number-btn {
@@ -37,11 +37,11 @@ const PaginationControlsStyled = styled.div<PaginationControlsStyledProps>`
             height: 37px;
             width: 37px;
             border-radius: 10px;
-            background-color: var(--bg-secondary);
-            color: var(--text-secondary);
+            background-color: var(--panels-gray);
+            color: var(--text);
             &.active {
-                background-color: var(--button-primary);
-                color: var(--text-secondary-light);
+                background-color: var(--primary);
+                color: var(--white);
             }
         }
     }

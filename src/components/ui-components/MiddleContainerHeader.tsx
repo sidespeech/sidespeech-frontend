@@ -20,12 +20,12 @@ import SidesListMobileMenu from '../CurrentColony/SidesListMobileMenu';
 
 const MiddleContainerHeaderStyled = styled.header`
     width: 100%;
-    background-color: var(--bg-primary);
+    background-color: var(--background);
     height: 10vh;
-    color: var(--text-secondary);
+    color: var(--text);
     padding: 0 2rem;
     &::placeholder {
-        color: var(--text-secondary);
+        color: var(--text);
         font-size: 15px;
         font-weight: 400;
     }
@@ -71,7 +71,7 @@ const MiddleContainerHeaderStyled = styled.header`
                     width: 36px;
                     height: 36px;
                     border-radius: 36px;
-                    background-color: var(--bg-secondary-dark);
+                    background-color: var(--input);
                     ${breakpoints(
                         size.lg,
                         `{
@@ -118,7 +118,7 @@ const MiddleContainerHeaderStyled = styled.header`
                                 content: '';
                                 top: 0;
                                 left: 0;
-                                border-left: 3px solid var(--text-primary-light);
+                                border-left: 3px solid var(--text);
                                 height: 100%;
                             }
                         }
@@ -190,7 +190,7 @@ const MiddleContainerHeaderStyled = styled.header`
                         max-width: 100px;
                     }
                     .user-address {
-                        color: var(--text-secondary-dark);
+                        color: var(--inactive);
                     }
                 }
             }
@@ -199,7 +199,7 @@ const MiddleContainerHeaderStyled = styled.header`
                 align-items: center;
                 justify-content: center;
                 flex-shrink: 0;
-                background-color: var(--bg-secondary-light);
+                background-color: var(--disable);
                 border-radius: 100px;
                 padding: 0.5rem;
             }
@@ -243,7 +243,7 @@ const MiddleContainerHeaderStyled = styled.header`
                         max-width: 100px;
                     }
                     .user-address {
-                        color: var(--text-secondary-dark);
+                        color: var(--inactive);
                     }
                 }
             }
@@ -256,7 +256,7 @@ const MiddleContainerHeaderStyled = styled.header`
                     height: 36px;
                     border-radius: 36px;
                     flex-shrink: 0;
-                    background-color: var(--bg-secondary);
+                    background-color: var(--panels-gray);
                     & img {
                         width: 100%;
                         object-fit: cover;
@@ -270,7 +270,7 @@ const MiddleContainerHeaderStyled = styled.header`
             gap: 0.5rem;
             width: 100%;
             padding: 0.5rem 1rem;
-            background-color: var(--bg-secondary-light);
+            background-color: var(--disable);
             box-shadow: none;
             border: none;
             outline: none;
@@ -290,7 +290,7 @@ const MiddleContainerHeaderStyled = styled.header`
             }
         }
         .toolbar-content {
-            background-color: var(--bg-secondary-light);
+            background-color: var(--disable);
             transform: scaleY(0);
             position: absolute;
             &.open {
