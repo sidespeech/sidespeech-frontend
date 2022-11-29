@@ -167,7 +167,7 @@ export const userDataSlice = createSlice({
       state.account = null;
       state.userTokens = null;
 
-      websocketService.getUsersStatus();
+      // websocketService.getUsersStatus();
     },
     updateUser: (state: UserData, action: PayloadAction<any>) => {
       state.user = { ...state.user, ...action.payload };

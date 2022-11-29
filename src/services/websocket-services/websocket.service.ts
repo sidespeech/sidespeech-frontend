@@ -45,6 +45,12 @@ class WebSocketService {
     });
   }
 
+  async getUsersStatus(currentProfile:any) {
+    await this.socket?.emit("getUsersStatus", {
+      user: { username: currentProfile.username, rooms : currentProfile.rooms }
+    });
+  }
+
   sendMessage(message: string, roomId: string, sender: string) {
     this.socket?.emit("sendMessage", {
       message: message,
@@ -77,10 +83,6 @@ class WebSocketService {
   //     rooms: rooms,
   //   });
   // }
-
-  getUsersStatus() {
-    this.socket?.emit("usersStatus");
-  }
 
   deconnectWebsocket() {
     if (!this.socket) return;

@@ -53,6 +53,7 @@ export default function CurrentSideLeftContent() {
   const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
   const { user } = useSelector((state: RootState) => state.user);
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
   const onChannelSelected = (c: Channel) => {
     dispatch(setSelectedChannel(c));
@@ -93,9 +94,15 @@ export default function CurrentSideLeftContent() {
     }
   };
 
-  // const handleDisplayColonySettings = () => {
-  //   if (isAdmin) setDisplayColonySettings(true);
-  // };
+  const handleUsersStatus = async (m: any) => {
+    const { detail } = m;
+    let onlineUsersObj:any = [] 
+    if (detail !== 'transport close') {
+      for (let socket of detail)
+        onlineUsersObj.push(socket['user']['username'])
+      setOnlineUsers(onlineUsersObj);
+    }
+  };
 
   const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
     const account = localStorage.getItem("userAccount");
@@ -111,7 +118,7 @@ export default function CurrentSideLeftContent() {
   // Function to get notification from db and assign them to the state variable
   async function getAndSetRoomNotifications(account: string, from_ws = false) {
     const notifications = await notificationService.getNotification(account!);
- 
+
     let dotsPrivateMessageCopy: any = {};
     let dotsChannelCopy: any = { ...dotsChannel };
     for (let notification of notifications) {
@@ -161,6 +168,17 @@ export default function CurrentSideLeftContent() {
       );
     };
   });
+
+  useEffect(() => {
+    subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
+    return () => {
+      unSubscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
+    };
+  }, [onlineUsers, handleUsersStatus]);
+
+  useEffect(() => { 
+    if (currentProfile) websocketService.getUsersStatus(currentProfile);
+  }, [currentProfile, currentSide]);
   // LISTENING WS =====================================================================
 
   useEffect(() => {
@@ -232,8 +250,10 @@ export default function CurrentSideLeftContent() {
             dots={dotsPrivateMessage}
             handleSelectedUser={handleSelectedUser}
             selectedUser={selectedUser}
+            onlineUsers={onlineUsers}
             isMembersList
           />
+
         </Accordion>
 
         <Accordion
@@ -262,6 +282,7 @@ export default function CurrentSideLeftContent() {
             dots={dotsPrivateMessage}
             handleSelectedUser={handleSelectedUser}
             selectedUser={selectedUser}
+            onlineUsers={onlineUsers}
           />
         </Accordion>
       </SidebarStyled>

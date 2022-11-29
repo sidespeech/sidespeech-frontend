@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../constants/constants";
+import { Notification } from "../../models/Notification";
 import { User } from "../../models/User";
 import { BaseApiService } from "./base-api.service";
 

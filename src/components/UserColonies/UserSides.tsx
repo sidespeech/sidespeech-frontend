@@ -108,7 +108,6 @@ export default function UserSides() {
   async function getAndSetRoomNotifications(account: string) {
     const notifications = await notificationService.getNotification(account!);
     let dots_object: any = { ...dots };
-
     const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
     for (let notification of notifications) {
       if (
@@ -132,7 +131,6 @@ export default function UserSides() {
             });
           });
         }
-
         if (currentSide && sideFounded!["id"] !== currentSide["id"])
           dots_object[sideFounded!["id"]] =
             dots_object[sideFounded!["id"]]++ || 1;
@@ -172,9 +170,9 @@ export default function UserSides() {
                 currentSide?.name === c.name ? "active" : ""
               }`}
               key={c.id}
-            >
+            > 
               <img alt="colony-icon" src={c.sideImage} />
-              {c && dots[c.id] > 0 && (
+              {c &&  dots[c.id] > 0 && (
                 <Dot className="badge-notification">{dots[c.id]}</Dot>
               )}
             </div>
