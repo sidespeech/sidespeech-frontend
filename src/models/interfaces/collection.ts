@@ -1,5 +1,5 @@
-import { Side } from '../Side';
-import { NFT } from './nft';
+import { Side } from "../Side";
+import { NFT } from "./nft";
 
 export class Collection {
   public address: string;
@@ -34,59 +34,61 @@ export class Collection {
     this.sides = _data.sides || [];
   }
 
-    getCollectionProperties() {
-        return this.nfts.reduce(function (filtered: any, current) {
-            const metadata = current['metadata'];
-            if (metadata['attributes']) {
-                const attributes = metadata['attributes'];
-                if (Array.isArray(attributes)) {
-                    for (let attribute of attributes) {
-                        let property_exists =
-                            filtered.filter(function (o: any) {
-                                return o['property']['value'] == attribute['trait_type'];
-                            }).length > 0;
-                        if (property_exists) {
-                            for (let element of filtered) {
-                                if (element['property']['value'] == attribute['trait_type']) {
-                                    let value_exists =
-                                        element['values'].filter(function (o: any) {
-                                            return o['value'] == attribute['value'];
-                                        }).length > 0;
-                                    if (!value_exists)
-                                        element['values'].push({
-                                            label: attribute['value'],
-                                            value: attribute['value']
-                                        });
-                                }
-                            }
-                        } else {
-                            filtered.push({
-                                property: {
-                                    label: attribute['trait_type'],
-                                    value: attribute['trait_type']
-                                },
-                                values: [{ label: attribute['value'], value: attribute['value'] }],
-                                values_used: []
-                            });
-                        }
-                    }
+  getCollectionProperties() {
+    return this.nfts.reduce(function (filtered: any, current) {
+      const metadata = current["metadata"];
+      if (metadata["attributes"]) {
+        const attributes = metadata["attributes"];
+        if (Array.isArray(attributes)) {
+          for (let attribute of attributes) {
+            let property_exists =
+              filtered.filter(function (o: any) {
+                return o["property"]["value"] == attribute["trait_type"];
+              }).length > 0;
+            if (property_exists) {
+              for (let element of filtered) {
+                if (element["property"]["value"] == attribute["trait_type"]) {
+                  let value_exists =
+                    element["values"].filter(function (o: any) {
+                      return o["value"] == attribute["value"];
+                    }).length > 0;
+                  if (!value_exists)
+                    element["values"].push({
+                      label: attribute["value"],
+                      value: attribute["value"],
+                    });
                 }
+              }
+            } else {
+              filtered.push({
+                property: {
+                  label: attribute["trait_type"],
+                  value: attribute["trait_type"],
+                },
+                values: [
+                  { label: attribute["value"], value: attribute["value"] },
+                ],
+                values_used: [],
+              });
             }
-            return filtered;
-        }, []);
-    }
+          }
+        }
+      }
+      return filtered;
+    }, []);
+  }
 }
 
 interface OpenSeaData {
-    floorPrice: number;
-    collectionName: string;
-    safelistRequestStatus: OpenSeaRequestStatus;
-    imageUrl: string;
-    description: string;
-    externalUrl: string;
-    twitterUsername: string;
-    discordUrl: string;
-    lastIngestedAt: string;
+  floorPrice: number;
+  collectionName: string;
+  safelistRequestStatus: OpenSeaRequestStatus;
+  imageUrl: string;
+  description: string;
+  externalUrl: string;
+  twitterUsername: string;
+  discordUrl: string;
+  lastIngestedAt: string;
 }
 
 export interface Trait {
@@ -95,8 +97,8 @@ export interface Trait {
 }
 
 export enum OpenSeaRequestStatus {
-    verified = 'verified',
-    approved = 'approved',
-    requested = 'requested',
-    not_requested = 'not_requested'
+  verified = "verified",
+  approved = "approved",
+  requested = "requested",
+  not_requested = "not_requested",
 }

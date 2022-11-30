@@ -28,6 +28,8 @@ import Informations from '../CurrentColony/settings/informations/Information';
 import userService from '../../services/api-services/user.service';
 import filesService from '../../services/api-services/files.service';
 import sideService from '../../services/api-services/side.service';
+import { reduceWalletAddress } from '../../helpers/utilities';
+import Spinner from '../ui-components/Spinner';
 
 const NewSideStyled = styled.div`
     width: 100%;
@@ -45,12 +47,12 @@ const NewSideStyled = styled.div`
     .container-next-back {
         width: 100%;
         ${breakpoints(
-            size.lg,
-            `{
+    size.lg,
+    `{
     width: 60%;
     max-width: 500px;
   }`
-        )}
+)}
     }
 
     .tabs-wrapper_mobile {
@@ -61,11 +63,11 @@ const NewSideStyled = styled.div`
         padding: 0 2rem;
         margin: 2rem 0 1rem 0;
         ${breakpoints(
-            size.lg,
-            `{
+    size.lg,
+    `{
         display: none
       }`
-        )}
+)}
         & .step-icon {
             position: relative;
             background-color: var(--disable);
@@ -108,11 +110,11 @@ const NewSideStyled = styled.div`
         display: none;
         padding-left: 1rem;
         ${breakpoints(
-            size.lg,
-            `{
+    size.lg,
+    `{
         display: flex;
       }`
-        )}
+)}
         .tabs-wrapper {
             display: flex;
             flex-direction: column;
@@ -255,11 +257,19 @@ const Middle = styled.div`
     height: calc(100vh - 62px - 77px);
     padding-bottom: calc(2rem + 77px);
     ${breakpoints(
-        size.lg,
-        `{
+    size.lg,
+    `{
     height: calc(100vh - 62px);
-  }`
-    )}
+  }
+  .spinner-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+  `
+  
+)}
 `;
 
 export default function NewSide() {
@@ -277,6 +287,7 @@ export default function NewSide() {
 
     const [steps, setSteps] = useState<any[]>(cloneDeep(initialStateSteps));
     const [currentStep, setCurrentStep] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // Variables for Admission component
     const [divCollections, setDivCollection] = useState<any[]>(cloneDeep(initialDivCollections));
@@ -308,8 +319,8 @@ export default function NewSide() {
                     if (user['id'] !== userInvite['id'])
                         invitationsUsersObject.push({
                             name: userInvite['username']
-                                ? `${userInvite['username']} (${userInvite['accounts']})`
-                                : userInvite['accounts'],
+                                ? `${userInvite['username']} (${reduceWalletAddress(userInvite['accounts'])})`
+                                : reduceWalletAddress(userInvite['accounts']),
                             invited: false,
                             recipient: userInvite,
                             sender: user
@@ -442,7 +453,7 @@ export default function NewSide() {
         setFormData({ ...formData, description: text });
     };
 
-    const validateForm = async () => {};
+    const validateForm = async () => { };
 
     // validate the name, return true if name is valid;
     const validateName = async (name: string) => {
@@ -692,6 +703,8 @@ export default function NewSide() {
     const onSubmit = async () => {
         try {
             if (formData.sideImage && user) {
+
+                setIsLoading(true);
                 const data = _.cloneDeep(formData);
 
                 // Save side entity ** start
@@ -714,6 +727,8 @@ export default function NewSide() {
 
                 const refreshedUser = await userService.getUserByAddress(user.accounts);
                 dispatch(updateUser(refreshedUser));
+
+                setIsLoading(false);
                 navigate('/' + newSide.name);
             }
         } catch (error) {
@@ -736,9 +751,8 @@ export default function NewSide() {
             <div className="tabs-wrapper_mobile">
                 {steps.map((step: any) => (
                     <i
-                        className={`${step['icon']} ${step['active'] ? 'active' : ''} ${
-                            step['completed'] ? 'completed' : ''
-                        } step-icon`}
+                        className={`${step['icon']} ${step['active'] ? 'active' : ''} ${step['completed'] ? 'completed' : ''
+                            } step-icon`}
                         key={step['icon']}
                     ></i>
                 ))}
@@ -753,9 +767,8 @@ export default function NewSide() {
                                 <TabItems
                                     onClick={() => handleTabs(index)}
                                     key={index}
-                                    className={`nav-link ${step['active'] ? 'active' : ''} ${
-                                        step['completed'] ? 'completed' : ''
-                                    } sidebar-item text-secondary-dark`}
+                                    className={`nav-link ${step['active'] ? 'active' : ''} ${step['completed'] ? 'completed' : ''
+                                        } sidebar-item text-secondary-dark`}
                                 >
                                     <div>
                                         <i className={`${step['icon']} step-icon`}></i>
@@ -769,68 +782,78 @@ export default function NewSide() {
                 </ContainerLeft>
 
                 <Middle className="f-column w-100 pt-3 pb-5 px-5">
-                    {steps.map((step: any, index: number) => {
-                        return (
-                            <div key={index}>
-                                {step['label'] === 'Informations' && step['active'] ? (
-                                    <>
-                                        <Informations
-                                            currentSide={formData}
-                                            onChangeNewSideName={onChangeSideName}
-                                            onChangeNewSideImage={onChangeSideImage}
-                                            onChangeNewSideDescription={onChangeSideDescription}
-                                            formError={formError}
-                                        />
-                                    </>
-                                ) : step['label'] === 'Admission' && step['active'] ? (
-                                    <>
-                                        <Admission
-                                            divCollections={divCollections}
-                                            collections={collectionHolder}
-                                            setSideTokenAddress={setSideTokenAddress}
-                                            setSidePropertyCondition={setSidePropertyCondition}
-                                            setSideValueCondition={setSideValueCondition}
-                                            onRemoveFeature={onRemoveFeature}
-                                            addDivCollection={addDivCollection}
-                                            removeDivCollection={removeDivCollection}
-                                            addConditionToDivCollection={addConditionToDivCollection}
-                                            onlyOneRequired={onlyOneRequired}
-                                            setOnlyOneRequired={setOnlyOneRequired}
-                                            setNumberOfNftNeededToDivCollection={setNumberOfNftNeededToDivCollection}
-                                        />
-                                    </>
-                                ) : step['label'] === 'Channels' && step['active'] ? (
-                                    <div>
-                                        <Channels
-                                            currentSide={currentSide}
-                                            channelsNewSide={channels}
-                                            handleRemoveChannel={handleRemoveChannel}
-                                            handleAddNewChannel={handleAddNewChannel}
-                                            onChangeNameChannel={onChangeNameChannel}
-                                            onChangeTypeChannel={onChangeTypeChannel}
-                                            onChangeAuthorizeCommentsChannel={onChangeAuthorizeCommentsChannel}
-                                            onChangeIsVisibleChannel={onChangeIsVisibleChannel}
-                                        />
+                    {
+                        isLoading ?
+                            <div className="spinner-wrapper">
+                                <Spinner />
+                            </div> :
+
+                            steps.map((step: any, index: number) => {
+                                return (
+                                    <div key={index}>
+                                        {step['label'] === 'Informations' && step['active'] ? (
+                                            <>
+                                                <Informations
+                                                    currentSide={formData}
+                                                    onChangeNewSideName={onChangeSideName}
+                                                    onChangeNewSideImage={onChangeSideImage}
+                                                    onChangeNewSideDescription={onChangeSideDescription}
+                                                    formError={formError}
+                                                />
+                                            </>
+                                        ) : step['label'] === 'Admission' && step['active'] ? (
+                                            <>
+                                                <Admission
+                                                    divCollections={divCollections}
+                                                    collections={collectionHolder}
+                                                    setSideTokenAddress={setSideTokenAddress}
+                                                    setSidePropertyCondition={setSidePropertyCondition}
+                                                    setSideValueCondition={setSideValueCondition}
+                                                    onRemoveFeature={onRemoveFeature}
+                                                    addDivCollection={addDivCollection}
+                                                    removeDivCollection={removeDivCollection}
+                                                    addConditionToDivCollection={addConditionToDivCollection}
+                                                    onlyOneRequired={onlyOneRequired}
+                                                    setOnlyOneRequired={setOnlyOneRequired}
+                                                    setNumberOfNftNeededToDivCollection={setNumberOfNftNeededToDivCollection}
+                                                />
+                                            </>
+                                        ) : step['label'] === 'Channels' && step['active'] ? (
+                                            <div>
+                                                <Channels
+                                                    currentSide={currentSide}
+                                                    channelsNewSide={channels}
+                                                    handleRemoveChannel={handleRemoveChannel}
+                                                    handleAddNewChannel={handleAddNewChannel}
+                                                    onChangeNameChannel={onChangeNameChannel}
+                                                    onChangeTypeChannel={onChangeTypeChannel}
+                                                    onChangeAuthorizeCommentsChannel={onChangeAuthorizeCommentsChannel}
+                                                    onChangeIsVisibleChannel={onChangeIsVisibleChannel}
+                                                />
+                                            </div>
+                                        ) : step['label'] === 'Invitation' && step['active'] ? (
+                                            <>
+                                                <Invitation
+                                                    currentSide={currentSide}
+                                                    invitationUsers={invitationUsers}
+                                                    setUserInvited={setUserInvited}
+                                                    userInvited={userInvited}
+                                                />
+                                            </>
+                                        ) : null}
                                     </div>
-                                ) : step['label'] === 'Invitation' && step['active'] ? (
-                                    <>
-                                        <Invitation
-                                            currentSide={currentSide}
-                                            invitationUsers={invitationUsers}
-                                            setUserInvited={setUserInvited}
-                                            userInvited={userInvited}
-                                        />
-                                    </>
-                                ) : null}
-                            </div>
-                        );
-                    })}
-                    <FooterButtons
+                                );
+                            })
+                    }
+                    < FooterButtons
                         steps={steps}
                         onSubmit={onSubmit}
                         index={steps.findIndex((s) => s.active)}
                         newSideNextPreviousStep={newSideNextPreviousStep}
                     />
+
+
+
                 </Middle>
             </div>
         </NewSideStyled>

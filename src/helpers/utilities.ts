@@ -162,7 +162,6 @@ export function checkUserEligibility(
       const token_address = item["metadata"]["address"];
 
       const collectionSide = selectedSide.collectionSides.find(elem => elem['collectionId'] === token_address)
-      console.log(collectionSide, selectedSide)
       const collection = nfts[token_address];
 
       const condition = {

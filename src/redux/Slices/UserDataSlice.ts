@@ -69,10 +69,13 @@ export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string, { dispatch, getState }) => {
     const nfts = await alchemyService.getUserNfts(address);
+
     const collections = await alchemyService.getUserCollections(address);
+
     const data = await getSidesCountByCollection(
       collections.map((elem) => elem["address"])
     );
+
     await collectionService.savedCollections(collections);
 
     let res: any = {};
@@ -100,9 +103,9 @@ export const fetchUserDatas = createAsyncThunk(
         } else {
           res[address]["sideCount"] = 0;
         }
-        return res;
       }
     }
+    return res;
   }
 );
 
@@ -205,6 +208,8 @@ export const userDataSlice = createSlice({
           });
           state.currentProfile = profile;
         }
+      } else {
+        state.currentProfile = undefined;
       }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
