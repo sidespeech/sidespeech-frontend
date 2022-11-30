@@ -1,4 +1,3 @@
-import alchemyService from "../../services/web3-services/alchemy.service";
 import { Side } from "../Side";
 import { NFT } from "./nft";
 
@@ -15,7 +14,8 @@ export class Collection {
   public numDistinctTokensOwned: number;
   public ownedCount: number;
   public media: any[];
-  public sideCount: number|undefined;
+  public sideCount: number | undefined;
+  public traits: Trait[];
   sides: Side[] = [];
   constructor(_data: any) {
     this.address = _data.address;
@@ -29,8 +29,9 @@ export class Collection {
     this.ownedCount = _data.ownedCount;
     this.media = _data.media;
     this.sideCount = 0;
-    this.opensea = _data.opensea 
-    this.sides = _data.sides || []
+    this.opensea = _data.opensea;
+    this.traits = _data.traits ? JSON.parse(_data.traits) : [];
+    this.sides = _data.sides || [];
   }
 
   getCollectionProperties() {
@@ -67,7 +68,7 @@ export class Collection {
                 values: [
                   { label: attribute["value"], value: attribute["value"] },
                 ],
-                values_used : []
+                values_used: [],
               });
             }
           }
@@ -88,6 +89,11 @@ interface OpenSeaData {
   twitterUsername: string;
   discordUrl: string;
   lastIngestedAt: string;
+}
+
+export interface Trait {
+  type: string;
+  values: string[];
 }
 
 export enum OpenSeaRequestStatus {

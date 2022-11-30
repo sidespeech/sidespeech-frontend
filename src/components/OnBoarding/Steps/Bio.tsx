@@ -1,162 +1,155 @@
-import React, { useEffect, useState } from "react";
-import styled from 'styled-components'
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 //redux
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import {
-  updateUser
-} from "../../../redux/Slices/UserDataSlice";
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { updateUser } from '../../../redux/Slices/UserDataSlice';
 
 // models
-import { User } from "../../../models/User";
+import { User } from '../../../models/User';
 
 // ui component
-import Button from "../../ui-components/Button";
-import TextArea from "../../ui-components/TextArea";
+import Button from '../../ui-components/Button';
+import TextArea from '../../ui-components/TextArea';
 
 // other
-import { toast } from "react-toastify";
-import { breakpoints, size } from "../../../helpers/breakpoints";
+import { toast } from 'react-toastify';
+import { breakpoints, size } from '../../../helpers/breakpoints';
 
 const BioStyled = styled.div`
-  padding: 0 2rem;
-  margin-top: 2rem;
-  .text-area-wrapper {
-    width: 100%;
-    ${breakpoints(size.md, `{
+    padding: 0 2rem;
+    margin-top: 2rem;
+    .text-area-wrapper {
+        width: 100%;
+        ${breakpoints(
+            size.md,
+            `{
       max-width: 480px;
       margin: 0 auto;
-    }`)}  
-  }
+    }`
+        )}
+    }
 `;
 
 export interface InitialStateBio {
-  bio: string;
+    bio: string;
 }
 interface InitialErrorState {
-  bio: boolean;
+    bio: boolean;
 }
 
 const initialStateError = {
-  bio: true
+    bio: true
 };
 const InitialStateBio = {
-  bio: ""
+    bio: ''
 };
 
 type ChildProps = {
-  updateCurrentStep: (step: number) => void;
-}
+    updateCurrentStep: (step: number) => void;
+};
 
-export default function Bio({
-  updateCurrentStep
-}: ChildProps) {
+export default function Bio({ updateCurrentStep }: ChildProps) {
+    const [formData, setFormData] = useState<InitialStateBio>(InitialStateBio);
+    const [errorData, setErrorData] = useState<InitialErrorState>(initialStateError);
 
-  const [formData, setFormData] = useState<InitialStateBio>(InitialStateBio);
-  const [errorData, setErrorData] =
-    useState<InitialErrorState>(initialStateError);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+    let bioLength = formData.bio.length;
 
-  let bioLength = formData.bio.length;
+    //#region Form handlers
+    const onChangeBio = (event: any) => {
+        const bio = event.target.value;
+        validateBio(bio);
+        setFormData({ ...formData, bio: bio });
+    };
 
-  //#region Form handlers
-  const onChangeBio = (event: any) => {
-    const bio = event.target.value;
-    validateBio(bio);
-    setFormData({ ...formData, bio: bio });
-  };
+    const validateBio = (bio: string) => {
+        const length = bio.length;
+        const validLength = length <= 500;
+        setErrorData({ ...errorData, bio: validLength });
+        return validLength;
+    };
 
-  const validateBio = (bio: string) => {
-    const length = bio.length;
-    const validLength = length <= 500;
-    setErrorData({ ...errorData, bio: validLength });
-    return validLength;
-  };
+    //#region Submit functions
 
-  //#region Submit functions
+    const onSubmit = async () => {
+        if (!validateForm()) {
+            toast.error('Please ensure all requirements met.', {
+                toastId: 3
+            });
+            return false;
+        }
+        try {
+            // await apiService.updateUser(user.id, formData)
 
-  const onSubmit = async () => {
-    if (!validateForm()) {
-      toast.error("Please ensure all requirements met.", {
-        toastId: 3,
-      });
-      return false;
-    }
-    try {
-      // await apiService.updateUser(user.id, formData)
-      
-      // Update the step to go to that we are on.
-      updateCurrentStep(3);
-      
-      dispatch(updateUser({ ...formData }));
-    } catch (error) {
-      toast.error("There has been an issue updating your account.", {
-        toastId: 3,
-      });
-      console.log(error);
-    }
-  };
-  //#endregion
+            // Update the step to go to that we are on.
+            updateCurrentStep(3);
 
-  //#region Form validation
+            dispatch(updateUser({ ...formData }));
+        } catch (error) {
+            toast.error('There has been an issue updating your account.', {
+                toastId: 3
+            });
+            console.log(error);
+        }
+    };
+    //#endregion
 
-  const goBack = () => {
-    return updateCurrentStep(1);
-  };
+    //#region Form validation
 
-  const validateForm = () => {
-    return validateBio(formData.bio);
-  };
- 
-  return (
-    <BioStyled className="f-row form-area">
-        
-      <div className="">
-        <div className="text-area-wrapper">
-          <TextArea
-            height={120}
-            bgColor="var(--bg-secondary-dark)"
-            glass={false}
-            placeholder={"Describe yourself"}
-            placeholderColor="var(--text-primary-light)"
-            onChange={onChangeBio}
-            radius="10px"
-            maxLength={600}
-          />
-        </div>
-        {!errorData.bio && (
-          <div className="text-red">Max number of characters is 500.</div>
-        )}
-      </div>
+    const goBack = () => {
+        return updateCurrentStep(1);
+    };
 
-      <div className="actions">
-          <Button
-            classes={"mt-3 back"}
-            width={"159px"}
-            height={44}
-            onClick={goBack}
-            radius={10}
-            color={"var(--text-primary-light)"}
-          >
-            Back
-          </Button>
+    const validateForm = () => {
+        return validateBio(formData.bio);
+    };
 
-          {/* Submit Button */}
-          <Button
-            classes={`mt-3 ${bioLength == 0 ? 'skip' : 'submit'}`}
-            width={"159px"}
-            height={44}
-            onClick={onSubmit}
-            radius={10}
-            color={"var(--text-primary-light)"}
-          >
-            {bioLength == 0 ? 'Skip' : 'Continue'}
-          </Button>
-      </div>
-     
-    </BioStyled>
-  );
+    return (
+        <BioStyled className="f-row form-area">
+            <div className="">
+                <div className="text-area-wrapper">
+                    <TextArea
+                        height={120}
+                        bgColor="var(--input)"
+                        glass={false}
+                        placeholder={'Describe yourself'}
+                        placeholderColor="var(--text)"
+                        onChange={onChangeBio}
+                        radius="10px"
+                        maxLength={600}
+                    />
+                </div>
+                {!errorData.bio && <div className="text-red">Max number of characters is 500.</div>}
+            </div>
+
+            <div className="actions">
+                <Button
+                    classes={'mt-3 back'}
+                    width={'159px'}
+                    height={44}
+                    onClick={goBack}
+                    radius={10}
+                    color={'var(--text)'}
+                >
+                    Back
+                </Button>
+
+                {/* Submit Button */}
+                <Button
+                    classes={`mt-3 ${bioLength == 0 ? 'skip' : 'submit'}`}
+                    width={'159px'}
+                    height={44}
+                    onClick={onSubmit}
+                    radius={10}
+                    color={'var(--text)'}
+                >
+                    {bioLength == 0 ? 'Skip' : 'Continue'}
+                </Button>
+            </div>
+        </BioStyled>
+    );
 }

@@ -69,10 +69,13 @@ export const fetchUserDatas = createAsyncThunk(
   "userData/fetchUserTokensAndNfts",
   async (address: string, { dispatch, getState }) => {
     const nfts = await alchemyService.getUserNfts(address);
+
     const collections = await alchemyService.getUserCollections(address);
+
     const data = await getSidesCountByCollection(
       collections.map((elem) => elem["address"])
     );
+
     await collectionService.savedCollections(collections);
 
     let res: any = {};
@@ -167,7 +170,7 @@ export const userDataSlice = createSlice({
       state.account = null;
       state.userTokens = null;
 
-      websocketService.getUsersStatus();
+      // websocketService.getUsersStatus();
     },
     updateUser: (state: UserData, action: PayloadAction<any>) => {
       state.user = { ...state.user, ...action.payload };

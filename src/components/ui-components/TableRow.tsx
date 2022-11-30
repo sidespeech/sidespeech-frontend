@@ -1,44 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { fixURL, getRoleColor, reduceWalletAddress } from "../../helpers/utilities";
-import CustomSelect from "./CustomSelect";
-import check from "../../assets/check.svg";
-import { first } from "lodash";
-import Button from "./Button";
-import { Side } from "../../models/Side";
-import { Profile } from "../../models/Profile";
-import defaultPP from "../../assets/default-pp.webp";
-import profileService from "../../services/api-services/profile.service";
+import React, { useEffect, useState } from 'react';
+import { fixURL, getRoleColor, reduceWalletAddress } from '../../helpers/utilities';
+import CustomSelect from './CustomSelect';
+import Button from './Button';
+import { Side } from '../../models/Side';
+import { Profile } from '../../models/Profile';
+import defaultPP from '../../assets/default-pp.webp';
+import profileService from '../../services/api-services/profile.service';
 
-export default function TableRow({
-  side,
-  user,
-}: {
-  side: Side;
-  user: Profile;
-}) {
-  const [isCreator, setIsCreator] = useState<boolean>(false);
-  const [connectedUserIsCreator, setConnectedUserIsCreator] =
-    useState<boolean>(false);
-  const [newRole, setNewRole] = useState("");
+export default function TableRow({ side, user }: { side: Side; user: Profile }) {
+    const [isCreator, setIsCreator] = useState<boolean>(false);
+    const [connectedUserIsCreator, setConnectedUserIsCreator] = useState<boolean>(false);
+    const [newRole, setNewRole] = useState('');
 
-  const handleRoleChange = (event: any) => {
-    setNewRole(event.target.value);
-  };
+    const handleRoleChange = (event: any) => {
+        setNewRole(event.target.value);
+    };
 
-  const getRole = (role: number) => {
-    if (role === 0) return "Administrator";
-    else if (role === 2) return "Sub-Admin";
-    else return "User";
-  };
+    const getRole = (role: number) => {
+        if (role === 0) return 'Administrator';
+        else if (role === 2) return 'Sub-Admin';
+        else return 'User';
+    };
 
-  useEffect(() => {}, []);
+    useEffect(() => {}, []);
 
-  const onClickEject = async (user: any) => {
-    await profileService.removeProfile(user["id"]);
-    window.location.reload();
-  };
+    const onClickEject = async (user: any) => {
+        await profileService.removeProfile(user['id']);
+        window.location.reload();
+    };
 
-  const handleSaveRole = async () => {};
+    const handleSaveRole = async () => {};
 
   return (
     <tr>
@@ -58,10 +49,7 @@ export default function TableRow({
           </span>
           <span className="fw-400 size-12 ml-2 text-primary-light">
             {user["username"].length > 25
-              ? user["username"].replace(
-                  user["username"].substring(4, 34),
-                  "..."
-                )
+              ? reduceWalletAddress(user["username"])
               : user["username"]}
           </span>
         </div>
@@ -158,4 +146,3 @@ export default function TableRow({
     // </div>
   );
 }
-
