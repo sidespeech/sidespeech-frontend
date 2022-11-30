@@ -3,7 +3,7 @@
     padding: 20px;
     border-radius: 10px;
     flex: 1.2;
-    background-color: var(--bg-secondary-dark);
+    background-color: var(--input);
     width: 96%;
     height: 6rem;
 }
@@ -12,13 +12,13 @@
     width: 30px;
     height: 30px;
     cursor: pointer;
-    background: var(--bg-secondary-dark);
+    background: var(--input);
     border-radius: 100px;
     text-align: center;
-    color: var(--bg-primary-light);
+    color: var(--inactive);
     overflow: hidden;
 }
 
 .date-label {
-    color: var(--placeholer);
+    color: var(--inactive);
 }
