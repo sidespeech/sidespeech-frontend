@@ -88,7 +88,7 @@ export default function CustomCheckbox({ className, id, isChecked, label, onClic
         <CustomCheckboxStyled className={className} id={id} style={style}>
             <label className="checkbox-container">
                 {label}
-                <input type="checkbox" checked={isChecked} onClick={onClick} />
+                <input type="checkbox" defaultChecked={isChecked} onClick={onClick} />
                 <span className="checkmark"></span>
             </label>
         </CustomCheckboxStyled>
