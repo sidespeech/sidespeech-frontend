@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import { checkUserEligibility } from '../../helpers/utilities';
 import { User } from '../../models/User';
@@ -30,45 +30,49 @@ const DashboardLeftMenuStyled = styled.aside`
             padding: 10px;
             cursor: pointer;
             border-radius: 10px;
-            color: var(--text-secondary-dark);
-            transition: background-color .3s ease;
-            ${breakpoints(size.lg, `{ margin: 1rem 0;}`)};
+            color: var(--inactive);
+            transition: background-color 0.3s ease;
+            ${breakpoints(size.lg, `{ padding: 1rem 10px;}`)};
             & svg {
                 margin-right: 1rem;
-                opacity: .4;
-                transition: opacity .3s ease;
+                opacity: 0.4;
+                transition: opacity 0.3s ease;
                 & path {
-                    transition: fill .3s ease;
-                    fill: #D9D9D9;
+                    transition: fill 0.3s ease;
+                    fill: var(--inactive);
                 }
             }
             &.active {
-                background-color: var(--bg-secondary);
-                color: var(--text-secondary-light);
+                background-color: var(--white-transparency-10);
+                color: var(--white);
                 & svg {
                     opacity: 1;
                     & path {
-                        fill: #705CE9;
+                        fill: var(--primary);
                     }
                 }
             }
-            &:hover, &:focus {
-                background-color: var(--bg-secondary);
+            &:hover,
+            &:focus {
+                background-color: var(--white-transparency-10);
             }
         }
     }
     .add-side-btn {
         ${breakpoints(size.xs, `{display: none;}`)};
-        ${breakpoints(size.lg, `{display: block;}`)};
+        ${breakpoints(size.lg, `{display: flex;}`)};
         svg {
             margin-right: 1rem;
         }
     }
     &.search-page {
         display: none;
-        ${breakpoints(size.lg, `{
+        ${breakpoints(
+            size.lg,
+            `{
             display: block;
-        }`)}
+        }`
+        )}
     }
 `;
 
@@ -81,7 +85,7 @@ const DashboardLeftMenu = ({
     setSearchText: any;
     tabKeys: {
         [key: string]: string;
-    }
+    };
 }) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
@@ -93,14 +97,13 @@ const DashboardLeftMenu = ({
         const pendingInvitations = await invitationService.getPendingInvitationsByRecipient(user['id']);
         let invitations = pendingInvitations.map((item: any) => {
             item['eligibility'] = checkUserEligibility(userData['userCollectionsData'], item['side']);
-            return item
-        })
+            return item;
+        });
         setInvitations(invitations);
     };
 
     useEffect(() => {
-        if (userData && userData['user'])
-            getInvitations(userData['user']);
+        if (userData && userData['user']) getInvitations(userData['user']);
     }, [userData]);
 
     return (
@@ -112,7 +115,7 @@ const DashboardLeftMenu = ({
                         className={`menu-item ${currentTab === tabKeys.explore ? 'active' : ''}`}
                         onClick={() => {
                             setSearchText('');
-                            navigate(tabKeys.explore)
+                            navigate(tabKeys.explore);
                         }}
                     >
                         <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -124,7 +127,7 @@ const DashboardLeftMenu = ({
                         className={`menu-item ${currentTab === tabKeys.mySides ? 'active' : ''}`}
                         onClick={() => {
                             setSearchText('');
-                            navigate(tabKeys.mySides)
+                            navigate(tabKeys.mySides);
                         }}
                     >
                         <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,33 +139,42 @@ const DashboardLeftMenu = ({
                         className={`menu-item ${currentTab === tabKeys.invitations ? 'active' : ''} justify-between`}
                         onClick={() => {
                             setSearchText('');
-                            navigate(tabKeys.invitations)
+                            navigate(tabKeys.invitations);
                         }}
                     >
-                        <div className='inner-item flex'>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <div className="inner-item flex">
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
                                 <path d="M2 15.3125C1.45 15.3125 0.979333 15.1168 0.588 14.7255C0.196 14.3335 0 13.8625 0 13.3125V5.4625C0 5.2125 0.0710001 4.9665 0.213 4.7245C0.354333 4.48317 0.55 4.29583 0.8 4.1625L8.5 0.3125L16.05 4.1625C16.25 4.2625 16.4207 4.42083 16.562 4.6375C16.704 4.85417 16.8 5.07917 16.85 5.3125H13.925L8.5 2.5625L2 5.7875V15.3125ZM5 19.3125C4.45 19.3125 3.97933 19.1168 3.588 18.7255C3.196 18.3335 3 17.8625 3 17.3125V8.3125C3 7.7625 3.196 7.2915 3.588 6.8995C3.97933 6.50817 4.45 6.3125 5 6.3125H18C18.55 6.3125 19.021 6.50817 19.413 6.8995C19.8043 7.2915 20 7.7625 20 8.3125V17.3125C20 17.8625 19.8043 18.3335 19.413 18.7255C19.021 19.1168 18.55 19.3125 18 19.3125H5ZM11.5 13.6625L5 10.3125V17.3125H18V10.3125L11.5 13.6625ZM11.5 11.6625L18 8.3125H5L11.5 11.6625Z" />
                             </svg>
                             Invitations
                         </div>
-                        {invitations.length ?
-                            <div className='inner-item flex align-center'>
+                        {invitations.length ? (
+                            <div className="inner-item flex align-center">
                                 <Dot>{invitations.length}</Dot>
-                            </div> : null
-                        }
+                            </div>
+                        ) : null}
                     </li>
                 </ul>
                 <Link to="/new-side" onClick={() => setSearchText('')}>
                     <Button classes="add-side-btn">
                         <svg width="17" height="18" viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7.66699 13.1666H9.33366V9.83329H12.667V8.16663H9.33366V4.83329H7.66699V8.16663H4.33366V9.83329H7.66699V13.1666ZM8.50033 17.3333C7.34755 17.3333 6.26421 17.1144 5.25033 16.6766C4.23644 16.2394 3.35449 15.6458 2.60449 14.8958C1.85449 14.1458 1.26088 13.2638 0.823659 12.25C0.385881 11.2361 0.166992 10.1527 0.166992 8.99996C0.166992 7.84718 0.385881 6.76385 0.823659 5.74996C1.26088 4.73607 1.85449 3.85413 2.60449 3.10413C3.35449 2.35413 4.23644 1.76024 5.25033 1.32246C6.26421 0.885237 7.34755 0.666626 8.50033 0.666626C9.6531 0.666626 10.7364 0.885237 11.7503 1.32246C12.7642 1.76024 13.6462 2.35413 14.3962 3.10413C15.1462 3.85413 15.7398 4.73607 16.177 5.74996C16.6148 6.76385 16.8337 7.84718 16.8337 8.99996C16.8337 10.1527 16.6148 11.2361 16.177 12.25C15.7398 13.2638 15.1462 14.1458 14.3962 14.8958C13.6462 15.6458 12.7642 16.2394 11.7503 16.6766C10.7364 17.1144 9.6531 17.3333 8.50033 17.3333Z" fill="white" />
+                            <path
+                                d="M7.66699 13.1666H9.33366V9.83329H12.667V8.16663H9.33366V4.83329H7.66699V8.16663H4.33366V9.83329H7.66699V13.1666ZM8.50033 17.3333C7.34755 17.3333 6.26421 17.1144 5.25033 16.6766C4.23644 16.2394 3.35449 15.6458 2.60449 14.8958C1.85449 14.1458 1.26088 13.2638 0.823659 12.25C0.385881 11.2361 0.166992 10.1527 0.166992 8.99996C0.166992 7.84718 0.385881 6.76385 0.823659 5.74996C1.26088 4.73607 1.85449 3.85413 2.60449 3.10413C3.35449 2.35413 4.23644 1.76024 5.25033 1.32246C6.26421 0.885237 7.34755 0.666626 8.50033 0.666626C9.6531 0.666626 10.7364 0.885237 11.7503 1.32246C12.7642 1.76024 13.6462 2.35413 14.3962 3.10413C15.1462 3.85413 15.7398 4.73607 16.177 5.74996C16.6148 6.76385 16.8337 7.84718 16.8337 8.99996C16.8337 10.1527 16.6148 11.2361 16.177 12.25C15.7398 13.2638 15.1462 14.1458 14.3962 14.8958C13.6462 15.6458 12.7642 16.2394 11.7503 16.6766C10.7364 17.1144 9.6531 17.3333 8.50033 17.3333Z"
+                                fill="white"
+                            />
                         </svg>
                         Create my own side
                     </Button>
                 </Link>
             </nav>
         </DashboardLeftMenuStyled>
-    )
-}
+    );
+};
 
-export default DashboardLeftMenu
+export default DashboardLeftMenu;

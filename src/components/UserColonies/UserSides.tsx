@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { EventType } from "../../constants/EventType";
 import {
   subscribeToEvent,
@@ -9,22 +9,19 @@ import {
 } from "../../helpers/CustomEvent";
 import { Announcement } from "../../models/Announcement";
 import { RootState } from "../../redux/store/app.store";
-// import { flattenChannels } from "../../redux/Slices/UserDataSlice";
 import { Side, SideStatus } from "../../models/Side";
-// import { Channel } from "diagnostics_channel";
 import { Dot } from "../ui-components/styled-components/shared-styled-components";
 import { Profile, Role } from "../../models/Profile";
 import { NotificationType } from "../../models/Notification";
 import SideEligibilityModal from "../Modals/SideEligibilityModal";
 import LeaveSideConfirmationModal from "../Modals/LeaveSideConfirmationModal";
-import { setSettingsOpen } from "../../redux/Slices/AppDatasSlice";
 import notificationService from "../../services/api-services/notification.service";
 
 const UserSidesStyled = styled.div`
   .colony-badge {
     width: 50px;
     height: 50px;
-    background-color: var(--bg-secondary-dark);
+    background-color: var(--input);
     border: 1px solid black;
     border-radius: 25px;
     margin: 0px 12px;
@@ -70,7 +67,7 @@ export default function UserSides() {
       setSide(side);
       setDisplayModal(true);
     } else {
-      navigate(side.name);
+      navigate("side/" + side.name);
     }
   };
 
@@ -108,7 +105,6 @@ export default function UserSides() {
   async function getAndSetRoomNotifications(account: string) {
     const notifications = await notificationService.getNotification(account!);
     let dots_object: any = { ...dots };
-
     const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
     for (let notification of notifications) {
       if (
@@ -126,21 +122,14 @@ export default function UserSides() {
             return s.channels.find((c: any) => c.id === notification["name"]);
           });
         } else {
-          sideFounded = userData.sides.find((s: Side) => {
-            return s.profiles.find((p: Profile) => {
-              return p.rooms.find((el) => el.id === notification["name"]);
-            });
-          });
+          navigate("side/" + side?.name);
         }
-
         if (currentSide && sideFounded!["id"] !== currentSide["id"])
           dots_object[sideFounded!["id"]] =
             dots_object[sideFounded!["id"]]++ || 1;
       }
     }
-    notifications.length ? setDots(dots_object) : setDots({});
   }
-
   useEffect(() => {
     const account = localStorage.getItem("userAccount");
     if (currentSide && account) getAndSetRoomNotifications(account);

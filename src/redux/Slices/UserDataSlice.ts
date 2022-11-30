@@ -73,7 +73,7 @@ export const fetchUserDatas = createAsyncThunk(
     const data = await getSidesCountByCollection(
       collections.map((elem) => elem["address"])
     );
-    // await collectionService.savedCollections(collections);
+    await collectionService.savedCollections(collections);
 
     let res: any = {};
     for (let nft of nfts) {
@@ -100,9 +100,9 @@ export const fetchUserDatas = createAsyncThunk(
         } else {
           res[address]["sideCount"] = 0;
         }
+        return res;
       }
     }
-    return res;
   }
 );
 
@@ -167,7 +167,7 @@ export const userDataSlice = createSlice({
       state.account = null;
       state.userTokens = null;
 
-      websocketService.getUsersStatus();
+      // websocketService.getUsersStatus();
     },
     updateUser: (state: UserData, action: PayloadAction<any>) => {
       state.user = { ...state.user, ...action.payload };
@@ -205,8 +205,6 @@ export const userDataSlice = createSlice({
           });
           state.currentProfile = profile;
         }
-      } else {
-        state.currentProfile = undefined;
       }
     },
     updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
