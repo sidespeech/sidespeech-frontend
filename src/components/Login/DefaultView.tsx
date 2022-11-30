@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../../redux/store/app.store';
-import Login from './Login';
 import { useNavigate } from 'react-router';
 import DashboardPage from '../dashboard/DashboardPage';
-import { Side } from '../../models/Side';
 import userService from '../../services/api-services/user.service';
+import Spinner from '../ui-components/Spinner';
 
 interface ISeparatorHorizontal {
     borderColor?: string;
@@ -21,28 +20,29 @@ export const SeparatorHorizontal = styled.div<ISeparatorHorizontal>`
 
 export default function DefaultView() {
     const userData = useSelector((state: RootState) => state.user);
-    const walletAddress = window.ethereum.selectedAddress;
     const navigate = useNavigate();
 
-    let initialPage;
+    const [checkingOnboard, setCheckingOnboard] = useState<boolean>(true);
 
-    if (userData.account === null || walletAddress == null) {
-        initialPage = <Login />;
-    } else if (walletAddress) {
-        const checkOnBoarding = async () => {
-            const onBoarding = await userService.findOnBoarding(walletAddress);
+    const isUserOnboarded = useCallback(async (walletAddress: string) => {
+        const onBoarding = await userService.findOnBoarding(walletAddress);
+        if (onBoarding) navigate('/onboarding');
+        setCheckingOnboard(false);
+        return onBoarding;
+    }, []);
 
-            if (onBoarding) {
-                //Redirect the user to the onboarding area.
-                navigate('/onboarding');
-                return false;
-            }
-        };
-        checkOnBoarding();
-        initialPage = <DashboardPage />;
-    } else {
-        initialPage = <DashboardPage />;
-    }
+    useEffect(() => {
+        const walletAddress = window.ethereum.selectedAddress;
+        if (userData.account === null || walletAddress == null) navigate('/login');
+    }, [userData]);
 
-    return <>{initialPage}</>;
+    useEffect(() => {
+        const walletAddress = window.ethereum.selectedAddress;
+        if (walletAddress) isUserOnboarded(walletAddress);
+        else setCheckingOnboard(false);
+    }, [isUserOnboarded]);
+
+    if (checkingOnboard) return <Spinner />;
+
+    return <DashboardPage />;
 }
