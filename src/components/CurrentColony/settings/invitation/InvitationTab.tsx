@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import Button from '../../../ui-components/Button';
-import InputText from '../../../ui-components/InputText';
-import { useDispatch } from 'react-redux';
-import { Side } from '../../../../models/Side';
-import facebook from '../../../../assets/facebook.svg';
-import twitter from '../../../../assets/twitter.svg';
-import linkedin from '../../../../assets/linkedin.svg';
-import styled from 'styled-components';
-import { toast } from 'react-toastify';
-import { Profile } from '../../../../models/Profile';
-import { State, Type } from '../../../../models/Invitation';
-import { breakpoints, size } from '../../../../helpers/breakpoints';
-import userService from '../../../../services/api-services/user.service';
-import invitationService from '../../../../services/api-services/invitation.service';
+import React, { useEffect, useState } from "react";
+import Button from "../../../ui-components/Button";
+import InputText from "../../../ui-components/InputText";
+import { useDispatch } from "react-redux";
+import { Side } from "../../../../models/Side";
+import facebook from "../../../../assets/facebook.svg";
+import twitter from "../../../../assets/twitter.svg";
+import linkedin from "../../../../assets/linkedin.svg";
+import styled from 'styled-components'
+import { toast } from "react-toastify";
+import { Profile } from "../../../../models/Profile";
+import { State, Type } from "../../../../models/Invitation";
+import { breakpoints, size } from "../../../../helpers/breakpoints";
+import userService from "../../../../services/api-services/user.service";
+import invitationService from "../../../../services/api-services/invitation.service";
+import { fixURL, reduceWalletAddress } from "../../../../helpers/utilities";
 
 const InvitationsStyled = styled.div`
     width: 100%;
     ${breakpoints(
-        size.lg,
-        `{
+    size.lg,
+    `{
     width: 60%;
     max-width: 500px;
   }`
-    )}
+)}
     .btn-copy {
         margin-left: -23%;
     }
@@ -64,39 +65,39 @@ const InvitationsStyled = styled.div`
         align-items: center;
         margin: 1rem 0;
         ${breakpoints(
-            size.md,
-            `{
+    size.md,
+    `{
         display: grid;
         grid-template-columns: 4fr 2fr;
       }`
-        )}
+)}
         & button {
             order: 3;
             ${breakpoints(
-                size.md,
-                `{
+    size.md,
+    `{
           order: 2;
         }`
-            )}
+)}
         }
         & label {
             order: 2;
             grid-column: 1/3;
             ${breakpoints(
-                size.md,
-                `{
+    size.md,
+    `{
           order: 3;
         }`
-            )}
+)}
         }
     }
     .media-btns-wrapper {
         ${breakpoints(
-            size.md,
-            `{
+    size.md,
+    `{
         margin-top: 2rem;
       }`
-        )}
+)}
         .media-btns {
             display: flex;
             align-items: center;
@@ -104,31 +105,31 @@ const InvitationsStyled = styled.div`
             gap: 1rem;
             margin-top: 1rem;
             ${breakpoints(
-                size.md,
-                `{
+    size.md,
+    `{
           justify-content: flex-start;
         }`
-            )}
+)}
             .media-btn {
                 font-size: 0.75rem;
                 ${breakpoints(
-                    size.md,
-                    `{
+    size.md,
+    `{
             font-size: .88rem;
             max-width: 140px;
           }`
-                )}
+)}
                 & img {
                     height: 15px;
                     width: 15px;
                     object-fit: cover;
                     ${breakpoints(
-                        size.md,
-                        `{
+    size.md,
+    `{
               height: 25px;
               width: 25px;
             }`
-                    )}
+)}
                 }
             }
         }
@@ -234,11 +235,17 @@ export default function Invitation({
             setUsersInvite(users);
         }
     };
-    const sideLink = `https://sidespeech.com/side/invitation/${(Math.random() + 1).toString(36).substring(7)}`;
+    const sideLink = `https://sidespeech.com/side/${currentSide['name']}`;
 
     const handleCopyWalletAddress = () => {
         navigator.clipboard.writeText(sideLink);
-        toast.success('Link copied successfuly.', { toastId: 1 });
+        toast.success("Link copied successfuly.", { toastId: 1 });
+    };
+
+    const getAvatarPicture = (userAvatar: string) => {
+        const jsonAvatar = JSON.parse(userAvatar);
+        const image = fixURL(jsonAvatar['metadata']['image'])
+        return image
     };
 
     return (
@@ -256,7 +263,7 @@ export default function Invitation({
                     glass={true}
                     iconRightPos={{ top: 12, right: 20 }}
                     placeholder={'Search by username or wallet address '}
-                    onChange={() => {}}
+                    onChange={() => { }}
                     radius="5px"
                 />
                 <div className="f-column user-list mt-3">
@@ -266,7 +273,7 @@ export default function Invitation({
                                 <label className="profile-image-user f-column align-center justify-center">
                                     <img
                                         style={{ height: 'inherit', width: 'inherit', objectFit: 'cover' }}
-                                        src="https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80"
+                                        src={getAvatarPicture(user['recipient']['metadata']['image'])}
                                         alt="file"
                                     />
                                 </label>

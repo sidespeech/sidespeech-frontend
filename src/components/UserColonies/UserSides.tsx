@@ -57,74 +57,72 @@ export default function UserSides() {
     // const [isSubscribe, setIsSubscribe] = useState<boolean>(false);
     const [dots, setDots] = useState<any>({});
 
-    const displaySide = (side: Side) => {
-        if (side.status === SideStatus.inactive) {
-            setSide(side);
-            setDisplayModal(true);
+  const displaySide = (side: Side) => {
+    if (side.status === SideStatus.inactive) {
+      setSide(side);
+      setDisplayModal(true);
+    } else {
+      navigate("side/" + side.name);
+    }
+  };
+
+  const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
+    const account = localStorage.getItem("userAccount");
+    if (currentSide && account) getAndSetRoomNotifications(account);
+  };
+
+  const handleReceiveMessage = async (m: any) => {
+    const { detail } = m;
+    const account = localStorage.getItem("userAccount");
+    if (currentSide && account) getAndSetRoomNotifications(account);
+  };
+
+  // LISTENING WS =====================================================================
+  useEffect(() => {
+    subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
+    return () => {
+      unSubscribeToEvent(
+        EventType.RECEIVE_ANNOUNCEMENT,
+        handleReceiveAnnouncement
+      );
+    };
+  }, [dots, userData, currentSide]);
+
+  useEffect(() => {
+    subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
+    return () => {
+      unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
+    };
+  }, [dots, userData, currentSide]);
+  // LISTENING WS =====================================================================
+
+  // Function to get notification from db and assign them to the state variable
+  async function getAndSetRoomNotifications(account: string) {
+    const notifications = await notificationService.getNotification(account!);
+    let dots_object: any = { ...dots };
+    const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
+    for (let notification of notifications) {
+      if (
+        currentChannelsIds.includes(notification["name"]) ||
+        currentSide?.profiles.find((p: Profile) =>
+          p.rooms.some((el) => el.id === notification["name"])
+        )
+      ) {
+        dots_object[currentSide!["id"]] = 0;
+      } else {
+        let sideFounded: any;
+
+        if (notification["type"] == NotificationType.Channel) {
+          sideFounded = userData.sides.find((s: Side) => {
+            return s.channels.find((c: any) => c.id === notification["name"]);
+          });
         } else {
             navigate('side/' + side.name);
         }
-    };
-
-    const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-        const account = localStorage.getItem('userAccount');
-        if (currentSide && account) getAndSetRoomNotifications(account);
-    };
-
-    const handleReceiveMessage = async (m: any) => {
-        const { detail } = m;
-        const account = localStorage.getItem('userAccount');
-        if (currentSide && account) getAndSetRoomNotifications(account);
-    };
-
-    // LISTENING WS =====================================================================
-    useEffect(() => {
-        subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-        return () => {
-            unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-        };
-    }, [dots, userData, currentSide]);
-
-    useEffect(() => {
-        subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-        return () => {
-            unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-        };
-    }, [dots, userData, currentSide]);
-    // LISTENING WS =====================================================================
-
-    // Function to get notification from db and assign them to the state variable
-    async function getAndSetRoomNotifications(account: string) {
-        const notifications = await notificationService.getNotification(account!);
-        let dots_object: any = { ...dots };
-
-        const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
-        for (let notification of notifications) {
-            if (
-                currentChannelsIds.includes(notification['name']) ||
-                currentSide?.profiles.find((p: Profile) => p.rooms.some((el) => el.id === notification['name']))
-            ) {
-                dots_object[currentSide!['id']] = 0;
-            } else {
-                let sideFounded: any;
-
-                if (notification['type'] == NotificationType.Channel) {
-                    sideFounded = userData.sides.find((s: Side) => {
-                        return s.channels.find((c: any) => c.id === notification['name']);
-                    });
-                } else {
-                    sideFounded = userData.sides.find((s: Side) => {
-                        return s.profiles.find((p: Profile) => {
-                            return p.rooms.find((el) => el.id === notification['name']);
-                        });
-                    });
-                }
-
-                if (currentSide && sideFounded!['id'] !== currentSide['id'])
-                    dots_object[sideFounded!['id']] = dots_object[sideFounded!['id']]++ || 1;
-            }
-        }
-        notifications.length ? setDots(dots_object) : setDots({});
+        if (currentSide && sideFounded!["id"] !== currentSide["id"])
+          dots_object[sideFounded!["id"]] =
+            dots_object[sideFounded!["id"]]++ || 1;
+      }
     }
 
     useEffect(() => {
@@ -139,24 +137,31 @@ export default function UserSides() {
         }
     }, [currentSide, userData, side]);
 
-    return (
-        <>
-            <UserSidesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
-                {userData.sides.map((c, i) => {
-                    return (
-                        <div
-                            onClick={() => {
-                                displaySide(c);
-                            }}
-                            className={`colony-badge pointer ${currentSide?.name === c.name ? 'active' : ''}`}
-                            key={c.id}
-                        >
-                            <img alt="colony-icon" src={c.sideImage} />
-                            {c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
-                        </div>
-                    );
-                })}
-                {/* <Link to={"/new-side"}>
+  return (
+    <>
+      <UserSidesStyled
+        className="f-column align-center mt-3"
+        style={{ gap: 15 }}
+      >
+        {userData.sides.map((c, i) => {
+          return (
+            <div
+              onClick={() => {
+                displaySide(c);
+              }}
+              className={`colony-badge pointer ${
+                currentSide?.name === c.name ? "active" : ""
+              }`}
+              key={c.id}
+            > 
+              <img alt="colony-icon" src={c.sideImage} />
+              {c &&  dots[c.id] > 0 && (
+                <Dot className="badge-notification">{dots[c.id]}</Dot>
+              )}
+            </div>
+          );
+        })}
+        {/* <Link to={"/new-side"}>
           <i
             className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark"
             // onClick={() => changeStateModal(true)}
