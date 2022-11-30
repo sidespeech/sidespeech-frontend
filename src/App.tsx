@@ -22,6 +22,7 @@ import { getRandomId } from "./helpers/utilities";
 import MobileMenu from "./components/ui-components/MobileMenu";
 import DesktopMenu from "./components/ui-components/DesktopMenu";
 import userService from "./services/api-services/user.service";
+import _ from "lodash";
 
 export interface GeneralSettingsAccountContext {
   isSettingsMobileMenuOpen?: boolean;
@@ -43,9 +44,8 @@ function App() {
   let generalSettings = location.pathname.indexOf("/general-settings") > -1;
 
   useEffect(() => {
-
     websocketService.connectToWebSocket();
-    
+
     async function getUser(account: string) {
       try {
         const user = await userService.getUserByAddress(account);

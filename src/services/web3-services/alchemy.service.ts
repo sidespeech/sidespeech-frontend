@@ -100,8 +100,6 @@ class AlchemyService {
     const ownedCollections: Collection[] = result.contracts.map(
       (c: any) => new Collection(c)
     );
-    const promises: Promise<any>[] = [];
-    await Promise.all(promises);
     return ownedCollections;
   }
 }
