@@ -73,7 +73,7 @@ export const fetchUserDatas = createAsyncThunk(
     const data = await getSidesCountByCollection(
       collections.map((elem) => elem["address"])
     );
-    await collectionService.savedCollections(collections);
+    // await collectionService.savedCollections(collections);
 
     let res: any = {};
     for (let nft of nfts) {

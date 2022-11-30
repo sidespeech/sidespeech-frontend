@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import "./App.css";
@@ -9,7 +9,6 @@ import { Outlet } from "react-router-dom";
 
 // Components
 import GeneralSettingsMenu from "./components/GeneralSettings/ContainerLeft/Index";
-import UserColonies from "./components/UserColonies/UserSides";
 // import SidesList from "./components/SidesList";
 
 // Images
@@ -24,12 +23,11 @@ import { getRandomId } from "./helpers/utilities";
 import MobileMenu from "./components/ui-components/MobileMenu";
 import DesktopMenu from "./components/ui-components/DesktopMenu";
 import userService from "./services/api-services/user.service";
-import alchemyService from "./services/web3-services/alchemy.service";
+import _ from "lodash";
 
 function App() {
   const userData: any = useSelector((state: RootState) => state.user);
 
-  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -46,61 +44,6 @@ function App() {
 
   useEffect(() => {
     websocketService.connectToWebSocket();
-    async function sleep(ms: any) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    async function getData() {
-      const end = 20000;
-      let i = 0;
-      let concatData: any[] = [];
-      do {
-        const res = await fetch(
-          `https://api.opensea.io/api/v1/collections?offset=${i}&limit=300`
-        );
-        let collections = (await res.json()).collections;
-        concatData = concatData.concat(collections);
-        i += 300;
-        await sleep(5000);
-      } while (i <= end);
-
-      let addresses: string[] = [];
-
-      concatData.forEach((d) => {
-        const contracts = d["primary_asset_contracts"];
-        if (contracts.length > 0) {
-          const ads = contracts.map((c: any) => c.address);
-          addresses = [...addresses, ...ads];
-        }
-      });
-
-      console.log(addresses);
-      let index = 0;
-      let results: any[] = [];
-      do {
-        let foo: any = [];
-        addresses.slice(index, index + 20).forEach(async (c) => {
-          const data = alchemyService.getContractMetadata(c);
-          foo = [...foo, data];
-        });
-        const res = await Promise.all(foo);
-        results = results.concat(res.filter((r: any) => r !== undefined));
-        index += 20;
-        await sleep(5000);
-      } while (index < addresses.length);
-
-      console.log(results);
-      // async function getData() {
-      //   collectionAddresses.slice(0, 20).forEach(async (c) => {
-      //     const data = alchemyService.getContractMetadata(c);
-      //     foo = [...foo, data];
-      //   });
-      //   const res = await Promise.all(foo);
-      //   console.log(res);
-      // }
-
-      // console.log(concatData);
-    }
 
     async function getUser(account: string) {
       try {
@@ -125,8 +68,6 @@ function App() {
       console.log("has connected account");
       getUser(account);
     }
-
-    // getData();
 
     // This is needed because MetaMask doesn't trigger a callback if somebody manually disconnects.
     const interval = setInterval(() => {

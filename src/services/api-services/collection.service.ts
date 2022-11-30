@@ -6,7 +6,6 @@ import { BaseApiService } from "./base-api.service";
 // Create an API Service class
 let instance: CollectionService;
 class CollectionService extends BaseApiService {
-
   static getInstance() {
     if (!instance) instance = new CollectionService();
     return instance;
@@ -23,6 +22,14 @@ class CollectionService extends BaseApiService {
       collections: data,
     });
     return res;
+  }
+
+  async updateCollectionTraits(traits: any, address: string): Promise<any> {
+    const res = await this.patch(`${BASE_URL}/collection/traits`).send({
+      address,
+      traits,
+    });
+    return res.body;
   }
 
   async getAllCollections(): Promise<Collection[]> {
