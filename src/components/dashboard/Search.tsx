@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { getRandomId, paginateArray } from '../../helpers/utilities';
 import useDebounceValue from '../../hooks/useDebounceValue';
-import { Collection } from '../../models/interfaces/collection';
+import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
 import SideEligibilityModal from '../Modals/SideEligibilityModal';
@@ -221,7 +221,9 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
                 ? filteredSides.filter((side) => !side.eligible)
                 : filteredSides;
         if (searchFilters.verifiedCollections) {
-            parsedArray = parsedArray.filter((side) => side.firstCollection?.safelistRequestStatus === 'verified');
+            parsedArray = parsedArray.filter(
+                (side) => side.firstCollection?.safelistRequestStatus === OpenSeaRequestStatus.verified
+            );
         }
         setTotalResults(parsedArray.length);
         const { array } = paginateArray({

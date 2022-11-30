@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
+import { OpenSeaRequestStatus } from '../../../models/interfaces/collection';
 import { Side } from '../../../models/Side';
 import SideEligibilityModal from '../../Modals/SideEligibilityModal';
 import ClampLines from '../../ui-components/ClampLines';
@@ -19,7 +20,6 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
     flex-direction: column;
     justify-content: flex-end;
     width: 100%;
-    height: ${CARD_HEIGHT}px;
     flex-shrink: 0;
     background-color: var(--black-transparency-20);
     border-radius: 10px;
@@ -109,25 +109,19 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
     .side-content {
         display: flex;
         flex-direction: column;
+        gap: 1rem;
         justify-content: flex-end;
         min-height: ${CARD_HEIGHT / 2}px;
         padding: 1rem;
         color: var(--text);
         .side-description {
-            min-height: 50%;
-            & > p {
-                height: 3.5rem;
-                display: -webkit-box;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 3;
-                overflow: hidden;
-            }
+            height: 100%;
         }
         .side-actions {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 50%;
+            height: 100%;
         }
     }
 `;
@@ -180,7 +174,7 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
                             <div className="collections">
                                 <span className="collection">
                                     <span>{side.firstCollection?.collectionName}</span>
-                                    {side.firstCollection?.safelistRequestStatus === 'verified' && (
+                                    {side.firstCollection?.safelistRequestStatus === OpenSeaRequestStatus.verified && (
                                         <svg
                                             width="17"
                                             height="16"
@@ -202,11 +196,7 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
             </div>
             <div className="side-content">
                 <div className={`side-description ${side.joined ? 'pointer' : ''}`} onClick={handleNavigate}>
-                    <ClampLines>
-                        {side.description}
-                        Mi proin molestie suspendisse massa amet ex diam adipiscing metus erat et elementum ex phasellus
-                        arcu interdum nisi metus vivamus gravida accumsan et nisi magna.
-                    </ClampLines>
+                    <ClampLines>{side.description}</ClampLines>
                 </div>
                 <div className="side-actions">
                     {userSides && side.joined && side.eligible ? (

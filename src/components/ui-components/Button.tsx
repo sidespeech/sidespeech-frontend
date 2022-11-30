@@ -28,6 +28,9 @@ const CustomButton = styled.button<ButtonProps>`
     pointer-events: ${(props) => (props.disabled ? 'none' : 'all')};
     filter: ${(props) => props.disabled && 'grayscale(1)'};
     opacity: ${(props) => props.disabled && 0.2};
+    &:disabled {
+        color: var(--inactive);
+    }
 `;
 const CustomButtonSecondary = styled.button<ButtonProps>`
     width: ${(props) => (props.width ? props.width : '251px')};

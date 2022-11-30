@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { getRandomId, paginateArray } from '../../helpers/utilities';
-import { Collection } from '../../models/interfaces/collection';
+import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
 import Button from '../ui-components/Button';
@@ -172,7 +172,9 @@ const MySides = ({ collections }: MySidesProps) => {
 
     useEffect(() => {
         let parsedArray = searchFilters.verifiedCollections
-            ? filteredSides.filter((side) => side.firstCollection?.safelistRequestStatus === 'verified')
+            ? filteredSides.filter(
+                  (side) => side.firstCollection?.safelistRequestStatus === OpenSeaRequestStatus.verified
+              )
             : filteredSides;
         if (searchFilters.collections?.split(',')?.length && searchFilters.collections?.split(',')[0] !== 'all') {
             parsedArray = parsedArray.filter((side) =>

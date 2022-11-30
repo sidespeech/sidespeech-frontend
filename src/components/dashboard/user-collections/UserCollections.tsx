@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/app.store';
 import _ from 'lodash';
 
-import { Collection } from '../../../models/interfaces/collection';
+import { Collection, OpenSeaRequestStatus } from '../../../models/interfaces/collection';
 import UserCollectionCard from './UserCollectionCard';
 import UserCollectionItemSmall from './UserCollectionItemSmall';
 import CustomCheckbox from '../../ui-components/CustomCheckbox';
@@ -158,7 +158,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
             // if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
             if (isOnlyVerifiedCollectionsChecked)
                 filteredArray = filteredArray.filter(
-                    (collection) => collection.opensea?.safelistRequestStatus === 'verified'
+                    (collection) => collection.opensea?.safelistRequestStatus === OpenSeaRequestStatus.verified
                 );
             setFilteredCollections(filteredArray);
         }
