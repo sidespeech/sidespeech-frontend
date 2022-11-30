@@ -182,8 +182,8 @@ export default function Invitation({
                         if (user['id'] !== userInvite['id'])
                             invitationsUsersObject.push({
                                 name: userInvite['username']
-                                    ? `${userInvite['username']} (${userInvite['accounts']})`
-                                    : userInvite['accounts'],
+                                    ? `${userInvite['username']} (${reduceWalletAddress(userInvite['accounts'])})`
+                                    : reduceWalletAddress(userInvite['accounts']),
                                 invited: userInvite['invitations'].find(
                                     (item: any) => item['sideId'] === currentSide['id']
                                 )
@@ -273,7 +273,7 @@ export default function Invitation({
                                 <label className="profile-image-user f-column align-center justify-center">
                                     <img
                                         style={{ height: 'inherit', width: 'inherit', objectFit: 'cover' }}
-                                        src={getAvatarPicture(user['recipient']['metadata']['image'])}
+                                        src={getAvatarPicture(user['recipient']['userAvatar'])}
                                         alt="file"
                                     />
                                 </label>

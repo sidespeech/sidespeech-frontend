@@ -63,8 +63,11 @@ export const fetchUserDatas = createAsyncThunk(
     'userData/fetchUserTokensAndNfts',
     async (address: string, { dispatch, getState }) => {
         const nfts = await alchemyService.getUserNfts(address);
+
         const collections = await alchemyService.getUserCollections(address);
+
         const data = await getSidesCountByCollection(collections.map((elem) => elem['address']));
+
         await collectionService.savedCollections(collections);
 
         let res: any = {};
@@ -88,9 +91,9 @@ export const fetchUserDatas = createAsyncThunk(
                 } else {
                     res[address]['sideCount'] = 0;
                 }
-                return res;
             }
         }
+        return res;
     }
 );
 
@@ -155,43 +158,61 @@ export const userDataSlice = createSlice({
             state.account = null;
             state.userTokens = null;
 
-      // websocketService.getUsersStatus();
-    },
-    updateUser: (state: UserData, action: PayloadAction<any>) => {
-      state.user = { ...state.user, ...action.payload };
-      state.sides = action.payload.profiles
-        ? action.payload.profiles.map((p: Profile) => {
-            p.side["profiles"] = [p];
-            return p.side;
-          })
-        : [];
-    },
-    updateProfiles: (state: UserData, action: PayloadAction<any>) => {
-      if (state.user) {
-        const profiles = [...state.user?.profiles, action.payload];
-        state.user = { ...state.user, profiles: profiles };
-      }
-    },
-    addColony: (state: UserData, action: PayloadAction<any>) => {
-      state.sides = [...state.sides, action.payload];
-    },
-    removeSide: (state: UserData, action: PayloadAction<any>) => {
-      state.sides = state.sides.filter((side) => side.id !== action.payload);
-      state.profiles = state.profiles.filter(
-        (profile) => profile.side.id !== action.payload
-      );
-    },
-    setCurrentProfile: (
-      state: UserData,
-      action: PayloadAction<Side | null>
-    ) => {
-      if (action.payload) {
-        const userprofiles = state.user?.profiles;
-        if (state.user && userprofiles) {
-          const profile = userprofiles.find((p) => {
-            return p.side.id === action.payload?.id;
-          });
-          state.currentProfile = profile;
+            // websocketService.getUsersStatus();
+        },
+        updateUser: (state: UserData, action: PayloadAction<any>) => {
+            state.user = { ...state.user, ...action.payload };
+            state.sides = action.payload.profiles
+                ? action.payload.profiles.map((p: Profile) => {
+                      p.side['profiles'] = [p];
+                      return p.side;
+                  })
+                : [];
+        },
+        updateProfiles: (state: UserData, action: PayloadAction<any>) => {
+            if (state.user) {
+                const profiles = [...state.user?.profiles, action.payload];
+                state.user = { ...state.user, profiles: profiles };
+            }
+        },
+        addColony: (state: UserData, action: PayloadAction<any>) => {
+            state.sides = [...state.sides, action.payload];
+        },
+        removeSide: (state: UserData, action: PayloadAction<any>) => {
+            state.sides = state.sides.filter((side) => side.id !== action.payload);
+            state.profiles = state.profiles.filter((profile) => profile.side.id !== action.payload);
+        },
+        setCurrentProfile: (state: UserData, action: PayloadAction<Side | null>) => {
+            if (action.payload) {
+                const userprofiles = state.user?.profiles;
+                if (state.user && userprofiles) {
+                    const profile = userprofiles.find((p) => {
+                        return p.side.id === action.payload?.id;
+                    });
+                    state.currentProfile = profile;
+                }
+            } else {
+                state.currentProfile = undefined;
+            }
+        },
+        updateCurrentProfile: (state: UserData, action: PayloadAction<Profile>) => {
+            state.currentProfile = action.payload;
+            if (state.user) {
+                const user = { ...state.user };
+                const profiles = [...user.profiles];
+                const index = profiles.findIndex((p: Profile) => p.id === action.payload.id);
+                if (index !== -1) {
+                    profiles.splice(index, 1, action.payload);
+                    user.profiles = profiles;
+                    state.user = { ...user };
+                }
+            }
+        },
+        addRoomToProfile: (state: UserData, action: PayloadAction<Room>) => {
+            if (state.currentProfile) {
+                const rooms = state.currentProfile.rooms;
+                state.currentProfile.rooms = [...rooms, action.payload];
+            }
         }
     },
     extraReducers: (builder) => {

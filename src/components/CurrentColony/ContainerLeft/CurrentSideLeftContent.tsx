@@ -148,6 +148,14 @@ export default function CurrentSideLeftContent() {
   }
 
   // LISTENING WS =====================================================================
+
+  useEffect(() => {
+    subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
+    return () => {
+      unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
+    };
+  });
+
   useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
     return () => {
