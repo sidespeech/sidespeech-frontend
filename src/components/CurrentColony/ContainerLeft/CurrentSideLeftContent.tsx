@@ -1,37 +1,33 @@
-import _ from "lodash";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { Channel } from "../../../models/Channel";
-import { Profile } from "../../../models/Profile";
-import { setSelectedChannel } from "../../../redux/Slices/AppDatasSlice";
-import { setSelectedRoom } from "../../../redux/Slices/ChatSlice";
-import { RootState } from "../../../redux/store/app.store";
-import websocketService from "../../../services/websocket-services/websocket.service";
-import ChannelsList from "./ChannelsList/ChannelsList";
-import SideUserList from "./SideUserList/SideUserList";
-import {
-  subscribeToEvent,
-  unSubscribeToEvent,
-} from "../../../helpers/CustomEvent";
-import { EventType } from "../../../constants/EventType";
-import { Announcement } from "../../../models/Announcement";
-import { addRoomToProfile } from "../../../redux/Slices/UserDataSlice";
-import { toast } from "react-toastify";
-import { getRandomId } from "../../../helpers/utilities";
-import Accordion from "../../ui-components/Accordion";
-import { NotificationType } from "../../../models/Notification";
-import roomService from "../../../services/api-services/room.service";
-import notificationService from "../../../services/api-services/notification.service";
-
+import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { Channel } from '../../../models/Channel';
+import { Profile } from '../../../models/Profile';
+import { setSelectedChannel } from '../../../redux/Slices/AppDatasSlice';
+import { setSelectedRoom } from '../../../redux/Slices/ChatSlice';
+import { RootState } from '../../../redux/store/app.store';
+import websocketService from '../../../services/websocket-services/websocket.service';
+import ChannelsList from './ChannelsList/ChannelsList';
+import SideUserList from './SideUserList/SideUserList';
+import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
+import { EventType } from '../../../constants/EventType';
+import { Announcement } from '../../../models/Announcement';
+import { addRoomToProfile } from '../../../redux/Slices/UserDataSlice';
+import { toast } from 'react-toastify';
+import { getRandomId } from '../../../helpers/utilities';
+import Accordion from '../../ui-components/Accordion';
+import { NotificationType } from '../../../models/Notification';
+import roomService from '../../../services/api-services/room.service';
+import notificationService from '../../../services/api-services/notification.service';
 
 const SidebarStyled = styled.div`
-  max-height: 100vh;
-  overflow-y: scroll;
-  .selected-channel {
-    border-radius: 7px;
-    background-color: var(--bg-primary);
-  }
+    max-height: 100vh;
+    overflow-y: scroll;
+    .selected-channel {
+        border-radius: 7px;
+        background-color: var(--background);
+    }
 `;
 
 export default function CurrentSideLeftContent() {
@@ -96,7 +92,7 @@ export default function CurrentSideLeftContent() {
 
   const handleUsersStatus = async (m: any) => {
     const { detail } = m;
-    let onlineUsersObj:any = [] 
+    let onlineUsersObj: any = []
     if (detail !== 'transport close') {
       for (let socket of detail)
         onlineUsersObj.push(socket['user']['username'])
@@ -160,23 +156,13 @@ export default function CurrentSideLeftContent() {
   });
 
   useEffect(() => {
-    subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-    return () => {
-      unSubscribeToEvent(
-        EventType.RECEIVE_ANNOUNCEMENT,
-        handleReceiveAnnouncement
-      );
-    };
-  });
-
-  useEffect(() => {
     subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
     return () => {
       unSubscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
     };
   }, [onlineUsers, handleUsersStatus]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (currentProfile) websocketService.getUsersStatus(currentProfile);
   }, [currentProfile, currentSide]);
   // LISTENING WS =====================================================================
@@ -186,7 +172,7 @@ export default function CurrentSideLeftContent() {
   }, [currentSide, account]);
 
   useEffect(() => {
-    const account = localStorage.getItem("userAccount");
+    const account = localStorage.getItem('userAccount');
     if (account) getAndSetRoomNotifications(account);
   }, [selectedRoom, selectedChannel]);
 
@@ -211,9 +197,7 @@ export default function CurrentSideLeftContent() {
                   fill="#B4C1D2"
                 />
               </svg>
-              <p className="size-14">
-                Channels ({currentSide.channels.length || 0})
-              </p>
+              <p className="size-14">Channels ({currentSide.channels.length || 0})</p>
             </span>
           )}
         >
@@ -240,9 +224,7 @@ export default function CurrentSideLeftContent() {
                   fill="#B4C1D2"
                 />
               </svg>
-              <p className="size-14">
-                Members ({currentSide.profiles.length || 0})
-              </p>
+              <p className="size-14">Members ({currentSide.profiles.length || 0})</p>
             </span>
           )}
         >
@@ -250,10 +232,9 @@ export default function CurrentSideLeftContent() {
             dots={dotsPrivateMessage}
             handleSelectedUser={handleSelectedUser}
             selectedUser={selectedUser}
-            onlineUsers={onlineUsers}
             isMembersList
+            onlineUsers={onlineUsers}
           />
-
         </Accordion>
 
         <Accordion
@@ -272,9 +253,7 @@ export default function CurrentSideLeftContent() {
                   fill="#B4C1D2"
                 />
               </svg>
-              <p className="size-14">
-                Conversations ({currentSide.profiles.length || 0})
-              </p>
+              <p className="size-14">Conversations ({currentSide.profiles.length || 0})</p>
             </span>
           )}
         >

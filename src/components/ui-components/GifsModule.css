@@ -4,10 +4,10 @@
     flex-direction: column;
     height: 400px;
     overflow: hidden;
-    bottom: 50px; 
+    bottom: 50px;
     right: 0;
-    background-color: var(--bg-secondary-light);
-    padding: .5rem;
+    background-color: var(--disable);
+    padding: 0.5rem;
     padding-bottom: 0;
     border-radius: 6px;
 }

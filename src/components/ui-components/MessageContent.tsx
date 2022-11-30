@@ -1,13 +1,13 @@
-import React, { forwardRef, useEffect, useState } from "react";
-import styled from "styled-components";
+import React, { forwardRef, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { Gif } from '@giphy/react-components';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import { Editor } from 'react-draft-wysiwyg';
 import { ContentBlock, ContentState, convertFromRaw, EditorState } from 'draft-js';
 import { markdownToDraft } from 'markdown-draft-js';
 
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import './MessageContent.css'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import './MessageContent.css';
 
 interface MessageContentPropTypes {
     bgColor?: string;
@@ -15,7 +15,7 @@ interface MessageContentPropTypes {
     color?: string;
     defaultValue?: string;
     disabled?: any;
-    imageUpload?:  boolean,
+    imageUpload?: boolean;
     height?: number;
     iconSize?: number;
     id?: any;
@@ -48,21 +48,19 @@ interface MessageContentProps {
 }
 
 const EditorStyled = styled(Editor)<MessageContentProps>`
-  max-width: ${(props) => (props.maxWidth ? props.maxWidth : "")}px;
-  width: ${(props) => (props.width ? props.width : "100%")};
-  border: ${(props) => (props.border ? props.border : "")};
-  background-color: ${(props) =>
-    props.bgColor ? props.bgColor : "var(--bg-secondary-dark)"};
-  border-radius: ${(props) => (props.radius ? props.radius : "40px")};
-  height: ${(props) => (props.height ? props.height : 35)}px;
-  color: ${(props) =>
-    props.color ? props.color : "var(--text-secondary-dark)"};
-  padding: ${(props) => (props.padding ? props.padding : "0px 20px")};
-  font-size: ${(props) => (props.size ? props.size : "15")}px;
-  font-weight: ${(props) => (props.weight ? props.weight : "400")};
+    max-width: ${(props) => (props.maxWidth ? props.maxWidth : '')}px;
+    width: ${(props) => (props.width ? props.width : '100%')};
+    border: ${(props) => (props.border ? props.border : '')};
+    background-color: ${(props) => (props.bgColor ? props.bgColor : 'var(--input)')};
+    border-radius: ${(props) => (props.radius ? props.radius : '40px')};
+    height: ${(props) => (props.height ? props.height : 35)}px;
+    color: ${(props) => (props.color ? props.color : 'var(--inactive)')};
+    padding: ${(props) => (props.padding ? props.padding : '0px 20px')};
+    font-size: ${(props) => (props.size ? props.size : '15')}px;
+    font-weight: ${(props) => (props.weight ? props.weight : '400')};
 `;
 
-const giphyService = new GiphyFetch(process.env.REACT_APP_GIPHY_API_KEY || '')
+const giphyService = new GiphyFetch(process.env.REACT_APP_GIPHY_API_KEY || '');
 
 interface CustomImagePropTypes {
     src: string;
@@ -81,97 +79,98 @@ const CustomImage = (props: CustomImagePropTypes) => {
                 </a>
             </div>
         </div>
-    )
-}
+    );
+};
 
 interface CustomGifPropTypes {
     gifId: string;
 }
 
 const CustomGif = (props: CustomGifPropTypes) => {
-    const [gif, setGif] = useState<any>(null)
+    const [gif, setGif] = useState<any>(null);
 
     const fetchGifs = async (id: string) => {
-        try {            
+        try {
             const { data } = await giphyService.gif(id);
             setGif(data);
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
-    }
+    };
 
     useEffect(() => {
-        fetchGifs(props.gifId)
-    }, [])
+        fetchGifs(props.gifId);
+    }, []);
 
     if (!gif) return null;
-    
-    return <Gif gif={gif} hideAttribution noLink width={400} />
+
+    return <Gif gif={gif} hideAttribution noLink width={400} />;
+};
+
+const emojiRegex = /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu;
+
+const emojiStrategy = (
+    contentBlock: ContentBlock,
+    callback: (start: number, end: number) => void,
+    contentState: ContentState
+) => {
+    findWithRegex(emojiRegex, contentBlock, callback);
+};
+
+function findWithRegex(regex: RegExp, contentBlock: ContentBlock, callback: (start: number, end: number) => void) {
+    const text = contentBlock.getText();
+    let matchArr, start;
+    while ((matchArr = regex.exec(text)) !== null) {
+        start = matchArr.index;
+        callback(start, start + matchArr[0].length);
+    }
 }
 
-    const emojiRegex = /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu;
-
-    const emojiStrategy = (contentBlock: ContentBlock, callback: (start: number, end: number) => void, contentState: ContentState) => {
-        findWithRegex(emojiRegex, contentBlock, callback);
+const compositeDecorators = [
+    {
+        strategy: emojiStrategy,
+        component: (props?: any | undefined) => <span className="emoji-item">{props.children}</span>
     }
-
-    function findWithRegex(regex: RegExp, contentBlock: ContentBlock, callback: (start: number, end: number) => void) {
-        const text = contentBlock.getText();
-        let matchArr, start;
-        while ((matchArr = regex.exec(text)) !== null) {
-          start = matchArr.index;
-          callback(start, start + matchArr[0].length);
-        }
-      }
-
-    const compositeDecorators = [
-        {
-            strategy: emojiStrategy,
-            component: (props?: any | undefined) => (<span className="emoji-item">{props.children}</span>)
-        }
-    ];
+];
 
 const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Ref<Editor> | null) => {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const [imagesArray, setImagesArray] = useState<CustomImagePropTypes[]>([]);
 
     useEffect(() => {
-        const draftState = markdownToDraft(props.message?.split("[IMAGES]")[0] || '');
+        const draftState = markdownToDraft(props.message?.split('[IMAGES]')[0] || '');
         const contentState = convertFromRaw(draftState);
         const newEditorState = EditorState.createWithContent(contentState);
-        
+
         setEditorState(newEditorState);
-    }, [props.message])
+    }, [props.message]);
 
     useEffect(() => {
         const imagesMarker = /\[IMAGES\]/gi;
         const imageRegex = /!\[(.*?)\]\((.*?)\)/gi;
         const imagesMatch = imagesMarker.exec(props?.message || '');
-    
+
         if (imagesMatch) {
-            const markdownArray = props?.message?.split("[IMAGES]")[1].match(imageRegex) || [];
-            const imagesObjectsArray = markdownArray.map(imgMd => ({
+            const markdownArray = props?.message?.split('[IMAGES]')[1].match(imageRegex) || [];
+            const imagesObjectsArray = markdownArray.map((imgMd) => ({
                 src: imgMd.trim().split('](')[1].split('"')[0].trim(),
                 alt: imgMd.trim().split('![')[1].split(']')[0]
             }));
             setImagesArray(imagesObjectsArray);
         }
-    }, [props.message])
+    }, [props.message]);
 
     if (!props.message) return null;
 
     const gifRegex = /\[GIPHY\]![a-zA-Z0-9^]/gi;
     const gifArray = gifRegex.exec(props.message);
 
-    if (gifArray) return <CustomGif gifId={props.message.split('!')[1]} />
+    if (gifArray) return <CustomGif gifId={props.message.split('!')[1]} />;
 
     return (
         <div>
-            <div
-                className="relative flex align-end"
-                style={{ width: props.parentWidth ? props.parentWidth : "100%" }}
-            >
-                <EditorStyled 
+            <div className="relative flex align-end" style={{ width: props.parentWidth ? props.parentWidth : '100%' }}>
+                <EditorStyled
                     bgColor={props.bgColor}
                     border={props.border}
                     color={props.color}
@@ -196,7 +195,9 @@ const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Re
 
             {!!imagesArray.length && (
                 <div className="images-wrapper flex gap-20">
-                    {imagesArray.map(imageObject => (<CustomImage src={imageObject.src} alt={imageObject.alt} />))}
+                    {imagesArray.map((imageObject) => (
+                        <CustomImage src={imageObject.src} alt={imageObject.alt} />
+                    ))}
                 </div>
             )}
         </div>
