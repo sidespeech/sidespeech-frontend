@@ -1,35 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation, useOutletContext } from "react-router-dom";
-import { toast } from "react-toastify";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation, useOutletContext } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import "./App.css";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./redux/store/app.store";
-import { Outlet } from "react-router-dom";
+import './App.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from './redux/store/app.store';
+import { Outlet } from 'react-router-dom';
 
 // Components
-import GeneralSettingsMenu from "./components/GeneralSettings/ContainerLeft/Index";
+import GeneralSettingsMenu from './components/GeneralSettings/ContainerLeft/Index';
 
 // Images
 
-import websocketService from "./services/websocket-services/websocket.service";
+import websocketService from './services/websocket-services/websocket.service';
 
 // Redux
-import { connect, fetchUserDatas } from "./redux/Slices/UserDataSlice";
+import { connect, fetchUserDatas } from './redux/Slices/UserDataSlice';
 
 // API's
-import { getRandomId } from "./helpers/utilities";
-import MobileMenu from "./components/ui-components/MobileMenu";
-import DesktopMenu from "./components/ui-components/DesktopMenu";
-import userService from "./services/api-services/user.service";
-import _ from "lodash";
+import { getRandomId } from './helpers/utilities';
+import MobileMenu from './components/ui-components/MobileMenu';
+import DesktopMenu from './components/ui-components/DesktopMenu';
+import userService from './services/api-services/user.service';
+import _ from 'lodash';
 
 export interface GeneralSettingsAccountContext {
-  isSettingsMobileMenuOpen?: boolean;
-  setIsSettingsMobileMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+	isSettingsMobileMenuOpen?: boolean;
+	setIsSettingsMobileMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const accountInitialState = localStorage.getItem("userAccount") && localStorage.getItem("jwtToken") && window.ethereum.selectedAddress ? window.ethereum.selectedAddress : null;
+const accountInitialState =
+	localStorage.getItem('userAccount') && localStorage.getItem('jwtToken') && window.ethereum.selectedAddress
+		? window.ethereum.selectedAddress
+		: null;
 
 function App() {
   const [isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpen] = useState<boolean>(false);
@@ -63,75 +66,69 @@ function App() {
       }
     }
 
-    // This is needed because the metamask extension connection isn't picked up on just normal useEffect after refresh.
-    window.onload = (event) => {
+		// This is needed because the metamask extension connection isn't picked up on just normal useEffect after refresh.
+		window.onload = event => {
+			const connectedWallet = window.ethereum.selectedAddress ? window.ethereum.selectedAddress : null;
 
-      const connectedWallet = window.ethereum.selectedAddress ? window.ethereum.selectedAddress : null;
+			if (connectedWallet) {
+				console.log('Wallet is connected to: ', connectedWallet);
+				setAccount(connectedWallet);
+				getUser(connectedWallet);
+			} else {
+				console.log('Wallet is not connected');
+			}
+		};
 
-      if (connectedWallet) {
-        console.log("Wallet is connected to: ", connectedWallet);
-        setAccount(connectedWallet);
-        getUser(connectedWallet);
-      } else {
-         console.log("Wallet is not connected");
-      }
+		return () => {
+			websocketService.deconnectWebsocket();
+		};
+	}, []);
 
-    };
+	return (
+		<div className="main-container relative">
+			{onBoarding || login ? (
+				<div
+					className={`${onBoarding ? 'onboarding' : ''} middle-container f-column align-center `}
+					style={{ width: '100%' }}
+				>
+					<Outlet></Outlet>
+				</div>
+			) : generalSettings ? (
+				<div style={{ display: 'flex', width: '100%' }}>
+					<GeneralSettingsMenu
+						isSettingsMobileMenuOpen={isSettingsMobileMenuOpen}
+						setIsSettingsMobileMenuOpen={setIsSettingsMobileMenuOpen}
+					/>
+					<Outlet
+						context={{
+							isSettingsMobileMenuOpen,
+							setIsSettingsMobileMenuOpen
+						}}
+					/>
 
-
-    return () => {
-      websocketService.deconnectWebsocket();
-    };
-  }, []);
-  
-  return (
-    <div className="main-container relative">
-      {onBoarding ? (
-          <div 
-            className={`${onBoarding ? "onboarding" : ""} middle-container f-column align-center `}
-            style={{width: "100%"}}
-            >
-            <Outlet></Outlet>
-          </div>
-        ) : generalSettings ? (
-              <div style={{ display: "flex", width: "100%"}}>
-                <GeneralSettingsMenu 
-                  isSettingsMobileMenuOpen={isSettingsMobileMenuOpen} 
-                  setIsSettingsMobileMenuOpen={setIsSettingsMobileMenuOpen}
-                />
-                <Outlet 
-                  context={{
-                    isSettingsMobileMenuOpen,
-                    setIsSettingsMobileMenuOpen
-                  }}
-                />
-
-                <div className="mobile-bottom-menu">
-                  <MobileMenu />
-                </div>
-              </div>
-            ) : (
-              <div className="containers-wrapper">
-                {!loginPage ? (
-                  <div className="left-container">
-                  <DesktopMenu userData={userData} />
-                </div>
-                ) : ''}
-                <div className="middle-container">
-                  <Outlet></Outlet>
-                </div>
-                <div className="mobile-bottom-menu">
-                  <MobileMenu />
-                </div>
-              </div>
-            )
-      }
-    </div>
-  );
+					<div className="mobile-bottom-menu">
+						<MobileMenu />
+					</div>
+				</div>
+			) : (
+				<div className="containers-wrapper">
+					<div className="left-container">
+						<DesktopMenu userData={userData} />
+					</div>
+					<div className="middle-container">
+						<Outlet></Outlet>
+					</div>
+					<div className="mobile-bottom-menu">
+						<MobileMenu />
+					</div>
+				</div>
+			)}
+		</div>
+	);
 }
 
 export function useGeneralSettingsContext() {
-  return useOutletContext<GeneralSettingsAccountContext>();
+	return useOutletContext<GeneralSettingsAccountContext>();
 }
 
 export default App;

@@ -15,7 +15,7 @@ interface ButtonProps {
 const CustomButton = styled.button<ButtonProps>`
     width: ${(props) => (props.width ? props.width : '251px')};
     height: ${(props) => (props.height ? props.height : 48)}px;
-    color: ${(props) => (props.background ? props.color : 'white')};
+    color: ${(props) => (props.background ? props.color : 'var(--background)')};
     background: ${(props) => (props.background ? props.background : 'var(--primary)')};
     border-radius: ${(props) => (props.radius ? props.radius : 10)}px;
     border: ${(props) => (props.border ? props.border : 'none')};
@@ -28,6 +28,9 @@ const CustomButton = styled.button<ButtonProps>`
     pointer-events: ${(props) => (props.disabled ? 'none' : 'all')};
     filter: ${(props) => props.disabled && 'grayscale(1)'};
     opacity: ${(props) => props.disabled && 0.2};
+    &:disabled {
+        color: var(--inactive);
+    }
 `;
 const CustomButtonSecondary = styled.button<ButtonProps>`
     width: ${(props) => (props.width ? props.width : '251px')};

@@ -45,12 +45,6 @@
     }
 }
 
-.connection-container {
-    width: 100%;
-    height: 390px;
-    border-radius: 10px;
-}
-
 .middle-container-center {
     height: 90vh;
     display: flex;
