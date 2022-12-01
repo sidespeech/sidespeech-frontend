@@ -1,50 +1,78 @@
-import { useState, useEffect } from "react";
-import styled from "styled-components";
-import { fixURL } from "../../helpers/utilities";
-import { Collection, OpenSeaRequestStatus } from "../../models/interfaces/collection";
-import { NFT } from "../../models/interfaces/nft";
-import defaultPP from "../../assets/default-pp.webp";
-import check from "../../assets/check.svg";
+import { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { fixURL } from '../../helpers/utilities';
+import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
+import { NFT } from '../../models/interfaces/nft';
+import defaultPP from '../../assets/default-pp.webp';
+import check from '../../assets/check.svg';
+import { breakpoints, size } from '../../helpers/breakpoints';
 
 export const NftItem = ({ nft, collection }: { nft: NFT; collection: Collection }) => {
     const [url, setUrl] = useState<string>(defaultPP);
-  
+
     useEffect(() => {
-      if (nft && nft.metadata && nft.metadata.image) {
-        setUrl(fixURL(nft.metadata.image));
-      }
+        if (nft && nft.metadata && nft.metadata.image) {
+            setUrl(fixURL(nft.metadata.image));
+        }
     }, [nft]);
-  
+
     return (
-      <NftItemContainer className="f-column">
-        <img width={251} height={251} src={url} style={{ objectFit: "cover" }} />
-        <NftData>
-          <div >#{nft.token_id}</div>
-          {collection && (
-            <div >
-              {collection.name}
-              {collection.opensea?.safelistRequestStatus ===
-                OpenSeaRequestStatus.verified && <img src={check} />}
-            </div>
-          )}
-        </NftData>
-      </NftItemContainer>
+        <NftItemContainer>
+            <img className="nft-img" src={url} />
+            <NftData>
+                <div>#{nft.token_id}</div>
+                {collection && (
+                    <div>
+                        {collection.name}
+                        {collection.opensea?.safelistRequestStatus === OpenSeaRequestStatus.verified && (
+                            <img src={check} />
+                        )}
+                    </div>
+                )}
+            </NftData>
+        </NftItemContainer>
     );
-  };
-  
-  
-  
-  export const NftData = styled.div`
+};
+
+export const NftData = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 16px 12px;
-    color: var(--text)
-  
-  `;
-  export const NftItemContainer = styled.div`
-    background: var(--input);
+    padding: 1rem;
+    color: var(--text);
+`;
+export const NftItemContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    background: var(--black-transparency-20);
     border-radius: 10px;
     overflow: hidden;
-  `;
+    width: 100%;
+    max-width: 200px;
+    ${breakpoints(
+        size.md,
+        `{
+        width: 50%;
+    }`
+    )}
+    ${breakpoints(
+        size.lg,
+        `{
+        max-width: 251px;
+    }`
+    )}
+    & .nft-img {
+        width: 100%;
+        height: auto;
+        min-height: 150px;
+        max-height: 250px;
+        object-fit: cover;
+        ${breakpoints(
+            size.lg,
+            `{
+            height: 251px;
+        }`
+        )}
+    }
+`;

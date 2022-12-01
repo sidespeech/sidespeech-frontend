@@ -6,23 +6,21 @@ import { searchFiltersProps } from './DashboardPage';
 import FeaturedSides from './FeaturedSides';
 import UserCollections from './user-collections/UserCollections';
 
-const DashboardExploreStyles = styled.main`
-
-`;
+const DashboardExploreStyles = styled.main``;
 
 interface DashboardExploreProps {
-  featureSides: Side[];
-  featureSidesLoading: boolean;
-  setSearchFilters: React.Dispatch<React.SetStateAction<searchFiltersProps>>;
+	featureSides: Side[];
+	featureSidesLoading: boolean;
+	setSearchFilters: React.Dispatch<React.SetStateAction<searchFiltersProps>>;
 }
 
-const DashboardExplore = ({featureSides, featureSidesLoading, setSearchFilters}: DashboardExploreProps) => {
-  return (
-    <DashboardExploreStyles>
-        <FeaturedSides featuredSides={featureSides} sidesLoading={featureSidesLoading} />
-        <UserCollections setSearchFilters={setSearchFilters} />
-    </DashboardExploreStyles>
-  )
-}
+const DashboardExplore = ({ featureSides, featureSidesLoading, setSearchFilters }: DashboardExploreProps) => {
+	return (
+		<DashboardExploreStyles>
+			<FeaturedSides featuredSides={featureSides} sidesLoading={featureSidesLoading} />
+			<UserCollections setSearchFilters={setSearchFilters} />
+		</DashboardExploreStyles>
+	);
+};
 
-export default DashboardExplore
+export default DashboardExplore;

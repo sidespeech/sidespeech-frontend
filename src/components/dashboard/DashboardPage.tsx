@@ -24,6 +24,7 @@ const DashboardPageStyled = styled.div`
 	flex-direction: column;
 	overflow-y: scroll;
 	width: 100%;
+	flex-grow: 1;
 	min-height: 100vh;
 	padding: 0 0 77px 0;
 	${breakpoints(

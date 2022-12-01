@@ -127,14 +127,7 @@ export default function Bio({ updateCurrentStep }: ChildProps) {
             </div>
 
             <div className="actions">
-                <Button
-                    classes={'mt-3 back'}
-                    width={'159px'}
-                    height={44}
-                    onClick={goBack}
-                    radius={10}
-                    color={'var(--text)'}
-                >
+                <Button classes={'mt-3 back'} width={'159px'} height={44} onClick={goBack} radius={10}>
                     Back
                 </Button>
 
@@ -145,7 +138,6 @@ export default function Bio({ updateCurrentStep }: ChildProps) {
                     height={44}
                     onClick={onSubmit}
                     radius={10}
-                    color={'var(--text)'}
                 >
                     {bioLength == 0 ? 'Skip' : 'Continue'}
                 </Button>

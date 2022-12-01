@@ -7,6 +7,7 @@ import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import Spinner from '../ui-components/Spinner';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
+import { OpenSeaRequestStatus } from '../../models/interfaces/collection';
 
 const CARD_HEIGHT = 191;
 const CARD_WIDTH = 265;
@@ -81,7 +82,7 @@ const FeatureSideCard = ({ onJoin, side }: FeaturedSideCardProps) => {
                     <div className="collections">
                         <span className="collection">
                             {side.firstCollection?.collectionName}
-                            {side.firstCollection.safelistRequestStatus === 'verified' && (
+                            {side.firstCollection.safelistRequestStatus === OpenSeaRequestStatus.verified && (
                                 <svg
                                     width="17"
                                     height="16"
