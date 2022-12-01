@@ -1,113 +1,41 @@
-.main-container {
-    height: 100vh;
-    max-height: 100vh;
-    display: flex;
-    overflow: hidden;
-}
-
-.containers-wrapper {
-    display: flex;
-    width: 100vw;
-}
-
-@media screen and (min-width: 980px) {
-    width: 100%;
-}
-
-.left-container {
-    background-color: var(--panels-gray);
-    width: 70px;
-    display: none;
-    flex-direction: column;
-    text-align: center;
-    justify-content: space-between;
-    padding: 13px 0px 21px 0px;
-}
-@media screen and (min-width: 980px) {
-    .left-container {
-        display: flex;
-    }
-}
-
-.middle-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: var(--background);
-    width: 100%;
-    padding-bottom: 77px;
-}
-
-@media screen and (min-width: 980px) {
-    .middle-container {
-        width: calc(100% - 70px);
-        padding-bottom: 0;
-    }
-}
-
-.middle-container-center {
-    height: 90vh;
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-}
-
 .profile-round {
-    width: 35px;
-    height: 35px;
-    background-color: var(--input);
-    border: 1px solid black;
-    border-radius: 20px;
-    margin: 0px 12px;
-    overflow: hidden;
-    object-fit: cover;
+	width: 35px;
+	height: 35px;
+	background-color: var(--input);
+	border: 1px solid black;
+	border-radius: 20px;
+	margin: 0px 12px;
+	overflow: hidden;
+	object-fit: cover;
 }
 
 .upload-colony-image {
-    flex-shrink: 0;
-    width: 70px;
-    height: 70px;
-    cursor: pointer;
-    background: var(--input);
-    outline: 1px dashed var(--inactive);
-    border: 4px solid var(--background);
-    border-radius: 100px;
-    text-align: center;
-    color: var(--inactive);
-    overflow: hidden;
+	flex-shrink: 0;
+	width: 70px;
+	height: 70px;
+	cursor: pointer;
+	background: var(--input);
+	outline: 1px dashed var(--inactive);
+	border: 4px solid var(--background);
+	border-radius: 100px;
+	text-align: center;
+	color: var(--inactive);
+	overflow: hidden;
 }
 
 .upload-side-settings-image {
-    width: 80px;
-    height: 80px;
+	width: 80px;
+	height: 80px;
 }
 
 .upload-colony-cover {
-    width: 200px;
-    height: 100px;
-    cursor: pointer;
-    background: var(--input);
-    border: 2px dashed var(--inactive);
-    border-radius: 3px;
-    text-align: center;
-    color: var(--inactive);
-    overflow: hidden;
-}
-
-.mobile-bottom-menu {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    margin: 0;
-    width: 100vw;
-    height: 77px;
-    background-color: var(--panels-gray);
-    z-index: 9900;
-}
-
-@media screen and (min-width: 980px) {
-    .mobile-bottom-menu {
-        display: none;
-    }
+	width: 200px;
+	height: 100px;
+	cursor: pointer;
+	background: var(--input);
+	border: 2px dashed var(--inactive);
+	border-radius: 3px;
+	text-align: center;
+	color: var(--inactive);
+	overflow: hidden;
 }
