@@ -35,6 +35,7 @@ function App() {
   const [isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpen] = useState<boolean>(false);
   const [account, setAccount] = useState<string>(accountInitialState)
   const [accountStatus, setAccountStatus] = useState<boolean>(false);
+  const [loginPage, setLoginPage] = useState<boolean>(true);
   const userData: any = useSelector((state: RootState) => state.user);
   
   const location = useLocation();
@@ -43,6 +44,7 @@ function App() {
   const onBoarding = location.pathname.indexOf("/onboarding") > -1;
   let generalSettings = location.pathname.indexOf("/general-settings") > -1;
 
+  
   useEffect(() => {
     websocketService.connectToWebSocket();
 
@@ -52,10 +54,12 @@ function App() {
         dispatch(connect({ account: account, user: user }));
         dispatch(fetchUserDatas(account));
         setAccountStatus(true);
+        setLoginPage(false);
       } catch (error) {
        console.error(error);
        toast.error('Ooops! Something went wrong fetching your account data', { toastId: getRandomId() });
        setAccountStatus(false);
+       setLoginPage(true);
       }
     }
 
@@ -73,6 +77,7 @@ function App() {
       }
 
     };
+
 
     return () => {
       websocketService.deconnectWebsocket();
@@ -107,9 +112,11 @@ function App() {
               </div>
             ) : (
               <div className="containers-wrapper">
-                <div className="left-container">
+                {!loginPage ? (
+                  <div className="left-container">
                   <DesktopMenu userData={userData} />
                 </div>
+                ) : ''}
                 <div className="middle-container">
                   <Outlet></Outlet>
                 </div>

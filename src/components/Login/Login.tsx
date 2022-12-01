@@ -48,7 +48,7 @@ export default function Login() {
         // Setup the web3 modal...
         const web3Modal = new Web3Modal({
             network: 'mainnet', // optional
-            cacheProvider: true, // optional
+            cacheProvider: false, // optional
             providerOptions // required
         });
 
@@ -78,19 +78,11 @@ export default function Login() {
 
                 // If there are any accounts connected then send them to the API.
                 if (accounts) {
-                    let nonce;
-
-                    if (!localStorage.getItem('nonce')) {
-                        nonce = randomNonce(24);
-                        localStorage.setItem('nonce', nonce);
-                    } else {
-                        nonce = localStorage.getItem('nonce');
-                    }
 
                     // Get Signer
                     const signer = library.getSigner();
 
-                    const randomNonceString = nonce;
+                    const randomNonceString = randomNonce(12);
 
                     // Grab the wallet address
                     const address = await signer.getAddress();

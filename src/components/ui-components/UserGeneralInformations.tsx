@@ -131,6 +131,7 @@ export default function UserGeneralInformations({
     const [errorData, setErrorData] = useState<InitialErrorState>(initialStateError);
 
     const [collectionName, setCollectionName] = useState<string | undefined>(undefined);
+    const [loginPage, setLoginPage] = useState<boolean>(true);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -167,8 +168,6 @@ export default function UserGeneralInformations({
 
     const logout = () => {
         dispatch(disconnect());
-        localStorage.removeItem('userAccount');
-        localStorage.removeItem('jwtToken');
         navigate('/');
     };
 
