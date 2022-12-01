@@ -26,7 +26,7 @@ interface IAdmissionProps {
 	onlyOneRequired: boolean;
 	setOnlyOneRequired: any;
 	setNumberOfNftNeededToDivCollection: any;
-    userCollectionsData: UserCollectionsData
+	userCollectionsData: UserCollectionsData;
 }
 interface IRequirementsRadioButtonContainerProps {
 	selected: boolean;
@@ -193,7 +193,7 @@ export default function Admission({
 	onlyOneRequired,
 	setOnlyOneRequired,
 	setNumberOfNftNeededToDivCollection,
-    userCollectionsData
+	userCollectionsData
 }: IAdmissionProps) {
 	const dispatch = useDispatch();
 	const [value, setValue] = useState(false);
@@ -280,7 +280,16 @@ export default function Admission({
 																						alt="thumbnail"
 																					/>
 																				) : null}
-																				<span className="ml-2 mr-3" style={{color: userCollectionsData[c.address] ? 'var(--main)' : "var(--red)"}}>
+																				<span
+																					className="ml-2 mr-3"
+																					style={{
+																						color: userCollectionsData[
+																							c.address
+																						]
+																							? 'var(--main)'
+																							: 'var(--red)'
+																					}}
+																				>
 																					{c.name}
 																				</span>
 																				{c.opensea?.safelistRequestStatus ===
@@ -317,9 +326,10 @@ export default function Admission({
 															  ]
 															: ['Choose collection']
 													}
-													onChange={(address: string) =>
-														setSideTokenAddress(address, i, filteredCollections)
-													}
+													onChange={(address: string) => {
+														setFilter('');
+														setSideTokenAddress(address, i, filteredCollections);
+													}}
 													filterDropdownList={filterDropdownList}
 												/>
 												<div className="ml-4">
@@ -627,7 +637,10 @@ export default function Admission({
 					radius={10}
 					background={'var(--disable)'}
 					color={'var(--text)'}
-					onClick={() => addDivCollection()}
+					onClick={() => {
+						setFilter('');
+						addDivCollection();
+					}}
 				>
 					<i className="fa-solid fa-circle-plus mr-2"></i> Add a collection
 				</Button>

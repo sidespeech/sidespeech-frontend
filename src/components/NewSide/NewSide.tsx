@@ -477,8 +477,10 @@ export default function NewSide() {
 
 	// Creation properties object to display in conditions
 	function createPropertiesObject(address: string) {
-		if (!userCollectionsData) return;
-		const properties = userCollectionsData[address].getCollectionProperties();
+		const selectedCollection = collections.find(c => c.address === address);
+		if (!selectedCollection) return;
+		const properties = selectedCollection.getCollectionProperties();
+		console.log(properties);
 		return properties;
 	}
 

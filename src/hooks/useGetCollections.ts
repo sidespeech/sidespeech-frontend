@@ -10,8 +10,10 @@ export default function useGetCollections(): Collection[] {
 
 	useEffect(() => {
 		const getCollections = async () => {
-			const response = await collectionService.getAllCollections();
-			setCollections(response);
+			if (user?.token) {
+				const response = await collectionService.getAllCollections();
+				setCollections(response);
+			}
 		};
 		getCollections();
 	}, [user?.token]);

@@ -20,7 +20,6 @@ export class Collection {
 	sides: Side[] = [];
 	constructor(_data: any) {
 		this.address = _data.address;
-		this.name = _data.opensea?.collectionName || _data.name || 'No name data';
 		this.symbol = _data.symbol;
 		this.tokenType = _data.tokenType;
 		this.totalSupply = _data.totalSupply;
@@ -36,50 +35,75 @@ export class Collection {
 				? JSON.parse(_data.opensea)
 				: _data.opensea
 			: null;
+		this.name = this.opensea?.collectionName || _data.name || 'No name data';
 		this.traits = _data.traits ? JSON.parse(_data.traits) : [];
 		this.sides = _data.sides || [];
 	}
 
 	getCollectionProperties() {
-		return this.nfts.reduce(function (filtered: any, current) {
-			const metadata = current['metadata'];
-			if (metadata['attributes']) {
-				const attributes = metadata['attributes'];
-				if (Array.isArray(attributes)) {
-					for (let attribute of attributes) {
-						let property_exists =
-							filtered.filter(function (o: any) {
-								return o['property']['value'] == attribute['trait_type'];
-							}).length > 0;
-						if (property_exists) {
-							for (let element of filtered) {
-								if (element['property']['value'] == attribute['trait_type']) {
-									let value_exists =
-										element['values'].filter(function (o: any) {
-											return o['value'] == attribute['value'];
-										}).length > 0;
-									if (!value_exists)
-										element['values'].push({
-											label: attribute['value'],
-											value: attribute['value']
-										});
-								}
-							}
-						} else {
-							filtered.push({
-								property: {
-									label: attribute['trait_type'],
-									value: attribute['trait_type']
-								},
-								values: [{ label: attribute['value'], value: attribute['value'] }],
-								values_used: []
-							});
-						}
-					}
-				}
+		return this.traits.reduce(function (filtered: any, current) {
+			if (current.values.length > 0) {
+				filtered.push({
+					property: {
+						label: current['type'],
+						value: current['type']
+					},
+					values: [
+						...current.values.map(v => {
+							return { label: v, value: v };
+						})
+					],
+					values_used: []
+				});
 			}
 			return filtered;
 		}, []);
+	}
+
+	getPropertiesOwnedByUser() {
+		if (this.nfts.length > 0) {
+			return this.nfts.reduce(function (filtered: any, current) {
+				const metadata = current['metadata'];
+				if (metadata['attributes']) {
+					const attributes = metadata['attributes'];
+					if (Array.isArray(attributes)) {
+						for (let attribute of attributes) {
+							let property_exists =
+								filtered.filter(function (o: any) {
+									return o['property']['value'] == attribute['trait_type'];
+								}).length > 0;
+							if (property_exists) {
+								for (let element of filtered) {
+									if (element['property']['value'] == attribute['trait_type']) {
+										let value_exists =
+											element['values'].filter(function (o: any) {
+												return o['value'] == attribute['value'];
+											}).length > 0;
+										if (!value_exists)
+											element['values'].push({
+												label: attribute['value'],
+												value: attribute['value']
+											});
+									}
+								}
+							} else {
+								filtered.push({
+									property: {
+										label: attribute['trait_type'],
+										value: attribute['trait_type']
+									},
+									values: [{ label: attribute['value'], value: attribute['value'] }],
+									values_used: []
+								});
+							}
+						}
+					}
+				}
+				return filtered;
+			}, []);
+		} else {
+			return [];
+		}
 	}
 }
 
