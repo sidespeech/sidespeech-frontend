@@ -27,6 +27,7 @@ import UserProfile from './components/CurrentColony/UserProfile/UserProfile';
 import PublicUserProfile from './components/PublicUserProfile/PublicUserProfile';
 import CurrentSideMiddle from './components/CurrentColony/CurrentSideMiddle/CurrentSideMiddle';
 import ChannelView from './components/CurrentColony/CurrentSideMiddle/ChannelView';
+import Login from './components/Login/Login';
 
 ReactDOM.render(
     <Provider store={store}>
@@ -50,6 +51,7 @@ ReactDOM.render(
                 <Routes>
                     <Route path="/" element={<App />}>
                         <Route index element={<DefaultView />} />
+                        <Route path="/login" element={<Login />} />
                         <Route path="/my-sides" element={<DefaultView />} />
                         <Route path="/invitations" element={<DefaultView />} />
                         <Route path="/search" element={<DefaultView />} />

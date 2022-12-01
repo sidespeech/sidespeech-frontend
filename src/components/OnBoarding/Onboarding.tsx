@@ -19,7 +19,7 @@ const OnBoardingStyled = styled.div`
     justify-content: space-between;
     width: 100%;
     height: 100%;
-    background: var(--panels-gray);
+    background: var(--background);
     padding: 10vh 0 5vh 0;
     .content {
         width: 100%;
@@ -54,6 +54,7 @@ const OnBoardingStyled = styled.div`
                 text-align: center;
                 background-color: rgba(125, 166, 220, 0.1);
                 color: var(--inactive);
+                font-weight: 700;
             }
             &::after {
                 content: '';
@@ -74,7 +75,7 @@ const OnBoardingStyled = styled.div`
             }
             &.active::before {
                 background: var(--primary);
-                color: var(--text);
+                color: var(--background);
             }
             &.complete::after {
                 background-color: var(--primary);
@@ -130,13 +131,30 @@ const OnBoardingStyled = styled.div`
             &.back {
                 background-color: transparent;
                 border: 1px solid rgba(125, 166, 220, 0.1);
+                color: var(--text);
             }
             &.skip {
                 background-color: rgba(125, 166, 220, 0.1);
+                color: var(--text);
             }
             &.submit {
                 background-color: var(--primary);
             }
+        }
+    }
+    & .logoArea {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        & p {
+            font-size: 22px;
+            font-weight: 700;
+            ${breakpoints(
+                size.lg,
+                `{
+                font-size: 2rem;
+            }`
+            )}
         }
     }
 `;
@@ -209,7 +227,20 @@ export default function OnBoarding() {
             </div>
 
             <div className="logoArea">
-                <img src={logoComplete} />
+                <svg
+                    className="logo"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 28 28"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M15.9588 11.243L12.7487 11.2363C11.2681 11.2363 10.0627 10.0005 10.0627 8.48261V8.28112C10.0627 6.76325 11.2681 5.52747 12.7487 5.52747H28C26.7029 3.29096 24.9733 1.39698 22.8376 0H12.7422C8.28732 0 4.67103 3.71408 4.67103 8.27441V8.47589C4.67103 9.44303 4.83481 10.3699 5.13617 11.2363C6.24988 14.4466 9.23725 16.757 12.7487 16.757L15.9588 16.7637C17.4394 16.7637 18.6448 17.9995 18.6448 19.5174V19.7189C18.6448 21.2367 17.4394 22.4725 15.9588 22.4725H0C1.29715 24.709 3.04633 26.603 5.18203 28H15.9523C20.4071 28 24.0234 24.2859 24.0234 19.7256V19.5241C24.0234 18.557 23.8596 17.6301 23.5583 16.7637C22.4576 13.5534 19.4637 11.243 15.9588 11.243Z"
+                        fill="var(--primary)"
+                    />
+                </svg>
+                <p>SideSpeech</p>
             </div>
         </OnBoardingStyled>
     );

@@ -17,6 +17,7 @@ import UserBadge from './UserBadge';
 import defaultPP from '../../assets/default-pp.webp';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import SidesListMobileMenu from '../CurrentColony/SidesListMobileMenu';
+import { OpenSeaRequestStatus } from '../../models/interfaces/collection';
 
 const MiddleContainerHeaderStyled = styled.header`
     width: 100%;
@@ -589,7 +590,7 @@ export default function MiddleContainerHeader({
                                 <img src={currentSide?.sideImage} alt="" />
                             </div>
                             <span>{currentSide?.name}</span>
-                            {currentSide?.firstCollection?.safelistRequestStatus === 'verified' && (
+                            {currentSide?.firstCollection?.safelistRequestStatus === OpenSeaRequestStatus.verified && (
                                 <svg
                                     width="13"
                                     height="14"
