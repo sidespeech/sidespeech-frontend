@@ -45,6 +45,7 @@ function App() {
   const dispatch = useDispatch();
 
   const onBoarding = location.pathname.indexOf("/onboarding") > -1;
+  const login = location.pathname.indexOf("/login") > -1;
   let generalSettings = location.pathname.indexOf("/general-settings") > -1;
 
   
