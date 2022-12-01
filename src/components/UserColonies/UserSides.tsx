@@ -96,16 +96,18 @@ export default function UserSides() {
     // Function to get notification from db and assign them to the state variable
     async function getAndSetRoomNotifications(account: string) {
         const notifications = await notificationService.getNotification(account!);
-        let dots_object: any = { ...dots };
+        let dots_object: any = { ...dots }
 
         const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
         for (let notification of notifications) {
+
+            // If the message is for current Side
             if (
                 currentChannelsIds.includes(notification['name']) ||
                 currentSide?.profiles.find((p: Profile) => p.rooms.some((el) => el.id === notification['name']))
             ) {
                 dots_object[currentSide!['id']] = 0;
-            } else {
+            } else { // If the message is for another Side
                 let sideFounded: any;
 
                 if (notification['type'] == NotificationType.Channel) {

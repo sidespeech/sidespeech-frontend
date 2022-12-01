@@ -49,12 +49,19 @@ class SideService extends BaseApiService {
         return sidesList;
     }
 
-    // get all sides by search string
-    async getSidesByOwner(address: string, userCollectionsData?: any, userSides?: Side[]): Promise<Side[]> {
-        const res = await this.get(`${BASE_URL}/side/owner?address=${address}`);
-        const sidesList = await getSidesMetadata(res.body, userCollectionsData, userSides);
-        return sidesList;
-    }
+  async getSidesByOwner(
+    address: string,
+    userCollectionsData?: any,
+    userSides?: Side[]
+  ): Promise<Side[]> {
+    const res = await this.get(`${BASE_URL}/side/owner?address=${address}`);
+    const sidesList = await getSidesMetadata(
+      res.body,
+      userCollectionsData,
+      userSides
+    );
+    return sidesList;
+  }
 
     // get all featured sides
     async getAllFeaturedSides(userCollectionsData?: any, userSides?: Side[]): Promise<Side[]> {

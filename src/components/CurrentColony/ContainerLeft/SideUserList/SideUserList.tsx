@@ -46,35 +46,25 @@ export default function SideUserList({
   handleSelectedUser,
   selectedUser,
   isMembersList,
+  onlineUsers
 }: {
   dots: any;
   handleSelectedUser: any;
   selectedUser: any;
   isMembersList?: boolean;
+  onlineUsers?: any
 }) {
   const { currentSide } = useSelector((state: RootState) => state.appDatas);
   const { currentProfile } = useSelector((state: RootState) => state.user);
-  const [usersStatus, setUsersStatus] = useState<any>({});
   const dispatch = useDispatch();
 
-  const handleUsersStatus = async (m: any) => {
-    const { detail } = m;
-    setUsersStatus(detail);
-  };
 
   useEffect(() => {
-    subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
-    return () => {
-      unSubscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
-    };
-  }, [usersStatus, handleUsersStatus]);
+  }, [onlineUsers, currentProfile, currentSide]);
 
-  useEffect(() => {}, [currentProfile, currentSide]);
-
-  return (
+  return (currentProfile ?
     <div className="f-column align-start w-100">
       {currentSide?.profiles.map((p: Profile, index: number) => {
-        let status;
         const id = getRandomId();
         const isMe = p.id === currentProfile?.id;
         const room = currentProfile?.getRoom(p.id);
@@ -83,15 +73,9 @@ export default function SideUserList({
         const url = p.profilePicture?.metadata?.image
           ? fixURL(p.profilePicture?.metadata?.image)
           : undefined;
-
-        if (usersStatus[index] && usersStatus[index].user) {
-          status = usersStatus[index].user.id == p.user.id ? true : false;
-        } else {
-          status = false;
-        }
-
         return (
-          <>
+          <React.Fragment key={index}>
+
             <ReactTooltip
               id={id}
               globalEventOff="click"
@@ -109,28 +93,38 @@ export default function SideUserList({
               data-for={id}
               key={index}
               onClick={
-                isMe ? () => {} : () => handleSelectedUser(p, currentProfile)
+                isMe ? () => { } : () => handleSelectedUser(p, currentProfile)
               }
-              className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${
-                selectedUser && selectedUser.id === p.id && "selected-channel"
-              } ${isMe ? "" : "pointer"}`}
+              className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${selectedUser && selectedUser.id === p.id && "selected-channel"
+                } ${isMe ? "" : "pointer"}`}
             >
               <div className="flex align-center">
-                <UserBadge
-                  avatar={url}
-                  weight={400}
-                  fontSize={11}
-                  username={p.user.username}
-                  connect={status}
-                />
+                {
+                  currentProfile['username'] !== p['username'] ?
+                    <UserBadge
+                      avatar={url}
+                      weight={400}
+                      fontSize={11}
+                      username={p.user.username}
+                      connect={onlineUsers.includes(p['username'])}
+                    /> :
+                    <UserBadge
+                      avatar={url}
+                      weight={400}
+                      fontSize={11}
+                      username={p.user.username}
+                      connect={true}
+                    />
+                }
+
                 {isMe && <span className="ml-2">(you)</span>}
               </div>
               {room && !isMe && dots[room.id] > 0 && <Dot>{dots[room.id]}</Dot>}
             </div>
-          </>
+          </React.Fragment>
         );
       })}
-    </div>
+    </div> : null
   );
 }
 
