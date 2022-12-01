@@ -35,33 +35,37 @@ const accountInitialState =
 		: null;
 
 function App() {
-	const [isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpen] = useState<boolean>(false);
-	const [account, setAccount] = useState<string>(accountInitialState);
-	const [accountStatus, setAccountStatus] = useState<boolean>(false);
-	const userData: any = useSelector((state: RootState) => state.user);
+  const [isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpen] = useState<boolean>(false);
+  const [account, setAccount] = useState<string>(accountInitialState)
+  const [accountStatus, setAccountStatus] = useState<boolean>(false);
+  const [loginPage, setLoginPage] = useState<boolean>(true);
+  const userData: any = useSelector((state: RootState) => state.user);
+  
+  const location = useLocation();
+  const dispatch = useDispatch();
 
-	const location = useLocation();
-	const dispatch = useDispatch();
+  const onBoarding = location.pathname.indexOf("/onboarding") > -1;
+  const login = location.pathname.indexOf("/login") > -1;
+  let generalSettings = location.pathname.indexOf("/general-settings") > -1;
 
-	const onBoarding = location.pathname.indexOf('/onboarding') > -1;
-	const login = location.pathname === '/login';
-	let generalSettings = location.pathname.indexOf('/general-settings') > -1;
+  
+  useEffect(() => {
+    websocketService.connectToWebSocket();
 
-	useEffect(() => {
-		websocketService.connectToWebSocket();
-
-		async function getUser(account: string) {
-			try {
-				const user = await userService.getUserByAddress(account);
-				dispatch(connect({ account: account, user: user }));
-				dispatch(fetchUserDatas(account));
-				setAccountStatus(true);
-			} catch (error) {
-				console.error(error);
-				toast.error('Ooops! Something went wrong fetching your account data', { toastId: getRandomId() });
-				setAccountStatus(false);
-			}
-		}
+    async function getUser(account: string) {
+      try {
+        const user = await userService.getUserByAddress(account);
+        dispatch(connect({ account: account, user: user }));
+        dispatch(fetchUserDatas(account));
+        setAccountStatus(true);
+        setLoginPage(false);
+      } catch (error) {
+       console.error(error);
+       toast.error('Ooops! Something went wrong fetching your account data', { toastId: getRandomId() });
+       setAccountStatus(false);
+       setLoginPage(true);
+      }
+    }
 
 		// This is needed because the metamask extension connection isn't picked up on just normal useEffect after refresh.
 		window.onload = event => {
