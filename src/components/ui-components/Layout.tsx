@@ -42,6 +42,14 @@ const LayoutStyled = styled.div`
 			padding-bottom: 0;
         }`
 		)}
+		&.full-screen {
+			${breakpoints(
+				size.lg,
+				`{
+				width: 100%;
+			}`
+			)}
+		}
 	}
 	.mobile-bottom-menu {
 		position: fixed;
@@ -90,7 +98,13 @@ const Layout = ({ children, isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpe
 					<DesktopMenu userData={userData} />
 				</div>
 			)}
-			<div className="middle-container">{children}</div>
+			<div
+				className={`middle-container ${
+					(generalSettings && isAuth) || !onBoarding || !login ? 'full-screen' : ''
+				}`}
+			>
+				{children}
+			</div>
 			{!onBoarding && !login && isAuth && (
 				<div className="mobile-bottom-menu">
 					<MobileMenu />
