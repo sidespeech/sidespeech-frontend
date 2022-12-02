@@ -91,7 +91,7 @@ export default function DashboardPage() {
 	const [searchText, setSearchText] = useState<string>('');
 	const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
 
-	const { sides } = useSelector((state: RootState) => state.user);
+	const { account, sides } = useSelector((state: RootState) => state.user);
 
 	useEffect(() => {
 		if (searchText || searchFilters.selectedCollection) navigate('/search');
@@ -110,16 +110,21 @@ export default function DashboardPage() {
 				setFeatureSidesLoading(false);
 			}
 		}
-		getAllFeaturedSides();
-	}, []);
+		if (account) getAllFeaturedSides();
+	}, [account]);
 
 	useEffect(() => {
 		const getCollections = async () => {
-			const response = await collectionService.getAllCollections();
-			setAllCollections(response);
+			try {
+				const response = await collectionService.getAllCollections();
+				setAllCollections(response);
+			} catch (error) {
+				console.error(error);
+				toast.error('Ooops! Something went wrong fetching your collections', { toastId: getRandomId() });
+			}
 		};
-		getCollections();
-	}, []);
+		if (account) getCollections();
+	}, [account]);
 
 	return (
 		<DashboardPageStyled>

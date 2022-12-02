@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,6 +35,7 @@ function App() {
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const userData = useSelector((state: RootState) => state.user);
 
@@ -49,6 +50,7 @@ function App() {
 
 	useEffect(() => {
 		if (userData.account === null || walletAddress == null) navigate('/login');
+		if (location.pathname === '/login' && userData.account) navigate('/');
 	}, [userData]);
 
 	useEffect(() => {
