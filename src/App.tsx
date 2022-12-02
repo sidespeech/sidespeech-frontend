@@ -48,7 +48,7 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		if (userData.account === null || walletAddress == null) navigate('/login');
+		if (userData.account === null) navigate('/login');
 	}, [userData]);
 
 	useEffect(() => {
