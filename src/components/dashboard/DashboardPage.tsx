@@ -85,13 +85,14 @@ export default function DashboardPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const currentTab = location.pathname;
+	const token = localStorage.getItem("jwtToken");
 
 	const [featuredSides, setFeaturedSides] = useState<Side[]>([]);
 	const [featureSidesLoading, setFeatureSidesLoading] = useState<boolean>(false);
 	const [searchText, setSearchText] = useState<string>('');
 	const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
 
-	const { sides } = useSelector((state: RootState) => state.user);
+	const { account, sides } = useSelector((state: RootState) => state.user);
 
 	const collections = useGetCollections();
 
@@ -112,8 +113,8 @@ export default function DashboardPage() {
 				setFeatureSidesLoading(false);
 			}
 		}
-		getAllFeaturedSides();
-	}, []);
+		if (account && token) getAllFeaturedSides();
+	}, [account, token]);
 
 	return (
 		<DashboardPageStyled>

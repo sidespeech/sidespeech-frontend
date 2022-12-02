@@ -6,17 +6,17 @@ import collectionService from '../services/api-services/collection.service';
 
 export default function useGetCollections(): Collection[] {
 	const [collections, setCollections] = useState<Collection[]>([]);
-	const { user } = useSelector((state: RootState) => state.user);
+	const { user, account } = useSelector((state: RootState) => state.user);
 
 	useEffect(() => {
 		const getCollections = async () => {
-			if (user?.token) {
+			if (user?.token && account) {
 				const response = await collectionService.getAllCollections();
 				setCollections(response);
 			}
 		};
 		getCollections();
-	}, [user?.token]);
+	}, [user?.token, account]);
 
 	return collections;
 }
