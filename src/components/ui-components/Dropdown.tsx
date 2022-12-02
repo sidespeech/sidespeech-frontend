@@ -22,7 +22,7 @@ const DropdownContainer = styled.div<any>`
 
 		width: inherit;
 		height: inherit;
-		background-color: var(--disable);
+		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--disable)')};
 		${props => props.selected && 'border-bottom: 1px solid var(--inactive);'}
 		display: flex;
 		align-items: center;
@@ -34,7 +34,8 @@ const DropdownContainer = styled.div<any>`
 	}
 	& > div[role='list'] > button {
 		width: 100%;
-		background-color: var(--disable);
+		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--disable)')};
+
 		height: 40px;
 		border-bottom: 1px solid var(--inactive);
 	}
@@ -44,7 +45,7 @@ const DropdownContainer = styled.div<any>`
 	}
 `;
 
-export default function Dropdown({ onChange, options, key, values, style, filterDropdownList }: any) {
+export default function Dropdown({ onChange, options, key, values, style, filterDropdownList, backgroundColor }: any) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [headerTitle, setHeaderTitle] = useState<any>(options[0]);
 
@@ -59,7 +60,7 @@ export default function Dropdown({ onChange, options, key, values, style, filter
 	};
 
 	return (
-		<DropdownContainer selected={isOpen} style={{ ...style }}>
+		<DropdownContainer selected={isOpen} backgroundColor={backgroundColor} style={{ ...style }}>
 			<button type="button" onClick={toggleList}>
 				<div className="m-auto">{headerTitle}</div>
 				<div className={`${isOpen ? 'selected' : ''} mr-2`}>

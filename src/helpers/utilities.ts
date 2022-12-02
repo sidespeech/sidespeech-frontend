@@ -4,6 +4,7 @@ import { Side } from '../models/Side';
 import { NFT } from '../models/interfaces/nft';
 import { Collection, OpenSeaRequestStatus } from '../models/interfaces/collection';
 import { Metadata } from '../models/Metadata';
+import { groupBy } from 'lodash';
 
 export function weiToDecimals(value: number, exposant: number = NUMBER_OF_DECIMALS) {
 	return value / 10 ** exposant;
@@ -105,6 +106,35 @@ export function timestampToLocalString(timestamp: string) {
 
 export interface ElligibilityResponse {
 	[key: string]: any[];
+}
+export function checkEligibilityByCondition(conditions: any, nfts: NFT[]): boolean {
+	const res: any[] = [];
+	const groupedNfts = groupBy(nfts, 'token_address');
+	const keys = Object.keys(conditions);
+	// pop to remove the required object in the conditions
+	keys.pop();
+	keys.forEach((address: string) => {
+		const condition = conditions[address];
+		if (!groupedNfts[address]) res.push(false);
+		else if (condition['features'] && condition['features'].length) {
+			for (let feature of condition['features']) {
+				const type = feature['property'];
+				const value = feature['value'];
+				const anafNft = groupedNfts[address].length >= condition['numberNeeded'];
+				const meetCondition = groupedNfts[address].some(nft =>
+					nft.metadata.attributes.some(a => a['trait_type'] === type && a['value'] === value)
+				);
+				if (!anafNft || !meetCondition) res.push(false);
+				else res.push(true);
+			}
+		} else {
+			const anafNft = groupedNfts[address].length >= condition['numberNeeded'];
+			if (!anafNft) res.push(false);
+			else res.push(true);
+		}
+	});
+	if (conditions['required']) return res.some(r => r);
+	else return res.every(r => r);
 }
 
 export function checkUserEligibility(nfts: any, selectedSide: Side): [ElligibilityResponse, boolean] {

@@ -350,18 +350,57 @@ export default function Admission({
 										{current['features'].length ? (
 											<>
 												{current['features'].map((fcurrent: any, findex: number) => {
+													const collection = userCollectionsData[current['collection']];
+
 													return (
 														<div className="feature-box" key={findex}>
 															<div className="feature-selects mr-auto">
-																<CustomSelect
-																	width={'100%'}
-																	height={'40px'}
-																	radius={'7px'}
-																	classes={'mr-3'}
-																	valueToSet={fcurrent['trait_selected']}
-																	fontSize={12}
-																	fontWeight={700}
-																	arrowPosition={{ top: 12, right: 15 }}
+																<Dropdown
+																	backgroundColor={'var(--input)'}
+																	options={
+																		current['traits_values'].length
+																			? [
+																					'Select trait',
+																					...current['traits_values'].map(
+																						(item: any) => {
+																							let hasFeature = false;
+
+																							if (collection) {
+																								hasFeature =
+																									collection.nfts.some(
+																										nft =>
+																											nft.metadata.attributes.find(
+																												a =>
+																													a.trait_type ===
+																													item[
+																														'property'
+																													][
+																														'value'
+																													]
+																											)
+																									);
+																							}
+
+																							return (
+																								<span
+																									className={`${
+																										hasFeature
+																											? 'text-green'
+																											: 'text-red'
+																									}`}
+																								>
+																									{
+																										item[
+																											'property'
+																										]['value']
+																									}
+																								</span>
+																							);
+																						}
+																					)
+																			  ]
+																			: ['Traits']
+																	}
 																	values={
 																		current['traits_values'].length
 																			? [
@@ -373,29 +412,12 @@ export default function Admission({
 																			  ]
 																			: ['']
 																	}
-																	options={
-																		current['traits_values'].length
-																			? [
-																					'Select trait',
-																					...current['traits_values'].map(
-																						(item: any) =>
-																							item['property']['value']
-																					)
-																			  ]
-																			: ['Traits']
-																	}
-																	onChange={(event: any) =>
-																		setSidePropertyCondition(event, i, findex)
+																	onChange={(value: any) =>
+																		setSidePropertyCondition(value, i, findex)
 																	}
 																/>
-																<CustomSelect
-																	width={'100%'}
-																	height={'40px'}
-																	radius={'7px'}
-																	valueToSet={fcurrent['value_selected']}
-																	fontSize={12}
-																	fontWeight={700}
-																	arrowPosition={{ top: 12, right: 15 }}
+																<Dropdown
+																	backgroundColor={'var(--input)'}
 																	values={
 																		current['traits_values'].length
 																			? fcurrent['value_selected']
@@ -492,7 +514,7 @@ export default function Admission({
 																		current['traits_values'].length
 																			? fcurrent['value_selected']
 																				? [
-																						'Select value of trait',
+																						`Select value of trait`,
 																						fcurrent['value_selected'],
 																						...current['traits_values']
 																							.reduce(
@@ -530,13 +552,42 @@ export default function Admission({
 																								},
 																								[]
 																							)
-																							.map(
-																								(item: any) =>
-																									item['value']
-																							)
+																							.sort((a: any, b: any) => {
+																								if (a['value'] < b['value']) return -1;
+																								if (a['value'] > b['value']) return 1;
+																								return 0;
+																							})
+																							.map((item: any) => {
+																								let hasValue =
+																									collection.nfts.find(
+																										nft =>
+																											nft.metadata.attributes.find(
+																												a =>
+																													a.trait_type ===
+																														fcurrent[
+																															'trait_selected'
+																														] &&
+																													a.value.toLowerCase() ===
+																														item[
+																															'value'
+																														].toLowerCase()
+																											)
+																									) !== undefined;
+																								return (
+																									<span
+																										className={`${
+																											hasValue
+																												? 'text-green'
+																												: 'text-red'
+																										}`}
+																									>
+																										{item['value']}
+																									</span>
+																								);
+																							})
 																				  ]
 																				: [
-																						'Select value of trait',
+																						`Select value of trait`,
 																						...current['traits_values']
 																							.reduce(
 																								(
@@ -573,15 +624,48 @@ export default function Admission({
 																								},
 																								[]
 																							)
-																							.map(
-																								(item: any) =>
-																									item['value']
-																							)
+																							.sort((a: any, b: any) => {
+																								if (a['value'] < b['value']) return -1;
+																								if (a['value'] > b['value']) return 1;
+																								return 0;
+																							})
+																							.map((item: any) => {
+																								let hasValue =
+																									collection.nfts.find(
+																										nft =>
+																											nft.metadata.attributes.find(
+																												a =>
+																													a.trait_type ===
+																														fcurrent[
+																															'trait_selected'
+																														] &&
+																													a.value.toLowerCase() ===
+																														item['value'].toLowerCase()
+																											)
+																									) !== undefined;
+
+																								if (collection)
+																									return (
+																										<span
+																											className={`${
+																												hasValue
+																													? 'text-green'
+																													: 'text-red'
+																											}`}
+																										>
+																											{
+																												item[
+																													'value'
+																												]
+																											}
+																										</span>
+																									);
+																							})
 																				  ]
 																			: ['Values']
 																	}
-																	onChange={(event: any) =>
-																		setSideValueCondition(event, i, findex)
+																	onChange={(value: any) =>
+																		setSideValueCondition(value, i, findex)
 																	}
 																/>
 															</div>

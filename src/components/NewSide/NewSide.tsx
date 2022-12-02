@@ -13,7 +13,7 @@ import Invitation from '../CurrentColony/settings/invitation/InvitationTab';
 import { updateSidesByUserCollections, updateUser } from '../../redux/Slices/UserDataSlice';
 import { RootState } from '../../redux/store/app.store';
 import { Collection } from '../../models/interfaces/collection';
-import _, { cloneDeep, valuesIn } from 'lodash';
+import _, { cloneDeep, flatten, valuesIn } from 'lodash';
 import { Channel, ChannelType } from '../../models/Channel';
 import { Profile, Role } from '../../models/Profile';
 import { Metadata } from '../../models/Metadata';
@@ -22,7 +22,7 @@ import Informations from '../CurrentColony/settings/informations/Information';
 import userService from '../../services/api-services/user.service';
 import filesService from '../../services/api-services/files.service';
 import sideService from '../../services/api-services/side.service';
-import { reduceWalletAddress } from '../../helpers/utilities';
+import { checkEligibilityByCondition, checkUserEligibility, reduceWalletAddress } from '../../helpers/utilities';
 import Spinner from '../ui-components/Spinner';
 import useGetCollections from '../../hooks/useGetCollections';
 
@@ -412,8 +412,17 @@ export default function NewSide() {
 				toast.error('You need to enter miminum one condition', { toastId: 3 });
 				return false;
 			}
+			conditions['required'] = onlyOneRequired;
+			const userNfts = flatten(Object.values(userCollectionsData).map(c => c.nfts));
 
-			setFormData({ ...formData, conditions: conditions });
+			const isEligible = checkEligibilityByCondition(conditions, userNfts);
+			if(isEligible){
+				setFormData({ ...formData, conditions: conditions });
+			}
+			else {
+				toast.error('Your nfts do not meet those conditions', { toastId: 3 });
+				return false;
+			}
 		}
 
 		// Checking if every channels have name to continu to the other steps
@@ -484,8 +493,8 @@ export default function NewSide() {
 		return properties;
 	}
 
-	const setSidePropertyCondition = (event: any, index: number, findex: number) => {
-		const trait = event.target.value;
+	const setSidePropertyCondition = (value: any, index: number, findex: number) => {
+		const trait = value;
 		if (trait.trim().length) {
 			let current_divs = [...divCollections];
 
@@ -503,8 +512,7 @@ export default function NewSide() {
 		}
 	};
 
-	const setSideValueCondition = (event: any, index: number, findex: number) => {
-		const value = event.target.value;
+	const setSideValueCondition = (value: any, index: number, findex: number) => {
 		if (value.trim().length) {
 			let current_divs = [...divCollections];
 
@@ -695,30 +703,35 @@ export default function NewSide() {
 				const data = _.cloneDeep(formData);
 
 				// Save side entity ** start
-				data['conditions']['required'] = onlyOneRequired;
-				data['conditions'] = JSON.stringify(data['conditions']);
-				data['NftTokenAddress'] = data['conditions'];
-				const fd = new FormData();
-				fd.append('file', formData['sideImage']);
-				data['sideImage'] = await filesService.uploadImage(fd);
-				data['creatorAddress'] = user.accounts;
-				data['required'] = !onlyOneRequired;
+				const userNfts = flatten(Object.values(userCollectionsData).map(c => c.nfts));
+				const eligibility = checkEligibilityByCondition(data['conditions'], userNfts);
+				if (eligibility) {
+					data['conditions'] = JSON.stringify(data['conditions']);
+					data['NftTokenAddress'] = data['conditions'];
+					const fd = new FormData();
+					fd.append('file', formData['sideImage']);
+					data['sideImage'] = await filesService.uploadImage(fd);
+					data['creatorAddress'] = user.accounts;
+					data['required'] = !onlyOneRequired;
+					const newSide = await sideService.createFullSide(data, channels, userInvited);
+					// Save side entity ** end
 
-				const newSide = await sideService.createFullSide(data, channels, userInvited);
-				// Save side entity ** end
+					dispatch(updateSidesByUserCollections(null));
+					toast.success(data.name + ' has been created.', {
+						toastId: 4
+					});
 
-				dispatch(updateSidesByUserCollections(null));
-				toast.success(data.name + ' has been created.', {
-					toastId: 4
-				});
+					const refreshedUser = await userService.getUserByAddress(user.accounts);
+					dispatch(updateUser(refreshedUser));
 
-				const refreshedUser = await userService.getUserByAddress(user.accounts);
-				dispatch(updateUser(refreshedUser));
-
-				setIsLoading(false);
-				navigate('/' + newSide.name);
+					setIsLoading(false);
+					navigate('/' + newSide.name);
+				} else {
+					toast.error('You do not meet the conditions to create this side.');
+				}
 			}
 		} catch (error) {
+			console.log(error);
 			toast.error('Error creating side.', { toastId: 3 });
 		}
 	};
