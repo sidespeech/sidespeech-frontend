@@ -23,6 +23,7 @@ export interface UserData {
 	userTokens: UserTokensData | null;
 	redirectTo: null;
 	sides: Side[];
+	authToken: string | null;
 	currentProfile: Profile | undefined;
 	userCollectionsData: UserCollectionsData;
 	userCollectionsLoading: boolean;
@@ -35,6 +36,7 @@ const initialState: UserData = {
 	account: null,
 	userTokens: null,
 	redirectTo: null,
+	authToken:null,
 	sides: [],
 	currentProfile: undefined,
 	userCollectionsData: {},

@@ -84,6 +84,7 @@ export default function DashboardPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const currentTab = location.pathname;
+	const token = localStorage.getItem("jwtToken");
 
 	const [allCollections, setAllCollections] = useState<Collection[]>([]);
 	const [featuredSides, setFeaturedSides] = useState<Side[]>([]);
@@ -110,8 +111,8 @@ export default function DashboardPage() {
 				setFeatureSidesLoading(false);
 			}
 		}
-		if (account) getAllFeaturedSides();
-	}, [account]);
+		if (account && token) getAllFeaturedSides();
+	}, [account, token]);
 
 	useEffect(() => {
 		const getCollections = async () => {
@@ -123,8 +124,8 @@ export default function DashboardPage() {
 				toast.error('Ooops! Something went wrong fetching your collections', { toastId: getRandomId() });
 			}
 		};
-		if (account) getCollections();
-	}, [account]);
+		if (account && token) getCollections();
+	}, [account, token]);
 
 	return (
 		<DashboardPageStyled>
