@@ -282,6 +282,10 @@ const Invitations = ({}: InvitationsProps) => {
 				<div className="list-wrapper">
 					{filteredInvitations.length ? (
 						filteredInvitations.map((invitation, index) => {
+							const userImg =
+								typeof invitation['recipient']['userAvatar'] === 'string'
+									? JSON.parse(invitation['recipient']['userAvatar'])?.metadata?.thumbnail
+									: 'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80';
 							return (
 								<div className="requests-list" key={index}>
 									{/* Side data */}
@@ -294,9 +298,7 @@ const Invitations = ({}: InvitationsProps) => {
 														width: 'inherit',
 														objectFit: 'cover'
 													}}
-													src={
-														'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80'
-													}
+													src={invitation.side?.sideImage}
 													alt="file"
 												/>
 											</label>
@@ -370,9 +372,7 @@ const Invitations = ({}: InvitationsProps) => {
 														width: 'inherit',
 														objectFit: 'cover'
 													}}
-													src={
-														'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80'
-													}
+													src={userImg}
 													alt="file"
 												/>
 											</label>
