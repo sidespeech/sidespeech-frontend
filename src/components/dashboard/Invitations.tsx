@@ -376,12 +376,7 @@ const Invitations = ({}: InvitationsProps) => {
 													alt="file"
 												/>
 											</label>
-											<label>
-												{invitation['recipient']['accounts'].replace(
-													invitation['recipient']['accounts'].substring(4, 30),
-													'...'
-												)}
-											</label>
+											<label>{invitation['recipient']['username']}</label>
 										</div>
 									</div>
 
