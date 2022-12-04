@@ -272,11 +272,11 @@ export default function Admission({
 																				className="flex align-center pl-3"
 																				key={fi}
 																			>
-																				{c.opensea?.imageUrl ? (
+																				{c.imageUrl ? (
 																					<Thumbnail
 																						width={27}
 																						height={27}
-																						src={c.opensea?.imageUrl}
+																						src={c.imageUrl}
 																						alt="thumbnail"
 																					/>
 																				) : null}
@@ -292,7 +292,7 @@ export default function Admission({
 																				>
 																					{c.name}
 																				</span>
-																				{c.opensea?.safelistRequestStatus ===
+																				{c.safelistRequestStatus ===
 																					OpenSeaRequestStatus.verified && (
 																					<img alt="check" src={check} />
 																				)}

@@ -15,6 +15,9 @@ import { Metadata } from '../../models/Metadata';
 import collectionService from '../../services/api-services/collection.service';
 import userService from '../../services/api-services/user.service';
 import sideService, { getSidesMetadata } from '../../services/api-services/side.service';
+import _ from 'lodash';
+import openseaService from '../../services/web3-services/opensea.service';
+import { saveOpenseaData } from '../../hooks/useOpenseaData';
 
 export interface UserData {
 	user: User | null;
@@ -36,7 +39,7 @@ const initialState: UserData = {
 	account: null,
 	userTokens: null,
 	redirectTo: null,
-	authToken:null,
+	authToken: null,
 	sides: [],
 	currentProfile: undefined,
 	userCollectionsData: {},
@@ -67,10 +70,21 @@ export const fetchUserDatas = createAsyncThunk(
 		const nfts = await alchemyService.getUserNfts(address);
 
 		const collections = await alchemyService.getUserCollections(address);
+		const cols = await collectionService.getManyCollectionsByAddress([
+			'0xd4e53e3597a2ed999d37e974f1f36b15eb879bac',
+			'0xd4e53e3597a2ed999d37e974f1f36b15eb879bad'
+		]);
+		if (cols.length !== collections.length) {
+			const missingCollections = _.differenceBy(collections, cols, 'address');
+			for (const collection of missingCollections) {
+				const contract = await openseaService.getContractData(collection.address);
+				await saveOpenseaData(contract.collection.slug);
+			}
+		}
 
 		const data = await getSidesCountByCollection(collections.map(elem => elem['address']));
 
-		await collectionService.savedCollections(collections);
+		// await collectionService.savedCollections(collections);
 
 		let res: any = {};
 		for (let nft of nfts) {

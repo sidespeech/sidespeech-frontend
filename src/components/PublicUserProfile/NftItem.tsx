@@ -24,7 +24,7 @@ export const NftItem = ({ nft, collection }: { nft: NFT; collection: Collection 
                 {collection && (
                     <div>
                         {collection.name}
-                        {collection.opensea?.safelistRequestStatus === OpenSeaRequestStatus.verified && (
+                        {collection.safelistRequestStatus === OpenSeaRequestStatus.verified && (
                             <img src={check} />
                         )}
                     </div>

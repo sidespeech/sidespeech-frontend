@@ -8,6 +8,7 @@ import {
   alchemyNftModelToSideNftModel,
   alchemyNftsModelToSideNftsModel,
 } from "../../helpers/utilities";
+import { AlchemyCollection } from "../../models/interfaces/alchemyCollection";
 import { Collection } from "../../models/interfaces/collection";
 
 // // Print owner's wallet address:
@@ -98,7 +99,7 @@ class AlchemyService {
     );
     const result = await res.json();
     const ownedCollections: Collection[] = result.contracts.map(
-      (c: any) => new Collection(c)
+      (c: any) => new AlchemyCollection(c)
     );
     return ownedCollections;
   }

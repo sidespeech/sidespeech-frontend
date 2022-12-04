@@ -377,13 +377,13 @@ export function paginateArray({
 
 export const sortCollectionByVerifiedCollectionsAndName = (a: Collection, b: Collection) => {
 	if (
-		a.opensea?.safelistRequestStatus === OpenSeaRequestStatus.verified &&
-		b.opensea?.safelistRequestStatus !== OpenSeaRequestStatus.verified
+		a.safelistRequestStatus === OpenSeaRequestStatus.verified &&
+		b.safelistRequestStatus !== OpenSeaRequestStatus.verified
 	)
 		return -1;
 	else if (
-		a.opensea?.safelistRequestStatus !== OpenSeaRequestStatus.verified &&
-		b.opensea?.safelistRequestStatus === OpenSeaRequestStatus.verified
+		a.safelistRequestStatus !== OpenSeaRequestStatus.verified &&
+		b.safelistRequestStatus === OpenSeaRequestStatus.verified
 	)
 		return 1;
 	else if (a.name < b.name) return -1;
