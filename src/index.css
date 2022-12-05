@@ -7,7 +7,7 @@
 	--green: #36da81;
 	--green-opacity: #36da811a;
 	--blue: #3db4e7;
-	--input: #1d1e2a; /* Black 20% */
+	--input: rgba(0, 0, 0, 0.1); /* Black 20% */
 	--inactive: #5e6474; /* Light 40% */
 	--white: #ffffff; /* Button Text*/
 	--text: #b4c1d2; /* Text*/
