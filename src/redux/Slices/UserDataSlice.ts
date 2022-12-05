@@ -70,16 +70,15 @@ export const fetchUserDatas = createAsyncThunk(
 		const nfts = await alchemyService.getUserNfts(address);
 
 		const collections = await alchemyService.getUserCollections(address);
-		const cols = await collectionService.getManyCollectionsByAddress([
-			'0xd4e53e3597a2ed999d37e974f1f36b15eb879bac',
-			'0xd4e53e3597a2ed999d37e974f1f36b15eb879bad'
-		]);
+		const cols = await collectionService.getManyCollectionsByAddress(collections.map(c => c.address));
 		if (cols.length !== collections.length) {
 			const missingCollections = _.differenceBy(collections, cols, 'address');
+			const slugs: string[] = [];
 			for (const collection of missingCollections) {
 				const contract = await openseaService.getContractData(collection.address);
-				await saveOpenseaData(contract.collection.slug);
+				slugs.push(contract.collection.slug);
 			}
+			await saveOpenseaData(slugs);
 		}
 
 		const data = await getSidesCountByCollection(collections.map(elem => elem['address']));

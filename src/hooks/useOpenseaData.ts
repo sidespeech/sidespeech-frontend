@@ -22,7 +22,6 @@ import openseaService from '../services/web3-services/opensea.service';
 //////////////////////////////////////////////////////////////////////////////////////////
 
 export default function useOpenseaCollection() {
-
 	/**
 	 * @description Update traits for all collection in database
 	 */
@@ -88,7 +87,8 @@ export async function saveOpenseaData(slugs: string[]) {
 				bannerUrl: body['collection']['banner_image_url'],
 				isSpam: false,
 				totalVolume: body['collection']['stats']['total_volume'],
-				slug: c
+				slug: c,
+				traits: getTraits(body.collection.traits)
 			};
 			await collectionService.updateCollection(collection);
 		});
@@ -104,21 +104,25 @@ async function getTraitsFromOpensea(slugs: string[]) {
 	do {
 		slugs.slice(i, i + 4).forEach(async c => {
 			const body = await openseaService.getCollectionData(c);
-			const traits = body.collection.traits;
+			const mappedTraits = getTraits(body.collection.traits);
 			const address = body.collection.primary_asset_contracts[0].address;
-			const mappedTraits: Trait[] = [];
-			// get traits from the response
-			Object.entries<any>(traits).map(([key, value]) => {
-				const trait: Trait = {
-					type: key,
-					values: Object.keys(value)
-				};
-				mappedTraits.push(trait);
-			});
 			// update our collection with traits
 			await collectionService.updateCollectionTraits(JSON.stringify(mappedTraits), address);
 		});
 		i += 4;
 		await sleep(3000);
 	} while (i < slugs.length);
+}
+
+function getTraits(traits: any[]) {
+	const mappedTraits: Trait[] = [];
+	// get traits from the response
+	Object.entries<any>(traits).map(([key, value]) => {
+		const trait: Trait = {
+			type: key,
+			values: Object.keys(value)
+		};
+		mappedTraits.push(trait);
+	});
+	return mappedTraits;
 }
