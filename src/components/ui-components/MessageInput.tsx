@@ -2,7 +2,7 @@ import React, { forwardRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { Editor } from 'react-draft-wysiwyg';
-import { convertToRaw, EditorState, Modifier } from 'draft-js';
+import Draft, { convertToRaw, EditorState, Modifier } from 'draft-js';
 import { draftToMarkdown } from 'markdown-draft-js';
 
 import boldIcon from '../../assets/bold.svg';
@@ -37,6 +37,7 @@ interface MessageInputPropsType {
 	imageUpload?: boolean;
 	height?: number;
 	iconSize?: number;
+	keyBindingFn?:any;
 	id?: any;
 	maxLength?: number;
 	maxWidth?: number;
@@ -75,6 +76,7 @@ interface MessageInputProps {
 	radius?: string;
 	size?: number;
 	weight?: number;
+	keyBindingFn?:any;
 	width?: number | string;
 }
 
@@ -317,6 +319,16 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 		}
 	};
 
+	const keyBindingFn = (e:any) => {
+		if (!e.metaKey && e.code === 'Enter') {
+		  handleSubmit();
+		  return false
+		}
+	  
+		// Return Draft's default command for this key.
+		return Draft.getDefaultKeyBinding(e)
+	  }
+
 	// Upload a single file and update state within the message input
 
 	const handleUploadFile = async (image: File | undefined): Promise<void> => {
@@ -395,6 +407,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 					height={props.height}
 					id={props.id}
 					maxLength={props.maxLength}
+					keyBindingFn={keyBindingFn}
 					onEditorStateChange={(state: EditorState) => {
 						if (isGiphyOpen) setIsGiphyOpen(false);
 						if (isEmojiMenuOpen) setIsEmojiMenuOpen(false);
