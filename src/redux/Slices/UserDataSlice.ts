@@ -177,12 +177,15 @@ export const userDataSlice = createSlice({
 		},
 		updateUser: (state: UserData, action: PayloadAction<any>) => {
 			state.user = { ...state.user, ...action.payload };
-			state.sides = action.payload.profiles
+			if(state.sides) {
+				state.sides = action.payload.profiles
 				? action.payload.profiles.map((p: Profile) => {
 						p.side['profiles'] = [p];
 						return p.side;
 				  })
 				: [];
+			}
+			
 		},
 		updateProfiles: (state: UserData, action: PayloadAction<any>) => {
 			if (state.user) {
