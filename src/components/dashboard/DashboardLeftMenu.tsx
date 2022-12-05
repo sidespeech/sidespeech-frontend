@@ -93,6 +93,7 @@ const DashboardLeftMenu = ({
 
 	const userData = useSelector((state: RootState) => state.user);
 	const [invitations, setInvitations] = useState<any[]>([]);
+	const token = localStorage.getItem("jwtToken");
 
 	const getInvitations = async (user: User) => {
 		try {
@@ -109,8 +110,8 @@ const DashboardLeftMenu = ({
 	};
 
 	useEffect(() => {
-		if (userData && userData['user']) getInvitations(userData['user']);
-	}, [userData]);
+		if (userData && userData['user'] && token) getInvitations(userData['user']);
+	}, [userData, token]);
 
 	return (
 		<DashboardLeftMenuStyled className={pathname === '/search' ? 'search-page' : ''}>
