@@ -47,29 +47,52 @@ const InvitationsStyled = styled.main<InvitationsStyledProps>`
 		}
 	}
 
+	& .list-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-top: 2rem;
+	}
+
 	.requests-list {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+		width: 100%;
 		position: relative;
 		padding: 20px;
 		border-radius: 10px;
 		flex: 1.2;
-		background-color: var(--input);
+		background-color: var(--white-transparency-10);
 		width: 96%;
 		height: 6rem;
-	}
-
-	.image-collection {
-		width: 70px;
-		height: 70px;
-		cursor: pointer;
-		background: var(--input);
-		border-radius: 5px;
-		text-align: center;
-		color: var(--inactive);
-		overflow: hidden;
-	}
-
-	.date-label {
-		color: var(--inactive);
+		${breakpoints(
+			size.md,
+			`{
+			grid-template-columns: repeat(3, 1fr);
+		}`
+		)}
+		& .image-collection {
+			width: 70px;
+			height: 70px;
+			cursor: pointer;
+			background: var(--input);
+			border-radius: 5px;
+			text-align: center;
+			color: var(--inactive);
+			overflow: hidden;
+		}
+		& .invited-by {
+			font-size: 10px;
+			& .date-label {
+				color: var(--inactive);
+			}
+		}
+		& .buttons-wrapper {
+			display: flex;
+			gap: 1rem;
+			align-items: center;
+		}
 	}
 
 	.spinner-wrapper {
@@ -122,13 +145,6 @@ const InvitationsStyled = styled.main<InvitationsStyledProps>`
 
 	.no-results .buttons-wrapper a {
 		color: inherit;
-	}
-
-	.list-wrapper {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, calc(33% - 0.5rem)));
-		grid-gap: 1rem;
-		width: 100%;
 	}
 `;
 
@@ -263,14 +279,18 @@ const Invitations = ({}: InvitationsProps) => {
 
 			{/* Invitations List **start */}
 			{!isLoading ? (
-				filteredInvitations.length ? (
-					filteredInvitations.map((invitation, index) => {
-						return (
-							<div className="f-column mt-3 requests-list justify-center" key={index}>
-								<div className="flex align-center justify-center justify-between">
+				<div className="list-wrapper">
+					{filteredInvitations.length ? (
+						filteredInvitations.map((invitation, index) => {
+							const userImg =
+								typeof invitation['recipient']['userAvatar'] === 'string'
+									? JSON.parse(invitation['recipient']['userAvatar'])?.metadata?.thumbnail
+									: 'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80';
+							return (
+								<div className="requests-list" key={index}>
 									{/* Side data */}
 									<div>
-										<div className="flex align-center justify-center">
+										<div className="flex align-center gap-20">
 											<label className="image-collection f-column align-center justify-center">
 												<img
 													style={{
@@ -278,26 +298,24 @@ const Invitations = ({}: InvitationsProps) => {
 														width: 'inherit',
 														objectFit: 'cover'
 													}}
-													src={
-														'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80'
-													}
+													src={invitation.side?.sideImage}
 													alt="file"
 												/>
 											</label>
 											{/* <label className="align-center justify-center mt-2 ml-3">{request['accounts'].replace(request['accounts'].substring(4, 30), "...")}</label> */}
-											<div className="flex f-column justify-center">
-												<label className="align-center justify-center mt-2 ml-3 text-primary-light">
+											<div className="f-column align-start justify-center gap-10">
+												<label className="align-center justify-center">
 													{invitation['side']['name']}
 												</label>
-												<label className="align-center justify-center mt-2 ml-3 flex">
+												<label className="align-center justify-center flex">
 													<Button
 														width={'100px'}
 														height={25}
 														onClick={undefined}
 														radius={3}
-														background={'var(--disable)'}
+														background={'transparent'}
 														fontSize={'12px'}
-														classes={'mr-2 override-width'}
+														classes={'override-width'}
 													>
 														{invitation['side']['collectionSides'].length
 															? invitation['side']['collectionSides'][0]['collection'][
@@ -320,12 +338,12 @@ const Invitations = ({}: InvitationsProps) => {
 													) : null}
 												</label>
 												{invitation['eligibility'][1] ? (
-													<label className="align-center justify-center mt-2 ml-3">
+													<label className="align-center justify-center">
 														<i className="fa-solid fa-circle-check mr-2 text-green"></i>
 														Eligible
 													</label>
 												) : (
-													<label className="align-center justify-center mt-2 ml-3">
+													<label className="align-center justify-center">
 														<i className="fa-solid fa-circle-xmark mr-2 text-red"></i>
 														Non-Eligible
 													</label>
@@ -335,18 +353,18 @@ const Invitations = ({}: InvitationsProps) => {
 									</div>
 
 									{/* Sender data */}
-									<div className="flex f-column justify-center">
-										<label>
-											<small className="date-label mr-3">
+									<div className="flex f-column justify-center gap-10">
+										<label className="invited-by">
+											<span className="date-label mr-3">
 												{moment
 													.utc(invitation['created_at'])
 													.local()
 													.startOf('seconds')
 													.fromNow()}
-											</small>
+											</span>
 											Invited By
 										</label>
-										<div className="flex mt-2">
+										<div className="flex align-center gap-10">
 											<label className="profile-image-user f-column align-center justify-center">
 												<img
 													style={{
@@ -354,51 +372,37 @@ const Invitations = ({}: InvitationsProps) => {
 														width: 'inherit',
 														objectFit: 'cover'
 													}}
-													src={
-														'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80'
-													}
+													src={userImg}
 													alt="file"
 												/>
 											</label>
-											<label className="align-center justify-center mt-2 ml-3">
-												{invitation['recipient']['accounts'].replace(
-													invitation['recipient']['accounts'].substring(4, 30),
-													'...'
-												)}
-											</label>
+											<label>{invitation['recipient']['username']}</label>
 										</div>
 									</div>
 
 									{/* Buttons section */}
-									<div className="flex align-center">
+									<div className="buttons-wrapper">
 										<Button
-											width={'159px'}
-											height={46}
+											width="100%"
 											onClick={() => onDecline(invitation, index)}
-											radius={10}
 											background={'var(--red-opacity)'}
 											color={'var(--red)'}
-											classes={'mr-4'}
 										>
 											Decline
 										</Button>
 
 										{invitation['eligibility'][1] ? (
 											<Button
-												width={'159px'}
-												height={46}
+												width="100%"
 												onClick={() => onAccept(invitation, index)}
-												radius={10}
 												color={'var(--text)'}
 											>
 												Accept
 											</Button>
 										) : (
 											<Button
-												width={'159px'}
-												height={46}
+												width="100%"
 												onClick={() => handleEligibilityCheck(invitation['side'])}
-												radius={10}
 												background={'var(--disable)'}
 											>
 												Condition
@@ -406,29 +410,29 @@ const Invitations = ({}: InvitationsProps) => {
 										)}
 									</div>
 								</div>
+							);
+						})
+					) : (
+						<div className="no-results">
+							<p>
+								Ooops!
+								<br />
+								Nothing here
+							</p>
+							<div className="buttons-wrapper">
+								<Link to="/new-side">
+									<Button width={'145px'} background="var(--disable)" color="white">
+										<i className="fa-solid fa-circle-plus mr-2"></i>
+										Create a Side
+									</Button>
+								</Link>
+								<Link to="/">
+									<Button width={'145px'}>Explore</Button>
+								</Link>
 							</div>
-						);
-					})
-				) : (
-					<div className="no-results">
-						<p>
-							Ooops!
-							<br />
-							Nothing here
-						</p>
-						<div className="buttons-wrapper">
-							<Link to="/new-side">
-								<Button width={'145px'} background="var(--disable)" color="white">
-									<i className="fa-solid fa-circle-plus mr-2"></i>
-									Create a Side
-								</Button>
-							</Link>
-							<Link to="/">
-								<Button width={'145px'}>Explore</Button>
-							</Link>
 						</div>
-					</div>
-				)
+					)}
+				</div>
 			) : (
 				<div className="spinner-wrapper">
 					<Spinner />

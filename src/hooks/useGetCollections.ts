@@ -11,8 +11,12 @@ export default function useGetCollections(): Collection[] {
 	useEffect(() => {
 		const getCollections = async () => {
 			if (user?.token && account) {
-				const response = await collectionService.getAllCollections();
-				setCollections(response);
+				try {
+					const response = await collectionService.getAllCollections();
+					setCollections(response);
+				} catch (error) {
+					console.error(error);
+				}
 			}
 		};
 		getCollections();
