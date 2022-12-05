@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import collectionService from '../../services/api-services/collection.service';
 import sideService from '../../services/api-services/side.service';
+import useGetCollections from '../../hooks/useGetCollections';
 
 const DashboardPageStyled = styled.div`
 	display: flex;
@@ -84,14 +85,16 @@ export default function DashboardPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const currentTab = location.pathname;
+	const token = localStorage.getItem("jwtToken");
 
-	const [allCollections, setAllCollections] = useState<Collection[]>([]);
 	const [featuredSides, setFeaturedSides] = useState<Side[]>([]);
 	const [featureSidesLoading, setFeatureSidesLoading] = useState<boolean>(false);
 	const [searchText, setSearchText] = useState<string>('');
 	const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
 
 	const { account, sides } = useSelector((state: RootState) => state.user);
+
+	const collections = useGetCollections();
 
 	useEffect(() => {
 		if (searchText || searchFilters.selectedCollection) navigate('/search');
@@ -110,21 +113,8 @@ export default function DashboardPage() {
 				setFeatureSidesLoading(false);
 			}
 		}
-		if (account) getAllFeaturedSides();
-	}, [account]);
-
-	useEffect(() => {
-		const getCollections = async () => {
-			try {
-				const response = await collectionService.getAllCollections();
-				setAllCollections(response);
-			} catch (error) {
-				console.error(error);
-				toast.error('Ooops! Something went wrong fetching your collections', { toastId: getRandomId() });
-			}
-		};
-		if (account) getCollections();
-	}, [account]);
+		if (account && token) getAllFeaturedSides();
+	}, [account, token]);
 
 	return (
 		<DashboardPageStyled>
@@ -140,11 +130,11 @@ export default function DashboardPage() {
 							setSearchFilters={setSearchFilters}
 						/>
 					)}
-					{currentTab === tabKeys.mySides && <MySides collections={allCollections} />}
+					{currentTab === tabKeys.mySides && <MySides collections={collections} />}
 					{currentTab === tabKeys.invitations && <Invitations />}
 					{currentTab === tabKeys.search && (
 						<Search
-							collections={allCollections}
+							collections={collections}
 							searchFilters={searchFilters}
 							searchText={searchText}
 							setSearchFilters={setSearchFilters}
