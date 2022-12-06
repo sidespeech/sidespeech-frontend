@@ -168,7 +168,7 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
                     <div className="avatar">
                         <img src={side.firstCollection?.imageUrl || FALLBACK_BG_IMG} alt={`${side?.name} avatar`} />
                     </div>
-                    <div className="f-column">
+                    <div className="f-column w-100">
                         <h3 className="title">{side?.name || '{No Name}'}</h3>
                         {side.collectionsCount > 0 && (
                             <div className="collections">

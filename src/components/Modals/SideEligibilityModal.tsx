@@ -128,12 +128,15 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 					side: props.selectedSide
 				};
 				await invitationService.sendRequestPrivateSide(object);
+				setIsLoading(false);
 			} else {
 				const profile = await profileService.joinSide(user.id, props.selectedSide.id, Role.User);
 				props.setDisplayEligibility?.(false);
 				dispatch(updateProfiles(profile));
 				dispatch(addUserParsedSide(props.selectedSide));
 				toast.success('Great! You join the side', { toastId: 26 });
+				navigate('/side/' + props.selectedSide.name);
+				setIsLoading(false);
 			}
 		} catch (error: any) {
 			if (error.statusCode === '403') {
@@ -162,7 +165,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 		async function updateSide() {
 			const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
 			props.setDisplayEligibility(false);
-			navigate(side.name);
+			navigate('side/' + side.name);
 		}
 		if (isEligible && props.selectedSide.status === SideStatus.inactive && props.isSideAdmin) {
 			updateSide();

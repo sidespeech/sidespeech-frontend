@@ -94,8 +94,8 @@ export default function Eligibility({ side }: { side: Side }) {
                                         <div className="flex align-center">
                                             {' '}
                                             <span className="mr-2">-</span>
-                                            {collection?.opensea?.collectionName || collection?.name}{' '}
-                                            {collection?.opensea?.safelistRequestStatus ===
+                                            {collection?.getName()}{' '}
+                                            {collection?.safelistRequestStatus ===
                                                 OpenSeaRequestStatus.verified && (
                                                 <img alt="check" width={18} className="ml-2" src={check} />
                                             )}

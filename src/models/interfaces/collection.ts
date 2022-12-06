@@ -3,41 +3,55 @@ import { Side } from '../Side';
 import { NFT } from './nft';
 
 export class Collection {
-	public address: string;
-	public name: string;
-	public symbol: string;
-	public tokenType: string;
-	public totalSupply: string;
-	public opensea?: OpenSeaData;
-	public totalBalance: number;
-	public isSpam: boolean;
-	public nfts: NFT[] = [];
-	public numDistinctTokensOwned: number;
-	public ownedCount: number;
-	public media: any[];
-	public sideCount: number | undefined;
-	public traits: Trait[];
+	address: string;
+	name: string;
+	symbol: string;
+	tokenType: string;
+	totalSupply: string;
+	collectionName: string;
+	imageUrl: string;
+	description: string;
+	slug: string;
+	bannerUrl: string;
+	isSpam: boolean;
+	totalBalance: number;
+	numDistinctTokensOwned: number;
+	ownedCount: number;
+	sideCount: number | undefined;
+	floorPrice: number;
+	totalVolume: number;
+	traits: Trait[];
+	nfts: NFT[] = [];
 	sides: Side[] = [];
+	media: any[];
+	safelistRequestStatus: OpenSeaRequestStatus;
+
 	constructor(_data: any) {
 		this.address = _data.address;
+		this.isSpam = _data.isSpam;
+		this.media = _data.media;
+		this.name = _data.name;
+		this.numDistinctTokensOwned = _data.numDistinctTokensOwned;
 		this.symbol = _data.symbol;
 		this.tokenType = _data.tokenType;
 		this.totalSupply = _data.totalSupply;
 		this.totalBalance = _data.totalBalance;
-		this.isSpam = _data.isSpam;
-		this.numDistinctTokensOwned = _data.numDistinctTokensOwned;
+		this.imageUrl = _data.imageUrl;
+		this.description = _data.description;
+		this.slug = _data.slug;
+		this.floorPrice = _data.floorPrice;
+		this.safelistRequestStatus = _data.safelistRequestStatus;
+		this.bannerUrl = _data.bannerUrl;
+		this.totalVolume = _data.totalVolume;
 		this.ownedCount = _data.ownedCount;
-		this.media = _data.media;
 		this.sideCount = 0;
-		this.opensea = _data.opensea
-			? // if string, data comes from database and has to be deserialized
-			  typeof _data.opensea === 'string'
-				? JSON.parse(_data.opensea)
-				: _data.opensea
-			: null;
-		this.name = this.opensea?.collectionName || _data.name || 'No name data';
+		this.collectionName = _data.collectionName;
 		this.traits = _data.traits ? JSON.parse(_data.traits) : [];
 		this.sides = _data.sides || [];
+	}
+
+	getName() {
+		return this.collectionName || this.name || 'Missing name data';
 	}
 
 	getCollectionProperties() {
@@ -107,18 +121,6 @@ export class Collection {
 	}
 }
 
-interface OpenSeaData {
-	floorPrice: number;
-	collectionName: string;
-	safelistRequestStatus: OpenSeaRequestStatus;
-	imageUrl: string;
-	description: string;
-	externalUrl: string;
-	twitterUsername: string;
-	discordUrl: string;
-	lastIngestedAt: string;
-}
-
 export interface Trait {
 	type: string;
 	values: string[];
@@ -128,5 +130,6 @@ export enum OpenSeaRequestStatus {
 	verified = 'verified',
 	approved = 'approved',
 	requested = 'requested',
-	not_requested = 'not_requested'
+	not_requested = 'not_requested',
+	disabled_top_trending = 'disabled_top_trending'
 }

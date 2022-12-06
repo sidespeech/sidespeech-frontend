@@ -79,7 +79,7 @@ class UserService extends BaseApiService {
     return res["body"];
   }
 
-  async getUserFromSides(sides: Side[]): Promise<any> {
+  async getUserFromSides(sides: string[]): Promise<any> {
     const res = await this.post(`${BASE_URL}/user/side`).send({ sides: sides });
     return res.body.users;
   }

@@ -162,7 +162,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 
 	const [userCollections, setUserCollections] = useState<Collection[]>([]);
 	const [filteredCollections, setFilteredCollections] = useState<Collection[]>([]);
-	const [isOnlyVerifiedCollectionsChecked, setIsOnlyVerifiedCollectionsChecked] = useState<boolean>(false);
+	const [isOnlyVerifiedCollectionsChecked, setIsOnlyVerifiedCollectionsChecked] = useState<boolean>(true);
 	const [isWithSidesChecked, setIsWithSidesChecked] = useState<boolean>(false);
 	const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
 	const [viewMode, setViewMode] = useState<string>('card');
@@ -174,7 +174,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 			// if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
 			if (isOnlyVerifiedCollectionsChecked)
 				filteredArray = filteredArray.filter(
-					collection => collection.opensea?.safelistRequestStatus === OpenSeaRequestStatus.verified
+					collection => collection.safelistRequestStatus === OpenSeaRequestStatus.verified
 				);
 			setFilteredCollections(filteredArray);
 		}
@@ -280,8 +280,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 											setSearchFilters(prevState => ({
 												...prevState,
 												collections: collection.address,
-												selectedCollection:
-													collection?.opensea?.collectionName || collection?.name
+												selectedCollection: collection.getName()
 											}))
 										}
 									/>
@@ -293,8 +292,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 											setSearchFilters(prevState => ({
 												...prevState,
 												collections: collection.address,
-												selectedCollection:
-													collection?.opensea?.collectionName || collection?.name
+												selectedCollection: collection.getName()
 											}))
 										}
 									/>

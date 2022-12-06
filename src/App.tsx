@@ -21,6 +21,7 @@ import { getRandomId } from './helpers/utilities';
 // Styles
 import './App.css';
 import { RootState } from './redux/store/app.store';
+import useOpenseaCollection from './hooks/useOpenseaData';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;

@@ -7,7 +7,7 @@ import Switch from '../../ui-components/Switch';
 import styled from 'styled-components';
 import Dropdown from '../../ui-components/Dropdown';
 import { Collection, OpenSeaRequestStatus } from '../../../models/interfaces/collection';
-import { fixURL } from '../../../helpers/utilities';
+import { fixURL, hasTraitInCollection, hasTraitValueInCollection } from '../../../helpers/utilities';
 import CustomInputNumber from '../../ui-components/InputNumber';
 import { filter, unionBy } from 'lodash';
 import { breakpoints, size } from '../../../helpers/breakpoints';
@@ -257,6 +257,7 @@ export default function Admission({
 										<div className="f-column mt-3 mb-3">
 											<div className="flex">
 												<Dropdown
+													style={{ zIndex: 5 + divCollections.length - i }}
 													values={
 														filteredCollections.length
 															? ['', ...filteredCollections.map(c => c.address)]
@@ -272,11 +273,11 @@ export default function Admission({
 																				className="flex align-center pl-3"
 																				key={fi}
 																			>
-																				{c.opensea?.imageUrl ? (
+																				{c.imageUrl ? (
 																					<Thumbnail
 																						width={27}
 																						height={27}
-																						src={c.opensea?.imageUrl}
+																						src={c.imageUrl}
 																						alt="thumbnail"
 																					/>
 																				) : null}
@@ -286,13 +287,13 @@ export default function Admission({
 																						color: userCollectionsData[
 																							c.address
 																						]
-																							? 'var(--main)'
+																							? 'var(--green)'
 																							: 'var(--red)'
 																					}}
 																				>
 																					{c.name}
 																				</span>
-																				{c.opensea?.safelistRequestStatus ===
+																				{c.safelistRequestStatus ===
 																					OpenSeaRequestStatus.verified && (
 																					<img alt="check" src={check} />
 																				)}
@@ -345,306 +346,317 @@ export default function Admission({
 											</div>
 										</div>
 
-										<label>Holders of one of these traits</label>
-
-										{current['features'].length ? (
+										{current['traits_values'].length > 0 && (
 											<>
-												{current['features'].map((fcurrent: any, findex: number) => {
-													const collection = userCollectionsData[current['collection']];
-
-													return (
-														<div className="feature-box" key={findex}>
-															<div className="feature-selects mr-auto">
-																<Dropdown
-																	backgroundColor={'var(--input)'}
-																	options={
-																		current['traits_values'].length
-																			? [
-																					'Select trait',
-																					...current['traits_values'].map(
-																						(item: any) => {
-																							let hasFeature = false;
-
-																							if (collection) {
-																								hasFeature =
-																									collection.nfts.some(
-																										nft =>
-																											nft.metadata.attributes.find(
-																												a =>
-																													a.trait_type ===
-																													item[
-																														'property'
-																													][
-																														'value'
-																													]
-																											)
-																									);
-																							}
-
-																							return (
-																								<span
-																									className={`${
-																										hasFeature
-																											? 'text-green'
-																											: 'text-red'
-																									}`}
-																								>
-																									{
-																										item[
-																											'property'
-																										]['value']
-																									}
-																								</span>
+												<label>Holders of one of these traits</label>
+												{current['features'].length ? (
+													<>
+														{current['features'].map((fcurrent: any, findex: number) => {
+															const collection =
+																userCollectionsData[current['collection']];
+															const hasTrait = hasTraitInCollection(
+																collection,
+																fcurrent['trait_selected'].toLowerCase()
+															);
+															const hasTraitValue = hasTraitValueInCollection(
+																collection,
+																fcurrent['trait_selected'].toLowerCase(),
+																fcurrent['value_selected'].toLowerCase()
+															);
+															return (
+																<div className="feature-box" key={findex}>
+																	<div className="feature-selects mr-auto">
+																		<Dropdown
+																			style={{ zIndex: 4 }}
+																			defaultValue={
+																				fcurrent['trait_selected'] ? (
+																					<span
+																						className={`${
+																							hasTrait
+																								? 'text-green'
+																								: 'text-red'
+																						}`}
+																					>
+																						{fcurrent['trait_selected']}
+																					</span>
+																				) : null
+																			}
+																			backgroundColor={'var(--black-plain)'}
+																			options={[
+																				'Select trait',
+																				...current['traits_values'].map(
+																					(item: any) => {
+																						let hasFeature =
+																							hasTraitInCollection(
+																								collection,
+																								item['property'][
+																									'value'
+																								].toLowerCase()
 																							);
-																						}
-																					)
-																			  ]
-																			: ['Traits']
-																	}
-																	values={
-																		current['traits_values'].length
-																			? [
-																					'',
-																					...current['traits_values'].map(
-																						(item: any) =>
-																							item['property']['value']
-																					)
-																			  ]
-																			: ['']
-																	}
-																	onChange={(value: any) =>
-																		setSidePropertyCondition(value, i, findex)
-																	}
-																/>
-																<Dropdown
-																	backgroundColor={'var(--input)'}
-																	values={
-																		current['traits_values'].length
-																			? fcurrent['value_selected']
-																				? [
-																						'Select value of trait',
-																						fcurrent['value_selected'],
-																						...current['traits_values']
-																							.reduce(
-																								(
-																									prev: any,
-																									innerCurrent: any
-																								) => {
-																									if (
-																										innerCurrent[
-																											'property'
-																										]['value'] ===
-																										fcurrent[
-																											'trait_selected'
-																										]
-																									)
-																										prev =
-																											innerCurrent[
-																												'values'
-																											].filter(
-																												function (
-																													el: any
-																												) {
-																													if (
-																														innerCurrent[
-																															'values_used'
-																														].indexOf(
-																															el
-																														) <
-																														0
-																													)
-																														return el;
-																												}
-																											);
-																									return prev;
-																								},
-																								[]
-																							)
-																							.map(
-																								(item: any) =>
-																									item['value']
-																							)
-																				  ]
-																				: [
-																						'',
-																						...current['traits_values']
-																							.reduce(
-																								(
-																									prev: any,
-																									innerCurrent: any
-																								) => {
-																									if (
-																										innerCurrent[
-																											'property'
-																										]['value'] ===
-																										fcurrent[
-																											'trait_selected'
-																										]
-																									)
-																										prev =
-																											innerCurrent[
-																												'values'
-																											].filter(
-																												function (
-																													el: any
-																												) {
-																													if (
-																														innerCurrent[
-																															'values_used'
-																														].indexOf(
-																															el
-																														) <
-																														0
-																													)
-																														return el;
-																												}
-																											);
-																									return prev;
-																								},
-																								[]
-																							)
-																							.map(
-																								(item: any) =>
-																									item['value']
-																							)
-																				  ]
-																			: ['']
-																	}
-																	options={
-																		current['traits_values'].length
-																			? fcurrent['value_selected']
-																				? [
-																						`Select value of trait`,
-																						fcurrent['value_selected'],
-																						...current['traits_values']
-																							.reduce(
-																								(
-																									prev: any,
-																									innerCurrent: any
-																								) => {
-																									if (
-																										innerCurrent[
-																											'property'
-																										]['value'] ===
-																										fcurrent[
-																											'trait_selected'
-																										]
-																									)
-																										prev =
-																											innerCurrent[
-																												'values'
-																											].filter(
-																												function (
-																													el: any
-																												) {
-																													if (
-																														innerCurrent[
-																															'values_used'
-																														].indexOf(
-																															el
-																														) <
-																														0
-																													)
-																														return el;
-																												}
-																											);
-																									return prev;
-																								},
-																								[]
-																							)
-																							.sort((a: any, b: any) => {
-																								if (a['value'] < b['value']) return -1;
-																								if (a['value'] > b['value']) return 1;
-																								return 0;
-																							})
-																							.map((item: any) => {
-																								let hasValue =
-																									collection.nfts.find(
-																										nft =>
-																											nft.metadata.attributes.find(
-																												a =>
-																													a.trait_type ===
-																														fcurrent[
-																															'trait_selected'
-																														] &&
-																													a.value.toLowerCase() ===
-																														item[
-																															'value'
-																														].toLowerCase()
-																											)
-																									) !== undefined;
-																								return (
-																									<span
-																										className={`${
-																											hasValue
-																												? 'text-green'
-																												: 'text-red'
-																										}`}
-																									>
-																										{item['value']}
-																									</span>
-																								);
-																							})
-																				  ]
-																				: [
-																						`Select value of trait`,
-																						...current['traits_values']
-																							.reduce(
-																								(
-																									prev: any,
-																									innerCurrent: any
-																								) => {
-																									if (
-																										innerCurrent[
-																											'property'
-																										]['value'] ===
-																										fcurrent[
-																											'trait_selected'
-																										]
-																									)
-																										prev =
-																											innerCurrent[
-																												'values'
-																											].filter(
-																												function (
-																													el: any
-																												) {
-																													if (
-																														innerCurrent[
-																															'values_used'
-																														].indexOf(
-																															el
-																														) <
-																														0
-																													)
-																														return el;
-																												}
-																											);
-																									return prev;
-																								},
-																								[]
-																							)
-																							.sort((a: any, b: any) => {
-																								if (a['value'] < b['value']) return -1;
-																								if (a['value'] > b['value']) return 1;
-																								return 0;
-																							})
-																							.map((item: any) => {
-																								let hasValue =
-																									collection.nfts.find(
-																										nft =>
-																											nft.metadata.attributes.find(
-																												a =>
-																													a.trait_type ===
-																														fcurrent[
-																															'trait_selected'
-																														] &&
-																													a.value.toLowerCase() ===
-																														item['value'].toLowerCase()
-																											)
-																									) !== undefined;
 
-																								if (collection)
+																						return (
+																							<span
+																								className={`${
+																									hasFeature
+																										? 'text-green'
+																										: 'text-red'
+																								}`}
+																							>
+																								{
+																									item['property'][
+																										'value'
+																									]
+																								}
+																							</span>
+																						);
+																					}
+																				)
+																			]}
+																			values={[
+																				'',
+																				...current['traits_values'].map(
+																					(item: any) =>
+																						item['property']['value']
+																				)
+																			]}
+																			onChange={(value: any) =>
+																				setSidePropertyCondition(
+																					value,
+																					i,
+																					findex
+																				)
+																			}
+																		/>
+																		<Dropdown
+																			style={{ zIndex: 4 }}
+																			defaultValue={
+																				fcurrent['value_selected'] ? (
+																					<span
+																						className={`${
+																							hasTraitValue
+																								? 'text-green'
+																								: 'text-red'
+																						}`}
+																					>
+																						{fcurrent['value_selected']}
+																					</span>
+																				) : null
+																			}
+																			backgroundColor={'var(--black-plain)'}
+																			values={
+																				fcurrent['value_selected']
+																					? [
+																							'Select value of trait',
+																							<span
+																								className={`${
+																									hasTraitValue
+																										? 'text-green'
+																										: 'text-red'
+																								}`}
+																							>
+																								{
+																									fcurrent[
+																										'value_selected'
+																									]
+																								}
+																							</span>,
+																							...current['traits_values']
+																								.reduce(
+																									(
+																										prev: any,
+																										innerCurrent: any
+																									) => {
+																										if (
+																											innerCurrent[
+																												'property'
+																											][
+																												'value'
+																											] ===
+																											fcurrent[
+																												'trait_selected'
+																											]
+																										)
+																											prev =
+																												innerCurrent[
+																													'values'
+																												].filter(
+																													function (
+																														el: any
+																													) {
+																														if (
+																															innerCurrent[
+																																'values_used'
+																															].indexOf(
+																																el
+																															) <
+																															0
+																														)
+																															return el;
+																													}
+																												);
+																										return prev;
+																									},
+																									[]
+																								)
+																								.sort(
+																									(
+																										a: any,
+																										b: any
+																									) => {
+																										if (
+																											a['value'] <
+																											b['value']
+																										)
+																											return -1;
+																										if (
+																											a['value'] >
+																											b['value']
+																										)
+																											return 1;
+																										return 0;
+																									}
+																								)
+																								.map(
+																									(item: any) =>
+																										item['value']
+																								)
+																					  ]
+																					: [
+																							'',
+																							...current['traits_values']
+																								.reduce(
+																									(
+																										prev: any,
+																										innerCurrent: any
+																									) => {
+																										if (
+																											innerCurrent[
+																												'property'
+																											][
+																												'value'
+																											] ===
+																											fcurrent[
+																												'trait_selected'
+																											]
+																										)
+																											prev =
+																												innerCurrent[
+																													'values'
+																												].filter(
+																													function (
+																														el: any
+																													) {
+																														if (
+																															innerCurrent[
+																																'values_used'
+																															].indexOf(
+																																el
+																															) <
+																															0
+																														)
+																															return el;
+																													}
+																												);
+																										return prev;
+																									},
+																									[]
+																								)
+																								.sort(
+																									(
+																										a: any,
+																										b: any
+																									) => {
+																										if (
+																											a['value'] <
+																											b['value']
+																										)
+																											return -1;
+																										if (
+																											a['value'] >
+																											b['value']
+																										)
+																											return 1;
+																										return 0;
+																									}
+																								)
+																								.map(
+																									(item: any) =>
+																										item['value']
+																								)
+																					  ]
+																			}
+																			options={
+																				fcurrent['value_selected']
+																					? [
+																							`Select value of trait`,
+																							fcurrent['value_selected'],
+																							...current['traits_values']
+																								.reduce(
+																									(
+																										prev: any,
+																										innerCurrent: any
+																									) => {
+																										if (
+																											innerCurrent[
+																												'property'
+																											][
+																												'value'
+																											] ===
+																											fcurrent[
+																												'trait_selected'
+																											]
+																										)
+																											prev =
+																												innerCurrent[
+																													'values'
+																												].filter(
+																													function (
+																														el: any
+																													) {
+																														if (
+																															innerCurrent[
+																																'values_used'
+																															].indexOf(
+																																el
+																															) <
+																															0
+																														)
+																															return el;
+																													}
+																												);
+																										return prev;
+																									},
+																									[]
+																								)
+																								.sort(
+																									(
+																										a: any,
+																										b: any
+																									) => {
+																										if (
+																											a['value'] <
+																											b['value']
+																										)
+																											return -1;
+																										if (
+																											a['value'] >
+																											b['value']
+																										)
+																											return 1;
+																										return 0;
+																									}
+																								)
+																								.map((item: any) => {
+																									let hasValue =
+																										hasTraitValueInCollection(
+																											collection,
+																											fcurrent[
+																												'trait_selected'
+																											].toLowerCase(),
+																											item[
+																												'value'
+																											].toLowerCase()
+																										);
 																									return (
 																										<span
 																											className={`${
@@ -660,47 +672,134 @@ export default function Admission({
 																											}
 																										</span>
 																									);
-																							})
-																				  ]
-																			: ['Values']
-																	}
-																	onChange={(value: any) =>
-																		setSideValueCondition(value, i, findex)
-																	}
-																/>
-															</div>
+																								})
+																					  ]
+																					: [
+																							`Select value of trait`,
+																							...current['traits_values']
+																								.reduce(
+																									(
+																										prev: any,
+																										innerCurrent: any
+																									) => {
+																										if (
+																											innerCurrent[
+																												'property'
+																											][
+																												'value'
+																											] ===
+																											fcurrent[
+																												'trait_selected'
+																											]
+																										)
+																											prev =
+																												innerCurrent[
+																													'values'
+																												].filter(
+																													function (
+																														el: any
+																													) {
+																														if (
+																															innerCurrent[
+																																'values_used'
+																															].indexOf(
+																																el
+																															) <
+																															0
+																														)
+																															return el;
+																													}
+																												);
+																										return prev;
+																									},
+																									[]
+																								)
+																								.sort(
+																									(
+																										a: any,
+																										b: any
+																									) => {
+																										if (
+																											a['value'] <
+																											b['value']
+																										)
+																											return -1;
+																										if (
+																											a['value'] >
+																											b['value']
+																										)
+																											return 1;
+																										return 0;
+																									}
+																								)
+																								.map((item: any) => {
+																									let hasValue =
+																										hasTraitValueInCollection(
+																											collection,
+																											fcurrent[
+																												'trait_selected'
+																											].toLowerCase(),
+																											item[
+																												'value'
+																											].toLowerCase()
+																										);
+																									return (
+																										<span
+																											className={`${
+																												hasValue
+																													? 'text-green'
+																													: 'text-red'
+																											}`}
+																										>
+																											{
+																												item[
+																													'value'
+																												]
+																											}
+																										</span>
+																									);
+																								})
+																					  ]
+																			}
+																			onChange={(value: any) =>
+																				setSideValueCondition(value, i, findex)
+																			}
+																		/>
+																	</div>
 
-															<div className="feature-btn f-column justify-center">
-																<button
-																	className="mt-2 text-red"
-																	onClick={() => onRemoveFeature(i, findex)}
-																>
-																	<i className="fa-solid fa-minus"></i>
-																</button>
-															</div>
+																	<div className="feature-btn f-column justify-center">
+																		<button
+																			className="mt-2 text-red"
+																			onClick={() => onRemoveFeature(i, findex)}
+																		>
+																			<i className="fa-solid fa-minus"></i>
+																		</button>
+																	</div>
+																</div>
+															);
+														})}
+														<div
+															className="add-feature mt-3"
+															onClick={() => addConditionToDivCollection(i)}
+														>
+															<button>
+																<i className="fa fa-plus-circle" aria-hidden="true"></i>{' '}
+																Add a Feature
+															</button>
 														</div>
-													);
-												})}
-												<div
-													className="add-feature mt-3"
-													onClick={() => addConditionToDivCollection(i)}
-												>
-													<button>
-														<i className="fa fa-plus-circle" aria-hidden="true"></i> Add a
-														Feature
-													</button>
-												</div>
+													</>
+												) : (
+													<div
+														className="add-feature mt-3"
+														onClick={() => addConditionToDivCollection(i)}
+													>
+														<button>
+															<i className="fa fa-plus-circle" aria-hidden="true"></i> Add
+															a Feature
+														</button>
+													</div>
+												)}
 											</>
-										) : (
-											<div
-												className="add-feature mt-3"
-												onClick={() => addConditionToDivCollection(i)}
-											>
-												<button>
-													<i className="fa fa-plus-circle" aria-hidden="true"></i> Add a
-													Feature
-												</button>
-											</div>
 										)}
 									</div>
 								</div>{' '}

@@ -13,15 +13,8 @@ class CollectionService extends BaseApiService {
 	}
 
 	async savedCollections(collections: Collection[]) {
-		console.log('save collection');
-		const copy = _.cloneDeep(collections);
-
-		const data = copy.map((c: any) => {
-			c.opensea = JSON.stringify(c.opensea);
-			return c;
-		});
 		const res = await this.post(`${BASE_URL}/collection/many`).send({
-			collections: data
+			collections: collections
 		});
 		return res;
 	}
@@ -32,6 +25,10 @@ class CollectionService extends BaseApiService {
 			traits
 		});
 		return res.body;
+	}
+	async updateCollection(collection: any): Promise<any> {
+		const res = await this.patch(`${BASE_URL}/collection/${collection.address}`).send(collection);
+		return new Collection(res.body);
 	}
 
 	async getAllCollections(): Promise<Collection[]> {

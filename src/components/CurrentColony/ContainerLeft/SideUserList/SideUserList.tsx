@@ -229,7 +229,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
               <SpanElipsis className="mr-2">#{nft && nft.token_id}</SpanElipsis>
               <span className="">
                 {collection &&
-                  (collection.name || collection.opensea?.collectionName)}
+                  (collection.getName())}
               </span>
               <img src={check} className="ml-2" />
             </span>

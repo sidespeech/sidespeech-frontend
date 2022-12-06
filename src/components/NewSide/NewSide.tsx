@@ -298,7 +298,7 @@ export default function NewSide() {
 		if (user && user.profiles) {
 			const getInvitationUsers = async (user: any) => {
 				let userSides = user.profiles.map((p: Profile) => p.side);
-				let users = await userService.getUserFromSides(userSides);
+				let users = await userService.getUserFromSides(userSides.map((s: Side) => s.id));
 				let invitationsUsersObject = [];
 				delete user['profiles'];
 				for (let userInvite of users) {
@@ -416,10 +416,9 @@ export default function NewSide() {
 			const userNfts = flatten(Object.values(userCollectionsData).map(c => c.nfts));
 
 			const isEligible = checkEligibilityByCondition(conditions, userNfts);
-			if(isEligible){
+			if (isEligible) {
 				setFormData({ ...formData, conditions: conditions });
-			}
-			else {
+			} else {
 				toast.error('Your nfts do not meet those conditions', { toastId: 3 });
 				return false;
 			}
@@ -477,9 +476,11 @@ export default function NewSide() {
 			current_divs[index]['collection'] = address;
 
 			current_divs[index]['traits_values'] = createPropertiesObject(address);
+			current_divs[index]['features'] = [];
 
 			const data = filteredCollections.find((item: Collection) => item['address'] === address);
 			current_divs[index]['metadata'] = data;
+			console.log(current_divs, current_divs[index]);
 			setDivCollection(current_divs);
 		}
 	};
@@ -489,7 +490,6 @@ export default function NewSide() {
 		const selectedCollection = collections.find(c => c.address === address);
 		if (!selectedCollection) return;
 		const properties = selectedCollection.getCollectionProperties();
-		console.log(properties);
 		return properties;
 	}
 
@@ -513,6 +513,7 @@ export default function NewSide() {
 	};
 
 	const setSideValueCondition = (value: any, index: number, findex: number) => {
+		console.log(value);
 		if (value.trim().length) {
 			let current_divs = [...divCollections];
 
@@ -557,7 +558,10 @@ export default function NewSide() {
 
 	const addConditionToDivCollection = (index: number) => {
 		let current_divs = [...divCollections];
-
+		if (current_divs[index]['features'].length === current_divs[index]['traits_values'].length) {
+			toast.error('No more features available for this collection', { toastId: 8 });
+			return;
+		}
 		if (current_divs[index]['features'].length < MAX_NUMBER_OF_COLLECTIONS) {
 			current_divs[index]['features'].push({
 				trait_selected: '',
@@ -725,7 +729,7 @@ export default function NewSide() {
 					dispatch(updateUser(refreshedUser));
 
 					setIsLoading(false);
-					navigate('/' + newSide.name);
+					navigate('/side/' + newSide.name);
 				} else {
 					toast.error('You do not meet the conditions to create this side.');
 				}
