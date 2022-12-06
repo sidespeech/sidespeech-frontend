@@ -55,7 +55,7 @@ export class Collection {
 	}
 
 	getCollectionProperties() {
-		return this.traits.reduce(function (filtered: any, current) {
+		return Object.keys(this.traits).length ? this.traits.reduce(function (filtered: any, current) {
 			if (current.values.length > 0) {
 				filtered.push({
 					property: {
@@ -71,7 +71,7 @@ export class Collection {
 				});
 			}
 			return filtered;
-		}, []);
+		}, []) : [];
 	}
 
 	getPropertiesOwnedByUser() {
