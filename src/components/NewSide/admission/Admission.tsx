@@ -203,8 +203,7 @@ export default function Admission({
 	useEffect(() => {
 		const selectedCollections: string[] = divCollections.map((d: any) => d.collection);
 		const filtered = collections.filter(
-			c => !selectedCollections.includes(c.address) && c.name.toLowerCase().includes(filter.toLowerCase())
-		);
+			c => !selectedCollections.includes(c.address) && ((c.name) ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name));
 		setFilteredCollections(filtered);
 	}, [divCollections, filter]);
 
