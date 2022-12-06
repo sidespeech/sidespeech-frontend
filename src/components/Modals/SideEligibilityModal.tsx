@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { checkUserEligibility, fixURL, getRandomId } from '../../helpers/utilities';
-import { NFT } from '../../models/interfaces/nft';
+import { checkUserEligibility } from '../../helpers/utilities';
 import { Role } from '../../models/Profile';
 import { Side, SideStatus } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
 import Button from '../ui-components/Button';
 import Modal from '../ui-components/Modal';
 import { RoundedImageContainer } from '../ui-components/styled-components/shared-styled-components';
-import { OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import Eligibility from '../CurrentColony/settings/eligibility/eligibility';
 import { toast } from 'react-toastify';
 import { addUserParsedSide, updateProfiles } from '../../redux/Slices/UserDataSlice';
@@ -19,6 +17,7 @@ import Spinner from '../ui-components/Spinner';
 import invitationService from '../../services/api-services/invitation.service';
 import sideService from '../../services/api-services/side.service';
 import profileService from '../../services/api-services/profile.service';
+import { breakpoints, size } from '../../helpers/breakpoints';
 
 const eligibilityTexts = {
 	success: {
@@ -55,6 +54,47 @@ const EligibilityResult = styled.div<IEligibilityResultProps>`
 	margin-bottom: 30px;
 	text-align: left;
 `;
+
+const SideEligibilityModalStyled = styled.div`
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	& .conditions-wrapper {
+		width: 100%;
+		overflow-y: scroll;
+	}
+`;
+
+const FooterStyled = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	width: 100%;
+	margin-top: 1rem;
+	${breakpoints(
+		size.md,
+		`{
+    justify-content: space-between;
+
+  }`
+	)}
+	& .footer-btn {
+		${breakpoints(
+			size.md,
+			`{
+      max-width: 175px;
+    }`
+		)}
+		&.secondary-btn {
+			border: 1px solid var(--disable);
+		}
+	}
+`;
+
 interface ISideEligibilityModalProps {
 	selectedSide: Side;
 	setDisplayEligibility: React.Dispatch<React.SetStateAction<boolean>>;
@@ -125,7 +165,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 		async function updateSide() {
 			const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
 			props.setDisplayEligibility(false);
-			navigate('side/'+side.name);
+			navigate('side/' + side.name);
 		}
 		if (isEligible && props.selectedSide.status === SideStatus.inactive && props.isSideAdmin) {
 			updateSide();
@@ -138,7 +178,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 		<Modal
 			body={
 				!isLoading ? (
-					<>
+					<SideEligibilityModalStyled>
 						<RoundedImageContainer height="104px" width="104px" radius={60}>
 							<img src={props.selectedSide?.sideImage} width="100%" alt="side" />
 						</RoundedImageContainer>
@@ -180,8 +220,10 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 								</>
 							)}
 						</EligibilityResult>
-						<Eligibility side={props.selectedSide} />
-					</>
+						<div className="conditions-wrapper">
+							<Eligibility side={props.selectedSide} />
+						</div>
+					</SideEligibilityModalStyled>
 				) : (
 					<div className="spinner-wrapper">
 						<Spinner />
@@ -189,33 +231,41 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 				)
 			}
 			footer={
-				props.selectedSide.status === SideStatus.active ? (
+				<FooterStyled>
 					<Button
-						classes="mt-3 ml-auto"
-						width="121px"
-						height={44}
-						disabled={!isEligible || isLoading}
-						children={props.selectedSide['private'] === true ? 'Send Request' : 'Join now'}
-						onClick={handleJoinSide}
-					/>
-				) : (
-					<>
-						{' '}
-						{props.isSideAdmin && (
-							<Button
-								classes="mt-3 ml-auto"
-								width="185px"
-								height={44}
-								background={'var(--disable)'}
-								children={'Choose a sub-admin'}
-								onClick={() => {
-									props.setDisplayLeaveSide(true);
-									props.setDisplayEligibility(false);
-								}}
-							/>
-						)}
-					</>
-				)
+						classes="footer-btn secondary-btn"
+						width="100%"
+						background={'transparent'}
+						onClick={() => props.setDisplayEligibility(false)}
+					>
+						Back
+					</Button>
+					{props.selectedSide.status === SideStatus.active ? (
+						<Button
+							classes="footer-btn"
+							width="100%"
+							disabled={!isEligible || isLoading}
+							children={props.selectedSide['private'] === true ? 'Send Request' : 'Join now'}
+							onClick={handleJoinSide}
+						/>
+					) : (
+						<>
+							{' '}
+							{props.isSideAdmin && (
+								<Button
+									classes="footer-btn"
+									width="100%"
+									background={'var(--disable)'}
+									children={'Choose a sub-admin'}
+									onClick={() => {
+										props.setDisplayLeaveSide(true);
+										props.setDisplayEligibility(false);
+									}}
+								/>
+							)}
+						</>
+					)}
+				</FooterStyled>
 			}
 			title={undefined}
 			showModal={props.setDisplayEligibility}
