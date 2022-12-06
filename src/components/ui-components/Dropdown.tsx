@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import InputText from './InputText';
 
@@ -45,9 +45,26 @@ const DropdownContainer = styled.div<any>`
 	}
 `;
 
-export default function Dropdown({ onChange, options, key, values, style, filterDropdownList, backgroundColor }: any) {
+export default function Dropdown({
+	onChange,
+	options,
+	key,
+	values,
+	style,
+	filterDropdownList,
+	backgroundColor,
+	defaultValue
+}: any) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [headerTitle, setHeaderTitle] = useState<any>(options[0]);
+
+	useEffect(() => {
+		if (defaultValue) {
+			setHeaderTitle(defaultValue);
+		} else if(defaultValue === null){
+			setHeaderTitle(options[0]);
+		}
+	}, [defaultValue,options]);
 
 	const toggleList = () => {
 		setIsOpen(!isOpen);

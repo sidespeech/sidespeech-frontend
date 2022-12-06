@@ -107,23 +107,39 @@ export function timestampToLocalString(timestamp: string) {
 export interface ElligibilityResponse {
 	[key: string]: any[];
 }
+export function hasTraitInCollection(collection: Collection, trait: string): boolean {
+	if (!collection || !collection.nfts) return false;
+	return collection.nfts.some(nft => nft.metadata.attributes.find(a => a.trait_type.toLowerCase() === trait));
+}
+export function hasTraitValueInCollection(collection: Collection, trait: string, value: string): boolean {
+	if (!collection || !collection.nfts) return false;
+	return (
+		collection?.nfts.find(nft =>
+			nft.metadata.attributes.find(a => a.trait_type.toLowerCase() === trait && a.value.toLowerCase() === value)
+		) !== undefined
+	);
+}
 export function checkEligibilityByCondition(conditions: any, nfts: NFT[]): boolean {
 	const res: any[] = [];
 	const groupedNfts = groupBy(nfts, 'token_address');
 	const keys = Object.keys(conditions);
 	// pop to remove the required object in the conditions
 	keys.pop();
+	console.log(conditions, keys, groupedNfts);
 	keys.forEach((address: string) => {
 		const condition = conditions[address];
 		if (!groupedNfts[address]) res.push(false);
 		else if (condition['features'] && condition['features'].length) {
 			for (let feature of condition['features']) {
-				const type = feature['property'];
-				const value = feature['value'];
+				const type = feature['property'].toLowerCase();
+				const value = feature['value'].toLowerCase();
 				const anafNft = groupedNfts[address].length >= condition['numberNeeded'];
 				const meetCondition = groupedNfts[address].some(nft =>
-					nft.metadata.attributes.some(a => a['trait_type'] === type && a['value'] === value)
+					nft.metadata.attributes.some(
+						a => a['trait_type'].toLowerCase() === type && a['value'].toLowerCase() === value
+					)
 				);
+				console.log(type, value, anafNft, meetCondition);
 				if (!anafNft || !meetCondition) res.push(false);
 				else res.push(true);
 			}

@@ -28,7 +28,7 @@ class CollectionService extends BaseApiService {
 	}
 	async updateCollection(collection: any): Promise<any> {
 		const res = await this.patch(`${BASE_URL}/collection/${collection.address}`).send(collection);
-		return res.body;
+		return new Collection(res.body);
 	}
 
 	async getAllCollections(): Promise<Collection[]> {
