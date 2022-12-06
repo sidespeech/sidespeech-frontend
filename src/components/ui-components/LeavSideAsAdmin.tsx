@@ -57,7 +57,7 @@ const LeavSideAsAdmin = ({ className, id, style, handleLeaveSide, side }: LeaveS
     useEffect(() => {
         async function getSideUsers() {
             if (side) {
-                const users = await userService.getUserFromSides([side]);
+                const users = await userService.getUserFromSides([side.id]);
                 setUsers(users);
                 const subadmin = side.profiles.filter((p) => p.role === Role.subadmin)[0];
                 if (subadmin) setNewSubAdmin(subadmin.user.username);
