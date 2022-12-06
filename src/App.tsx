@@ -22,6 +22,7 @@ import { getRandomId } from './helpers/utilities';
 import './App.css';
 import { RootState } from './redux/store/app.store';
 import useOpenseaCollection from './hooks/useOpenseaData';
+import Spinner from './components/ui-components/Spinner';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -39,23 +40,36 @@ function App() {
 
 	const userData = useSelector((state: RootState) => state.user);
 
-	const [checkingOnboard, setCheckingOnboard] = useState<boolean>(true);
+	const [onboarding, setCheckingOnboarding] = useState<boolean>(true);
+	const [fetchingUser, setFetchingUser] = useState<boolean>(true);
 
 	const isUserOnboarded = useCallback(async (walletAddress: string) => {
-		const onBoarding = await userService.findOnBoarding(walletAddress);
-		if (onBoarding) navigate('/onboarding');
-		setCheckingOnboard(false);
-		return onBoarding;
+		try {
+			const onBoarding = await userService.findOnBoarding(walletAddress);
+			if (onBoarding) navigate('/onboarding');
+			return onBoarding;
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setCheckingOnboarding(false);
+		}
 	}, []);
 
 	useEffect(() => {
-		if (userData.account === null) navigate('/login');
-		if (location.pathname === '/login' && userData.account) navigate('/');
-	}, [userData]);
+		if (!onboarding && !fetchingUser) {
+			if (userData.account === null)
+				navigate('/login', {
+					state: {
+						redirectFrom: location.pathname
+					}
+				});
+			if (location.pathname === '/login' && userData.account) navigate(location.state?.redirectFrom || '/');
+		}
+	}, [fetchingUser, onboarding, userData]);
 
 	useEffect(() => {
 		if (walletAddress) isUserOnboarded(walletAddress);
-		else setCheckingOnboard(false);
+		else setCheckingOnboarding(false);
 	}, [isUserOnboarded]);
 
 	useEffect(() => {
@@ -63,20 +77,30 @@ function App() {
 
 		async function getUser(account: string) {
 			try {
+				setFetchingUser(true);
 				const user = await userService.getUserByAddress(account);
 				dispatch(connect({ account: account, user: user }));
 				dispatch(fetchUserDatas(account));
 			} catch (error) {
 				console.error(error);
 				toast.error('Ooops! Something went wrong fetching your account data', { toastId: getRandomId() });
+			} finally {
+				setFetchingUser(false);
 			}
 		}
 
 		// This is needed because the metamask extension connection isn't picked up on just normal useEffect after refresh.
 		window.onload = event => {
-			const connectedWallet = window.ethereum.selectedAddress ? window.ethereum.selectedAddress : null;
-
-			if (localStorage.getItem('jwtToken') && connectedWallet) getUser(connectedWallet);
+			const addressFromLocalStorage = localStorage.getItem('userAccount');
+			if (localStorage.getItem('jwtToken') && (walletAddress || addressFromLocalStorage))
+				getUser(walletAddress || addressFromLocalStorage);
+			else {
+				setTimeout(() => {
+					if (localStorage.getItem('jwtToken') && (walletAddress || addressFromLocalStorage))
+						getUser(walletAddress || addressFromLocalStorage);
+					else setFetchingUser(false);
+				}, 1000);
+			}
 		};
 
 		return () => {
@@ -90,12 +114,18 @@ function App() {
 			isSettingsMobileMenuOpen={isSettingsMobileMenuOpen}
 			setIsSettingsMobileMenuOpen={setIsSettingsMobileMenuOpen}
 		>
-			<Outlet
-				context={{
-					isSettingsMobileMenuOpen,
-					setIsSettingsMobileMenuOpen
-				}}
-			/>
+			{onboarding || fetchingUser ? (
+				<div style={{ height: '100vh', width: '100%', display: 'grid', placeItems: 'center' }}>
+					<Spinner />
+				</div>
+			) : (
+				<Outlet
+					context={{
+						isSettingsMobileMenuOpen,
+						setIsSettingsMobileMenuOpen
+					}}
+				/>
+			)}
 		</Layout>
 	);
 }
