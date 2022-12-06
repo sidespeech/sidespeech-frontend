@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Trait } from '../models/interfaces/collection';
+import { Collection, Trait } from '../models/interfaces/collection';
 import collectionService from '../services/api-services/collection.service';
 import openseaService from '../services/web3-services/opensea.service';
 
@@ -40,13 +40,13 @@ export default function useOpenseaCollection() {
 	 * @description Update needed collection data for given addresses or given slugs
 	 */
 	async function updateCollections(addresses?: string[], slugs?: string[]) {
-		// if collections are already in database, no need to get slug from opensea
-		if (!slugs && addresses) {
-			const slugs = await getSlug(addresses);
-			await saveOpenseaData(slugs);
-		} else if (slugs) {
-			await saveOpenseaData(slugs);
-		}
+		// // if collections are already in database, no need to get slug from opensea
+		// if (!slugs && addresses) {
+		// 	const slugs = await getSlug(addresses);
+		// 	await saveOpenseaData(slugs);
+		// } else if (slugs) {
+		// 	await saveOpenseaData(slugs);
+		// }
 	}
 
 	return { updateCollections, updateTraitsForAllDatabaseCollections };
@@ -71,12 +71,14 @@ async function getSlug(collectionsAddress: string[]) {
 	return res;
 }
 
-export async function saveOpenseaData(slugs: string[]) {
+export async function saveOpenseaData(slugs: string[], collections: Collection[]) {
 	let i = 0;
+	const updatedCollections: Collection[] = [];
 	do {
-		slugs.slice(i, i + 4).forEach(async c => {
+		slugs.slice(i, i + 4).forEach(async (c, index) => {
 			const body = await openseaService.getCollectionData(c);
-			const address = body.collection.primary_asset_contracts[0].address;
+			const address1 = collections[index].address;
+			const address = body.collection.primary_asset_contracts.find((e: any) => e.address === address1).address;
 			const collection = {
 				address,
 				floorPrice: body['collection']['stats']['floor_price'],
@@ -90,11 +92,13 @@ export async function saveOpenseaData(slugs: string[]) {
 				slug: c,
 				traits: getTraits(body.collection.traits)
 			};
-			await collectionService.updateCollection(collection);
+			const updatedCollection = await collectionService.updateCollection(collection);
+			updatedCollections.push(updatedCollection);
 		});
 		i += 4;
 		await sleep(3000);
 	} while (i < slugs.length);
+	return updatedCollections;
 }
 async function getTraitsFromOpensea(slugs: string[]) {
 	let i = 0;

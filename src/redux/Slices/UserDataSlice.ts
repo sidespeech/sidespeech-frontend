@@ -73,31 +73,33 @@ export const fetchUserDatas = createAsyncThunk(
 		const cols = await collectionService.getManyCollectionsByAddress(collections.map(c => c.address));
 		if (cols.length !== collections.length) {
 			const missingCollections = _.differenceBy(collections, cols, 'address');
+			await collectionService.savedCollections(missingCollections);
 			const slugs: string[] = [];
 			for (const collection of missingCollections) {
 				const contract = await openseaService.getContractData(collection.address);
 				slugs.push(contract.collection.slug);
 			}
-			await saveOpenseaData(slugs);
+			const savedCollections = await saveOpenseaData(slugs, missingCollections);
+			cols.push(...savedCollections);
+			console.log('saves', savedCollections);
 		}
 
-		const data = await getSidesCountByCollection(collections.map(elem => elem['address']));
-
-		// await collectionService.savedCollections(collections);
-
+		const data = await getSidesCountByCollection(cols.map(elem => elem['address']));
+		console.log('coucou', data, cols);
 		let res: any = {};
 		for (let nft of nfts) {
 			const address = nft['token_address'];
 			const existingObject = res[address];
 
+			console.log('coucou1');
 			if (existingObject) {
 				existingObject.nfts.push(nft);
 			} else {
-				res[address] = collections.find((c: Collection) => c.address === address);
+				res[address] = cols.find((c: Collection) => c.address === address);
 				res[address].nfts.push(nft);
 
 				// Get Side Count
-				if (data.sides) {
+				if (data.sides.length) {
 					const numberSides = data['sides'].filter((item: Side) => {
 						return item['collectionSides'].find((coll: any) => coll['collectionId'] === address);
 					});
@@ -106,6 +108,7 @@ export const fetchUserDatas = createAsyncThunk(
 				} else {
 					res[address]['sideCount'] = 0;
 				}
+				console.log('coucou2');
 			}
 		}
 		return res;
@@ -177,15 +180,14 @@ export const userDataSlice = createSlice({
 		},
 		updateUser: (state: UserData, action: PayloadAction<any>) => {
 			state.user = { ...state.user, ...action.payload };
-			if(state.sides) {
+			if (state.sides) {
 				state.sides = action.payload.profiles
-				? action.payload.profiles.map((p: Profile) => {
-						p.side['profiles'] = [p];
-						return p.side;
-				  })
-				: [];
+					? action.payload.profiles.map((p: Profile) => {
+							p.side['profiles'] = [p];
+							return p.side;
+					  })
+					: [];
 			}
-			
 		},
 		updateProfiles: (state: UserData, action: PayloadAction<any>) => {
 			if (state.user) {
