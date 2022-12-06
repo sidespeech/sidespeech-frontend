@@ -1,5 +1,5 @@
 // Default Imports
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 
@@ -70,6 +70,7 @@ export default function Login() {
 	// Setup constants for dispatch, navigate and selector methods
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const userData = useSelector((state: RootState) => state.user);
 
@@ -156,10 +157,18 @@ export default function Login() {
 					// Check if the existing user still needs to onboard or not.
 					if (existingUser == null) {
 						// Redirect the user to the onboarding area.
-						navigate('/onboarding');
+						navigate('/onboarding', {
+							state: {
+								redirectFrom: location.pathname
+							}
+						});
 					} else {
 						// Redirect the user to the general settings page.
-						navigate('/');
+						navigate(location.state.redirectFrom, {
+							state: {
+								redirectFrom: location.pathname
+							}
+						});
 					}
 
 					// Dispatch the account that is connected to the redux slice.

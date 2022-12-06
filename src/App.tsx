@@ -22,6 +22,7 @@ import { getRandomId } from './helpers/utilities';
 import './App.css';
 import { RootState } from './redux/store/app.store';
 import useOpenseaCollection from './hooks/useOpenseaData';
+import Spinner from './components/ui-components/Spinner';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -42,16 +43,28 @@ function App() {
 	const [checkingOnboard, setCheckingOnboard] = useState<boolean>(true);
 
 	const isUserOnboarded = useCallback(async (walletAddress: string) => {
-		const onBoarding = await userService.findOnBoarding(walletAddress);
-		if (onBoarding) navigate('/onboarding');
-		setCheckingOnboard(false);
-		return onBoarding;
+		try {
+			const onBoarding = await userService.findOnBoarding(walletAddress);
+			if (onBoarding) navigate('/onboarding');
+			return onBoarding;
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setCheckingOnboard(false);
+		}
 	}, []);
 
 	useEffect(() => {
-		if (userData.account === null) navigate('/login');
-		if (location.pathname === '/login' && userData.account) navigate('/');
-	}, [userData]);
+		if (!checkingOnboard) {
+			if (userData.account === null)
+				navigate('/login', {
+					state: {
+						redirectFrom: location.pathname
+					}
+				});
+			if (location.pathname === '/login' && userData.account) navigate(location.state.redirectFrom);
+		}
+	}, [checkingOnboard, userData]);
 
 	useEffect(() => {
 		if (walletAddress) isUserOnboarded(walletAddress);
@@ -90,12 +103,16 @@ function App() {
 			isSettingsMobileMenuOpen={isSettingsMobileMenuOpen}
 			setIsSettingsMobileMenuOpen={setIsSettingsMobileMenuOpen}
 		>
-			<Outlet
-				context={{
-					isSettingsMobileMenuOpen,
-					setIsSettingsMobileMenuOpen
-				}}
-			/>
+			{checkingOnboard ? (
+				<Spinner />
+			) : (
+				<Outlet
+					context={{
+						isSettingsMobileMenuOpen,
+						setIsSettingsMobileMenuOpen
+					}}
+				/>
+			)}
 		</Layout>
 	);
 }
