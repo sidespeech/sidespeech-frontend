@@ -95,6 +95,7 @@ export default function SideUserList({
               onClick={
                 isMe ? () => { } : () => handleSelectedUser(p, currentProfile)
               }
+              onMouseEnter={()=>ReactTooltip.hide()}
               className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${selectedUser && selectedUser.id === p.id && "selected-channel"
                 } ${isMe ? "" : "pointer"}`}
             >
@@ -209,6 +210,11 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
     }
   };
 
+  const handleCopyWalletAddress = (walletAddress: string) => {
+    navigator.clipboard.writeText(walletAddress);
+    toast.success('Address copied successfuly.', { toastId: 1 });
+  };
+
   return (
     <TooltipContainer>
       <TooltipContent>
@@ -218,7 +224,11 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
             <div>{profile.user.username}</div>
             <div className="text-inactive">
               {reduceWalletAddress(profile.user.accounts)}
-              <img style={{ verticalAlign: "sub" }} src={copyAll} />
+              <img 
+                style={{ verticalAlign: "sub" }} 
+                src={copyAll} 
+                onClick={() => handleCopyWalletAddress(profile.user.accounts)}
+                />
             </div>
           </div>
         </div>

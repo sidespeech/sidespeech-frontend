@@ -117,6 +117,11 @@ const GeneralSettingsMenuStyled = styled.div`
 			gap: 1rem;
 			padding: 1rem 0;
 			border-radius: 10px;
+			&.active {
+				p {
+					color: var(--background);
+				}
+			}
 			${breakpoints(
 				size.lg,
 				`{
@@ -158,7 +163,7 @@ const GeneralSettingsMenuStyled = styled.div`
 						${breakpoints(
 							size.lg,
 							`{
-              fill: var(--input);
+              fill: var(--background);
             }`
 						)}
 					}
