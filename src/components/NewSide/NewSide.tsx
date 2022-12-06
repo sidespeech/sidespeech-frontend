@@ -461,7 +461,7 @@ export default function NewSide() {
 		if (event.target.files.length) {
 			const file = event.target.files[0];
 			if (file.size > 500000) {
-				toast.error('The image size has to be smaller than 500ko.');
+				toast.error('The image size has to be smaller than 5mb.');
 				return;
 			}
 			setFormData({ ...formData, sideImage: file });

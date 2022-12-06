@@ -204,7 +204,7 @@ export default function Informations({
     const onChangeSideImage = (event: any) => {
         const file = event.target.files[0];
         if (file.size > 500000) {
-            toast.error('The image size has to be smaller than 500ko.');
+            toast.error('The image size has to be smaller than 5mb');
             return;
         }
         setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
