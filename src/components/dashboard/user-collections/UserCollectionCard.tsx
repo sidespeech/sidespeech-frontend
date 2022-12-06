@@ -151,7 +151,7 @@ const UserCollectionCard = ({ collection, onClick }: UserCollectionItemProps) =>
 	useEffect(() => {}, [collection]);
 
 	return collection ? (
-		<UserCollectionCardStyled coverImage={collection?.bannerUrl || FALLBACK_BG_IMG}>
+		<UserCollectionCardStyled coverImage={collection?.bannerUrl || collection.imageUrl || FALLBACK_BG_IMG}>
 			<div className="cover-image">
 				<div className="title-wrapper title-wrapper-mobile">
 					<div className="avatar">
