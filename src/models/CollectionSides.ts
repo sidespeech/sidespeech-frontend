@@ -2,7 +2,7 @@ import { Collection } from "./interfaces/collection";
 import { Side } from "./Side";
 
 
-export class collectionSides {
+export class CollectionSides {
   collection:Collection;
   collectionId: string;
   sideId: string;
@@ -10,7 +10,7 @@ export class collectionSides {
   side: Side;
 
   constructor(_data: any) {
-    this.collection = _data.collection;
+    this.collection = new Collection(_data.collection);
     this.collectionId = _data.collectionId;
     this.sideId = _data.sideId;
     this.numberNeeded = _data.numberNeeded;
