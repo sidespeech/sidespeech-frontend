@@ -75,7 +75,12 @@ export default function Login() {
 	const userData = useSelector((state: RootState) => state.user);
 
 	useEffect(() => {
-		if (userData.account) navigate('/');
+		if (userData.account)
+			navigate(location.state?.redirectFrom || '/', {
+				state: {
+					redirectFrom: location.pathname
+				}
+			});
 	}, [userData]);
 
 	function ConnectWalletArea() {
@@ -164,7 +169,7 @@ export default function Login() {
 						});
 					} else {
 						// Redirect the user to the general settings page.
-						navigate(location.state.redirectFrom, {
+						navigate(location.state?.redirectFrom || '/', {
 							state: {
 								redirectFrom: location.pathname
 							}
