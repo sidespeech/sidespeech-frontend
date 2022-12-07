@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { RootState } from '../../../../redux/store/app.store';
 import { checkUserEligibility, fixURL } from '../../../../helpers/utilities';
 import { OpenSeaRequestStatus } from '../../../../models/interfaces/collection';
-import check from '../../../../assets/check.svg';
+import check from '../../../../assets/check_circle.svg';
 import { Side } from '../../../../models/Side';
 
 const ConditionsContainer = styled.div`

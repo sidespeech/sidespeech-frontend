@@ -139,11 +139,13 @@ const MiddleContainerHeaderStyled = styled.header`
 				align-items: center;
 				& h2 {
 					margin: 0;
+					color: white;
+					font-weight: 400;
 				}
 				& svg {
 					transform: scale(1.4);
 					& > path {
-						fill: #b4c1d2;
+						fill: white;
 					}
 				}
 			}
