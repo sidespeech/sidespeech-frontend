@@ -10,7 +10,7 @@ import UserBadge from "../../../ui-components/UserBadge";
 import defaultPP from "../../../../assets/default-pp.webp";
 import copyAll from "../../../../assets/copy_all.svg";
 import hexagon from "../../../../assets/hexagon.svg";
-import check from "../../../../assets/check.svg";
+import check from "../../../../assets/check_circle.svg";
 import {
   ProfilePictureData,
   SpanElipsis,

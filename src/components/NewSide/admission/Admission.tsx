@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import CustomSelect from '../../ui-components/CustomSelect';
-import check from '../../../assets/check.svg';
+import check from '../../../assets/check_circle.svg';
 import Button from '../../ui-components/Button';
 import Switch from '../../ui-components/Switch';
 import styled from 'styled-components';
@@ -265,7 +265,6 @@ export default function Admission({
 													options={
 														filteredCollections.length
 															? [
-																	`Choose NFT collection (${filteredCollections.length})`,
 																	...filteredCollections.map((c, fi) => {
 																		return (
 																			<span

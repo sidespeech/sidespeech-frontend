@@ -3,9 +3,8 @@ import Button from '../../../ui-components/Button';
 import InputText from '../../../ui-components/InputText';
 import { useDispatch } from 'react-redux';
 import { Side } from '../../../../models/Side';
-import facebook from '../../../../assets/facebook.svg';
 import twitter from '../../../../assets/twitter.svg';
-import linkedin from '../../../../assets/linkedin.svg';
+import facebook from '../../../../assets/telegram.svg';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { Profile } from '../../../../models/Profile';
@@ -154,17 +153,13 @@ export default function Invitation({
 
 	const socialsMedia = [
 		{
-			icon: facebook,
-			label: 'Facebook'
-		},
-		{
 			icon: twitter,
 			label: 'Twitter'
 		},
 		{
-			icon: linkedin,
-			label: 'LinkedIn'
-		}
+			icon: facebook,
+			label: 'Telegram'
+		},
 	];
 
 	const [usersInvite, setUsersInvite] = useState<any>([]);

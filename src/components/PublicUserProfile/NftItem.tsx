@@ -4,7 +4,7 @@ import { fixURL } from '../../helpers/utilities';
 import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { NFT } from '../../models/interfaces/nft';
 import defaultPP from '../../assets/default-pp.webp';
-import check from '../../assets/check.svg';
+import check from '../../assets/check_circle.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
 
 export const NftItem = ({ nft, collection }: { nft: NFT; collection: Collection }) => {
