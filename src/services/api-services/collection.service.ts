@@ -13,6 +13,7 @@ class CollectionService extends BaseApiService {
 	}
 
 	async savedCollections(collections: Collection[]) {
+		console.log('savedCollections :', collections)
 		const res = await this.post(`${BASE_URL}/collection/many`).send({
 			collections: collections
 		});
@@ -28,7 +29,7 @@ class CollectionService extends BaseApiService {
 	}
 	async updateCollection(collection: any): Promise<any> {
 		const res = await this.patch(`${BASE_URL}/collection/${collection.address}`).send(collection);
-		return new Collection(res.body);
+		return (res.body) ? new Collection(res.body) : collection;
 	}
 
 	async getAllCollections(): Promise<Collection[]> {

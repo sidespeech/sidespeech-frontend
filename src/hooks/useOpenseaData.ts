@@ -93,6 +93,9 @@ export async function saveOpenseaData(slugs: string[], collections: Collection[]
 				traits: getTraits(body.collection.traits)
 			};
 			const updatedCollection = await collectionService.updateCollection(collection);
+
+			console.log('updatedCollection :', updatedCollection);
+
 			updatedCollections.push(updatedCollection);
 		});
 		i += 4;

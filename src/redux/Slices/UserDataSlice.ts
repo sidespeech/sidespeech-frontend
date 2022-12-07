@@ -72,7 +72,10 @@ export const fetchUserDatas = createAsyncThunk(
 		const collections = await alchemyService.getUserCollections(address);
 		const cols = await collectionService.getManyCollectionsByAddress(collections.map(c => c.address));
 		if (cols.length !== collections.length) {
+			console.log('collections  userdataslice:', collections)
 			const missingCollections = _.differenceBy(collections, cols, 'address');
+			console.log('missingCollections userdataslice :', missingCollections)
+
 			await collectionService.savedCollections(missingCollections);
 			const slugs: string[] = [];
 			for (const collection of missingCollections) {
@@ -91,24 +94,37 @@ export const fetchUserDatas = createAsyncThunk(
 			const address = nft['token_address'];
 			const existingObject = res[address];
 
-			console.log('coucou1');
+			console.log('coucou1 :', nft);
 			if (existingObject) {
 				existingObject.nfts.push(nft);
 			} else {
-				res[address] = cols.find((c: Collection) => c.address === address);
-				res[address].nfts.push(nft);
+				console.log('cols :', cols)
 
-				// Get Side Count
-				if (data.sides.length) {
-					const numberSides = data['sides'].filter((item: Side) => {
-						return item['collectionSides'].find((coll: any) => coll['collectionId'] === address);
-					});
+				console.log('cols.find((c: Collection) => c.address === address) :', cols.find((c: Collection) => c.address === address))
+				const found = cols.find((c: Collection) => c.address === address)
 
-					res[address]['sideCount'] = numberSides.length;
-				} else {
-					res[address]['sideCount'] = 0;
+				if (found) {
+					res[address] = found;
+
+					console.log('after find')
+	
+					console.log('res[address] :', res[address])
+					res[address].nfts.push(nft);
+	
+					console.log('data.sides :', data.sides)
+					// Get Side Count
+					if (data.sides.length) {
+						const numberSides = data['sides'].filter((item: Side) => {
+							return item['collectionSides'].find((coll: any) => coll['collectionId'] === address);
+						});
+	
+						res[address]['sideCount'] = numberSides.length;
+					} else {
+						res[address]['sideCount'] = 0;
+					}
+					console.log('coucou2');
 				}
-				console.log('coucou2');
+				
 			}
 		}
 		return res;
