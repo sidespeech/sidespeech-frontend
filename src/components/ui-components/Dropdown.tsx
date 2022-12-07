@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import InputText from './InputText';
 
@@ -57,14 +57,21 @@ export default function Dropdown({
 }: any) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [headerTitle, setHeaderTitle] = useState<any>(options[0]);
+	const ref = useRef<HTMLInputElement>();
 
 	useEffect(() => {
 		if (defaultValue) {
 			setHeaderTitle(defaultValue);
-		} else if(defaultValue === null){
+		} else if (defaultValue === null) {
 			setHeaderTitle(options[0]);
 		}
-	}, [defaultValue,options]);
+	}, [defaultValue, options]);
+
+	useEffect(() => {
+		if (ref.current && isOpen) {
+			ref.current.focus();
+		}
+	}, [ref, isOpen]);
 
 	const toggleList = () => {
 		setIsOpen(!isOpen);
@@ -89,6 +96,7 @@ export default function Dropdown({
 					{filterDropdownList && (
 						<div className="py-2 px-2" style={{ backgroundColor: 'var(--disable)' }}>
 							<InputText
+								ref={ref}
 								border="1px solid var(--primary)"
 								onChange={filterDropdownList}
 								glass
