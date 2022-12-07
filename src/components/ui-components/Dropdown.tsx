@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import InputText from './InputText';
+import ClickAwayListener from 'react-click-away-listener';
 
 const DropdownLine = styled.div<any>`
 	position: relative;
@@ -13,6 +14,8 @@ const DropdownContainer = styled.div<any>`
 	font-weight: ${props => (props.fontWeight ? props.fontWeight : '400')};
 	width: ${props => (props.width ? props.width : '100%')};
 	height: ${props => (props.height ? props.height : '44px')};
+	pointer-events: ${props => props.disable && 'none'};
+	${props => props.disable && 'opacity: 0.2;'}
 	z-index: 5;
 	& > button:first-child {
 		${props =>
@@ -20,7 +23,7 @@ const DropdownContainer = styled.div<any>`
 				? `border-radius: ${props.radius ? props.radius : '7px 7px 0px 0px'};`
 				: `border-radius: ${props.radius ? props.radius : '7px'};`}
 
-		width: inherit;
+		width: 100%;
 		height: inherit;
 		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--disable)')};
 		${props => props.selected && 'border-bottom: 1px solid var(--inactive);'}
@@ -53,7 +56,8 @@ export default function Dropdown({
 	style,
 	filterDropdownList,
 	backgroundColor,
-	defaultValue
+	defaultValue,
+	disable
 }: any) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [headerTitle, setHeaderTitle] = useState<any>(options[0]);
@@ -77,6 +81,12 @@ export default function Dropdown({
 		setIsOpen(!isOpen);
 	};
 
+	const onClickAway = () => {
+		if (isOpen) {
+			toggleList();
+		}
+	};
+
 	const selectItem = (item: any, value: any) => {
 		setHeaderTitle(item);
 		onChange(value);
@@ -84,33 +94,40 @@ export default function Dropdown({
 	};
 
 	return (
-		<DropdownContainer selected={isOpen} backgroundColor={backgroundColor} style={{ ...style }}>
-			<button type="button" onClick={toggleList}>
-				<div className="m-auto">{headerTitle}</div>
-				<div className={`${isOpen ? 'selected' : ''} mr-2`}>
-					<i className="fa-solid fs-22 fa-angle-down"></i>
-				</div>
-			</button>
-			{isOpen && (
-				<div role="list" className="dd-list">
-					{filterDropdownList && (
-						<div className="py-2 px-2" style={{ backgroundColor: 'var(--disable)' }}>
-							<InputText
-								ref={ref}
-								border="1px solid var(--primary)"
-								onChange={filterDropdownList}
-								glass
-								iconRightPos={{ top: 9, right: 15 }}
-							/>
-						</div>
-					)}
-					{options.map((item: any, index: any) => (
-						<button type="button" key={index} onClick={e => selectItem(item, values[index])}>
-							{key ? item[key] : item}
-						</button>
-					))}
-				</div>
-			)}
-		</DropdownContainer>
+		<ClickAwayListener onClickAway={onClickAway}>
+			<DropdownContainer
+				disable={disable}
+				selected={isOpen}
+				backgroundColor={backgroundColor}
+				style={{ ...style }}
+			>
+				<button type="button" onClick={toggleList}>
+					<div className="m-auto">{headerTitle}</div>
+					<div className={`${isOpen ? 'selected' : ''} mr-2`}>
+						<i className="fa-solid fs-22 fa-angle-down"></i>
+					</div>
+				</button>
+				{isOpen && (
+					<div role="list" className="dd-list">
+						{filterDropdownList && (
+							<div className="py-2 px-2" style={{ backgroundColor: 'var(--disable)' }}>
+								<InputText
+									ref={ref}
+									border="1px solid var(--primary)"
+									onChange={filterDropdownList}
+									glass
+									iconRightPos={{ top: 9, right: 15 }}
+								/>
+							</div>
+						)}
+						{options.map((item: any, index: any) => (
+							<button type="button" key={index} onClick={e => selectItem(item, values[index])}>
+								{key ? item[key] : item}
+							</button>
+						))}
+					</div>
+				)}
+			</DropdownContainer>
+		</ClickAwayListener>
 	);
 }

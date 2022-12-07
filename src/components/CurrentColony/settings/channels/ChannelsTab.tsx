@@ -142,8 +142,7 @@ export default function Channels({
             }
         }
     };
-    const onChangeType = (event: any, index: number, current = true) => {
-        const value = Number.parseInt(event.target.value);
+    const onChangeType = (value: any, index: number, current = true) => {
         if (channelsNewSide) {
             onChangeTypeChannel(value, index, current);
         } else {
