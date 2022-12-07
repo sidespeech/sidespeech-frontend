@@ -203,7 +203,10 @@ export default function Admission({
 	useEffect(() => {
 		const selectedCollections: string[] = divCollections.map((d: any) => d.collection);
 		const filtered = collections.filter(
-			c => !selectedCollections.includes(c.address) && ((c.name) ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name));
+			c =>
+				!selectedCollections.includes(c.address) &&
+				(c.name ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name)
+		);
 		setFilteredCollections(filtered);
 	}, [divCollections, filter]);
 
@@ -256,7 +259,7 @@ export default function Admission({
 										<div className="f-column mt-3 mb-3">
 											<div className="flex">
 												<Dropdown
-													style={{ zIndex: 5 + divCollections.length - i }}
+													style={{ zIndex: 5 * (divCollections.length - i) }}
 													values={
 														filteredCollections.length
 															? ['', ...filteredCollections.map(c => c.address)]
@@ -365,7 +368,9 @@ export default function Admission({
 																<div className="feature-box" key={findex}>
 																	<div className="feature-selects mr-auto">
 																		<Dropdown
-																			style={{ zIndex: 4 }}
+																			style={{
+																				zIndex: (4 * (divCollections.length - i)) + 1
+																			}}
 																			defaultValue={
 																				fcurrent['trait_selected'] ? (
 																					<span
@@ -426,7 +431,9 @@ export default function Admission({
 																			}
 																		/>
 																		<Dropdown
-																			style={{ zIndex: 4 }}
+																			style={{
+																				zIndex: (4 * (divCollections.length - i)) + 1
+																			}}
 																			defaultValue={
 																				fcurrent['value_selected'] ? (
 																					<span
