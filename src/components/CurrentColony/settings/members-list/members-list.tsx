@@ -102,7 +102,7 @@ const MembersListStyled = styled.div`
 
 export default function MembersList({ currentSide }: { currentSide: Side }) {
 	return (
-		<MembersListStyled>
+		<MembersListStyled className="fade-in">
 			<div className="header-wrapper">
 				<div className="permissions-select">
 					<label>Permission</label>

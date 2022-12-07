@@ -159,7 +159,7 @@ export default function Invitation({
 		{
 			icon: facebook,
 			label: 'Telegram'
-		},
+		}
 	];
 
 	const [usersInvite, setUsersInvite] = useState<any>([]);
@@ -248,7 +248,7 @@ export default function Invitation({
 	};
 
 	return (
-		<InvitationsStyled>
+		<InvitationsStyled className="fade-in">
 			{/* Search and Invite Section */}
 			<div className="text-primary-light mb-3 text fw-600">Search and invite</div>
 			<div className="search-and-invite mb-3">

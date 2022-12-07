@@ -203,7 +203,10 @@ export default function Admission({
 	useEffect(() => {
 		const selectedCollections: string[] = divCollections.map((d: any) => d.collection);
 		const filtered = collections.filter(
-			c => !selectedCollections.includes(c.address) && ((c.name) ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name));
+			c =>
+				!selectedCollections.includes(c.address) &&
+				(c.name ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name)
+		);
 		setFilteredCollections(filtered);
 	}, [divCollections, filter]);
 
@@ -213,7 +216,7 @@ export default function Admission({
 	};
 
 	return (
-		<AdmissionStyled>
+		<AdmissionStyled className="fade-in">
 			<div className="left-side">
 				<label htmlFor="name" className="size-14 fw-400 mb-4 text-left">
 					Admission conditions ({divCollections.length})

@@ -175,7 +175,7 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
 	const checkUserVoted = poll.votes?.some(v => v.voterId === walletAddress);
 
 	return (
-		<PollItemStyled className={`w-100 poll-item ${!isFirstItem ? 'border-top' : ''} ${className || ''}`}>
+		<PollItemStyled className={`w-100 poll-item fade-in ${!isFirstItem ? 'border-top' : ''} ${className || ''}`}>
 			<div className="poll-item_container">
 				<div className="flex gap-20 w-100">
 					<UserBadge

@@ -248,7 +248,7 @@ const Invitations = ({}: InvitationsProps) => {
 	};
 
 	return (
-		<InvitationsStyled>
+		<InvitationsStyled className="fade-in">
 			<h2 className="title">
 				Invitations {filteredInvitations.length ? '(' + filteredInvitations.length + ')' : null}
 			</h2>

@@ -764,7 +764,7 @@ export default function NewSide() {
 			</div>
 
 			<div className="flex align-start w-100 text-left">
-				<ContainerLeft className="container-left">
+				<ContainerLeft className="container-left fade-in-left">
 					<label className="sidebar-title">Steps</label>
 					<nav className="tabs-wrapper">
 						{steps.map((step: any, index: number) => {
@@ -875,7 +875,7 @@ const FooterButtons = ({ index, newSideNextPreviousStep, onSubmit, steps }: any)
 	};
 
 	return (
-		<div className="flex justify-between container-next-back">
+		<div className="fade-in-delay flex justify-between container-next-back">
 			{index > 0 ? (
 				<Button
 					classes={'mt-4'}
