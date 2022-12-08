@@ -101,7 +101,7 @@ class AlchemyService {
     const ownedCollections: Collection[] = result.contracts.map(
       (c: any) => new AlchemyCollection(c)
     );
-    return ownedCollections;
+    return ownedCollections.filter(c => !c.isSpam);
   }
 }
 export default AlchemyService.getInstance();

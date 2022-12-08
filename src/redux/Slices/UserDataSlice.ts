@@ -73,6 +73,7 @@ export const fetchUserDatas = createAsyncThunk(
 		const cols = await collectionService.getManyCollectionsByAddress(collections.map(c => c.address));
 		if (cols.length !== collections.length) {
 			const missingCollections = _.differenceBy(collections, cols, 'address');
+
 			await collectionService.savedCollections(missingCollections);
 			const slugs: string[] = [];
 			for (const collection of missingCollections) {
@@ -81,34 +82,34 @@ export const fetchUserDatas = createAsyncThunk(
 			}
 			const savedCollections = await saveOpenseaData(slugs, missingCollections);
 			cols.push(...savedCollections);
-			console.log('saves', savedCollections);
 		}
 
 		const data = await getSidesCountByCollection(cols.map(elem => elem['address']));
-		console.log('coucou', data, cols);
 		let res: any = {};
 		for (let nft of nfts) {
 			const address = nft['token_address'];
 			const existingObject = res[address];
 
-			console.log('coucou1');
 			if (existingObject) {
 				existingObject.nfts.push(nft);
 			} else {
-				res[address] = cols.find((c: Collection) => c.address === address);
-				res[address].nfts.push(nft);
+				const found = cols.find((c: Collection) => c.address === address)
 
-				// Get Side Count
-				if (data.sides.length) {
-					const numberSides = data['sides'].filter((item: Side) => {
-						return item['collectionSides'].find((coll: any) => coll['collectionId'] === address);
-					});
-
-					res[address]['sideCount'] = numberSides.length;
-				} else {
-					res[address]['sideCount'] = 0;
+				if (found) {
+					res[address] = found;
+					res[address].nfts.push(nft);
+					// Get Side Count
+					if (data.sides.length) {
+						const numberSides = data['sides'].filter((item: Side) => {
+							return item['collectionSides'].find((coll: any) => coll['collectionId'] === address);
+						});
+	
+						res[address]['sideCount'] = numberSides.length;
+					} else {
+						res[address]['sideCount'] = 0;
+					}
 				}
-				console.log('coucou2');
+				
 			}
 		}
 		return res;

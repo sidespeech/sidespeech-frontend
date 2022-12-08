@@ -480,7 +480,6 @@ export default function NewSide() {
 
 			const data = filteredCollections.find((item: Collection) => item['address'] === address);
 			current_divs[index]['metadata'] = data;
-			console.log(current_divs, current_divs[index]);
 			setDivCollection(current_divs);
 		}
 	};
@@ -513,7 +512,6 @@ export default function NewSide() {
 	};
 
 	const setSideValueCondition = (value: any, index: number, findex: number) => {
-		console.log(value);
 		if (value.trim().length) {
 			let current_divs = [...divCollections];
 

@@ -21,6 +21,7 @@ import { breakpoints, size } from '../../../helpers/breakpoints';
 import Button from '../../ui-components/Button';
 import { useGeneralSettingsContext } from '../../../App';
 import userService from '../../../services/api-services/user.service';
+import { sortCollectionByVerifiedCollectionsAndVolume } from '../../../helpers/utilities';
 
 const GeneralSettingsAccountStyled = styled.div`
 	width: 100%;
@@ -144,7 +145,8 @@ export default function GeneralSettingsAccount() {
 					username: user.username
 				});
 			}
-			setCollections(Object.values(userCollectionsData));
+
+			setCollections(Object.values(userCollectionsData).sort(sortCollectionByVerifiedCollectionsAndVolume));
 			setSelectedAvatar(user.userAvatar);
 		}
 	}, [userCollectionsData, user]);
