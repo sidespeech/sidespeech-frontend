@@ -81,6 +81,9 @@ const AdmissionStyled = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+	.filterSearch + button {
+		display:none;
+	}
 	${breakpoints(
 		size.lg,
 		`{
@@ -241,6 +244,7 @@ export default function Admission({
 
 				<div className="f-column align-center">
 					{divCollections.map((current: any, i: number) => {
+						console.log('Current: ', current);
 						return (
 							<>
 								<div className="collection-item mb-3" key={i}>
@@ -268,6 +272,7 @@ export default function Admission({
 													options={
 														filteredCollections.length
 															? [
+																	`Choose collection`,
 																	...filteredCollections.map((c, fi) => {
 																		return (
 																			<span

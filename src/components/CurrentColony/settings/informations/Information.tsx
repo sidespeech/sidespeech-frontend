@@ -365,7 +365,7 @@ export default function Informations({
 				</div>
 				{formError?.name.exist && <div className="mt-3 text-red">Side name already exist.</div>}
 				{formError?.name.length && (
-					<div className="mt-3 text-red">Side name has to be between 3 and 50 character.</div>
+					<div className="mt-3 text-red">Side name has to be between 4 and 50 characters.</div>
 				)}
 			</div>
 

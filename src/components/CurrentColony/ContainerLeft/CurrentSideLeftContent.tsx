@@ -180,7 +180,8 @@ export default function CurrentSideLeftContent() {
 		<>
 			<SidebarStyled className="px-1">
 				<Accordion
-					className="fade-in-delay"
+					initialAnimation={300}
+					className="fade-in"
 					AccordionButton={() => (
 						<span className="fw-400 size-11 flex align-center">
 							<svg
@@ -208,7 +209,7 @@ export default function CurrentSideLeftContent() {
 				</Accordion>
 
 				<Accordion
-					className="fade-in-delay"
+					initialAnimation={500}
 					AccordionButton={() => (
 						<span className="fw-400 size-11 flex align-center">
 							<svg
@@ -238,7 +239,7 @@ export default function CurrentSideLeftContent() {
 				</Accordion>
 
 				<Accordion
-					className="fade-in-delay"
+					initialAnimation={700}
 					AccordionButton={() => (
 						<span className="fw-400 size-11 flex align-center">
 							<svg

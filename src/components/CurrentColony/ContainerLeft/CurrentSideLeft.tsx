@@ -95,7 +95,7 @@ export default function CurrentSideLeft({}: CurrentSideLeftProps) {
 
 	return (
 		<ContainerLeftStyled>
-			<div className="sidebar-desktop fade-in-left">
+			<div className="sidebar-desktop">
 				<ContainerLeft backgroundColor="var(--panels)" width="100%" height={100} paddingTop={0}>
 					<CoverImg
 						backgroundImage={currentSide?.sideImage}

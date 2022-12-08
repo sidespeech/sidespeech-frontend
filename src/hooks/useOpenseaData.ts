@@ -71,7 +71,7 @@ async function getSlug(collectionsAddress: string[]) {
 	return res;
 }
 
-export async function saveOpenseaData(slugs: string[], collections: Collection[]) {
+export async function saveOpenseaData(slugs: string[], collections: Collection[] = []) {
 	let i = 0;
 	const updatedCollections: Collection[] = [];
 	do {
