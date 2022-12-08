@@ -81,6 +81,9 @@ const AdmissionStyled = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+	.filterSearch + button {
+		display:none;
+	}
 	${breakpoints(
 		size.lg,
 		`{
@@ -203,10 +206,7 @@ export default function Admission({
 	useEffect(() => {
 		const selectedCollections: string[] = divCollections.map((d: any) => d.collection);
 		const filtered = collections.filter(
-			c =>
-				!selectedCollections.includes(c.address) &&
-				(c.name ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name)
-		);
+			c => !selectedCollections.includes(c.address) && ((c.name) ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name));
 		setFilteredCollections(filtered);
 	}, [divCollections, filter]);
 
@@ -241,6 +241,7 @@ export default function Admission({
 
 				<div className="f-column align-center">
 					{divCollections.map((current: any, i: number) => {
+						console.log('Current: ', current);
 						return (
 							<>
 								<div className="collection-item mb-3" key={i}>
@@ -259,7 +260,7 @@ export default function Admission({
 										<div className="f-column mt-3 mb-3">
 											<div className="flex">
 												<Dropdown
-													style={{ zIndex: 5 * (divCollections.length - i) }}
+													style={{ zIndex: 5 + divCollections.length - i }}
 													values={
 														filteredCollections.length
 															? ['', ...filteredCollections.map(c => c.address)]
@@ -268,6 +269,7 @@ export default function Admission({
 													options={
 														filteredCollections.length
 															? [
+																	`Choose collection`,
 																	...filteredCollections.map((c, fi) => {
 																		return (
 																			<span
@@ -368,9 +370,7 @@ export default function Admission({
 																<div className="feature-box" key={findex}>
 																	<div className="feature-selects mr-auto">
 																		<Dropdown
-																			style={{
-																				zIndex: (4 * (divCollections.length - i)) + 1
-																			}}
+																			style={{ zIndex: 4 }}
 																			defaultValue={
 																				fcurrent['trait_selected'] ? (
 																					<span
@@ -431,9 +431,7 @@ export default function Admission({
 																			}
 																		/>
 																		<Dropdown
-																			style={{
-																				zIndex: (4 * (divCollections.length - i)) + 1
-																			}}
+																			style={{ zIndex: 4 }}
 																			defaultValue={
 																				fcurrent['value_selected'] ? (
 																					<span

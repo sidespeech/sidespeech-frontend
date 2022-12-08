@@ -110,7 +110,7 @@ export default function Dropdown({
 				{isOpen && (
 					<div role="list" className="dd-list">
 						{filterDropdownList && (
-							<div className="py-2 px-2" style={{ backgroundColor: 'var(--disable)' }}>
+							<div className="py-2 filterSearch px-2" style={{ backgroundColor: 'var(--disable)' }}>
 								<InputText
 									ref={ref}
 									border="1px solid var(--primary)"
