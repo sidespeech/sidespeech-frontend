@@ -238,6 +238,12 @@ export default function Invitation({
 		toast.success('Link copied successfuly.', { toastId: 1 });
 	};
 
+	const handleSocialShare = (social: any) => {
+		let socialLink;
+		socialLink = social.label == 'Twitter' ? 'https://twitter.com/intent/tweet?text=Join%20my%20side%20on%20SideSpeech%20-%20'+sideLink : 'https://telegram.me/share/url?url='+sideLink+'&text=Join my side on SideSpeech';
+		window.open(socialLink, '_blank');
+	}
+
 	const getAvatarPicture = (userAvatar: string) => {
 		const jsonAvatar = JSON.parse(userAvatar);
 		const image =
@@ -343,7 +349,7 @@ export default function Invitation({
 							classes="media-btn"
 							width={'100%'}
 							height={40}
-							onClick={undefined}
+							onClick={() => handleSocialShare(social)}
 							radius={10}
 							background={'var(--disable)'}
 							color={'var(--text)'}
