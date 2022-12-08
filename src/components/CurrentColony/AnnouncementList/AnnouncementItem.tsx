@@ -100,7 +100,7 @@ export default function AnnouncementItem({
 	}, [announcement.creatorAddress, currentSide]);
 
 	return (
-		<AnnouncementItemStyled className={`fade-in ${className || ''}`}>
+		<AnnouncementItemStyled className={`${className || ''}`}>
 			<div className="flex w-100 gap-20">
 				<UserBadge
 					check
