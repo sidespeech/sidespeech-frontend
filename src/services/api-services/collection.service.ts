@@ -1,19 +1,19 @@
 import _ from 'lodash';
 import { BASE_URL } from '../../constants/constants';
-import { sortCollectionByVerifiedCollectionsAndName } from '../../helpers/utilities';
+import { sortCollectionByVerifiedCollectionsAndVolume } from '../../helpers/utilities';
 import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { BaseApiService } from './base-api.service';
 
 // Create an API Service class
 let instance: CollectionService;
 class CollectionService extends BaseApiService {
+
 	static getInstance() {
 		if (!instance) instance = new CollectionService();
 		return instance;
 	}
 
 	async savedCollections(collections: Collection[]) {
-		console.log('savedCollections :', collections)
 		const res = await this.post(`${BASE_URL}/collection/many`).send({
 			collections: collections
 		});
@@ -32,10 +32,14 @@ class CollectionService extends BaseApiService {
 		return (res.body) ? new Collection(res.body) : collection;
 	}
 
-	async getAllCollections(): Promise<Collection[]> {
+	async getAllCollections(userCollectionsData = {}): Promise<Collection[]> {
 		const res = await this.get(`${BASE_URL}/collection`);
-		const collections: Collection[] = res.body.map((b: any) => new Collection(b));
-		return collections.sort(sortCollectionByVerifiedCollectionsAndName);
+		const collections: Collection[] = res.body.map((b: any) => {
+			if (b.address in userCollectionsData)
+				b.ownedCount = 1
+			return new Collection(b)
+		});
+		return collections.sort(sortCollectionByVerifiedCollectionsAndVolume);
 	}
 
 	async getCollectionByAddress(address: string): Promise<Collection> {

@@ -72,9 +72,7 @@ export const fetchUserDatas = createAsyncThunk(
 		const collections = await alchemyService.getUserCollections(address);
 		const cols = await collectionService.getManyCollectionsByAddress(collections.map(c => c.address));
 		if (cols.length !== collections.length) {
-			console.log('collections  userdataslice:', collections)
 			const missingCollections = _.differenceBy(collections, cols, 'address');
-			console.log('missingCollections userdataslice :', missingCollections)
 
 			await collectionService.savedCollections(missingCollections);
 			const slugs: string[] = [];
@@ -84,34 +82,22 @@ export const fetchUserDatas = createAsyncThunk(
 			}
 			const savedCollections = await saveOpenseaData(slugs, missingCollections);
 			cols.push(...savedCollections);
-			console.log('saves', savedCollections);
 		}
 
 		const data = await getSidesCountByCollection(cols.map(elem => elem['address']));
-		console.log('coucou', data, cols);
 		let res: any = {};
 		for (let nft of nfts) {
 			const address = nft['token_address'];
 			const existingObject = res[address];
 
-			console.log('coucou1 :', nft);
 			if (existingObject) {
 				existingObject.nfts.push(nft);
 			} else {
-				console.log('cols :', cols)
-
-				console.log('cols.find((c: Collection) => c.address === address) :', cols.find((c: Collection) => c.address === address))
 				const found = cols.find((c: Collection) => c.address === address)
 
 				if (found) {
 					res[address] = found;
-
-					console.log('after find')
-	
-					console.log('res[address] :', res[address])
 					res[address].nfts.push(nft);
-	
-					console.log('data.sides :', data.sides)
 					// Get Side Count
 					if (data.sides.length) {
 						const numberSides = data['sides'].filter((item: Side) => {
@@ -122,7 +108,6 @@ export const fetchUserDatas = createAsyncThunk(
 					} else {
 						res[address]['sideCount'] = 0;
 					}
-					console.log('coucou2');
 				}
 				
 			}
