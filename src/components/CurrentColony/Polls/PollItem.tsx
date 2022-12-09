@@ -15,6 +15,7 @@ import { RootState } from '../../../redux/store/app.store';
 import { sum } from 'lodash';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import pollService from '../../../services/api-services/poll.service';
+import Votes from '../../ui-components/Votes';
 
 const PollItemStyled = styled.div`
 	display: flex;
@@ -172,7 +173,7 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
 	const finishedVoting = isExpired;
 
 	// We'll check if the user has voted.
-	const checkUserVoted = poll.votes?.some(v => v.voterId === walletAddress);
+	const userVoteOptionId = poll.votes?.filter(v => v.voterId === walletAddress)?.[0]?.option?.id;
 
 	return (
 		<PollItemStyled className={`w-100 poll-item ${!isFirstItem ? 'border-top' : ''} ${className || ''}`}>
@@ -218,16 +219,22 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
 				<ClampLines className="mb-2">{poll.question}</ClampLines>
 
 				<div className="flex poll-override">
-					<LeafPoll
+					<Votes
+						onVote={!!userVoteOptionId ? null : handleVote}
+						options={thePollOptions}
+						pollId={poll.id}
+						userVoteOptionId={userVoteOptionId}
+					/>
+					{/* <LeafPoll
 						type={'multiple'}
 						results={thePollOptions || []}
 						theme={customTheme}
-						isVoted={!!checkUserVoted}
+						isVoted={!!userVoteOptionId}
 						isVotedId={walletAddress}
 						onVote={
-							!!checkUserVoted ? () => null : (callbackData: any) => handleVote(callbackData, poll.id)
+							!!userVoteOptionId ? () => null : (callbackData: any) => handleVote(callbackData, poll.id)
 						}
-					/>
+					/> */}
 				</div>
 			</div>
 
