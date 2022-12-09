@@ -244,7 +244,6 @@ export default function Admission({
 
 				<div className="f-column align-center">
 					{divCollections.map((current: any, i: number) => {
-						console.log('Current: ', current);
 						return (
 							<>
 								<div className="collection-item mb-3" key={i}>

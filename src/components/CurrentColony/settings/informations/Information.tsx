@@ -339,6 +339,7 @@ export default function Informations({
 						<InputText
 							bgColor="var(--input)"
 							defaultValue={currentSide.name}
+							color="var(--text)"
 							glass={false}
 							height={35}
 							onChange={onChangeSideName}
@@ -376,6 +377,7 @@ export default function Informations({
 					<TextArea
 						height={100}
 						bgColor="var(--input)"
+						color="var(--text)"
 						glass={false}
 						placeholder={'Describe your Side'}
 						defaultValue={currentSide.description}
