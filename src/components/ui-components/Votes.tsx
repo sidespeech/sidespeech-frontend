@@ -10,8 +10,8 @@ const VotesStyled = styled.form`
 	& .option-wrapper {
 		padding: 1rem;
 		display: flex;
-		align-items: center;
-		gap: 1rem;
+		flex-direction: column;
+		gap: 0.5rem;
 		background-color: var(--panels);
 		transition: all 0.3s ease;
 		border-radius: 7px;
@@ -33,36 +33,56 @@ const VotesStyled = styled.form`
 				}
 			}
 		}
-		& .option-input {
-			flex-shrink: 0;
-			flex-grow: 0;
-			position: relative;
-			width: 14px;
-			height: 14px;
-			& input {
-				position: absolute;
-				opacity: 0;
-			}
-			& span {
+		& .name-input-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			width: 100%;
+			& .option-input {
+				flex-shrink: 0;
+				flex-grow: 0;
 				position: relative;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 100%;
-				height: 100%;
-				border-radius: 100px;
-				border: 1px solid var(--text);
-			}
-			& input:checked ~ span {
-				border: 1px solid var(--black-transparency-20);
-				&::before {
-					content: '';
+				width: 14px;
+				height: 14px;
+				& input {
+					position: absolute;
+					opacity: 0;
+				}
+				& span {
 					position: relative;
-					z-index: 2;
-					width: 80%;
-					height: 80%;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					width: 100%;
+					height: 100%;
 					border-radius: 100px;
-					background-color: var(--background);
+					border: 1px solid var(--text);
+				}
+				& input:checked ~ span {
+					border: 1px solid var(--black-transparency-20);
+					&::before {
+						content: '';
+						position: relative;
+						z-index: 2;
+						width: 80%;
+						height: 80%;
+						border-radius: 100px;
+						background-color: var(--background);
+					}
+				}
+			}
+			& .percentage {
+				display: none;
+			}
+		}
+		&.show-results {
+			& .name-input-wrapper {
+				justify-content: space-between;
+				& .option-input {
+					display: none;
+				}
+				& .percentage {
+					display: block;
 				}
 			}
 		}
@@ -71,6 +91,33 @@ const VotesStyled = styled.form`
 		max-width: fit-content;
 		padding-left: 3rem;
 		padding-right: 3rem;
+	}
+`;
+
+interface PercentageBarProps {
+	percentage: number;
+}
+
+const PercentageBar = styled.span<PercentageBarProps>`
+	display: none;
+	position: relative;
+	width: 100%;
+	height: 5px;
+	border-radius: 5px;
+	overflow: hidden;
+	background-color: var(--black-transparency-20);
+	&.show {
+		display: block;
+	}
+	&::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		width: ${props => props.percentage}%;
+		border-radius: 5px;
+		background-color: var(--primary);
 	}
 `;
 
@@ -85,10 +132,11 @@ interface VotesProps {
 	onVote?: (option: Option) => any | null;
 	options: Option[];
 	pollId: string;
+	showUserVotedOption?: boolean;
 	userVoteOptionId?: number;
 }
 
-const Votes = ({ onVote, options, pollId, userVoteOptionId }: VotesProps) => {
+const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId }: VotesProps) => {
 	const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
 
 	const handleSubmit = (ev: any) => {
@@ -102,27 +150,34 @@ const Votes = ({ onVote, options, pollId, userVoteOptionId }: VotesProps) => {
 			{options.map(option => {
 				const optionChecked = selectedOptionId === option.optionId;
 				const votedByUser = userVoteOptionId?.toString() === option.optionId.toString();
+				const percentage = 40;
 
 				return (
 					<label
 						key={option.optionId}
 						className={`option-wrapper ${optionChecked ? 'checked' : ''} ${
-							votedByUser ? 'user-option' : ''
-						} ${!userVoteOptionId ? 'enabled' : ''}`}
+							votedByUser && showUserVotedOption ? 'user-option' : ''
+						} ${!userVoteOptionId ? 'enabled' : 'show-results'}`}
 						htmlFor={option.optionId.toString()}
 					>
-						<div className="option-input">
-							<input
-								checked={optionChecked}
-								id={option.optionId.toString()}
-								name={pollId}
-								onChange={ev => setSelectedOptionId(option.optionId)}
-								type="radio"
-								value={option.optionId}
-							/>
-							<span />
+						<div className="name-input-wrapper">
+							<div className="option-input">
+								<input
+									checked={optionChecked}
+									id={option.optionId.toString()}
+									name={pollId}
+									onChange={ev => setSelectedOptionId(option.optionId)}
+									type="radio"
+									value={option.optionId}
+								/>
+								<span />
+							</div>
+							<span className="option-label">{option.text}</span>
+
+							<div className="percentage">{percentage}%</div>
 						</div>
-						<span className="option-label">{option.text}</span>
+
+						<PercentageBar className={!!userVoteOptionId ? 'show' : ''} percentage={percentage} />
 					</label>
 				);
 			})}
