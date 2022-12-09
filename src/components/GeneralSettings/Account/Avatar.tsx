@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { fixURL } from '../../../helpers/utilities';
 import { NFT } from '../../../models/interfaces/nft';
 
-import defaultPP from '../../../assets/default-pp.webp';
+import defaultPP from '../../../assets/default-pp.png';
 import hexagon from '../../../assets/hexagon.svg';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 

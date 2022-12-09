@@ -7,7 +7,7 @@ import { Profile } from "../../../../models/Profile";
 import { RootState } from "../../../../redux/store/app.store";
 import { Dot } from "../../../ui-components/styled-components/shared-styled-components";
 import UserBadge from "../../../ui-components/UserBadge";
-import defaultPP from "../../../../assets/default-pp.webp";
+import defaultPP from "../../../../assets/default-pp.png";
 import copyAll from "../../../../assets/copy_all.svg";
 import hexagon from "../../../../assets/hexagon.svg";
 import check from "../../../../assets/check_circle.svg";

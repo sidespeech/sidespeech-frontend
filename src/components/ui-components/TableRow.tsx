@@ -4,7 +4,7 @@ import CustomSelect from './CustomSelect';
 import Button from './Button';
 import { Side } from '../../models/Side';
 import { Profile } from '../../models/Profile';
-import defaultPP from '../../assets/default-pp.webp';
+import defaultPP from '../../assets/default-pp.png';
 import profileService from '../../services/api-services/profile.service';
 
 export default function TableRow({ side, user }: { side: Side; user: Profile }) {

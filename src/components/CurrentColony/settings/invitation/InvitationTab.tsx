@@ -13,7 +13,7 @@ import { breakpoints, size } from '../../../../helpers/breakpoints';
 import userService from '../../../../services/api-services/user.service';
 import invitationService from '../../../../services/api-services/invitation.service';
 import { fixURL, reduceWalletAddress } from '../../../../helpers/utilities';
-import defaultPP from '../../../../assets/default-pp.webp';
+import defaultPP from '../../../../assets/default-pp.png';
 
 const InvitationsStyled = styled.div`
 	width: 100%;
