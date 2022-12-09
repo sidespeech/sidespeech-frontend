@@ -422,6 +422,7 @@ export default function NftsCollections({
                 className="mb-3"
                 glass
                 height={40}
+                color="var(--text)"
                 iconRightPos={{ right: 16, top: 12 }}
                 width="100%"
                 bgColor="var(--disable)"

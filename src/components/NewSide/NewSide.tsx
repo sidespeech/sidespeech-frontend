@@ -840,7 +840,7 @@ export default function NewSide() {
 									) : step['label'] === 'Invitation' && step['active'] ? (
 										<>
 											<Invitation
-												currentSide={currentSide}
+												currentSide={formData}
 												invitationUsers={invitationUsers}
 												setUserInvited={setUserInvited}
 												userInvited={userInvited}

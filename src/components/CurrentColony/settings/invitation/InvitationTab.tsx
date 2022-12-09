@@ -143,7 +143,7 @@ export default function Invitation({
 	setUserInvited,
 	userInvited
 }: {
-	currentSide: Side;
+	currentSide: any;
 	userData?: any;
 	invitationUsers?: any[];
 	setUserInvited?: any;
@@ -260,7 +260,7 @@ export default function Invitation({
 			<div className="search-and-invite mb-3">
 				<InputText
 					placeholderColor="var(--inactive)"
-					color="var(--inactive)"
+					color="var(--text)"
 					parentWidth={'100%'}
 					height={45}
 					width="100%"
@@ -312,6 +312,7 @@ export default function Invitation({
 				<div className="copy-link-wrapper">
 					<InputText
 						height={40}
+						color="var(--text)"
 						parentWidth={'100%'}
 						width="100%"
 						bgColor="var(--input)"
