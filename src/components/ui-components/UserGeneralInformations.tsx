@@ -198,6 +198,7 @@ export default function UserGeneralInformations({
                 <InputText
                     height={40}
                     width="100%"
+                    color="var(--text)"
                     bgColor="var(--input)"
                     glass={false}
                     placeholderColor="var(--text)"
@@ -218,6 +219,7 @@ export default function UserGeneralInformations({
                 <TextArea
                     height={120}
                     width="100%"
+                    color="var(--text)"
                     bgColor="var(--input)"
                     glass={false}
                     placeholder={'Describe yourself'}

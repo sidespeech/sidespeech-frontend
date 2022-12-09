@@ -258,7 +258,7 @@ const Invitations = ({}: InvitationsProps) => {
 				<div className="search-input">
 					<InputText
 						placeholderColor="var(--inactive)"
-						color="var(--inactive)"
+						color="var(--text)"
 						height={40}
 						bgColor="var(--input)"
 						glass={true}
