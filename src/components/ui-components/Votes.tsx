@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from './Button';
 
@@ -115,9 +115,15 @@ const PercentageBar = styled.span<PercentageBarProps>`
 		left: 0;
 		top: 0;
 		height: 100%;
-		width: ${props => props.percentage}%;
+		width: 100%;
+		transition: transform 0.3s ease;
+		transform-origin: left;
+		transform: translateX(-100%);
 		border-radius: 5px;
 		background-color: var(--primary);
+	}
+	&.animate::after {
+		transform: translateX(-${props => 100 - props.percentage}%);
 	}
 `;
 
@@ -138,6 +144,17 @@ interface VotesProps {
 
 const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId }: VotesProps) => {
 	const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+	const [animate, setAnimate] = useState<boolean>(false);
+
+	const totalVotes = options?.reduce((a, b) => {
+		return a + b.votes;
+	}, 0);
+
+	useEffect(() => {
+		setTimeout(() => {
+			setAnimate(true);
+		}, 200);
+	}, []);
 
 	const handleSubmit = (ev: any) => {
 		ev.preventDefault();
@@ -150,7 +167,7 @@ const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId 
 			{options.map(option => {
 				const optionChecked = selectedOptionId === option.optionId;
 				const votedByUser = userVoteOptionId?.toString() === option.optionId.toString();
-				const percentage = 40;
+				const percentage = calculatePercentage(totalVotes, option.votes);
 
 				return (
 					<label
@@ -177,7 +194,10 @@ const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId 
 							<div className="percentage">{percentage}%</div>
 						</div>
 
-						<PercentageBar className={!!userVoteOptionId ? 'show' : ''} percentage={percentage} />
+						<PercentageBar
+							className={`${!!userVoteOptionId ? 'show' : ''} ${animate ? 'animate' : ''}`}
+							percentage={percentage}
+						/>
 					</label>
 				);
 			})}
@@ -191,3 +211,7 @@ const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId 
 };
 
 export default Votes;
+
+function calculatePercentage(totalVotes: number, optionVotes: number): number {
+	return Math.round((optionVotes * 100) / totalVotes);
+}
