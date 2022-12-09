@@ -57,7 +57,8 @@ export default function Dropdown({
 	filterDropdownList,
 	backgroundColor,
 	defaultValue,
-	disable
+	disable,
+	resultsNumbers
 }: any) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [headerTitle, setHeaderTitle] = useState<any>(options[0]);
@@ -118,6 +119,7 @@ export default function Dropdown({
 									glass
 									iconRightPos={{ top: 9, right: 15 }}
 								/>
+								<label className='resultsNumbers'>{resultsNumbers} results</label>
 							</div>
 						)}
 						{options.map((item: any, index: any) => (
