@@ -27,6 +27,7 @@ import 'react-leaf-polls/dist/index.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './override.css';
 import './index.css';
+import './animations.css';
 
 ReactDOM.render(
 	<Provider store={store}>

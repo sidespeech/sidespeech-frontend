@@ -143,7 +143,7 @@ export default function Invitation({
 	setUserInvited,
 	userInvited
 }: {
-	currentSide: Side;
+	currentSide: any;
 	userData?: any;
 	invitationUsers?: any[];
 	setUserInvited?: any;
@@ -159,7 +159,7 @@ export default function Invitation({
 		{
 			icon: facebook,
 			label: 'Telegram'
-		},
+		}
 	];
 
 	const [usersInvite, setUsersInvite] = useState<any>([]);
@@ -254,13 +254,13 @@ export default function Invitation({
 	};
 
 	return (
-		<InvitationsStyled>
+		<InvitationsStyled className="fade-in">
 			{/* Search and Invite Section */}
 			<div className="text-primary-light mb-3 text fw-600">Search and invite</div>
 			<div className="search-and-invite mb-3">
 				<InputText
 					placeholderColor="var(--inactive)"
-					color="var(--inactive)"
+					color="var(--text)"
 					parentWidth={'100%'}
 					height={45}
 					width="100%"
@@ -312,6 +312,7 @@ export default function Invitation({
 				<div className="copy-link-wrapper">
 					<InputText
 						height={40}
+						color="var(--text)"
 						parentWidth={'100%'}
 						width="100%"
 						bgColor="var(--input)"

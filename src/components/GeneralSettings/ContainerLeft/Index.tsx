@@ -95,6 +95,7 @@ const GeneralSettingsMenuStyled = styled.div`
 			justify-content: space-between;
 			align-items: center;
 			width: 100%;
+			color: inherit;
 			${breakpoints(
 				size.lg,
 				`{
@@ -119,7 +120,13 @@ const GeneralSettingsMenuStyled = styled.div`
 			border-radius: 10px;
 			&.active {
 				p {
+					${breakpoints(
+						size.lg,
+						`{
 					color: var(--background);
+
+					}`
+					)}
 				}
 			}
 			${breakpoints(
@@ -231,8 +238,8 @@ export default function IndexView({
 	};
 
 	return (
-		<GeneralSettingsMenuStyled className={isSettingsMobileMenuOpen ? 'open' : ''}>
-			<div>
+		<GeneralSettingsMenuStyled className={`${isSettingsMobileMenuOpen ? 'open' : ''}`}>
+			<div className="fade-in-left">
 				<div>
 					<div className="app-name">
 						<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -384,7 +391,7 @@ export default function IndexView({
 				</div>
 			</div>
 
-			<div className="nav-footer">
+			<div className="fade-in-left nav-footer">
 				<Link to={'/'} className="back-link">
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path
