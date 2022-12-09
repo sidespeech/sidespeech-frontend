@@ -101,7 +101,9 @@ export default function AnnouncementItem({
 
     return (
         <AnnouncementItemStyled className={`${className || ''}`}>
-            <div className="flex w-100 gap-20">
+
+            {!announcement.lastMessageSameCreator ? (
+              <div className="flex w-100 gap-20">
                 <UserBadge
                     check
                     color={reduceWalletAddressForColor(announcement.creatorAddress)}
@@ -116,6 +118,8 @@ export default function AnnouncementItem({
                     })}
                 </div>
             </div>
+            ) : null }
+          
 
             <MessageContent message={announcement.content} />
 
