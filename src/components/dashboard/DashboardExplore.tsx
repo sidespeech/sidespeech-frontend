@@ -15,8 +15,21 @@ interface DashboardExploreProps {
 }
 
 const DashboardExplore = ({ featureSides, featureSidesLoading, setSearchFilters }: DashboardExploreProps) => {
+	//@ts-ignore
+	tokenproof.on('nonce', e => {
+		console.log('new nonce generated: ', e);
+	});
+	//@ts-ignore
+	tokenproof.on('verified', e => {
+		console.log('result: ', e);
+	});
+	const handletokenproofconnection = async () => {
+		//@ts-ignore
+		await tokenproof.login({ appId: 'blablabla', env: 'development' });
+	};
 	return (
 		<DashboardExploreStyles>
+			<button onClick={handletokenproofconnection}>tokenproof</button>
 			<FeaturedSides featuredSides={featureSides} sidesLoading={featureSidesLoading} />
 			<UserCollections setSearchFilters={setSearchFilters} />
 		</DashboardExploreStyles>
