@@ -481,7 +481,6 @@ export default function NewSide() {
 
 			const data = filteredCollections.find((item: Collection) => item['address'] === address);
 			current_divs[index]['metadata'] = data;
-			console.log(current_divs, current_divs[index]);
 			setDivCollection(current_divs);
 		}
 	};
@@ -514,7 +513,6 @@ export default function NewSide() {
 	};
 
 	const setSideValueCondition = (value: any, index: number, findex: number) => {
-		console.log(value);
 		if (value.trim().length) {
 			let current_divs = [...divCollections];
 
@@ -733,7 +731,7 @@ export default function NewSide() {
 			</div>
 
 			<div className="flex align-start w-100 text-left">
-				<ContainerLeft className="container-left">
+				<ContainerLeft className="container-left fade-in-left">
 					<label className="sidebar-title">Steps</label>
 					<nav className="tabs-wrapper">
 						{steps.map((step: any, index: number) => {
@@ -812,7 +810,7 @@ export default function NewSide() {
 									) : step['label'] === 'Invitation' && step['active'] ? (
 										<>
 											<Invitation
-												currentSide={currentSide}
+												currentSide={formData}
 												invitationUsers={invitationUsers}
 												setUserInvited={setUserInvited}
 												userInvited={userInvited}
@@ -845,7 +843,7 @@ const FooterButtons = ({ index, newSideNextPreviousStep, onSubmit, steps }: any)
 	};
 
 	return (
-		<div className="flex justify-between container-next-back">
+		<div className="fade-in-delay flex justify-between container-next-back">
 			{index > 0 ? (
 				<Button
 					classes={'mt-4'}

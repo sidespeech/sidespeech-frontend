@@ -235,7 +235,7 @@ export default function Channels({
 
 	return (
 		<DndProvider backend={HTML5Backend}>
-			<ChannelsStyled>
+			<ChannelsStyled className="fade-in">
 				<div className="text-primary-light mb-3 text fw-600">Channels</div>
 				<div className="f-column channels-container">
 					{/* Existing channels */}

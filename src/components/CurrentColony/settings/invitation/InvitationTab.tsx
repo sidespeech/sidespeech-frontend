@@ -143,7 +143,7 @@ export default function Invitation({
 	setUserInvited,
 	userInvited
 }: {
-	currentSide: Side;
+	currentSide: any;
 	userData?: any;
 	invitationUsers?: any[];
 	setUserInvited?: any;
@@ -159,7 +159,7 @@ export default function Invitation({
 		{
 			icon: facebook,
 			label: 'Telegram'
-		},
+		}
 	];
 
 	const [usersInvite, setUsersInvite] = useState<any>([]);
@@ -238,6 +238,12 @@ export default function Invitation({
 		toast.success('Link copied successfuly.', { toastId: 1 });
 	};
 
+	const handleSocialShare = (social: any) => {
+		let socialLink;
+		socialLink = social.label == 'Twitter' ? 'https://twitter.com/intent/tweet?text=Join%20my%20side%20on%20SideSpeech%20-%20'+sideLink : 'https://telegram.me/share/url?url='+sideLink+'&text=Join my side on SideSpeech';
+		window.open(socialLink, '_blank');
+	}
+
 	const getAvatarPicture = (userAvatar: string) => {
 		const jsonAvatar = JSON.parse(userAvatar);
 		const image =
@@ -248,13 +254,13 @@ export default function Invitation({
 	};
 
 	return (
-		<InvitationsStyled>
+		<InvitationsStyled className="fade-in">
 			{/* Search and Invite Section */}
 			<div className="text-primary-light mb-3 text fw-600">Search and invite</div>
 			<div className="search-and-invite mb-3">
 				<InputText
 					placeholderColor="var(--inactive)"
-					color="var(--inactive)"
+					color="var(--text)"
 					parentWidth={'100%'}
 					height={45}
 					width="100%"
@@ -306,6 +312,7 @@ export default function Invitation({
 				<div className="copy-link-wrapper">
 					<InputText
 						height={40}
+						color="var(--text)"
 						parentWidth={'100%'}
 						width="100%"
 						bgColor="var(--input)"
@@ -343,7 +350,7 @@ export default function Invitation({
 							classes="media-btn"
 							width={'100%'}
 							height={40}
-							onClick={undefined}
+							onClick={() => handleSocialShare(social)}
 							radius={10}
 							background={'var(--disable)'}
 							color={'var(--text)'}

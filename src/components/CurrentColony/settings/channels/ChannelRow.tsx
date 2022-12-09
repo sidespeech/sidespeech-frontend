@@ -226,6 +226,7 @@ export default function ChannelRow({
 					<InputText
 						placeholderColor="var(--text)"
 						height={40}
+						color="var(--text)"
 						parentWidth={'65%'}
 						width="100%"
 						bgColor="var(--input)"

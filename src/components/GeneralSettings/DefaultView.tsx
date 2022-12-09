@@ -150,7 +150,7 @@ export const Icons = {
 };
 
 export const PageTitle = ({ title, Icon, onBack }: { title: string; Icon: any; onBack?: any }) => (
-	<PageTitleStyled>
+	<PageTitleStyled className="fade-in">
 		<div className="main-icon">
 			<Icon />
 		</div>
@@ -187,7 +187,7 @@ export default function DefaultView() {
 						Icon={Icons.privacy}
 						onBack={() => setIsSettingsMobileMenuOpen?.(true)}
 					/>
-					<div className="content">
+					<div className="fade-in-delay content">
 						<div className="inner">
 							<p>
 								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
@@ -252,7 +252,7 @@ export default function DefaultView() {
 
 		case '/general-settings/terms':
 			return (
-				<InnerPageStyled className="terms">
+				<InnerPageStyled className="fade-in-delay terms">
 					<PageTitle
 						title="Terms and conditions"
 						Icon={Icons.terms}

@@ -247,7 +247,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 	};
 
 	return (
-		<SearchStyled>
+		<SearchStyled className="fade-in">
 			<div className="title_wrapper">
 				<h2 className="title">
 					{totalResults} Sides found for "{searchText || searchFilters.selectedCollection || ''}"

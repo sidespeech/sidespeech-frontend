@@ -81,6 +81,9 @@ const AdmissionStyled = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+	.filterSearch + button {
+		display:none;
+	}
 	${breakpoints(
 		size.lg,
 		`{
@@ -216,7 +219,7 @@ export default function Admission({
 	};
 
 	return (
-		<AdmissionStyled>
+		<AdmissionStyled className="fade-in">
 			<div className="left-side">
 				<label htmlFor="name" className="size-14 fw-400 mb-4 text-left">
 					Admission conditions ({divCollections.length})
@@ -259,7 +262,7 @@ export default function Admission({
 										<div className="f-column mt-3 mb-3">
 											<div className="flex">
 												<Dropdown
-													style={{ zIndex: 5 * (divCollections.length - i) }}
+													style={{ zIndex: 5 + divCollections.length - i }}
 													values={
 														filteredCollections.length
 															? ['', ...filteredCollections.map(c => c.address)]
@@ -268,6 +271,7 @@ export default function Admission({
 													options={
 														filteredCollections.length
 															? [
+																	`Choose collection`,
 																	...filteredCollections.map((c, fi) => {
 																		return (
 																			<span
@@ -368,9 +372,7 @@ export default function Admission({
 																<div className="feature-box" key={findex}>
 																	<div className="feature-selects mr-auto">
 																		<Dropdown
-																			style={{
-																				zIndex: (4 * (divCollections.length - i)) + 1
-																			}}
+																			style={{ zIndex: 4 }}
 																			defaultValue={
 																				fcurrent['trait_selected'] ? (
 																					<span
@@ -431,9 +433,7 @@ export default function Admission({
 																			}
 																		/>
 																		<Dropdown
-																			style={{
-																				zIndex: (4 * (divCollections.length - i)) + 1
-																			}}
+																			style={{ zIndex: 4 }}
 																			defaultValue={
 																				fcurrent['value_selected'] ? (
 																					<span

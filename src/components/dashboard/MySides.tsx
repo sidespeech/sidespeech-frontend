@@ -243,7 +243,7 @@ const MySides = ({ collections }: MySidesProps) => {
 	// };
 
 	return (
-		<MySidesStyled>
+		<MySidesStyled className="fade-in">
 			<h2 className="title">My sides ({filteredSides.length})</h2>
 
 			<div className="my-sides-toolbar">

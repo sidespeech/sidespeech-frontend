@@ -93,7 +93,7 @@ const DashboardLeftMenu = ({
 
 	const userData = useSelector((state: RootState) => state.user);
 	const [invitations, setInvitations] = useState<any[]>([]);
-	const token = localStorage.getItem("jwtToken");
+	const token = localStorage.getItem('jwtToken');
 
 	const getInvitations = async (user: User) => {
 		try {
@@ -114,7 +114,7 @@ const DashboardLeftMenu = ({
 	}, [userData, token]);
 
 	return (
-		<DashboardLeftMenuStyled className={pathname === '/search' ? 'search-page' : ''}>
+		<DashboardLeftMenuStyled className={`fade-in-delay ${pathname === '/search' ? 'search-page' : ''}`}>
 			<h2 className="title">Dashboard</h2>
 			<nav className="navigation-menu">
 				<ul>

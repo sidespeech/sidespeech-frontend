@@ -248,7 +248,7 @@ const Invitations = ({}: InvitationsProps) => {
 	};
 
 	return (
-		<InvitationsStyled>
+		<InvitationsStyled className="fade-in">
 			<h2 className="title">
 				Invitations {filteredInvitations.length ? '(' + filteredInvitations.length + ')' : null}
 			</h2>
@@ -258,7 +258,7 @@ const Invitations = ({}: InvitationsProps) => {
 				<div className="search-input">
 					<InputText
 						placeholderColor="var(--inactive)"
-						color="var(--inactive)"
+						color="var(--text)"
 						height={40}
 						bgColor="var(--input)"
 						glass={true}

@@ -125,7 +125,6 @@ export function checkEligibilityByCondition(conditions: any, nfts: NFT[]): boole
 	const keys = Object.keys(conditions);
 	// pop to remove the required object in the conditions
 	keys.pop();
-	console.log(conditions, keys, groupedNfts);
 	keys.forEach((address: string) => {
 		const condition = conditions[address];
 		if (!groupedNfts[address]) res.push(false);
@@ -139,7 +138,6 @@ export function checkEligibilityByCondition(conditions: any, nfts: NFT[]): boole
 						a => a['trait_type'].toLowerCase() === type && a['value'].toLowerCase() === value
 					)
 				);
-				console.log(type, value, anafNft, meetCondition);
 				if (!anafNft || !meetCondition) res.push(false);
 				else res.push(true);
 			}
@@ -391,8 +389,18 @@ export function paginateArray({
 	};
 }
 
-export const sortCollectionByVerifiedCollectionsAndName = (a: Collection, b: Collection) => {
+export const sortCollectionByVerifiedCollectionsAndVolume = (a: Collection, b: Collection) => {
 	if (
+		a.ownedCount &&
+		!b.ownedCount
+	)
+		return -1;
+	else if (
+		!a.ownedCount &&
+		b.ownedCount
+	)
+		return 1;
+	else if (
 		a.safelistRequestStatus === OpenSeaRequestStatus.verified &&
 		b.safelistRequestStatus !== OpenSeaRequestStatus.verified
 	)
@@ -402,7 +410,7 @@ export const sortCollectionByVerifiedCollectionsAndName = (a: Collection, b: Col
 		b.safelistRequestStatus === OpenSeaRequestStatus.verified
 	)
 		return 1;
-	else if (a.name < b.name) return -1;
-	else if (a.name > b.name) return 1;
+	else if (a.totalVolume < b.totalVolume) return 1;
+	else if (a.totalVolume > b.totalVolume) return -1;
 	else return 0;
 };

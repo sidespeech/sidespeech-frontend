@@ -162,7 +162,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 
 	const [userCollections, setUserCollections] = useState<Collection[]>([]);
 	const [filteredCollections, setFilteredCollections] = useState<Collection[]>([]);
-	const [isOnlyVerifiedCollectionsChecked, setIsOnlyVerifiedCollectionsChecked] = useState<boolean>(true);
+	const [isOnlyVerifiedCollectionsChecked, setIsOnlyVerifiedCollectionsChecked] = useState<boolean>(false);
 	const [isWithSidesChecked, setIsWithSidesChecked] = useState<boolean>(false);
 	const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
 	const [viewMode, setViewMode] = useState<string>('card');
@@ -199,7 +199,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 	}, [filteredCollections, pagination]);
 
 	return (
-		<UserCollectionsStyled>
+		<UserCollectionsStyled className="fade-in-delay-3">
 			<div>
 				<div className="toolbar-wrapper">
 					<h2 className="title">My Collections</h2>
