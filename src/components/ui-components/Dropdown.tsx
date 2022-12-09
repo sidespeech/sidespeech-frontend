@@ -119,7 +119,7 @@ export default function Dropdown({
 									glass
 									iconRightPos={{ top: 9, right: 15 }}
 								/>
-								<label className='resultsNumbers'>{resultsNumbers} results</label>
+								{resultsNumbers ? <label className='resultsNumbers'>{resultsNumbers} results</label> : null}
 							</div>
 						)}
 						{options.map((item: any, index: any) => (
