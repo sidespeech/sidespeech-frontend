@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import defaultPP from '../../../../assets/default-pp.webp';
+import defaultPP from '../../../../assets/default-pp.png';
 import { fixURL, getRoleColor, reduceWalletAddress } from '../../../../helpers/utilities';
 import { Profile } from '../../../../models/Profile';
 import { Side } from '../../../../models/Side';

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { fixURL } from '../../helpers/utilities';
 import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { NFT } from '../../models/interfaces/nft';
-import defaultPP from '../../assets/default-pp.webp';
+import defaultPP from '../../assets/default-pp.png';
 import check from '../../assets/check_circle.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
 

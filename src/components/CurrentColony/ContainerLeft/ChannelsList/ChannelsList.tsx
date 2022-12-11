@@ -1,6 +1,6 @@
 // import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
-import _ from 'lodash';
+import _, { orderBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 // import { EventType } from "../../../../constants/EventType";
 // import {
@@ -39,7 +39,7 @@ export default function ChannelsList({ channels, dots, onChannelSelected }: Chan
 
     return (
         <ChannelsListStyled className="pl-2 mt-3">
-            {channels.map((c, index) => {
+            {orderBy(channels,'index').map((c, index) => {
                 const Icon = Icons[c.type];
                 const isSelected = selectedChannel?.id === c.id;
 

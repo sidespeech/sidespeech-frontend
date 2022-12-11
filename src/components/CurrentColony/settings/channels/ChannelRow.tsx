@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Channel, ChannelType } from '../../../../models/Channel';
 import CustomCheckbox from '../../../ui-components/CustomCheckbox';
@@ -7,12 +7,17 @@ import Dropdown from '../../../ui-components/Dropdown';
 import InputText from '../../../ui-components/InputText';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
 import _ from 'lodash';
+import { useDrag, useDrop } from 'react-dnd';
+import { ItemTypes } from './ChannelsTab';
+import type { Identifier, XYCoord } from 'dnd-core';
+
+const options = ['Announcement', 'DAO', 'Group chat'];
 
 const ChannelRowStyled = styled.div<any>`
 	display: flex;
 	width: 100%;
 	flex-direction: column;
-	margin: 0.5rem 0;
+	padding: 0.5rem 0;
 	gap: 1rem;
 	${breakpoints(
 		size.md,
@@ -26,6 +31,9 @@ const ChannelRowStyled = styled.div<any>`
 		align-items: center;
 		gap: 1rem;
 		flex-shrink: 0;
+		& i {
+			cursor: move;
+		}
 	}
 	.channel-actions {
 		display: flex;
@@ -79,6 +87,13 @@ const InputTextWithDropdown = styled.div`
 	)}
 `;
 
+interface DragItem {
+	index: number;
+	id: string;
+	type: string;
+	current: boolean;
+}
+
 export default function ChannelRow({
 	channel,
 	index,
@@ -88,7 +103,8 @@ export default function ChannelRow({
 	onChangeType,
 	onChangeAuthorizeComments,
 	onChangeIsVisible,
-	channelsNewSide
+	channelsNewSide,
+	moveCard
 }: {
 	channel: Channel;
 	index: number;
@@ -99,30 +115,100 @@ export default function ChannelRow({
 	onChangeAuthorizeComments: any;
 	onChangeIsVisible: any;
 	channelsNewSide: any;
+	moveCard: (dragIndex: number, hoverIndex: number) => void;
 }) {
 	// const [channels, setChannels] = useState<any>(initialChannelsState);
 	const [childIndex, setChildIndex] = useState<any>({ index: 0, count: 0 });
-	const first = useRef<HTMLDivElement>();
+	const ref = useRef<HTMLDivElement>(null);
+	const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
+		accept: ItemTypes.CHANNEL,
+		collect(monitor) {
+			return {
+				handlerId: monitor.getHandlerId()
+			};
+		},
+		hover(item: DragItem, monitor) {
+			if (!ref.current) {
+				return;
+			}
+			const dragIndex = item.index;
+			const hoverIndex = index;
+
+			// Don't replace items with themselves
+			if (dragIndex === hoverIndex) {
+				return;
+			}
+
+			// Determine rectangle on screen
+			const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+			// Get vertical middle
+			const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+			// Determine mouse position
+			const clientOffset = monitor.getClientOffset();
+
+			// Get pixels to the top
+			const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+			// Only perform the move when the mouse has crossed half of the items height
+			// When dragging downwards, only move when the cursor is below 50%
+			// When dragging upwards, only move when the cursor is above 50%
+
+			// Dragging downwards
+			if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+				return;
+			}
+
+			// Dragging upwards
+			if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+				return;
+			}
+
+			// Time to actually perform the action
+			moveCard(dragIndex, hoverIndex);
+
+			// Note: we're mutating the monitor item here!
+			// Generally it's better to avoid mutations,
+			// but it's good here for the sake of performance
+			// to avoid expensive index searches.
+			item.index = hoverIndex;
+		}
+	});
+
+	const [{ isDragging }, drag] = useDrag({
+		type: ItemTypes.CHANNEL,
+		item: () => {
+			return { index };
+		},
+		collect: (monitor: any) => ({
+			isDragging: monitor.isDragging()
+		})
+	});
+
+	const opacity = isDragging ? 0.2 : 1;
+
+	drag(drop(ref));
 
 	useEffect(() => {
-		if (first.current) {
-            // get parent div of this row
-			const parent = first.current.parentNode;
-            // get index of this row in parent children
-			const index = _.indexOf(parent?.children, first.current);
-            // save children count and index to use in z-index style
+		if (ref.current) {
+			// get parent div of this row
+			const parent = ref.current.parentNode;
+			// get index of this row in parent children
+			const index = _.indexOf(parent?.children, ref.current);
+			// save children count and index to use in z-index style
 			setChildIndex({ index, count: parent?.children.length });
 		}
 	}, [channelsNewSide]);
 
 	return (
-		<ChannelRowStyled ref={first} key={channel['id']}>
+		<ChannelRowStyled ref={ref} draggable style={{ opacity }} data-handler-id={handlerId}>
 			<div className="input-wrapper">
 				<i className="fa-solid fa-grip-lines fa-lg text-secondary-dark"></i>
 				<InputTextWithDropdown>
 					<Dropdown
-						onChange={(value: any) => onChangeType(value, index, placeholder ? true : false)}
-						options={['Announcement', 'DAO', 'Group chat']}
+						onChange={(value: any) => onChangeType(value, channel.id, placeholder ? true : false)}
+						options={options}
 						values={[ChannelType.Announcement, ChannelType.Poll, ChannelType.Textual]}
 						disable={
 							(channelsNewSide && !placeholder && index === 0) ||
@@ -135,6 +221,7 @@ export default function ChannelRow({
 							zIndex: childIndex.count - childIndex.index
 						}}
 						backgroundColor="var(--disable)"
+						defaultValue={options[channel['type']]}
 					/>
 					<InputText
 						placeholderColor="var(--text)"
@@ -145,7 +232,7 @@ export default function ChannelRow({
 						bgColor="var(--input)"
 						glass={false}
 						value={channel['name']}
-						onChange={(e: any) => onChangeName(e, index, placeholder ? true : false)}
+						onChange={(e: any) => onChangeName(e, channel.id, placeholder ? true : false)}
 						radius="10px"
 					/>
 				</InputTextWithDropdown>
@@ -155,7 +242,7 @@ export default function ChannelRow({
 				{channel['isVisible'] ? (
 					<button
 						onClick={e => {
-							onChangeIsVisible(false, index, placeholder ? true : false);
+							onChangeIsVisible(false, channel.id, placeholder ? true : false);
 						}}
 						className="action-btn visibility-btn"
 					>
@@ -169,7 +256,7 @@ export default function ChannelRow({
 				) : (
 					<button
 						onClick={e => {
-							onChangeIsVisible(true, index, placeholder ? true : false);
+							onChangeIsVisible(true, channel.id, placeholder ? true : false);
 						}}
 						className="action-btn visibility-btn"
 					>
@@ -183,7 +270,7 @@ export default function ChannelRow({
 					</button>
 				)}
 				<button
-					onClick={e => handleRemove(index, placeholder ? true : false)}
+					onClick={e => handleRemove(channel.id, placeholder ? true : false)}
 					className="action-btn remove-btn"
 				>
 					<svg width="12" height="2" viewBox="0 0 12 2" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -195,7 +282,7 @@ export default function ChannelRow({
 						<CustomCheckbox
 							isChecked={channel['authorizeComments']}
 							onClick={(e: any) => {
-								onChangeAuthorizeComments(e, index, placeholder ? true : false);
+								onChangeAuthorizeComments(e, channel.id, placeholder ? true : false);
 							}}
 						/>{' '}
 						<span className="ml-2">Authorize comments</span>

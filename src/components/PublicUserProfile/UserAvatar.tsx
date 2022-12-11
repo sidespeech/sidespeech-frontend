@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { fixURL } from '../../helpers/utilities';
 
-import defaultPP from '../../assets/default-pp.webp';
+import defaultPP from '../../assets/default-pp.png';
 import hexagon from '../../assets/hexagon.svg';
 import { SpanElipsis } from '../GeneralSettings/Account/Avatar';
 import { breakpoints, size } from '../../helpers/breakpoints';

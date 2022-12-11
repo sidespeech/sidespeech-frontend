@@ -14,7 +14,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Poll } from '../../models/Poll';
 import { Profile } from '../../models/Profile';
 import UserBadge from './UserBadge';
-import defaultPP from '../../assets/default-pp.webp';
+import defaultPP from '../../assets/default-pp.png';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import SidesListMobileMenu from '../CurrentColony/SidesListMobileMenu';
 import { OpenSeaRequestStatus } from '../../models/interfaces/collection';
