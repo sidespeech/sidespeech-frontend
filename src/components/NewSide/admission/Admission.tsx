@@ -82,10 +82,10 @@ const AdmissionStyled = styled.div`
 	flex-direction: column;
 	gap: 1rem;
 	.filterSearch {
-		text-align:right
+		text-align: right;
 	}
 	.filterSearch + button {
-		display:none;
+		display: none;
 	}
 	${breakpoints(
 		size.lg,

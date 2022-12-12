@@ -28,8 +28,14 @@ export function reduceTokenId(id: string): string {
 }
 export function reduceWalletAddressForColor(address: string): string {
 	if (!address) return '';
-	const name = '#' + address.substring(2, 8);
-	return name;
+	const notAllowerChar = ['0', '1', '2', '3', '4', '5'];
+	const replaceChar = ['A', 'B', 'C', 'D', 'E', 'F'];
+	const splitName = address.substring(2, 8).split('');
+	const result = splitName.map((letter, index) => {
+		if (notAllowerChar.includes(letter.toUpperCase())) return replaceChar[index].toLowerCase();
+		return letter;
+	});
+	return `#${result.join('')}`;
 }
 
 export function renameFile(originalFile: File, newName: string): File {
@@ -390,16 +396,8 @@ export function paginateArray({
 }
 
 export const sortCollectionByVerifiedCollectionsAndVolume = (a: Collection, b: Collection) => {
-	if (
-		a.ownedCount &&
-		!b.ownedCount
-	)
-		return -1;
-	else if (
-		!a.ownedCount &&
-		b.ownedCount
-	)
-		return 1;
+	if (a.ownedCount && !b.ownedCount) return -1;
+	else if (!a.ownedCount && b.ownedCount) return 1;
 	else if (
 		a.safelistRequestStatus === OpenSeaRequestStatus.verified &&
 		b.safelistRequestStatus !== OpenSeaRequestStatus.verified

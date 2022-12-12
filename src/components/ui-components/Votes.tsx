@@ -125,6 +125,9 @@ const PercentageBar = styled.span<PercentageBarProps>`
 	&.animate::after {
 		transform: translateX(-${props => 100 - props.percentage}%);
 	}
+	&.user-option::after {
+		background-color: var(--white);
+	}
 `;
 
 interface Option {
@@ -198,7 +201,9 @@ const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId 
 						</div>
 
 						<PercentageBar
-							className={`${!!userVoteOptionId ? 'show' : ''} ${animate ? 'animate' : ''}`}
+							className={`${!!userVoteOptionId ? 'show' : ''} ${animate ? 'animate' : ''} ${
+								votedByUser && showUserVotedOption ? 'user-option' : ''
+							}`}
 							percentage={percentage}
 						/>
 					</label>
