@@ -202,13 +202,19 @@ export default function Informations({
 	const dispatch = useDispatch();
 
 	const onChangeSideImage = (event: any) => {
+		if (isNewSide) onChangeNewSideImage(event);
 		const file = event.target.files[0];
-		if (file.size > 500000) {
+		const reader = new FileReader();
+		let image;
+		reader.addEventListener('load', event => {
+			image = event.target?.result;
+		});
+		reader.readAsDataURL(file);
+		if (file.size > 5000000) {
 			toast.error('The image size has to be smaller than 5mb');
 			return;
 		}
-		setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
-		if (isNewSide) onChangeNewSideImage(event);
+		setFormData({ ...formData, sideImage: image });
 	};
 
 	const onChangeSideName = (event: any) => {
@@ -280,17 +286,13 @@ export default function Informations({
 									width: 'inherit',
 									objectFit: 'cover'
 								}}
-								src={
-									!window.location.href.includes('settings')
-										? URL.createObjectURL(currentSide.sideImage)
-										: currentSide.sideImage
-								}
+								src={currentSide.sideImage}
 								alt="file"
 							/>
 						) : (
 							<></>
 						)}
-						{!(formData.sideImage && currentSide.sideImage) && (
+						{!(formData.sideImage || currentSide.sideImage) && (
 							<span className="camera-icon">
 								<svg
 									width="22"
