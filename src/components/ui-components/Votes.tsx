@@ -135,7 +135,7 @@ interface Option {
 }
 
 interface VotesProps {
-	onVote?: (option: Option) => any | null;
+	onVote?: (option: Option, pollId: string) => any | null;
 	options: Option[];
 	pollId: string;
 	showUserVotedOption?: boolean;
@@ -159,7 +159,10 @@ const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId 
 	const handleSubmit = (ev: any) => {
 		ev.preventDefault();
 		const selectedOption = options.filter(opt => opt.optionId === selectedOptionId)?.[0];
-		if (!userVoteOptionId && Object.keys(selectedOption).length && onVote) onVote(selectedOption);
+		if (!userVoteOptionId && Object.keys(selectedOption).length && onVote) {
+			onVote(selectedOption, pollId);
+			setSelectedOptionId(null);
+		}
 	};
 
 	return (
@@ -202,7 +205,7 @@ const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId 
 				);
 			})}
 			{!userVoteOptionId && (
-				<Button disabled={!!userVoteOptionId} classes="vote-btn">
+				<Button disabled={!!userVoteOptionId || !selectedOptionId} classes="vote-btn">
 					Vote
 				</Button>
 			)}
