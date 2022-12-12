@@ -312,11 +312,13 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 
 	// Iterate through files array and upload each file
 
-	const handleUploadFiles = (images: FileList | null): void => {
+	const handleUploadFiles = (ev: any): void => {
+		const images:FileList | null = ev.target.files
 		if (!images) return;
 		for (let i = 0; i < images.length; i++) {
 			handleUploadFile(images[i]);
 		}
+		ev.target.value=null
 	};
 
 	const keyBindingFn = (e:any) => {
@@ -381,12 +383,10 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 		const stateContent = editorState.getCurrentContent();
 		const rawState = convertToRaw(stateContent);
 		let message = draftToMarkdown(rawState);
-
 		if (imagesToUpload?.length) {
 			const arrayOfImagesMarkdown = imagesToUpload.map(img => img.url).join('  ');
 			message = `${message} [IMAGES] ${arrayOfImagesMarkdown}`;
 		}
-
 		if (message.trim()) {
 			props.onSubmit(message);
 			setEditorState(EditorState.createEmpty());
@@ -411,7 +411,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 					onEditorStateChange={(state: EditorState) => {
 						if (isGiphyOpen) setIsGiphyOpen(false);
 						if (isEmojiMenuOpen) setIsEmojiMenuOpen(false);
-						setEditorState(state);
+						setEditorState(EditorState.moveFocusToEnd(state));
 					}}
 					placeholder={props.placeholder}
 					placeholderColor={props.placeholderColor}
@@ -545,7 +545,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 							name={imageInputId}
 							accept="image/*"
 							multiple
-							onChange={ev => handleUploadFiles(ev.target.files)}
+							onChange={ev => handleUploadFiles(ev)  }
 							style={{
 								position: 'absolute',
 								pointerEvents: 'none',

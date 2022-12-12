@@ -205,7 +205,7 @@ const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Re
 				alt: imgMd.trim().split('![')[1].split(']')[0]
 			}));
 			setImagesArray(imagesObjectsArray);
-		}
+		} else setImagesArray([])
 	}, [props.message]);
 
 	if (!props.message) return null;
