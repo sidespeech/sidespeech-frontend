@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -8,7 +8,7 @@ import TabItems from '../ui-components/TabItems';
 import { Side } from '../../models/Side';
 import Button from '../ui-components/Button';
 import Admission from './admission/Admission';
-import Channels from '../CurrentColony/settings/channels/ChannelsTab';
+import Channels, { ChannelGroup, IChannelExtension } from '../CurrentColony/settings/channels/ChannelsTab';
 import Invitation from '../CurrentColony/settings/invitation/InvitationTab';
 import { updateSidesByUserCollections, updateUser } from '../../redux/Slices/UserDataSlice';
 import { RootState } from '../../redux/store/app.store';
@@ -25,6 +25,8 @@ import sideService from '../../services/api-services/side.service';
 import { checkEligibilityByCondition, checkUserEligibility, reduceWalletAddress } from '../../helpers/utilities';
 import Spinner from '../ui-components/Spinner';
 import useGetCollections from '../../hooks/useGetCollections';
+import { v4 } from 'uuid';
+import update from 'immutability-helper';
 
 const NewSideStyled = styled.div`
 	width: 100%;
@@ -234,18 +236,17 @@ const initialDivCollections = [
 	}
 ];
 
-const initialChannelsState = {
-	currents: [],
-	removed: [],
-	added: [
-		{
-			name: 'Announcement',
-			isVisible: true,
-			type: ChannelType.Announcement,
-			authorizeComments: false
-		}
-	]
-};
+const channelInitalState = [
+	{
+		id: v4(),
+		name: 'Announcement',
+		isVisible: true,
+		type: ChannelType.Announcement,
+		authorizeComments: false,
+		index: 0,
+		group: ChannelGroup.CURRENT
+	}
+];
 
 const Middle = styled.div`
 	overflow: scroll;
@@ -286,7 +287,7 @@ export default function NewSide() {
 	const [onlyOneRequired, setOnlyOneRequired] = useState<boolean>(true);
 
 	// Variables for Channels component
-	const [channels, setChannels] = useState<InitialChannelsState>(initialChannelsState);
+	const [channels, setChannels] = useState<Partial<IChannelExtension>[]>(channelInitalState);
 
 	// Variables for Invitation component
 	const [invitationUsers, setInvitationUsers] = useState<any>([]);
@@ -426,7 +427,7 @@ export default function NewSide() {
 
 		// Checking if every channels have name to continu to the other steps
 		if (index === 2) {
-			let isWrongChannels = channels['added'].filter((c: Channel) => c['name'].trim().length === 0);
+			let isWrongChannels = channels.filter((c: Partial<IChannelExtension>) => c['name']?.trim().length === 0);
 			if (isWrongChannels.length) {
 				toast.error('You need to name every channels', { toastId: 3 });
 				return false;
@@ -592,107 +593,57 @@ export default function NewSide() {
 	// ----- Functions for Admission component **end
 
 	// ----- Functions for Channels component **start
-	const handleRemoveChannel = (index: number, current = true) => {
+	const handleRemoveChannel = (id: string) => {
 		// Remove existing channel
-		if (current) {
-			let current_removed: Channel[] = [];
-			let current_channels: Channel[] = [];
-			if (channels['removed'].length) {
-				current_removed = [...channels['removed']];
-			}
-			if (channels['currents'].length) {
-				current_channels = [...channels['currents']];
-			}
-			if (!current_removed.includes(channels['currents'][index]['id'])) {
-				current_removed.push(channels['currents'][index]['id']);
-			}
-			current_channels.splice(index, 1);
-			setChannels({
-				...channels,
-				removed: current_removed,
-				currents: current_channels
-			});
-		}
-		// Remove new channel
-		else {
-			let current_added: Channel[] = [];
-			if (channels['added'].length) {
-				current_added = [...channels['added']];
-			}
-			current_added.splice(index, 1);
-			setChannels({ ...channels, added: current_added });
+		const index = _.findIndex(channels, c => c.id === id);
+		if (index !== -1) {
+			setChannels(current =>
+				update(current, {
+					$splice: [[index, 1]]
+				})
+			);
 		}
 	};
 
 	const handleAddNewChannel = () => {
-		let current_added: Partial<Channel>[] = [];
-		if (channels['added'].length) {
-			current_added = [...channels['added']];
-		}
-		current_added.push({
+		const newChannel: Partial<IChannelExtension> = {
+			id: v4(),
 			name: '',
 			isVisible: true,
 			type: ChannelType.Announcement,
-			side: formData,
+			sideId: currentSide.id,
+			group: ChannelGroup.ADDED,
 			authorizeComments: false
-		});
-		setChannels({ ...channels, added: current_added });
+		};
+		setChannels(current => update(current, { $push: [newChannel] }));
 	};
 
-	const onChangeNameChannel = (event: any, index: number, current = true) => {
+	const onChangeNameChannel = (event: any, id: string) => {
 		// Change name on existing channel
-		if (current) {
-			let current_channels = channels['currents'];
-			current_channels[index]['name'] = event.target.value;
-			setChannels({ ...channels, currents: current_channels });
-		}
-		// Change name on new channel
-		else {
-			let added_channels = channels['added'];
-			added_channels[index]['name'] = event.target.value;
-			setChannels({ ...channels, added: added_channels });
+		const index = _.findIndex(channels, c => c.id === id);
+		if (index !== -1) {
+			setChannels(current => update(current, { [index]: { name: { $set: event.target.value } } }));
 		}
 	};
-	const onChangeTypeChannel = (value: number, index: number, current = true) => {
+	const onChangeTypeChannel = (value: number, id: string) => {
 		// Change name on existing channel
-		if (current) {
-			let current_channels = channels['currents'];
-			current_channels[index]['type'] = value;
-			setChannels({ ...channels, currents: current_channels });
-		}
-		// Change name on new channel
-		else {
-			let added_channels = channels['added'];
-			added_channels[index]['type'] = value;
-			setChannels({ ...channels, added: added_channels });
+		const index = _.findIndex(channels, c => c.id === id);
+		if (index !== -1) {
+			setChannels(current => update(current, { [index]: { type: { $set: value } } }));
 		}
 	};
-	const onChangeAuthorizeCommentsChannel = (event: any, index: number, current = true) => {
+	const onChangeAuthorizeCommentsChannel = (event: any, id: string) => {
 		// Change name on existing channel
-		if (current) {
-			let current_channels = channels['currents'];
-			current_channels[index]['authorizeComments'] = event.target.checked;
-			setChannels({ ...channels, currents: current_channels });
-		}
-		// Change name on new channel
-		else {
-			let added_channels = channels['added'];
-			added_channels[index]['authorizeComments'] = event.target.checked;
-			setChannels({ ...channels, added: added_channels });
+		const index = _.findIndex(channels, c => c.id === id);
+		if (index !== -1) {
+			setChannels(current => update(current, { [index]: { authorizeComments: { $set: event.target.checked } } }));
 		}
 	};
-	const onChangeIsVisibleChannel = (value: any, index: number, current = true) => {
+	const onChangeIsVisibleChannel = (value: any, id: string) => {
 		// Change name on existing channel
-		if (current) {
-			let current_channels = channels['currents'];
-			current_channels[index]['isVisible'] = value;
-			setChannels({ ...channels, currents: current_channels });
-		}
-		// Change name on new channel
-		else {
-			let added_channels = channels['added'];
-			added_channels[index]['isVisible'] = value;
-			setChannels({ ...channels, added: added_channels });
+		const index = _.findIndex(channels, c => c.id === id);
+		if (index !== -1) {
+			setChannels(current => update(current, { [index]: { isVisible: { $set: value } } }));
 		}
 	};
 
@@ -738,6 +689,24 @@ export default function NewSide() {
 		}
 	};
 
+	const handleMoveCard = useCallback((dragIndex: number, hoverIndex: number) => {
+		setChannels((prevChannels: Partial<IChannelExtension>[]) =>
+			update(prevChannels, {
+				$splice: [
+					[dragIndex, 1],
+					[hoverIndex, 0, prevChannels[dragIndex] as Partial<IChannelExtension>]
+				],
+				$apply: (prevChannels: any[]) =>
+					prevChannels.map((channel, index) => {
+						return {
+							...channel,
+							index: index
+						};
+					})
+			})
+		);
+	}, []);
+
 	return (
 		<NewSideStyled>
 			<div className="title-wrapper">
@@ -762,7 +731,7 @@ export default function NewSide() {
 			</div>
 
 			<div className="flex align-start w-100 text-left">
-				<ContainerLeft className="container-left">
+				<ContainerLeft className="container-left fade-in-left">
 					<label className="sidebar-title">Steps</label>
 					<nav className="tabs-wrapper">
 						{steps.map((step: any, index: number) => {
@@ -835,6 +804,7 @@ export default function NewSide() {
 												onChangeTypeChannel={onChangeTypeChannel}
 												onChangeAuthorizeCommentsChannel={onChangeAuthorizeCommentsChannel}
 												onChangeIsVisibleChannel={onChangeIsVisibleChannel}
+												handleMoveCard={handleMoveCard}
 											/>
 										</div>
 									) : step['label'] === 'Invitation' && step['active'] ? (
@@ -873,7 +843,7 @@ const FooterButtons = ({ index, newSideNextPreviousStep, onSubmit, steps }: any)
 	};
 
 	return (
-		<div className="flex justify-between container-next-back">
+		<div className="fade-in-delay flex justify-between container-next-back">
 			{index > 0 ? (
 				<Button
 					classes={'mt-4'}

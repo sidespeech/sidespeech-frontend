@@ -29,7 +29,7 @@ export interface GeneralSettingsAccountContext {
 	setIsSettingsMobileMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const walletAddress = window.ethereum.selectedAddress || null;
+const walletAddress = window.ethereum?.selectedAddress || null;
 
 function App() {
 	const [isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpen] = useState<boolean>(false);

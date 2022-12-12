@@ -7,7 +7,7 @@ import {
 import styled from 'styled-components';
 import connectionDot from '../../assets/connection.svg';
 // import Avatar, { ProfilePictureData } from "../GeneralSettings/Account/Avatar";
-import defaultPP from '../../assets/default-pp.webp';
+import defaultPP from '../../assets/default-pp.png';
 // import copyAll from "../../assets/copy_all.svg";
 // import hexagon from "../../assets/hexagon.svg";
 // import check from "../../assets/check.svg";

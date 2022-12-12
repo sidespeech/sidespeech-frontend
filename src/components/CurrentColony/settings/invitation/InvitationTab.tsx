@@ -13,7 +13,7 @@ import { breakpoints, size } from '../../../../helpers/breakpoints';
 import userService from '../../../../services/api-services/user.service';
 import invitationService from '../../../../services/api-services/invitation.service';
 import { fixURL, reduceWalletAddress } from '../../../../helpers/utilities';
-import defaultPP from '../../../../assets/default-pp.webp';
+import defaultPP from '../../../../assets/default-pp.png';
 
 const InvitationsStyled = styled.div`
 	width: 100%;
@@ -159,7 +159,7 @@ export default function Invitation({
 		{
 			icon: facebook,
 			label: 'Telegram'
-		},
+		}
 	];
 
 	const [usersInvite, setUsersInvite] = useState<any>([]);
@@ -254,7 +254,7 @@ export default function Invitation({
 	};
 
 	return (
-		<InvitationsStyled>
+		<InvitationsStyled className="fade-in">
 			{/* Search and Invite Section */}
 			<div className="text-primary-light mb-3 text fw-600">Search and invite</div>
 			<div className="search-and-invite mb-3">
