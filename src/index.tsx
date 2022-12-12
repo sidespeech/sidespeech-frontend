@@ -23,7 +23,6 @@ import Settings from './components/CurrentColony/settings/Settings';
 import UserProfile from './components/CurrentColony/UserProfile/UserProfile';
 
 // Styles
-import 'react-leaf-polls/dist/index.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './override.css';
 import './index.css';
