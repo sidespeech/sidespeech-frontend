@@ -141,7 +141,7 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
 						callbackData.optionId,
 						Date.now().toString(),
 						signature,
-						currentSide.collections.map(c => c.address)
+						currentSide.collectionSides?.map(c => c.collection.address)
 					);
 					toast.success('You have now voted', { toastId: 8 });
 
