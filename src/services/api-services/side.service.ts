@@ -80,7 +80,7 @@ class SideService extends BaseApiService {
 		return new Side(res['body']);
 	}
 
-	async createFullSide(side: InitialStateSide, channels: InitialChannelsState, userInvited: any[]): Promise<Side> {
+	async createFullSide(side: InitialStateSide, channels: any, userInvited: any[]): Promise<Side> {
 		const res = await this.post(`${BASE_URL}/side/create`).send({
 			side: side,
 			channels: channels,
