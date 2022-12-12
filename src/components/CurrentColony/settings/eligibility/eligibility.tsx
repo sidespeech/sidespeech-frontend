@@ -15,7 +15,7 @@ const ConditionsContainer = styled.div`
     padding: 23px 28px 10px 30px;
 `;
 
-const ConfitionItem = styled.div`
+const ConditionItem = styled.div`
     width: 100%;
     padding: 19px 0px 23px 0px;
     display: flex;
@@ -106,11 +106,8 @@ export default function Eligibility({ side }: { side: Side }) {
                                             <i className="fa-solid fa-circle-check text-green size-18"></i>
                                         )}
                                     </div>
-                                    <ConfitionItem>
+                                    <ConditionItem>
                                         {v.type.includes('error') && <ErrorNft />}
-                                        {v.type.includes('success') && (
-                                            <NftImage src={fixURL(nft.metadata.image)} alt="nft visual" />
-                                        )}
 
                                         <div className="f-column justify-evenly ml-3">
                                             {v.type.includes('success') && (
@@ -134,7 +131,7 @@ export default function Eligibility({ side }: { side: Side }) {
                                                 <span>{v.value}</span>
                                             </div>
                                         </div>
-                                    </ConfitionItem>
+                                    </ConditionItem>
                                 </div>
                             </>
                         );

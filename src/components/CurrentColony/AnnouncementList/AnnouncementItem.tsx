@@ -36,6 +36,15 @@ const AnnouncementItemStyled = styled.div`
 	&.border-bottom {
 		border-bottom: 1px solid var(--disable);
 	}
+	&.border-top {
+		border-top: 1px solid var(--disable);
+	}
+	&.no-border {
+		border-top: none;
+	}
+	&.no-border {
+		padding-top: 0;
+	}
 `;
 
 interface AnnouncementItemProps {
@@ -43,13 +52,15 @@ interface AnnouncementItemProps {
 	authorizeComments?: boolean;
 	className?: string;
 	isThread?: boolean;
+	sameUser?: any;
 }
 
 export default function AnnouncementItem({
 	announcement,
 	authorizeComments,
 	className,
-	isThread
+	isThread,
+	sameUser
 }: AnnouncementItemProps) {
 	const [comments, setComments] = useState<Comment[]>([]);
 	const { id } = useParams();
@@ -99,23 +110,27 @@ export default function AnnouncementItem({
 		}
 	}, [announcement.creatorAddress, currentSide]);
 
-	return (
-		<AnnouncementItemStyled className={`${className || ''}`}>
-			<div className="flex w-100 gap-20">
-				<UserBadge
-					check
-					color={reduceWalletAddressForColor(announcement.creatorAddress)}
-					weight={700}
-					fontSize={14}
-					avatar={data.url}
-					username={data.profile?.user.username}
-				/>
-				<div className="size-11 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
-					{formatDistance(new Date(Number.parseInt(announcement.timestamp)), new Date(), {
-						addSuffix: true
-					})}
-				</div>
-			</div>
+    return (
+        <AnnouncementItemStyled className={`${className || ''} ${!announcement.lastMessageSameCreator ? 'border' : 'no-border'}`}>
+
+            {!announcement.lastMessageSameCreator ? (
+              <div className="flex w-100 gap-20">
+                <UserBadge
+                    check
+                    color={reduceWalletAddressForColor(announcement.creatorAddress)}
+                    weight={700}
+                    fontSize={14}
+                    avatar={data.url}
+                    username={data.profile?.user.username}
+                />
+                <div className="size-11 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
+                    {formatDistance(new Date(Number.parseInt(announcement.timestamp)), new Date(), {
+                        addSuffix: true
+                    })}
+                </div>
+            </div>
+            ) : null }
+          
 
 			<MessageContent message={announcement.content} />
 
