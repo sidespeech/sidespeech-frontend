@@ -169,7 +169,7 @@ const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
                 ref={ref}
                 size={props.size}
                 type={isDate ? 'date' : props.type && props.type !== 'date' ? props.type : 'text'}
-                value={selectedVal || props.value}
+                value={selectedVal || props.defaultValue || props.value}
                 weight={props.weight}
                 width={props.width}
             />

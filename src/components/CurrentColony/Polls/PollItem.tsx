@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { compareAsc, format, formatDistance } from 'date-fns';
-import { LeafPoll } from 'react-leaf-polls';
 
 import { getRandomId, reduceWalletAddressForColor } from '../../../helpers/utilities';
 import { Poll } from '../../../models/Poll';
@@ -15,6 +14,7 @@ import { RootState } from '../../../redux/store/app.store';
 import { sum } from 'lodash';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import pollService from '../../../services/api-services/poll.service';
+import Votes from '../../ui-components/Votes';
 
 const PollItemStyled = styled.div`
 	display: flex;
@@ -66,54 +66,6 @@ const PollItemStyled = styled.div`
 		max-height: 100%;
 		overflow-y: scroll;
 		padding-bottom: 4rem;
-	}
-	.poll-override article {
-		width: 100% !important;
-
-		& p {
-			width: max-content;
-		}
-		& span {
-			font-size: 12px;
-			font-weight: 700;
-		}
-	}
-	.poll-override article ._cCkxB {
-		position: relative;
-		padding: 1rem 2rem;
-		border-radius: 10px;
-	}
-	.poll-override article ._3gEzx {
-		padding: 1rem 0.8rem;
-		border-radius: 10px;
-	}
-	.poll-override article ._3gEzx ._is6ww {
-		height: 5px;
-		margin-top: 1rem;
-	}
-	.poll-override article ._cCkxB ._is6ww::before {
-		content: '';
-		position: absolute;
-		top: 50%;
-		left: 0;
-		transform: translate(100%, -50%);
-		width: 14px;
-		height: 14px;
-		border-radius: 14px;
-		border: 1px solid var(--text);
-	}
-	.poll-override article ._3gEzx ._is6ww p {
-		padding: 0;
-		transform: translate(0, -1.5rem);
-	}
-	.poll-override article ._cCkxB ._is6ww p {
-		padding: 0 1rem;
-		transform: translate(1rem, -1rem);
-	}
-
-	.poll-override article ._3gEzx span {
-		top: 50%;
-		transform: translateY(calc(-50% - 0.5rem));
 	}
 `;
 
@@ -172,11 +124,11 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
 	const finishedVoting = isExpired;
 
 	// We'll check if the user has voted.
-	const checkUserVoted = poll.votes?.some(v => v.voterId === walletAddress);
+	const userVoteOptionId = poll.votes?.filter(v => v.voterId === walletAddress)?.[0]?.option?.id;
 
 	return (
 		<PollItemStyled className={`w-100 poll-item ${!isFirstItem ? 'border-top' : ''} ${className || ''}`}>
-			<div className="poll-item_container">
+			<div className="poll-item_container fade-in">
 				<div className="flex gap-20 w-100">
 					<UserBadge
 						check
@@ -218,15 +170,11 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
 				<ClampLines className="mb-2">{poll.question}</ClampLines>
 
 				<div className="flex poll-override">
-					<LeafPoll
-						type={'multiple'}
-						results={thePollOptions || []}
-						theme={customTheme}
-						isVoted={!!checkUserVoted}
-						isVotedId={walletAddress}
-						onVote={
-							!!checkUserVoted ? () => null : (callbackData: any) => handleVote(callbackData, poll.id)
-						}
+					<Votes
+						onVote={!!userVoteOptionId ? null : handleVote}
+						options={thePollOptions}
+						pollId={poll.id}
+						userVoteOptionId={userVoteOptionId}
 					/>
 				</div>
 			</div>

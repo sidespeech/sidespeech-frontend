@@ -134,8 +134,9 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
                                 <AnnouncementItem
                                     announcement={a}
                                     authorizeComments={selectedChannel?.authorizeComments}
-                                    className={i !== 0 ? 'border-bottom' : ''}
+                                    className={'border-top'}
                                     key={a.id + getRandomId() + i}
+                                    sameUser={announcements[i].lastMessageSameCreator == announcements[i + 1]?.creatorAddress}
                                 />
                             ))
                         )}

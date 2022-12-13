@@ -24,7 +24,7 @@ import filesService from '../../services/api-services/files.service';
 import sideService from '../../services/api-services/side.service';
 import {
 	checkEligibilityByCondition,
-	checkUserEligibility,
+	dataUrlToFile,
 	generateDarkColorHex,
 	reduceWalletAddress
 } from '../../helpers/utilities';
@@ -300,6 +300,36 @@ export default function NewSide() {
 
 	const collections = useGetCollections();
 
+	const saveDataBeforeUnload = () => {
+		const dataToSave = {
+			formData,
+			steps,
+			divCollections,
+			onlyOneRequired,
+			channels
+		};
+		sessionStorage.setItem('create-side-data', JSON.stringify(dataToSave));
+	};
+
+	useEffect(() => {
+		window.addEventListener('beforeunload', saveDataBeforeUnload);
+		return () => {
+			window.addEventListener('beforeunload', saveDataBeforeUnload);
+		};
+	}, [formData, steps, divCollections, onlyOneRequired, channels]);
+
+	useEffect(() => {
+		const item = sessionStorage.getItem('create-side-data');
+		if (item) {
+			const savedData = JSON.parse(item);
+			setFormData(savedData.formData);
+			setSteps(savedData.steps);
+			setDivCollection(savedData.divCollections);
+			setOnlyOneRequired(savedData.onlyOneRequired);
+			setChannels(savedData.channels);
+		}
+	}, []);
+
 	useEffect(() => {
 		if (user && user.profiles) {
 			const getInvitationUsers = async (user: any) => {
@@ -466,11 +496,17 @@ export default function NewSide() {
 	const onChangeSideImage = (event: any) => {
 		if (event.target.files.length) {
 			const file = event.target.files[0];
-			if (file.size > 500000) {
+			const reader = new FileReader();
+			let image: any;
+			reader.addEventListener('load', event => {
+				image = event.target?.result;
+				setFormData({ ...formData, sideImage: image });
+			});
+			reader.readAsDataURL(file);
+			if (file.size > 5000000) {
 				toast.error('The image size has to be smaller than 5mb.');
 				return;
 			}
-			setFormData({ ...formData, sideImage: file });
 		}
 	};
 
@@ -668,7 +704,8 @@ export default function NewSide() {
 					data['NftTokenAddress'] = data['conditions'];
 					if (formData.sideImage) {
 						const fd = new FormData();
-						fd.append('file', formData['sideImage']);
+						const file = await dataUrlToFile(formData['sideImage'], 'file-name');
+						fd.append('file', file);
 						data['sideImage'] = await filesService.uploadImage(fd);
 					} else {
 						data['sideImage'] = generateDarkColorHex();
@@ -687,6 +724,7 @@ export default function NewSide() {
 					dispatch(updateUser(refreshedUser));
 
 					setIsLoading(false);
+					sessionStorage.removeItem('create-side-data');
 					navigate('/side/' + newSide.name);
 				} else {
 					toast.error('You do not meet the conditions to create this side.');

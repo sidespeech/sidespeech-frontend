@@ -77,10 +77,15 @@ const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonCont
 	}
 `;
 
+
+
 const AdmissionStyled = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+	.filterSearch {
+		text-align:right
+	}
 	.filterSearch + button {
 		display:none;
 	}
@@ -263,6 +268,7 @@ export default function Admission({
 											<div className="flex">
 												<Dropdown
 													style={{ zIndex: 5 + divCollections.length - i }}
+													resultsNumbers={filteredCollections.length}
 													values={
 														filteredCollections.length
 															? ['', ...filteredCollections.map(c => c.address)]
