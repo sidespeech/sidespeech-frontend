@@ -68,14 +68,9 @@ export const fetchUserDatas = createAsyncThunk(
 	'userData/fetchUserTokensAndNfts',
 	async (address: string, { dispatch, getState }) => {
 		const nfts = await alchemyService.getUserNfts(address);
-		const state: any = getState();
-		const userCollectionsData = state?.user?.userCollectionsData;
 
 		const collections = await alchemyService.getUserCollections(address);
-		const cols = await collectionService.getManyCollectionsByAddress(
-			collections.map(c => c.address),
-			userCollectionsData
-		);
+		const cols = await collectionService.getManyCollectionsByAddress(collections.map(c => c.address));
 		if (cols.length !== collections.length) {
 			const missingCollections = _.differenceBy(collections, cols, 'address');
 

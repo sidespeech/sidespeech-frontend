@@ -206,10 +206,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 				if (user.publicNfts) {
 					const addresses = Object.keys(_.groupBy(user.publicNfts, 'token_address'));
 					if (addresses.length > 0) {
-						const collections = await collectionService.getManyCollectionsByAddress(
-							addresses,
-							userData.userCollectionsData
-						);
+						const collections = await collectionService.getManyCollectionsByAddress(addresses);
 						setCollections(collections);
 					}
 					setFilteredNfts(user.publicNfts);

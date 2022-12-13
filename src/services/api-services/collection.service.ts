@@ -44,15 +44,11 @@ class CollectionService extends BaseApiService {
 		const res = await this.get(`${BASE_URL}/collection/${address}`);
 		return new Collection(res.body);
 	}
-	async getManyCollectionsByAddress(addresses: string[], userCollectionsData = {}): Promise<Collection[]> {
+	async getManyCollectionsByAddress(addresses: string[]): Promise<Collection[]> {
 		const res = await this.get(`${BASE_URL}/collection/getMany`).query({
 			addresses
 		});
-		const collections: Collection[] = res.body.map((b: any) => {
-			if (b.address in userCollectionsData) b.ownedCount = 1;
-			return new Collection(b);
-		});
-		return collections.map((b: any) => new Collection(b)).sort(sortCollectionByVerifiedCollectionsAndVolume);
+		return res.body.map((b: any) => new Collection(b));
 	}
 }
 export default CollectionService.getInstance();
