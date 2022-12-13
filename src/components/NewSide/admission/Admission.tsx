@@ -84,10 +84,10 @@ const AdmissionStyled = styled.div`
 	flex-direction: column;
 	gap: 1rem;
 	.filterSearch {
-		text-align:right
+		text-align: right;
 	}
 	.filterSearch + button {
-		display:none;
+		display: none;
 	}
 	${breakpoints(
 		size.lg,
@@ -224,13 +224,13 @@ export default function Admission({
 	};
 
 	return (
-		<AdmissionStyled className="fade-in">
+		<AdmissionStyled>
 			<div className="left-side">
-				<label htmlFor="name" className="size-14 fw-400 mb-4 text-left">
+				<label htmlFor="fade-in name" className="size-14 fw-400 mb-4 text-left">
 					Admission conditions ({divCollections.length})
 				</label>
-				<p className="text-secondary my-3">Collection requirements</p>
-				<div className="flex gap-20 mt-2 mb-3 w-100">
+				<p className="fade-in text-secondary my-3">Collection requirements</p>
+				<div className="fade-in flex gap-20 mt-2 mb-3 w-100">
 					<RequirementsRadioButtonContainer
 						onClick={() => setOnlyOneRequired(true)}
 						selected={onlyOneRequired}
@@ -826,6 +826,7 @@ export default function Admission({
 					})}
 				</div>
 				<Button
+					classes="fade-in"
 					width={'100%'}
 					height={46}
 					radius={10}
@@ -840,7 +841,7 @@ export default function Admission({
 				</Button>
 			</div>
 
-			<div className="right-side">
+			<div className="fade-in right-side">
 				<div>Summary</div>
 				<div style={{ lineHeight: '26px' }}>
 					To join this Side, you must have in your wallet : <br />
