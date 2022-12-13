@@ -390,16 +390,8 @@ export function paginateArray({
 }
 
 export const sortCollectionByVerifiedCollectionsAndVolume = (a: Collection, b: Collection) => {
-	if (
-		a.ownedCount &&
-		!b.ownedCount
-	)
-		return -1;
-	else if (
-		!a.ownedCount &&
-		b.ownedCount
-	)
-		return 1;
+	if (a.ownedCount && !b.ownedCount) return -1;
+	else if (!a.ownedCount && b.ownedCount) return 1;
 	else if (
 		a.safelistRequestStatus === OpenSeaRequestStatus.verified &&
 		b.safelistRequestStatus !== OpenSeaRequestStatus.verified
@@ -414,3 +406,11 @@ export const sortCollectionByVerifiedCollectionsAndVolume = (a: Collection, b: C
 	else if (a.totalVolume > b.totalVolume) return -1;
 	else return 0;
 };
+
+export async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
+	const type = dataUrl.match(/^data:(.+);base64/)?.[1];
+
+	const res: Response = await fetch(dataUrl);
+	const blob: Blob = await res.blob();
+	return new File([blob], fileName, { type });
+}
