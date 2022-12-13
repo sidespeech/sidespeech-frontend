@@ -13,7 +13,7 @@ import hexagon from '../../../../assets/hexagon.svg';
 import check from '../../../../assets/check_circle.svg';
 import { ProfilePictureData, SpanElipsis } from '../../../GeneralSettings/Account/Avatar';
 import Button from '../../../ui-components/Button';
-import { fixURL, getRandomId, reduceTokenId, reduceWalletAddress } from '../../../../helpers/utilities';
+import { fixURL, getRandomId, reduceTokenId, reduceWalletAddress, connectedWallet } from '../../../../helpers/utilities';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../../helpers/CustomEvent';
 import { EventType } from '../../../../constants/EventType';
 import { useNavigate } from 'react-router-dom';
@@ -129,6 +129,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 	const [url, setUrl] = useState<string>(defaultPP);
 	const [collection, setCollection] = useState<Collection | null>(null);
 	const [nft, setNft] = useState<NFT | null>(null);
+	const [walletConnected, setWalletConnected] = useState<string>('');
 
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 	const { currentProfile, user } = useSelector((state: RootState) => state.user);
@@ -148,6 +149,11 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 			getCollection(profile.profilePicture.token_address);
 			setNft(profile.profilePicture);
 		}
+		async function setWallet() {
+			const wallet = await connectedWallet();
+			setWalletConnected(wallet);
+		}
+		setWallet();
 	}, [profile.profilePicture]);
 
 	const handleSelectedUser = async (profile: Profile, currentProfile: Profile) => {
@@ -221,14 +227,16 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 						height={44}
 						background={'rgba(125, 166, 220, 0.1)'}
 					/>
-					<Button
-						children={'Messages'}
-						width={'117px'}
-						onClick={() => {
-							currentProfile && handleSelectedUser(profile, currentProfile);
-						}}
-						height={44}
-					/>
+					{profile.user.accounts.toLowerCase() !== walletConnected &&
+						<Button
+							children={'Messages'}
+							width={'117px'}
+							onClick={() => {
+								currentProfile && handleSelectedUser(profile, currentProfile);
+							}}
+							height={44}
+						/>
+					}
 				</div>
 			</TooltipContent>
 		</TooltipContainer>

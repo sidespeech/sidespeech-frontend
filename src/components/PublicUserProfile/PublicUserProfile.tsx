@@ -205,8 +205,10 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 				const user = await userService.getUserPublicData(username);
 				if (user.publicNfts) {
 					const addresses = Object.keys(_.groupBy(user.publicNfts, 'token_address'));
-					const collections = await collectionService.getManyCollectionsByAddress(addresses);
-					setCollections(collections);
+					if(addresses.length > 0) {
+						const collections = await collectionService.getManyCollectionsByAddress(addresses);
+						setCollections(collections);
+					}
 					setFilteredNfts(user.publicNfts);
 				}
 				setcreatedSideCount(getCreatedSideCount(user));
