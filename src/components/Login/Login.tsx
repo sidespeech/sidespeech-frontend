@@ -217,7 +217,7 @@ export default function Login() {
 
 		return (
 			<div className="connection-container">
-				<h2>Connect your wallet to take part in a slide</h2>
+				<h2>Connect your wallet and choose your side</h2>
 				<Button classes="connect-btn" onClick={() => connectWallet()}>
 					<svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path
