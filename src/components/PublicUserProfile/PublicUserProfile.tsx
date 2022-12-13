@@ -22,7 +22,8 @@ import userService from '../../services/api-services/user.service';
 import collectionService from '../../services/api-services/collection.service';
 import roomService from '../../services/api-services/room.service';
 import { breakpoints, size } from '../../helpers/breakpoints';
-import { reduceWalletAddress } from '../../helpers/utilities';
+import { reduceWalletAddress, connectedWallet } from '../../helpers/utilities';
+import { connect } from 'superagent';
 
 interface IDataCard {
 	background: string;
@@ -53,19 +54,13 @@ const DataAddress = styled.div`
 	align-items: center;
 	justify-content: start;
 	padding: 0px 17px;
-	${breakpoints(
-		size.lg,
-		`{
-            min-width: 250px;
-            max-width: 500px;
-            }`
-	)}
+	max-width: 200px;
 	& > div {
 		position: absolute;
 		display: flex;
 		align-items: center;
 		right: 10px;
-		bottom: 8px;
+		bottom: 11px;
 		gap: 6px;
 	}
 `;
@@ -200,6 +195,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 	const [link, setLink] = useState<string>('');
 	const [filteredNfts, setFilteredNfts] = useState<NFT[]>([]);
 	const [selectedCollection, setSelectedCollection] = useState<string>('All');
+	const [walletConnected, setWalletConnected] = useState<string>('');
 
 	const { connectWallet } = useLogin();
 
@@ -217,6 +213,8 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 				setUser(user);
 				setLink(`https://side.xyz/user/${username}`);
 			}
+			const wallet = await connectedWallet();
+			setWalletConnected(wallet);
 		}
 		getUserData();
 	}, [username]);
@@ -227,6 +225,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 			const userserSides = user.profiles.map(p => p.side);
 			const foo = _.intersectionBy(connectedUserSides, userserSides, 'id');
 			setSharedSidesCount(foo.length);
+	
 		}
 	}, [userData.user, user]);
 
@@ -238,6 +237,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 					: [...user.publicNfts.filter((nft: NFT) => nft.token_address === selectedCollection)];
 			setFilteredNfts(filteredNfts);
 		}
+
 	}, [selectedCollection, user]);
 
 	const copyLink = () => {
@@ -278,6 +278,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 			});
 		}
 	};
+	
 
 	return (
 		<PublicUserProfileStyled>
@@ -405,7 +406,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 									<p>{user.bio}</p>
 								</div>
 								<div className="flex gap-20">
-									{userData.user ? (
+									{userData.user && user.accounts.toLowerCase() !== walletConnected &&
 										<Button
 											classes="address-btn"
 											children={'Send a message'}
@@ -414,13 +415,14 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 													handleSelectedUser(profile, userData.currentProfile);
 											}}
 										/>
-									) : (
+									}
+									{!userData.user	&&
 										<Button
 											classes="address-btn"
 											children={'Connect Wallet'}
 											onClick={connectWallet}
 										/>
-									)}
+									}
 									<DataAddress className="user-link">
 										<span className="text-inactive">
 											{profile

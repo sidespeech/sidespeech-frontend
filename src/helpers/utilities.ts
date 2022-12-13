@@ -104,6 +104,11 @@ export function timestampToLocalString(timestamp: string) {
 	return new Date(Number.parseInt(timestamp)).toLocaleTimeString();
 }
 
+export async function connectedWallet() {
+	const account = await window.ethereum.request({ method: 'eth_accounts' });
+	return account.length > 0 ? account[0].toLowerCase() : null;
+}
+
 export interface ElligibilityResponse {
 	[key: string]: any[];
 }
