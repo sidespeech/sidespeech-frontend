@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { checkUserEligibility } from '../../helpers/utilities';
+import { checkUserEligibility, isColor } from '../../helpers/utilities';
 import { Role } from '../../models/Profile';
 import { Side, SideStatus } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
@@ -179,8 +179,21 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 			body={
 				!isLoading ? (
 					<SideEligibilityModalStyled>
-						<RoundedImageContainer height="104px" width="104px" radius={60}>
-							<img src={props.selectedSide?.sideImage} width="100%" alt="side" />
+						<RoundedImageContainer
+							style={{
+								backgroundColor: isColor(props.selectedSide?.sideImage)
+									? props.selectedSide?.sideImage
+									: ''
+							}}
+							height="104px"
+							width="104px"
+							radius={60}
+						>
+							{!isColor(props.selectedSide?.sideImage) ? (
+								<img alt="colony-icon" src={props.selectedSide?.sideImage} />
+							) : (
+								<div>{props.selectedSide?.name[0]}</div>
+							)}
 						</RoundedImageContainer>
 						<h2>{props.selectedSide.name}</h2>
 						<div className="text-center">{props.selectedSide.description}</div>

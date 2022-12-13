@@ -390,16 +390,8 @@ export function paginateArray({
 }
 
 export const sortCollectionByVerifiedCollectionsAndVolume = (a: Collection, b: Collection) => {
-	if (
-		a.ownedCount &&
-		!b.ownedCount
-	)
-		return -1;
-	else if (
-		!a.ownedCount &&
-		b.ownedCount
-	)
-		return 1;
+	if (a.ownedCount && !b.ownedCount) return -1;
+	else if (!a.ownedCount && b.ownedCount) return 1;
 	else if (
 		a.safelistRequestStatus === OpenSeaRequestStatus.verified &&
 		b.safelistRequestStatus !== OpenSeaRequestStatus.verified
@@ -414,3 +406,14 @@ export const sortCollectionByVerifiedCollectionsAndVolume = (a: Collection, b: C
 	else if (a.totalVolume > b.totalVolume) return -1;
 	else return 0;
 };
+
+export function generateDarkColorHex(): string {
+	let color = '#';
+	for (let i = 0; i < 3; i++)
+		color += ('0' + Math.floor((Math.random() * Math.pow(16, 2)) / 2).toString(16)).slice(-2);
+	return color;
+}
+
+export function isColor(string: string): boolean {
+	return string.startsWith('#');
+}

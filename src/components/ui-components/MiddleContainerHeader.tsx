@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/app.store';
 import { Room } from '../../models/Room';
-import { fixURL, reduceWalletAddress, reduceWalletAddressForColor } from '../../helpers/utilities';
+import { fixURL, isColor, reduceWalletAddress, reduceWalletAddressForColor } from '../../helpers/utilities';
 import { Channel } from '../../models/Channel';
 import Icons from './ChannelIcons';
 import { Announcement } from '../../models/Announcement';
@@ -260,6 +260,10 @@ const MiddleContainerHeaderStyled = styled.header`
 					border-radius: 36px;
 					flex-shrink: 0;
 					background-color: var(--panels-gray);
+					font-size: 20px;
+					text-transform: uppercase;
+					font-weight: 700;
+					line-height: 37px;
 					& img {
 						width: 100%;
 						object-fit: cover;
@@ -589,7 +593,11 @@ export default function MiddleContainerHeader({
 								</button>
 							)}
 							<div className="image">
-								<img src={currentSide?.sideImage} alt="" />
+								{currentSide && !isColor(currentSide.sideImage) ? (
+									<img alt="side" src={currentSide.sideImage} />
+								) : (
+									<div>{currentSide?.name[0]}</div>
+								)}
 							</div>
 							<span>{currentSide?.name}</span>
 							{currentSide?.firstCollection?.safelistRequestStatus === OpenSeaRequestStatus.verified && (

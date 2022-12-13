@@ -13,6 +13,7 @@ import { NotificationType } from '../../models/Notification';
 import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
 import notificationService from '../../services/api-services/notification.service';
+import { isColor } from '../../helpers/utilities';
 
 const UserSidesStyled = styled.div`
 	.colony-badge {
@@ -28,6 +29,10 @@ const UserSidesStyled = styled.div`
 		overflow: hidden;
 		z-index: 50;
 		transition: border 0.2s ease;
+		font-size: 27px;
+		font-weight: 700;
+		text-transform: uppercase;
+
 		&.active {
 			border: 2px solid var(--primary);
 		}
@@ -154,9 +159,14 @@ export default function UserSides() {
 								displaySide(c);
 							}}
 							className={`colony-badge pointer ${currentSide?.name === c.name ? 'active' : ''}`}
+							style={{ backgroundColor: isColor(c.sideImage) ? c.sideImage : '' }}
 							key={c.id}
 						>
-							<img alt="colony-icon" src={c.sideImage} />
+							{!isColor(c.sideImage) ? (
+								<img alt="colony-icon" src={c.sideImage} />
+							) : (
+								<div>{c.name[0]}</div>
+							)}
 							{c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
 						</div>
 					);

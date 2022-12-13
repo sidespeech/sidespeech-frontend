@@ -8,7 +8,7 @@ import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import InputText from '../ui-components/InputText';
 import moment from 'moment';
-import { checkUserEligibility, getRandomId } from '../../helpers/utilities';
+import { checkUserEligibility, getRandomId, isColor } from '../../helpers/utilities';
 import Spinner from '../ui-components/Spinner';
 import { Side } from '../../models/Side';
 import SideEligibilityModal from '../Modals/SideEligibilityModal';
@@ -81,6 +81,9 @@ const InvitationsStyled = styled.main<InvitationsStyledProps>`
 			text-align: center;
 			color: var(--inactive);
 			overflow: hidden;
+			font-size: 40px;
+			text-transform: uppercase;
+			font-weight: 700;
 		}
 		& .invited-by {
 			font-size: 10px;
@@ -291,16 +294,27 @@ const Invitations = ({}: InvitationsProps) => {
 									{/* Side data */}
 									<div>
 										<div className="flex align-center gap-20">
-											<label className="image-collection f-column align-center justify-center">
-												<img
-													style={{
-														height: 'inherit',
-														width: 'inherit',
-														objectFit: 'cover'
-													}}
-													src={invitation.side?.sideImage}
-													alt="file"
-												/>
+											<label
+												style={{
+													backgroundColor: isColor(invitation.side?.sideImage)
+														? invitation.side?.sideImage
+														: ''
+												}}
+												className="image-collection f-column align-center justify-center"
+											>
+												{!isColor(invitation.side?.sideImage) ? (
+													<img
+														style={{
+															height: 'inherit',
+															width: 'inherit',
+															objectFit: 'cover'
+														}}
+														alt="file"
+														src={invitation.side?.sideImage}
+													/>
+												) : (
+													<div>{invitation.side?.name[0]}</div>
+												)}
 											</label>
 											{/* <label className="align-center justify-center mt-2 ml-3">{request['accounts'].replace(request['accounts'].substring(4, 30), "...")}</label> */}
 											<div className="f-column align-start justify-center gap-10">

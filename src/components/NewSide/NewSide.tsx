@@ -22,7 +22,12 @@ import Informations from '../CurrentColony/settings/informations/Information';
 import userService from '../../services/api-services/user.service';
 import filesService from '../../services/api-services/files.service';
 import sideService from '../../services/api-services/side.service';
-import { checkEligibilityByCondition, checkUserEligibility, reduceWalletAddress } from '../../helpers/utilities';
+import {
+	checkEligibilityByCondition,
+	checkUserEligibility,
+	generateDarkColorHex,
+	reduceWalletAddress
+} from '../../helpers/utilities';
 import Spinner from '../ui-components/Spinner';
 import useGetCollections from '../../hooks/useGetCollections';
 import { v4 } from 'uuid';
@@ -376,7 +381,7 @@ export default function NewSide() {
 	// Functions to check mandatory data in steps
 	const validatorSteps = async (index: number, current_data: any) => {
 		// Checking if sideImage and name stored to continu to the other steps
-		if ((index === 0 && !current_data['sideImage']) || !current_data['name'].trim().length) {
+		if (index === 0 && !current_data['name'].trim().length) {
 			toast.error('Missing data', { toastId: 3 });
 			return false;
 		}
@@ -651,7 +656,7 @@ export default function NewSide() {
 
 	const onSubmit = async () => {
 		try {
-			if (formData.sideImage && user) {
+			if (user) {
 				setIsLoading(true);
 				const data = _.cloneDeep(formData);
 
@@ -661,9 +666,13 @@ export default function NewSide() {
 				if (eligibility) {
 					data['conditions'] = JSON.stringify(data['conditions']);
 					data['NftTokenAddress'] = data['conditions'];
-					const fd = new FormData();
-					fd.append('file', formData['sideImage']);
-					data['sideImage'] = await filesService.uploadImage(fd);
+					if (formData.sideImage) {
+						const fd = new FormData();
+						fd.append('file', formData['sideImage']);
+						data['sideImage'] = await filesService.uploadImage(fd);
+					} else {
+						data['sideImage'] = generateDarkColorHex();
+					}
 					data['creatorAddress'] = user.accounts;
 					data['required'] = !onlyOneRequired;
 					const newSide = await sideService.createFullSide(data, channels, userInvited);
