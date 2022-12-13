@@ -77,17 +77,15 @@ const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonCont
 	}
 `;
 
-
-
 const AdmissionStyled = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
 	.filterSearch {
-		text-align:right
+		text-align: right;
 	}
 	.filterSearch + button {
-		display:none;
+		display: none;
 	}
 	${breakpoints(
 		size.lg,
@@ -210,13 +208,16 @@ export default function Admission({
 
 	useEffect(() => {
 		const selectedCollections: string[] = divCollections.map((d: any) => d.collection);
-		const filtered = collections.filter(
+		let filtered = collections.filter(
 			c =>
 				!selectedCollections.includes(c.address) &&
 				(c.name ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name)
 		);
+		if (!onlyOneRequired) {
+			filtered = filtered.filter(c => userCollectionsData[c.address]);
+		}
 		setFilteredCollections(filtered);
-	}, [divCollections, filter]);
+	}, [divCollections, filter,onlyOneRequired]);
 
 	const filterDropdownList = (e: any) => {
 		const value = e.target.value;
