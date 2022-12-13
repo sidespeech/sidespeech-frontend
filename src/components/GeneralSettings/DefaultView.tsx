@@ -228,7 +228,7 @@ export default function DefaultView() {
 							<p>
 							If you have questions about our Privacy Policy please contact us at <a href="mailto:hello@side.xyz">hello@side.xyz</a>.<br/><br/>
 							Effective as of December 1, 2022.<br/><br/>
-							Updated December 1, 20122.
+							Updated December 1, 20122. 
 							</p>
 						</div>
 					</div>
