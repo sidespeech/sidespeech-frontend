@@ -186,6 +186,12 @@ const AdmissionStyled = styled.div`
 	}
 `;
 
+function collectionFilterByName(c: Collection, filter: string) {
+	const lowerCaseName = c.name?.toLowerCase();
+	const lowerCaseFilter = filter.toLowerCase();
+	return lowerCaseName.includes(lowerCaseFilter) || lowerCaseName.replaceAll(' ', '').includes(lowerCaseFilter.replaceAll(' ', ''));
+}
+
 export default function Admission({
 	divCollections,
 	collections,
@@ -209,15 +215,13 @@ export default function Admission({
 	useEffect(() => {
 		const selectedCollections: string[] = divCollections.map((d: any) => d.collection);
 		let filtered = collections.filter(
-			c =>
-				!selectedCollections.includes(c.address) &&
-				(c.name ? c.name.toLowerCase().includes(filter.toLowerCase()) : c.name)
+			c => !selectedCollections.includes(c.address) && collectionFilterByName(c, filter)
 		);
 		if (!onlyOneRequired) {
 			filtered = filtered.filter(c => userCollectionsData[c.address]);
 		}
 		setFilteredCollections(filtered);
-	}, [divCollections, filter,onlyOneRequired]);
+	}, [divCollections, filter, onlyOneRequired, collections]);
 
 	const filterDropdownList = (e: any) => {
 		const value = e.target.value;
