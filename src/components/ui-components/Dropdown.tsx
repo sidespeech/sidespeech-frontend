@@ -42,6 +42,9 @@ const DropdownContainer = styled.div<any>`
 		height: 40px;
 		border-bottom: 1px solid var(--inactive);
 	}
+	& > div[role='list'] > button:hover {
+		background-color: var(--panels);
+	}
 	& > div[role='list'] > button:last-child {
 		width: 100%;
 		border-radius: ${props => (props.radius ? props.radius : '0px 0px 7px 7px')};
