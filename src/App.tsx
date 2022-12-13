@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -54,6 +54,14 @@ function App() {
 			setCheckingOnboarding(false);
 		}
 	}, []);
+
+	useEffect(() => {
+		if (!location.pathname.includes('new-side')) {
+			console.log(location)
+			const newSideDraft = sessionStorage.getItem('create-side-data');
+			if (newSideDraft) sessionStorage.removeItem('create-side-data');
+		}
+	}, [location]);
 
 	useEffect(() => {
 		if (!onboarding && !fetchingUser) {

@@ -22,7 +22,12 @@ import Informations from '../CurrentColony/settings/informations/Information';
 import userService from '../../services/api-services/user.service';
 import filesService from '../../services/api-services/files.service';
 import sideService from '../../services/api-services/side.service';
-import { checkEligibilityByCondition, checkUserEligibility, reduceWalletAddress } from '../../helpers/utilities';
+import {
+	checkEligibilityByCondition,
+	dataUrlToFile,
+	generateDarkColorHex,
+	reduceWalletAddress
+} from '../../helpers/utilities';
 import Spinner from '../ui-components/Spinner';
 import useGetCollections from '../../hooks/useGetCollections';
 import { v4 } from 'uuid';
@@ -295,6 +300,36 @@ export default function NewSide() {
 
 	const collections = useGetCollections();
 
+	const saveDataBeforeUnload = () => {
+		const dataToSave = {
+			formData,
+			steps,
+			divCollections,
+			onlyOneRequired,
+			channels
+		};
+		sessionStorage.setItem('create-side-data', JSON.stringify(dataToSave));
+	};
+
+	useEffect(() => {
+		window.addEventListener('beforeunload', saveDataBeforeUnload);
+		return () => {
+			window.addEventListener('beforeunload', saveDataBeforeUnload);
+		};
+	}, [formData, steps, divCollections, onlyOneRequired, channels]);
+
+	useEffect(() => {
+		const item = sessionStorage.getItem('create-side-data');
+		if (item) {
+			const savedData = JSON.parse(item);
+			setFormData(savedData.formData);
+			setSteps(savedData.steps);
+			setDivCollection(savedData.divCollections);
+			setOnlyOneRequired(savedData.onlyOneRequired);
+			setChannels(savedData.channels);
+		}
+	}, []);
+
 	useEffect(() => {
 		if (user && user.profiles) {
 			const getInvitationUsers = async (user: any) => {
@@ -376,7 +411,7 @@ export default function NewSide() {
 	// Functions to check mandatory data in steps
 	const validatorSteps = async (index: number, current_data: any) => {
 		// Checking if sideImage and name stored to continu to the other steps
-		if ((index === 0 && !current_data['sideImage']) || !current_data['name'].trim().length) {
+		if (index === 0 && !current_data['name'].trim().length) {
 			toast.error('Missing data', { toastId: 3 });
 			return false;
 		}
@@ -461,11 +496,17 @@ export default function NewSide() {
 	const onChangeSideImage = (event: any) => {
 		if (event.target.files.length) {
 			const file = event.target.files[0];
-			if (file.size > 500000) {
+			const reader = new FileReader();
+			let image: any;
+			reader.addEventListener('load', event => {
+				image = event.target?.result;
+				setFormData({ ...formData, sideImage: image });
+			});
+			reader.readAsDataURL(file);
+			if (file.size > 5000000) {
 				toast.error('The image size has to be smaller than 5mb.');
 				return;
 			}
-			setFormData({ ...formData, sideImage: file });
 		}
 	};
 
@@ -651,7 +692,7 @@ export default function NewSide() {
 
 	const onSubmit = async () => {
 		try {
-			if (formData.sideImage && user) {
+			if (user) {
 				setIsLoading(true);
 				const data = _.cloneDeep(formData);
 
@@ -661,9 +702,14 @@ export default function NewSide() {
 				if (eligibility) {
 					data['conditions'] = JSON.stringify(data['conditions']);
 					data['NftTokenAddress'] = data['conditions'];
-					const fd = new FormData();
-					fd.append('file', formData['sideImage']);
-					data['sideImage'] = await filesService.uploadImage(fd);
+					if (formData.sideImage) {
+						const fd = new FormData();
+						const file = await dataUrlToFile(formData['sideImage'], 'file-name');
+						fd.append('file', file);
+						data['sideImage'] = await filesService.uploadImage(fd);
+					} else {
+						data['sideImage'] = generateDarkColorHex();
+					}
 					data['creatorAddress'] = user.accounts;
 					data['required'] = !onlyOneRequired;
 					const newSide = await sideService.createFullSide(data, channels, userInvited);
@@ -678,6 +724,7 @@ export default function NewSide() {
 					dispatch(updateUser(refreshedUser));
 
 					setIsLoading(false);
+					sessionStorage.removeItem('create-side-data');
 					navigate('/side/' + newSide.name);
 				} else {
 					toast.error('You do not meet the conditions to create this side.');

@@ -412,3 +412,21 @@ export const sortCollectionByVerifiedCollectionsAndVolume = (a: Collection, b: C
 	else if (a.totalVolume > b.totalVolume) return -1;
 	else return 0;
 };
+
+export function generateDarkColorHex(): string {
+	let color = '#';
+	for (let i = 0; i < 3; i++)
+		color += ('0' + Math.floor((Math.random() * Math.pow(16, 2)) / 2).toString(16)).slice(-2);
+	return color;
+}
+
+export function isColor(string: string): boolean {
+	return string.startsWith('#');
+}
+export async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
+	const type = dataUrl.match(/^data:(.+);base64/)?.[1];
+
+	const res: Response = await fetch(dataUrl);
+	const blob: Blob = await res.blob();
+	return new File([blob], fileName, { type });
+}

@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
 import profileService from '../../../../services/api-services/profile.service';
 import sideService from '../../../../services/api-services/side.service';
+import { isColor } from '../../../../helpers/utilities';
 
 const InformationsStyled = styled.div`
 	width: 100%;
@@ -25,6 +26,9 @@ const InformationsStyled = styled.div`
 	)}
 	.upload-colony-image {
 		position: relative;
+		font-size: 40px;
+		text-transform: uppercase;
+		font-weight: 700;
 		.camera-icon {
 			display: flex;
 			align-items: center;
@@ -202,13 +206,19 @@ export default function Informations({
 	const dispatch = useDispatch();
 
 	const onChangeSideImage = (event: any) => {
+		if (isNewSide) onChangeNewSideImage(event);
 		const file = event.target.files[0];
-		if (file.size > 500000) {
+		const reader = new FileReader();
+		let image;
+		reader.addEventListener('load', event => {
+			image = event.target?.result;
+		});
+		reader.readAsDataURL(file);
+		if (file.size > 5000000) {
 			toast.error('The image size has to be smaller than 5mb');
 			return;
 		}
-		setFormData({ ...formData, sideImage: URL.createObjectURL(file) });
-		if (isNewSide) onChangeNewSideImage(event);
+		setFormData({ ...formData, sideImage: image });
 	};
 
 	const onChangeSideName = (event: any) => {
@@ -262,35 +272,40 @@ export default function Informations({
 				<div className="text-primary-light mb-2 text fw-600 size-13">Side Icon</div>
 
 				<label htmlFor="input-colony-picture" className="flex pointer">
-					<div className="upload-colony-image f-column align-center justify-center">
+					<div
+						className="upload-colony-image f-column align-center justify-center"
+						style={{ backgroundColor: isColor(formData.sideImage || '') ? formData.sideImage : '' }}
+					>
 						{formData.sideImage ? (
+							<>
+								{!isColor(formData.sideImage) ? (
+									<img
+										style={{
+											height: 'inherit',
+											width: 'inherit',
+											objectFit: 'cover'
+										}}
+										src={formData.sideImage}
+										alt="file"
+									/>
+								) : (
+									<div>{formData.name[0]}</div>
+								)}
+							</>
+						) : currentSide.sideImage && !isColor(currentSide.sideImage) ? (
 							<img
 								style={{
 									height: 'inherit',
 									width: 'inherit',
 									objectFit: 'cover'
 								}}
-								src={formData.sideImage}
-								alt="file"
-							/>
-						) : currentSide.sideImage ? (
-							<img
-								style={{
-									height: 'inherit',
-									width: 'inherit',
-									objectFit: 'cover'
-								}}
-								src={
-									!window.location.href.includes('settings')
-										? URL.createObjectURL(currentSide.sideImage)
-										: currentSide.sideImage
-								}
+								src={currentSide.sideImage}
 								alt="file"
 							/>
 						) : (
 							<></>
 						)}
-						{!(formData.sideImage && currentSide.sideImage) && (
+						{!(formData.sideImage || currentSide.sideImage) && (
 							<span className="camera-icon">
 								<svg
 									width="22"
