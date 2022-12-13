@@ -28,8 +28,14 @@ export function reduceTokenId(id: string): string {
 }
 export function reduceWalletAddressForColor(address: string): string {
 	if (!address) return '';
-	const name = '#' + address.substring(2, 8);
-	return name;
+	const notAllowerChar = ['0', '1', '2', '3', '4', '5'];
+	const replaceChar = ['A', 'B', 'C', 'D', 'E', 'F'];
+	const splitName = address.substring(2, 8).split('');
+	const result = splitName.map((letter, index) => {
+		if (notAllowerChar.includes(letter.toUpperCase())) return replaceChar[index].toLowerCase();
+		return letter;
+	});
+	return `#${result.join('')}`;
 }
 
 export function renameFile(originalFile: File, newName: string): File {
@@ -102,6 +108,11 @@ export const durationToStringMax1h = (duration: Duration | null, _default: strin
 
 export function timestampToLocalString(timestamp: string) {
 	return new Date(Number.parseInt(timestamp)).toLocaleTimeString();
+}
+
+export async function connectedWallet() {
+	const account = await window.ethereum.request({ method: 'eth_accounts' });
+	return account.length > 0 ? account[0].toLowerCase() : null;
 }
 
 export interface ElligibilityResponse {

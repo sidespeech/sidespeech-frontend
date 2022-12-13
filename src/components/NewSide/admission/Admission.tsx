@@ -208,11 +208,6 @@ function reduceTraitsValues(prev: any, innerCurrent: any, fcurrent: any) {
 	return prev;
 }
 
-function traitValuesOptionsMap(collection: Collection, trait: string, value: string) {
-	let hasValue = hasTraitValueInCollection(collection, trait.toLowerCase(), value.toLowerCase());
-	return <span className={`${hasValue ? 'text-green' : 'text-red'}`}>{value}</span>;
-}
-
 export default function Admission({
 	divCollections,
 	collections,
@@ -266,14 +261,21 @@ export default function Admission({
 		);
 	};
 
+	const TraitValueRow = ({ ownedByUser, value }: { ownedByUser: boolean; value: string }) => {
+		return <span className={`${ownedByUser ? 'text-green' : 'text-red'}`}>{value}</span>;
+	};
+	function traitValuesOptionsMap(collection: Collection, trait: string, value: string) {
+		let hasValue = hasTraitValueInCollection(collection, trait.toLowerCase(), value.toLowerCase());
+		return <TraitValueRow ownedByUser={hasValue} value={value} key={value} />;
+	}
 	return (
 		<AdmissionStyled>
 			<div className="left-side">
-				<label htmlFor="name" className="size-14 fw-400 mb-4 text-left">
+				<label htmlFor="fade-in name" className="size-14 fw-400 mb-4 text-left">
 					Admission conditions ({divCollections.length})
 				</label>
-				<p className="text-secondary my-3">Collection requirements</p>
-				<div className="flex gap-20 mt-2 mb-3 w-100">
+				<p className="fade-in text-secondary my-3">Collection requirements</p>
+				<div className="fade-in flex gap-20 mt-2 mb-3 w-100">
 					<RequirementsRadioButtonContainer
 						onClick={() => setOnlyOneRequired(true)}
 						selected={onlyOneRequired}
@@ -384,32 +386,23 @@ export default function Admission({
 																		fcurrent['value_selected'].toLowerCase()
 																	);
 																	const traitsValues = current['traits_values'];
+																	const selectedTrait = fcurrent['trait_selected'];
+																	const zIndex =
+																		6 * (divCollections.length - i) - (findex + 1);
 																	return (
 																		<div className="feature-box" key={findex}>
 																			<div className="feature-selects mr-auto">
 																				<Dropdown
 																					style={{
-																						zIndex:
-																							6 *
-																								(divCollections.length -
-																									i) -
-																							(findex + 1)
+																						zIndex: zIndex
 																					}}
 																					defaultValue={
 																						fcurrent['trait_selected'] ? (
-																							<span
-																								className={`${
-																									hasTrait
-																										? 'text-green'
-																										: 'text-red'
-																								}`}
-																							>
-																								{
-																									fcurrent[
-																										'trait_selected'
-																									]
-																								}
-																							</span>
+																							<TraitValueRow
+																								ownedByUser={hasTrait}
+																								value={selectedTrait}
+																								key={findex}
+																							/>
 																						) : (
 																							'Select trait'
 																						)
@@ -420,30 +413,23 @@ export default function Admission({
 																					options={[
 																						...traitsValues.map(
 																							(item: any) => {
+																								const value =
+																									item['property'][
+																										'value'
+																									];
 																								let hasFeature =
 																									hasTraitInCollection(
 																										collection,
-																										item[
-																											'property'
-																										][
-																											'value'
-																										].toLowerCase()
+																										value.toLowerCase()
 																									);
-
 																								return (
-																									<span
-																										className={`${
+																									<TraitValueRow
+																										ownedByUser={
 																											hasFeature
-																												? 'text-green'
-																												: 'text-red'
-																										}`}
-																									>
-																										{
-																											item[
-																												'property'
-																											]['value']
 																										}
-																									</span>
+																										value={value}
+																										key={value}
+																									/>
 																								);
 																							}
 																						)
@@ -466,27 +452,21 @@ export default function Admission({
 																				/>
 																				<Dropdown
 																					style={{
-																						zIndex:
-																							6 *
-																								(divCollections.length -
-																									i) -
-																							(findex + 1)
+																						zIndex: zIndex
 																					}}
 																					defaultValue={
 																						fcurrent['value_selected'] ? (
-																							<span
-																								className={`${
+																							<TraitValueRow
+																								ownedByUser={
 																									hasTraitValue
-																										? 'text-green'
-																										: 'text-red'
-																								}`}
-																							>
-																								{
+																								}
+																								value={
 																									fcurrent[
 																										'value_selected'
 																									]
 																								}
-																							</span>
+																								key={findex}
+																							/>
 																						) : (
 																							'Select value of trait'
 																						)
@@ -605,6 +585,7 @@ export default function Admission({
 						})}
 				</div>
 				<Button
+					classes="fade-in"
 					width={'100%'}
 					height={46}
 					radius={10}
@@ -619,7 +600,7 @@ export default function Admission({
 				</Button>
 			</div>
 
-			<div className="right-side">
+			<div className="fade-in right-side">
 				<div>Summary</div>
 				<div style={{ lineHeight: '26px' }}>
 					To join this Side, you must have in your wallet : <br />

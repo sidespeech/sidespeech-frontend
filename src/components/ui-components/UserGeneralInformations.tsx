@@ -38,6 +38,9 @@ const UserGeneralInformationsStyled = styled.div`
     }`
         )}
     }
+    .connected-wallet {
+        max-width: 300px;
+    }
     & .copy {
         display: flex;
         align-items: center;
@@ -236,7 +239,7 @@ export default function UserGeneralInformations({
 
     const renderConnectedWallet = () => {
         return (
-            <div className="f-column">
+            <div className="f-column connected-wallet">
                 <div className="text-primary-light mb-3 text fw-600">Connected wallet</div>
                 <div className="flex">
                     <div className="w-100 relative">
