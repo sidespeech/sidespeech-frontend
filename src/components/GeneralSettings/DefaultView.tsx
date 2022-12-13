@@ -1,5 +1,6 @@
 // import React from "react";
 // import { useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 // import { RootState } from "../../redux/store/app.store";
 import { useLocation } from 'react-router';
@@ -11,9 +12,21 @@ import { useGeneralSettingsContext } from '../../App';
 
 const InnerPageStyled = styled.div`
 	padding: 2rem 1rem;
+	.inner {
+		padding-right: 20px;
+	}
 	&.privacy,
 	&.terms {
 		align-self: flex-start;
+		h3 {
+			font-size: 18px;
+		}
+		a,
+		a:focus,
+		a:active {
+			color: #b4c1d2;
+			text-decoration: underline!important;
+		}
 	}
 	&.themes {
 		width: 100%;
@@ -166,6 +179,7 @@ export const PageTitle = ({ title, Icon, onBack }: { title: string; Icon: any; o
 export default function DefaultView() {
 	const { setIsSettingsMobileMenuOpen } = useGeneralSettingsContext();
 
+	const navigate = useNavigate();
 	const location = useLocation();
 
 	switch (location.pathname) {
@@ -190,62 +204,33 @@ export default function DefaultView() {
 					<div className="fade-in-delay content">
 						<div className="inner">
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+							Side utilizes state-of-the-art security to provide private messaging and Internet calling services to users worldwide (“Services”).
 							</p>
-							<h3>Some heading</h3>
+							<h3>Information you provide</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+							Additional technical information is stored on our servers, including randomly generated authentication tokens, keys, push tokens, and other material that is necessary to transmit messages or other actions. Side limits this additional technical information to the minimum required to operate the Services.
 							</p>
-							<h3>Some heading</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+								<strong>User Support.</strong> If you contact Side User Support, any personal data you may share with us is kept only for the purposes of researching the issue and contacting you about your case.
 							</p>
-							<h3>Some heading</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+								<strong>Managing your information.</strong> You can manage your personal information in Side’s profile Settings.
 							</p>
-							<h3>Some heading</h3>
+							<h3>Updates</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+							We will update this privacy policy as needed so that it is current, accurate, and as clear as possible. Your continued use of our Services confirms your acceptance of our updated Privacy Policy.
 							</p>
-							<h3>Some heading</h3>
+							<h3>Terms</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+							Please also read our <a onClick={() => navigate(`/general-settings/terms`)}>Terms</a> which also governs the terms of this Privacy Policy.
 							</p>
-							<h3>Some heading</h3>
+							<h3>Contact Us</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
-							</p>
-							<h3>Some heading</h3>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+							If you have questions about our Privacy Policy please contact us at <a href="mailto:hello@side.xyz">hello@side.xyz</a>.<br/><br/>
+							Effective as of December 1, 2022.<br/><br/>
+							Updated December 1, 20122.
 							</p>
 						</div>
-						<div className="fader"></div>
 					</div>
 				</InnerPageStyled>
 			);
@@ -254,69 +239,83 @@ export default function DefaultView() {
 			return (
 				<InnerPageStyled className="fade-in-delay terms">
 					<PageTitle
-						title="Terms and conditions"
+						title="Terms of Service"
 						Icon={Icons.terms}
 						onBack={() => setIsSettingsMobileMenuOpen?.(true)}
 					/>
 					<div className="content">
 						<div className="inner">
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+								You agree to our Terms of Service (“Terms”) by using our app, services, or website (together, “Services”).
 							</p>
-							<h3>Some heading</h3>
+
+							<h3>About our services</h3>
+
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+							<strong>Minimum Age.</strong> You must be at least 13 years old to use our Services. The minimum age to use our Services without parental approval may be higher in your home country.
 							</p>
-							<h3>Some heading</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+							<strong>Profile Creation.</strong> To create a profile on Side, you must connect your wallet or use <a href="https://tokenproof.xyz/auth" target="_blank">tokenproof online authentification</a>. When you connect your MetaMask or Wallet Connect to Side for the first time, you have to sign a message to confirm that you are the owner of the wallet address. This signature does NOT allow Side to have access to your wallet or to make transactions with it.
 							</p>
-							<h3>Some heading</h3>
+							<p><strong>Privacy of user data.</strong> Side does not sell, rent or monetize your personal data or content in any way – ever.</p>
+							<p>Please read our <a onClick={() => navigate(`/general-settings/privacy`)}>Privacy Policy</a> to understand how we safeguard the information you provide when using our Services. For the purpose of operating our Services, you agree to our data practices as described in our Privacy Policy.</p>
+
+							<h3>Using Side</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+								<strong>Our Terms and Policies.</strong> You must use our Services according to our Terms and posted policies. 
 							</p>
-							<h3>Some heading</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+								<strong>Legal and Acceptable Use.</strong> You agree to use our Services only for legal, authorized, and acceptable purposes. You will not use (or assist others in using) our Services in ways that: (a) violate or infringe the rights of Side, our users, or others, including privacy, publicity, intellectual property, or other proprietary rights; (b) involve sending illegal or impermissible communications such as bulk messaging, auto-messaging, and auto-dialing. 
 							</p>
-							<h3>Some heading</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+								<strong>Harm to Side.</strong> You must not (or assist others to) access, use, modify, distribute, transfer, or exploit our Services in unauthorized manners, or in ways that harm Side, our Services, or systems. For example you must not (a) gain or try to gain unauthorized access to our Services or systems; (b) disrupt the integrity or performance of our Services; (c) create accounts for our Services through unauthorized or automated means; (d) collect information about our users in any unauthorized manner; or (e) sell, rent, or charge for our Services.
 							</p>
-							<h3>Some heading</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+								<strong>Keeping Your Account Secure.</strong> You are responsible for keeping your device, your Side account and your wallet safe and secure.
 							</p>
-							<h3>Some heading</h3>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in
-								hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur,
-								ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. Vestibulum
-								auctor ornare leo, non suscipit magna interdum eu. Curabitur pellentesque.
+								<strong>Security of your Private Keys, seed words or other credentials.</strong> We shall not be responsible to secure your Private Keys, seed words, credentials or other means of authorization of your Wallet. You must own and control any Wallet you use in connection with our Services. You are responsible for implementing all appropriate measures for securing any Wallet you use, including any Private Key, seed words, credentials or other means of authorization necessary to access such storage mechanism. We exclude any and all liability for any security breaches or other acts or omissions, which result in your loss of access or custody of any cryptographic assets stored thereon.
+							</p>
+							<p>
+								<strong>Third-party services.</strong> Our Services may allow you to access, use, or interact with third-party websites, apps, content, and other products and services. When you use third-party services, their terms and privacy policies govern your use of those services.
+							</p>
+							<p>
+								<strong>Third-party risks.</strong> The Services rely in part on third party and open-source software, including the Ethereum Blockchain, and the continued development and support by third parties. There is no assurance or guarantee that those third parties will maintain their support of their software or that open source software will continue to be maintained. There is also no guarantee that these third parties cannot suffer from a security breach in the future. This may have a material adverse effect on the Services. Side cannot be held responsible for any breach of security of a third party that can effect on the Services.
+							</p>
+
+							<h3>Your Rights and License with Side</h3>
+							<p>
+								<strong>Your Rights.</strong> You own the information you submit through our Services.
+							</p>
+							<p>
+								<strong>Side’s Rights.</strong> We own all copyrights, trademarks, domains, logos, trade dress, trade secrets, patents, and other intellectual property rights associated with our Services. You may not use our copyrights, trademarks, domains, logos, trade dress, patents, and other intellectual property rights unless you have our written permission. To report copyright, trademark, or other intellectual property infringement, please contact <a href="mailto:hello@side.xyz">hello@side.xyz</a>.
+							</p>
+							<p>
+								<strong>Side’s License to You.</strong> Side grants you a limited, revocable, non-exclusive, and non-transferable license to use our Services in accordance with these Terms.
+							</p>
+
+							<h3>Disclaimers and Limitations</h3>
+							<p>
+								<strong>Disclaimers.</strong> YOU USE OUR SERVICES AT YOUR OWN RISK AND SUBJECT TO THE FOLLOWING DISCLAIMERS. WE PROVIDE OUR SERVICES ON AN “AS IS” BASIS WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, AND FREEDOM FROM COMPUTER VIRUS OR OTHER HARMFUL CODE. SIDE DOES NOT WARRANT THAT ANY INFORMATION PROVIDED BY US IS ACCURATE, COMPLETE, OR USEFUL, THAT OUR SERVICES WILL BE OPERATIONAL, ERROR-FREE, SECURE, OR SAFE, OR THAT OUR SERVICES WILL FUNCTION WITHOUT DISRUPTIONS, DELAYS, OR IMPERFECTIONS. WE DO NOT CONTROL, AND ARE NOT RESPONSIBLE FOR, CONTROLLING HOW OR WHEN OUR USERS USE OUR SERVICES. WE ARE NOT RESPONSIBLE FOR THE ACTIONS OR INFORMATION (INCLUDING CONTENT) OF OUR USERS OR OTHER THIRD PARTIES. YOU RELEASE US, AFFILIATES, DIRECTORS, OFFICERS, EMPLOYEES, PARTNERS, AND AGENTS (TOGETHER, “SIDE PARTIES”) FROM ANY CLAIM, COMPLAINT, CAUSE OF ACTION, CONTROVERSY, OR DISPUTE (TOGETHER, “CLAIM”) AND DAMAGES, KNOWN AND UNKNOWN, RELATING TO, ARISING OUT OF, OR IN ANY WAY CONNECTED WITH ANY SUCH CLAIM YOU HAVE AGAINST ANY THIRD PARTIES.
+							</p>
+							<p>
+								<strong>Limitation of liability.</strong>THE SIDE PARTIES WILL NOT BE LIABLE TO YOU FOR ANY LOST PROFITS OR CONSEQUENTIAL, SPECIAL, PUNITIVE, INDIRECT, OR INCIDENTAL DAMAGES RELATING TO, ARISING OUT OF, OR IN ANY WAY IN CONNECTION WITH OUR TERMS, US, OR OUR SERVICES. THE FOREGOING DISCLAIMER OF CERTAIN DAMAGES AND LIMITATION OF LIABILITY WILL APPLY TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW. THE LAWS OF SOME STATES OR JURISDICTIONS MAY NOT ALLOW THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES, SO SOME OR ALL OF THE EXCLUSIONS AND LIMITATIONS SET FORTH ABOVE MAY NOT APPLY TO YOU. NOTWITHSTANDING ANYTHING TO THE CONTRARY IN OUR TERMS, IN SUCH CASES, THE LIABILITY OF THE SIDE PARTIES WILL BE LIMITED TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW.
+							</p>
+							<p>
+								<strong>Availability of Our Services.</strong> Our Services may be interrupted, including for maintenance, upgrades, or network or equipment failures. We may discontinue some or all of our Services, including certain features and the support for certain devices and platforms, at any time.
+							</p>
+							<h3>Ending Terms</h3>
+							<p>
+								<strong>Ending these Terms. </strong> You may end these Terms with Side at any time by deleting Side from your device and discontinuing use of our Services. We may modify, suspend, or terminate your access to or use of our Services anytime for any reason, such as if you violate the letter or spirit of our Terms or create harm, risk, or possible legal exposure for Side. The following provisions will survive termination of your relationship with Side: “Licenses,” “Disclaimers,” “Limitation of Liability,” “Resolving dispute,” “Availability” and “Ending these Terms,” and “General”.
+							</p>
+							<h3>General</h3>
+							<p>
+							Side may update the Terms from time to time. When we update our Terms, we will update the “Last Modified” date associated with the updated Terms. Your continued use of our Services confirms your acceptance of our updated Terms and supersedes any prior Terms. You will comply with all applicable export control and trade sanctions laws. Our Terms cover the entire agreement between you and Side regarding our Services. If you do not agree with our Terms, you should stop using our Services.
+							</p>
+							<p>
+							If we fail to enforce any of our Terms, that does not mean we waive the right to enforce them. If any provision of the Terms is deemed unlawful, void, or unenforceable, that provision shall be deemed severable from our Terms and shall not affect the enforceability of the remaining provisions. Our Services are not intended for distribution to or use in any country where such distribution or use would violate local law or would subject us to any regulations in another country. We reserve the right to limit our Services in any country. If you have specific questions about these Terms, please contact us at <a href="mailto:hello@side.xyz">hello@side.xyz</a>.
 							</p>
 						</div>
-						<div className="fader"></div>
 					</div>
 				</InnerPageStyled>
 			);
