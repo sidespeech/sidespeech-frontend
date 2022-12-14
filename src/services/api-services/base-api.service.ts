@@ -1,7 +1,6 @@
-import superagent, { SuperAgentRequest } from "superagent";
+import superagent  from "superagent";
 
 export class BaseApiService {
-  constructor() {}
 
   protected post(url: string) {
     const token = localStorage.getItem("jwtToken");

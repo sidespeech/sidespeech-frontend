@@ -1,16 +1,7 @@
-// import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
 import _, { orderBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-// import { EventType } from "../../../../constants/EventType";
-// import {
-//   subscribeToEvent,
-//   unSubscribeToEvent,
-// } from "../../../../helpers/CustomEvent";
-// import { Announcement } from "../../../../models/Announcement";
-import { Channel, ChannelType } from '../../../../models/Channel';
-// import { setSelectedChannel } from "../../../../redux/Slices/AppDatasSlice";
-// import { setSelectedRoom } from "../../../../redux/Slices/ChatSlice";
+import { Channel} from '../../../../models/Channel';
 import { RootState } from '../../../../redux/store/app.store';
 import { Dot } from '../../../ui-components/styled-components/shared-styled-components';
 import Icons from '../../../ui-components/ChannelIcons';

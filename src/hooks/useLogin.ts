@@ -83,7 +83,7 @@ export default function useLogin() {
                 return false;
             }
 
-            const existingUser = await userService.findExistingWallet(signature, signerMessage, signerAddr);
+            await userService.findExistingWallet(signature, signerMessage, signerAddr);
 
             // Send the wallet to the api service.
             const user = await userService.walletConnection(accounts, signerMessage, signature);

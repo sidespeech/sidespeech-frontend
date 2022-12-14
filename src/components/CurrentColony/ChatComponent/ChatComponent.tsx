@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import { format, formatDistance } from 'date-fns';
+import { formatDistance } from 'date-fns';
 import { Editor } from 'react-draft-wysiwyg';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { EventType } from '../../../constants/EventType';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
 // import { timestampToLocalString } from "../../../helpers/utilities";
@@ -12,13 +12,12 @@ import { Message, Room } from '../../../models/Room';
 //   addMessageToRoom,
 //   updateSelectedRoomMessages,
 // } from "../../../redux/Slices/ChatSlice";
-import { userDataSlice } from '../../../redux/Slices/UserDataSlice';
 import { RootState } from '../../../redux/store/app.store';
 import websocketService from '../../../services/websocket-services/websocket.service';
 import MessageInput from '../../ui-components/MessageInput';
 import UserBadge from '../../ui-components/UserBadge';
 import MessageContent from '../../ui-components/MessageContent';
-import { fixURL, reduceWalletAddressForColor } from '../../../helpers/utilities';
+import { fixURL} from '../../../helpers/utilities';
 import roomService from '../../../services/api-services/room.service';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 

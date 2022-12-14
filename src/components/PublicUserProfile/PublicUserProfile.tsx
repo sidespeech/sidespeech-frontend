@@ -23,7 +23,6 @@ import collectionService from '../../services/api-services/collection.service';
 import roomService from '../../services/api-services/room.service';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import { reduceWalletAddress, connectedWallet } from '../../helpers/utilities';
-import { connect } from 'superagent';
 
 interface IDataCard {
 	background: string;

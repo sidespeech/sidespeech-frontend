@@ -1,7 +1,6 @@
 import { InitialStateUser } from "../../components/OnBoarding/Steps/PublicNFTs";
 import { BASE_URL } from "../../constants/constants";
 import { NFT } from "../../models/interfaces/nft";
-import { Side } from "../../models/Side";
 import { User } from "../../models/User";
 import { BaseApiService } from "./base-api.service";
 

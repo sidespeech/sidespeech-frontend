@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../../redux/Slices/UserDataSlice';
 import Button from '../../ui-components/Button';

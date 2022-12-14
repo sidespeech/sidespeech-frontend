@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Collection, Trait } from '../models/interfaces/collection';
 import collectionService from '../services/api-services/collection.service';
 import openseaService from '../services/web3-services/opensea.service';

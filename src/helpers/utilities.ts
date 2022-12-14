@@ -3,7 +3,6 @@ import { Duration } from 'date-fns';
 import { Side } from '../models/Side';
 import { NFT } from '../models/interfaces/nft';
 import { Collection, OpenSeaRequestStatus } from '../models/interfaces/collection';
-import { Metadata } from '../models/Metadata';
 import { groupBy } from 'lodash';
 
 export function weiToDecimals(value: number, exposant: number = NUMBER_OF_DECIMALS) {

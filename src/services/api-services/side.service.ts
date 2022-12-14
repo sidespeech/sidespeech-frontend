@@ -1,7 +1,6 @@
-import superagent from 'superagent';
 import _ from 'lodash';
 import { InitialStateUpdateSide } from '../../components/CurrentColony/settings/informations/Information';
-import { InitialStateSide, InitialChannelsState } from '../../components/NewSide/NewSide';
+import { InitialStateSide } from '../../components/NewSide/NewSide';
 import { BASE_URL } from '../../constants/constants';
 import { checkUserEligibility } from '../../helpers/utilities';
 import { Side, SideStatus } from '../../models/Side';
