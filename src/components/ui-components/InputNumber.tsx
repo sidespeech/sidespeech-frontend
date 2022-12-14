@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { InputHTMLAttributes, useRef } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 
@@ -7,7 +7,8 @@ const InputNumber = styled.input`
 	height: 44px;
 	width: 73px;
 	border-radius: 7px;
-	background-color: var(--disable);
+	background-color: transparent;
+	border: 1px solid var(--disable);
 `;
 
 const style = {

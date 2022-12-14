@@ -26,15 +26,19 @@ const DropdownContainer = styled.div<any>`
 
 		width: 100%;
 		height: inherit;
-		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--disable)')};
+		border: 1px solid var(--disable);
+		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--black-transparency-20)')};
 		${props => props.selected && 'border-bottom: 1px solid var(--inactive);'}
 		display: flex;
+		gap: 1rem;
 		align-items: center;
-		justify-content: center;
+		justify-content: space-between;
+		padding: 0 1rem;
 	}
 	& > div[role='list'] > div > div > button {
 		width: 100%;
-		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--disable)')};
+		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--panels)')};
+		border: 1px solid var(--disable);
 
 		height: 40px;
 		border-bottom: 1px solid var(--inactive);
@@ -45,6 +49,18 @@ const DropdownContainer = styled.div<any>`
 	& > div[role='list'] > div > div > button:last-child {
 		width: 100%;
 		border-radius: ${props => (props.radius ? props.radius : '0px 0px 7px 7px')};
+	}
+	& .filterSearch {
+		padding: 1rem 1rem 0.5rem 1rem;
+		background-color: var(--panels);
+		border: 1px solid var(--disable);
+		& .resultsNumbers {
+			display: block;
+			margin-top: 0.5rem;
+			padding: 0 0.5rem;
+			width: 100%;
+			text-align: right;
+		}
 	}
 `;
 
@@ -111,17 +127,18 @@ export default function Dropdown({
 				style={{ ...style }}
 			>
 				<button type="button" onClick={toggleList}>
-					<div className="m-auto">{headerTitle}</div>
-					<div className={`${isOpen ? 'selected' : ''} mr-2`}>
+					<div className="">{headerTitle}</div>
+					<div className={`${isOpen ? 'selected' : ''}`}>
 						<i className="fa-solid fs-22 fa-angle-down"></i>
 					</div>
 				</button>
 				{isOpen && (
 					<div role="list" className="dd-list">
 						{filterDropdownList && (
-							<div className="py-2 filterSearch px-2" style={{ backgroundColor: 'var(--disable)' }}>
+							<div className="filterSearch">
 								<InputText
 									ref={ref}
+									bgColor="var(--panels)"
 									border="1px solid var(--primary)"
 									onChange={filterDropdownList}
 									glass

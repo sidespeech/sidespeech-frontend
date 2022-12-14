@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import CustomSelect from '../../ui-components/CustomSelect';
 import check from '../../../assets/check_circle.svg';
 import Button from '../../ui-components/Button';
-import Switch from '../../ui-components/Switch';
 import styled from 'styled-components';
 import Dropdown from '../../ui-components/Dropdown';
 import { Collection, OpenSeaRequestStatus } from '../../../models/interfaces/collection';
-import { fixURL, hasTraitInCollection, hasTraitValueInCollection } from '../../../helpers/utilities';
+import { hasTraitInCollection, hasTraitValueInCollection } from '../../../helpers/utilities';
 import CustomInputNumber from '../../ui-components/InputNumber';
-import { filter, unionBy } from 'lodash';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import { UserCollectionsData } from '../../../models/interfaces/UserCollectionsData';
 
@@ -42,9 +39,9 @@ const Thumbnail = styled.img`
 	border-radius: 15px;
 `;
 const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonContainerProps>`
-	background-color: ${props => (props.selected ? 'var(--primary)' : 'var(--input)')};
+	background-color: ${props => (props.selected ? 'var(--primary)' : 'var(--white-transparency-10)')};
 	border-radius: 7px;
-	padding: 0.5rem;
+	padding: 0.5rem 1rem;
 	${breakpoints(
 		size.lg,
 		`{
@@ -54,12 +51,12 @@ const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonCont
 	)}
 	flex: 1 0 0;
 	align-items: center;
-	color: ${props => (props.selected ? 'var(--white)' : 'var(--inactive)')};
+	color: ${props => (props.selected ? 'var(--background)' : 'var(--white)')};
 	display: flex;
 	cursor: pointer;
 
 	& > div:first-child {
-		border: 1px solid ${props => (props.selected ? 'var(--white)' : 'var(--inactive)')};
+		border: 1px solid ${props => (props.selected ? 'var(--background)' : 'var(--white)')};
 		width: 20px;
 		height: 20px;
 		flex-shrink: 0;
@@ -69,7 +66,7 @@ const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonCont
 		justify-content: center;
 		align-items: center;
 		& div {
-			background-color: var(--white);
+			background-color: var(--background);
 			width: 12px;
 			height: 12px;
 			border-radius: 8px;
@@ -81,9 +78,6 @@ const AdmissionStyled = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
-	.filterSearch {
-		text-align: right;
-	}
 	${breakpoints(
 		size.lg,
 		`{
@@ -104,7 +98,7 @@ const AdmissionStyled = styled.div`
 		.collection-item {
 			padding: 1rem;
 			border-radius: 7px;
-			background-color: var(--input);
+			background-color: var(--white-transparency-10);
 			width: 100%;
 			max-width: 90vw;
 			${breakpoints(
@@ -589,7 +583,7 @@ export default function Admission({
 					width={'100%'}
 					height={46}
 					radius={10}
-					background={'var(--disable)'}
+					background={'var(--white-transparency-10)'}
 					color={'var(--text)'}
 					onClick={() => {
 						setFilter('');
