@@ -44,7 +44,8 @@ const DropdownContainer = styled.div<any>`
 		height: 40px;
 		border-bottom: 1px solid var(--inactive);
 	}
-	& > div[role='list'] > div > div > button:hover {
+	& > div[role='list'] > div > div > button:hover,
+	& > div[role='list'] > div > div > button:focus {
 		background-color: var(--background);
 	}
 	& > div[role='list'] > div > div > button:last-child {
