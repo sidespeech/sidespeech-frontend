@@ -57,7 +57,7 @@ function App() {
 
 	useEffect(() => {
 		if (!location.pathname.includes('new-side')) {
-			console.log(location)
+			console.log(location);
 			const newSideDraft = sessionStorage.getItem('create-side-data');
 			if (newSideDraft) sessionStorage.removeItem('create-side-data');
 		}
@@ -124,7 +124,10 @@ function App() {
 		>
 			{onboarding || fetchingUser ? (
 				<div style={{ height: '100vh', width: '100%', display: 'grid', placeItems: 'center' }}>
-					<Spinner />
+					<div>
+						<Spinner color={'var(--green)'} size={3} />
+						<div className="size-18 mt-3 text-green">Loading data...</div>
+					</div>
 				</div>
 			) : (
 				<Outlet

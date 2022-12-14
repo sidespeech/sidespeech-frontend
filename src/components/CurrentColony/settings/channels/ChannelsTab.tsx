@@ -92,6 +92,26 @@ export default function Channels({
 		}
 	}, []);
 
+	useEffect(() => {
+		document.addEventListener('keyup', handleOnClickEnter);
+		return () => {
+			document.removeEventListener('keyup', handleOnClickEnter);
+		};
+	}, []);
+
+	const handleOnClickEnter = (event: any) => {
+		if (event.key === 'Enter') {
+			const focusedElement = document.activeElement;
+			if (focusedElement) {
+				if (focusedElement.tagName === 'INPUT' && focusedElement.getAttribute('type') === 'text') {
+					handleAddChannel();
+					var elements: any = document.querySelectorAll(".channels-container input[type='text']");
+					elements[elements.length - 1].focus();
+				}
+			}
+		}
+	};
+
 	const handleRemove = async (id: string) => {
 		if (channelsNewSide) {
 			handleRemoveChannel(id);
@@ -196,6 +216,7 @@ export default function Channels({
 			);
 		}
 	}, []);
+
 	const onSubmit = async () => {
 		try {
 			const updatedChannels = await channelService.updateManyChannels(
