@@ -184,7 +184,7 @@ const AdmissionStyled = styled.div`
 `;
 
 function collectionFilterByName(c: Collection, filter: string) {
-	const lowerCaseName = c.name?.toLowerCase();
+	const lowerCaseName = c.name?.toLowerCase() || '';
 	const lowerCaseFilter = filter.toLowerCase();
 	return (
 		lowerCaseName.includes(lowerCaseFilter) ||
