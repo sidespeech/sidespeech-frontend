@@ -4,11 +4,11 @@ import { BaseApiService } from "./base-api.service";
 
 
 // Create an API Service class
-let instance: AnnouncementService;
-class AnnouncementService extends BaseApiService {
+let instance: MetadataService;
+class MetadataService extends BaseApiService {
 
   static getInstance() {
-    if (!instance) instance = new AnnouncementService();
+    if (!instance) instance = new MetadataService();
     return instance;
   }
 
@@ -22,4 +22,4 @@ class AnnouncementService extends BaseApiService {
 
 }
 
-export default AnnouncementService.getInstance();
+export default MetadataService.getInstance();
