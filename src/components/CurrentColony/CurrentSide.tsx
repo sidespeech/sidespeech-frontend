@@ -22,6 +22,8 @@ import { toast } from 'react-toastify';
 import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import sideService from '../../services/api-services/side.service';
+import { FadeLoader } from 'react-spinners';
+import Spinner from '../ui-components/Spinner';
 
 const CurrentSideStyled = styled.div`
 	width: 100vw;
@@ -231,54 +233,67 @@ export default function CurrentSide() {
 
 	return (
 		<CurrentSideStyled>
-			{currentSide?.status === SideStatus.active ? (
-				<>
-					{!settingsOpen && (
-						<div className="left-side-desktop">
-							<CurrentSideLeft />
-						</div>
-					)}
-
-					<div className="current-side-middle-container">
-						<MiddleContainerHeader
-							channel={selectedChannel}
-							className="header-desktop fade-in-top"
-							isMobileSettingsMenuOpen={isMobileSettingsMenuOpen}
-							room={selectedRoom}
-							setIsMobileSettingsMenuOpen={setIsMobileSettingsMenuOpen}
-							setThread={setThread}
-							thread={thread}
-						/>
+			{currentSide ? (
+				currentSide.status === SideStatus.active ? (
+					<>
 						{!settingsOpen && (
-							<div className="left-side-mobile">
+							<div className="left-side-desktop">
 								<CurrentSideLeft />
 							</div>
 						)}
-						<Outlet
-							context={{
-								announcementId,
-								isMobileMenuOpen: isMobileSettingsMenuOpen,
-								selectedChannel,
-								selectedRoom,
-								setCreatePollModal,
-								setIsMobileMenuOpen: setIsMobileSettingsMenuOpen,
-								setThread,
-								thread
-							}}
-						/>
+
+						<div className="current-side-middle-container">
+							<MiddleContainerHeader
+								channel={selectedChannel}
+								className="header-desktop fade-in-top"
+								isMobileSettingsMenuOpen={isMobileSettingsMenuOpen}
+								room={selectedRoom}
+								setIsMobileSettingsMenuOpen={setIsMobileSettingsMenuOpen}
+								setThread={setThread}
+								thread={thread}
+							/>
+							{!settingsOpen && (
+								<div className="left-side-mobile">
+									<CurrentSideLeft />
+								</div>
+							)}
+							<Outlet
+								context={{
+									announcementId,
+									isMobileMenuOpen: isMobileSettingsMenuOpen,
+									selectedChannel,
+									selectedRoom,
+									setCreatePollModal,
+									setIsMobileMenuOpen: setIsMobileSettingsMenuOpen,
+									setThread,
+									thread
+								}}
+							/>
+						</div>
+						{createPollModal && selectedChannel && <CreatePollModal showModal={setCreatePollModal} />}
+					</>
+				) : displayEligibility && sideEligibility ? (
+					<SideEligibilityModal
+						setDisplayLeaveSide={() => {}}
+						setDisplayEligibility={setDisplayEligibility}
+						selectedSide={sideEligibility}
+					/>
+				) : (
+					<div className="f-column align-center justify-center w-100 vh-100 text-green">
+						<i className="fa-solid fa-lock size-60"></i>
+						<div className="size-18 mt-3 text-center">
+							This side is currently locked. <br />
+							Waiting for a new admin to be set.
+							<br />
+							Please try again later.
+						</div>
 					</div>
-					{createPollModal && selectedChannel && currentSide && (
-						<CreatePollModal showModal={setCreatePollModal} />
-					)}
-				</>
-			) : displayEligibility && sideEligibility ? (
-				<SideEligibilityModal
-					setDisplayLeaveSide={() => {}}
-					setDisplayEligibility={setDisplayEligibility}
-					selectedSide={sideEligibility}
-				/>
+				)
 			) : (
-				<div>This side is currently inactive</div>
+				<div className="spinner-wrapper f-column align-center justify-center w-100 vh-100">
+					<Spinner color={'var(--green)'} size={3} />
+					<div className="size-18 mt-3 text-green">Loading Side "{id}" information...</div>
+				</div>
 			)}
 		</CurrentSideStyled>
 	);

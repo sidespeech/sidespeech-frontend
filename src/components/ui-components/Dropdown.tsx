@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import InputText from './InputText';
 import ClickAwayListener from 'react-click-away-listener';
+import { FixedSizeList as List } from 'react-window';
 
 const DropdownLine = styled.div<any>`
 	position: relative;
@@ -31,18 +32,17 @@ const DropdownContainer = styled.div<any>`
 		align-items: center;
 		justify-content: center;
 	}
-	& > div[role='list'] {
-		max-height: 20vh;
-		overflow: auto;
-	}
-	& > div[role='list'] > button {
+	& > div[role='list'] > div > div > button {
 		width: 100%;
 		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--disable)')};
 
 		height: 40px;
 		border-bottom: 1px solid var(--inactive);
 	}
-	& > div[role='list'] > button:last-child {
+	& > div[role='list'] > div > div > button:hover {
+		background-color: var(--panels);
+	}
+	& > div[role='list'] > div > div > button:last-child {
 		width: 100%;
 		border-radius: ${props => (props.radius ? props.radius : '0px 0px 7px 7px')};
 	}
@@ -70,7 +70,7 @@ export default function Dropdown({
 		} else if (defaultValue === null) {
 			setHeaderTitle(options[0]);
 		}
-	}, [defaultValue, options]);
+	}, []);
 
 	useEffect(() => {
 		if (ref.current && isOpen) {
@@ -94,6 +94,14 @@ export default function Dropdown({
 		setIsOpen(false);
 	};
 
+	const Row = ({ index, style }: any) => {
+		const option = options[index];
+		return (
+			<button style={style} type="button" key={index} onClick={e => selectItem(option, values[index])}>
+				{key ? option[key] : option}
+			</button>
+		);
+	};
 	return (
 		<ClickAwayListener onClickAway={onClickAway}>
 			<DropdownContainer
@@ -119,14 +127,14 @@ export default function Dropdown({
 									glass
 									iconRightPos={{ top: 9, right: 15 }}
 								/>
-								{resultsNumbers ? <label className='resultsNumbers'>{resultsNumbers} results</label> : null}
+								{resultsNumbers ? (
+									<label className="resultsNumbers">{resultsNumbers} results</label>
+								) : null}
 							</div>
 						)}
-						{options.map((item: any, index: any) => (
-							<button type="button" key={index} onClick={e => selectItem(item, values[index])}>
-								{key ? item[key] : item}
-							</button>
-						))}
+						<List height={300} itemCount={values.length} itemSize={44} width={'100%'}>
+							{Row}
+						</List>
 					</div>
 				)}
 			</DropdownContainer>

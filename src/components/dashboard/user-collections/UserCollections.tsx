@@ -11,7 +11,7 @@ import UserCollectionItemSmall from './UserCollectionItemSmall';
 import CustomCheckbox from '../../ui-components/CustomCheckbox';
 import PaginationControls from '../../ui-components/PaginationControls';
 import Spinner from '../../ui-components/Spinner';
-import { paginateArray } from '../../../helpers/utilities';
+import { paginateArray, sortCollectionByVerifiedCollectionsAndVolume } from '../../../helpers/utilities';
 import { searchFiltersProps } from '../DashboardPage';
 // import Button from '../../ui-components/Button';
 import noResultsImg from '../../../assets/my_sides_empty_screen_shape.svg';
@@ -176,7 +176,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 				filteredArray = filteredArray.filter(
 					collection => collection.safelistRequestStatus === OpenSeaRequestStatus.verified
 				);
-			setFilteredCollections(filteredArray);
+			setFilteredCollections(filteredArray.sort(sortCollectionByVerifiedCollectionsAndVolume));
 		}
 	}, [isOnlyVerifiedCollectionsChecked, isWithSidesChecked, userCollectionsData]);
 

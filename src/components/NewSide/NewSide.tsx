@@ -563,8 +563,12 @@ export default function NewSide() {
 			// Adding the value as already used in the 'features' cell of it property
 			current_divs[index]['traits_values'] = current_divs[index]['traits_values'].map((item: any) => {
 				const valueUsed = item['values'].find((innerElem: any) => innerElem['value'] == value);
-				if (valueUsed) {
-					item['values_used'].push(valueUsed);
+				const usedValues = item['values_used'];
+				const featureIndex = usedValues.findIndex((uv: any) => uv.findex === findex);
+				if (valueUsed && featureIndex === -1) {
+					item['values_used'].push({ valueUsed, findex });
+				} else {
+					item['values_used'].splice(featureIndex, 1, { valueUsed, findex });
 				}
 				return item;
 			});
