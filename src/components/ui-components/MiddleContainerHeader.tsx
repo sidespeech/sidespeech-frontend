@@ -384,7 +384,7 @@ export default function MiddleContainerHeader({
 
 	return (
 		<MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>
-			<div className="desktop-header">
+			<div className="desktop-header fade-in-top">
 				<div className={`left-side ${settingsOpen && currentSide ? 'full-width' : ''}`}>
 					{thread && (
 						<div className="user-info">

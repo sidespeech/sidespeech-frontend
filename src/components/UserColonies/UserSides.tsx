@@ -33,7 +33,8 @@ const UserSidesStyled = styled.div`
 		font-weight: 700;
 		text-transform: uppercase;
 
-		&.active {
+		&.active,
+		&:hover {
 			border: 2px solid var(--primary);
 		}
 		& > img {
