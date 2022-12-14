@@ -93,7 +93,7 @@ export const fetchUserDatas = createAsyncThunk(
 			if (existingObject) {
 				existingObject.nfts.push(nft);
 			} else {
-				const found = cols.find((c: Collection) => c.address === address)
+				const found = cols.find((c: Collection) => c.address === address);
 
 				if (found) {
 					res[address] = found;
@@ -103,13 +103,12 @@ export const fetchUserDatas = createAsyncThunk(
 						const numberSides = data['sides'].filter((item: Side) => {
 							return item['collectionSides'].find((coll: any) => coll['collectionId'] === address);
 						});
-	
+
 						res[address]['sideCount'] = numberSides.length;
 					} else {
 						res[address]['sideCount'] = 0;
 					}
 				}
-				
 			}
 		}
 		return res;

@@ -205,7 +205,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 				const user = await userService.getUserPublicData(username);
 				if (user.publicNfts) {
 					const addresses = Object.keys(_.groupBy(user.publicNfts, 'token_address'));
-					if(addresses.length > 0) {
+					if (addresses.length > 0) {
 						const collections = await collectionService.getManyCollectionsByAddress(addresses);
 						setCollections(collections);
 					}
@@ -227,7 +227,6 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 			const userserSides = user.profiles.map(p => p.side);
 			const foo = _.intersectionBy(connectedUserSides, userserSides, 'id');
 			setSharedSidesCount(foo.length);
-	
 		}
 	}, [userData.user, user]);
 
@@ -239,7 +238,6 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 					: [...user.publicNfts.filter((nft: NFT) => nft.token_address === selectedCollection)];
 			setFilteredNfts(filteredNfts);
 		}
-
 	}, [selectedCollection, user]);
 
 	const copyLink = () => {
@@ -280,7 +278,6 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 			});
 		}
 	};
-	
 
 	return (
 		<PublicUserProfileStyled>
@@ -408,7 +405,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 									<p>{user.bio}</p>
 								</div>
 								<div className="flex gap-20">
-									{userData.user && user.accounts.toLowerCase() !== walletConnected &&
+									{userData.user && user.accounts.toLowerCase() !== walletConnected && (
 										<Button
 											classes="address-btn"
 											children={'Send a message'}
@@ -417,14 +414,14 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 													handleSelectedUser(profile, userData.currentProfile);
 											}}
 										/>
-									}
-									{!userData.user	&&
+									)}
+									{!userData.user && (
 										<Button
 											classes="address-btn"
 											children={'Connect Wallet'}
 											onClick={connectWallet}
 										/>
-									}
+									)}
 									<DataAddress className="user-link">
 										<span className="text-inactive">
 											{profile
