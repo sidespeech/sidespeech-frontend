@@ -245,7 +245,7 @@ export default function CurrentSide() {
 						<div className="current-side-middle-container">
 							<MiddleContainerHeader
 								channel={selectedChannel}
-								className="header-desktop fade-in-top"
+								className="header-desktop"
 								isMobileSettingsMenuOpen={isMobileSettingsMenuOpen}
 								room={selectedRoom}
 								setIsMobileSettingsMenuOpen={setIsMobileSettingsMenuOpen}

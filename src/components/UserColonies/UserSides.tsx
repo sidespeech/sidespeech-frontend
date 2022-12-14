@@ -30,13 +30,16 @@ const UserSidesStyled = styled.div`
 		margin: 0px 12px;
 		overflow: hidden;
 		z-index: 50;
-		transition: border 0.2s ease;
+		transition: all 0.2s ease;
 		font-size: 27px;
 		font-weight: 700;
 		text-transform: uppercase;
 
 		&.active {
 			border: 2px solid var(--primary);
+		}
+		&:hover {
+			outline: 2px solid var(--primary);
 		}
 		& > img {
 			object-fit: cover;

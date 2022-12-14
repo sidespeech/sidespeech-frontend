@@ -24,7 +24,13 @@ import notificationService from '../../../services/api-services/notification.ser
 const SidebarStyled = styled.div`
 	max-height: 100vh;
 	overflow-y: scroll;
-	.selected-channel {
+	& .channel-item {
+		transition: background-color 0.2s ease;
+		&:hover {
+			background-color: var(--black-transparency-20);
+		}
+	}
+	& .selected-channel {
 		border-radius: 7px;
 		background-color: var(--background);
 	}
