@@ -303,6 +303,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 				<div className="verified-checkbox">
 					<CustomCheckbox
 						label="Only with verified collections"
+						name="only-verified"
 						isChecked={searchFilters.verifiedCollections}
 						onClick={(ev: any) =>
 							setSearchFilters(prevState => ({

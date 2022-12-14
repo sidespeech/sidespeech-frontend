@@ -280,6 +280,7 @@ export default function ChannelRow({
 				{channel['type'] !== ChannelType.Textual && (
 					<div className="flex">
 						<CustomCheckbox
+							name="authorize-comments"
 							isChecked={channel['authorizeComments']}
 							onClick={(e: any) => {
 								onChangeAuthorizeComments(e, channel.id, placeholder ? true : false);

@@ -19,24 +19,8 @@ const SelectContainer = styled.div<ISelectContainer>`
 	position: relative;
 	${props => props.disable && 'pointer-events: none;'}
 	${props => props.disable && 'opacity: 0.2;'}
-  width: ${props => (props.width ? props.width : '148px')};
+  	width: ${props => (props.width ? props.width : '148px')};
 	height: ${props => (props.height ? props.height : '31px')};
-	.select-custom {
-		width: 100%;
-		padding: 5px 0px 5px 12px;
-		border-radius: ${props => (props.radius ? props.radius : '25px')};
-		appearance: none;
-		color: var(--text);
-		text-align: left;
-		height: inherit;
-		&:focus + .select-arrow > i {
-			transform: rotate(-180deg);
-		}
-	}
-	.select-custom:focus-visible {
-		outline: none;
-	}
-
 	.select-arrow {
 		position: absolute;
 		right: 7px;
@@ -58,9 +42,18 @@ const SelectContainer = styled.div<ISelectContainer>`
 `;
 
 const SelectCustom = styled.select<ISelectCustom>`
-	border-radius: ${props => (props.radius ? props.radius : '20px')};
+	border-radius: ${props => (props.radius ? props.radius : '10px')};
 	background: ${props => (props.bgColor ? props.bgColor : 'var(--input)')};
 	width: 100%;
+	padding: 5px 20px 5px 12px;
+	appearance: none;
+	color: var(--text);
+	text-align: left;
+	height: inherit;
+	cursor: pointer;
+	&:focus-visible {
+		outline: none;
+	}
 	& option {
 		background: var(--background);
 		&:hover {
@@ -149,7 +142,6 @@ export default function CustomSelect({
 				onClick={(event: any) => {
 					setSelected(!selected);
 				}}
-				className="select-custom"
 				value={value}
 			>
 				{placeholder && (
