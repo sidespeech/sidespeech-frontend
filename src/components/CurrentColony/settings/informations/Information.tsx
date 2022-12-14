@@ -359,6 +359,7 @@ export default function Informations({
 							height={35}
 							onChange={onChangeSideName}
 							radius="10px"
+							maxLength={50}
 						/>
 					</div>
 					{!formError?.name.exist && formData?.name.length > 3 && (

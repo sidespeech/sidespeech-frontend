@@ -209,6 +209,7 @@ export default function UserGeneralInformations({
                     defaultValue={user?.username || ''}
                     onChange={onChangeUsername}
                     radius="10px"
+                    maxLength={64}
                 />
                 {!errorData.username && <div className="text-red"> Only letters and numbers</div>}
             </div>

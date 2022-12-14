@@ -95,7 +95,7 @@ export default function Welcome({ updateCurrentStep, updateChosenUsername }: Chi
         const re = new RegExp('^[a-zA-Z0-9]*$');
         const isValid = re.test(username);
         // Setting state of the min characters.
-        username.length >= 5 && username.length <= 15 ? setMinMaxCharacters(true) : setMinMaxCharacters(false);
+        username.length >= 5 && username.length <= 64 ? setMinMaxCharacters(true) : setMinMaxCharacters(false);
 
         if (minMaxCharacters) {
             const checkUsername = await userService.findExistingUsername(username);
@@ -155,7 +155,7 @@ export default function Welcome({ updateCurrentStep, updateChosenUsername }: Chi
                         placeholder={'Your username'}
                         onChange={onChangeUsername}
                         radius="10px"
-                        maxLength={15}
+                        maxLength={64}
                     />
                 </div>
                 <div className="requirements">
@@ -166,7 +166,7 @@ export default function Welcome({ updateCurrentStep, updateChosenUsername }: Chi
                         <p>Available</p>
                     </div>
                     <div className={`rule ${!minMaxCharacters ? 'error' : ''}`}>
-                        <p>Between 5 and 15 Characters</p>
+                        <p>Between 5 and 64 Characters</p>
                     </div>
                 </div>
             </div>

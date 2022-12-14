@@ -14,6 +14,8 @@ import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
 import notificationService from '../../services/api-services/notification.service';
 import { isColor } from '../../helpers/utilities';
+import { setCurrentColony } from '../../redux/Slices/AppDatasSlice';
+import { setCurrentProfile } from '../../redux/Slices/UserDataSlice';
 
 const UserSidesStyled = styled.div`
 	.colony-badge {
@@ -70,6 +72,8 @@ export default function UserSides() {
 			setSide(side);
 			setDisplayModal(true);
 		} else {
+			dispatch(setCurrentColony(null))
+			dispatch(setCurrentProfile(null))
 			navigate('side/' + side.name);
 		}
 	};

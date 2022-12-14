@@ -234,6 +234,7 @@ export default function ChannelRow({
 						value={channel['name']}
 						onChange={(e: any) => onChangeName(e, channel.id, placeholder ? true : false)}
 						radius="10px"
+						maxLength={100}
 					/>
 				</InputTextWithDropdown>
 			</div>
