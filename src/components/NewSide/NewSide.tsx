@@ -254,7 +254,7 @@ const channelInitalState = [
 ];
 
 const Middle = styled.div`
-	overflow: scroll;
+	overflow-y: scroll;
 	height: calc(100vh - 62px - 77px);
 	padding-bottom: calc(2rem + 77px);
 	${breakpoints(
