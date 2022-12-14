@@ -37,6 +37,7 @@ const DropdownContainer = styled.div<any>`
 	}
 	& > div[role='list'] > div > div > button {
 		width: 100%;
+		transition: background-color 0.2s ease;
 		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--panels)')};
 		border: 1px solid var(--disable);
 
@@ -44,22 +45,33 @@ const DropdownContainer = styled.div<any>`
 		border-bottom: 1px solid var(--inactive);
 	}
 	& > div[role='list'] > div > div > button:hover {
-		background-color: var(--panels);
+		background-color: var(--background);
 	}
 	& > div[role='list'] > div > div > button:last-child {
 		width: 100%;
 		border-radius: ${props => (props.radius ? props.radius : '0px 0px 7px 7px')};
 	}
-	& .filterSearch {
-		padding: 1rem 1rem 0.5rem 1rem;
-		background-color: var(--panels);
-		border: 1px solid var(--disable);
-		& .resultsNumbers {
-			display: block;
-			margin-top: 0.5rem;
-			padding: 0 0.5rem;
-			width: 100%;
-			text-align: right;
+	& .dd-list {
+		transition: all 0.3s ease;
+		overflow-y: hidden;
+		max-height: 0;
+		padding-top: 0.5rem;
+		&.open {
+			max-height: 100vh;
+			transition: all 0.3s ease;
+			padding-top: 0;
+		}
+		& .filterSearch {
+			padding: 1rem 1rem 0.5rem 1rem;
+			background-color: var(--panels);
+			border: 1px solid var(--disable);
+			& .resultsNumbers {
+				display: block;
+				margin-top: 0.5rem;
+				padding: 0 0.5rem;
+				width: 100%;
+				text-align: right;
+			}
 		}
 	}
 `;
@@ -132,28 +144,24 @@ export default function Dropdown({
 						<i className="fa-solid fs-22 fa-angle-down"></i>
 					</div>
 				</button>
-				{isOpen && (
-					<div role="list" className="dd-list">
-						{filterDropdownList && (
-							<div className="filterSearch">
-								<InputText
-									ref={ref}
-									bgColor="var(--panels)"
-									border="1px solid var(--primary)"
-									onChange={filterDropdownList}
-									glass
-									iconRightPos={{ top: 9, right: 15 }}
-								/>
-								{resultsNumbers ? (
-									<label className="resultsNumbers">{resultsNumbers} results</label>
-								) : null}
-							</div>
-						)}
-						<List height={300} itemCount={values.length} itemSize={44} width={'100%'}>
-							{Row}
-						</List>
-					</div>
-				)}
+				<div role="list" className={`dd-list ${isOpen ? 'open' : ''}`}>
+					{filterDropdownList && (
+						<div className="filterSearch">
+							<InputText
+								ref={ref}
+								bgColor="var(--panels)"
+								border="1px solid var(--primary)"
+								onChange={filterDropdownList}
+								glass
+								iconRightPos={{ top: 9, right: 15 }}
+							/>
+							{resultsNumbers ? <label className="resultsNumbers">{resultsNumbers} results</label> : null}
+						</div>
+					)}
+					<List height={300} itemCount={values.length} itemSize={44} width={'100%'}>
+						{Row}
+					</List>
+				</div>
 			</DropdownContainer>
 		</ClickAwayListener>
 	);

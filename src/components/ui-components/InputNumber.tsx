@@ -7,7 +7,7 @@ const InputNumber = styled.input`
 	height: 44px;
 	width: 73px;
 	border-radius: 7px;
-	background-color: transparent;
+	background-color: var(--black-transparency-20);
 	border: 1px solid var(--disable);
 `;
 

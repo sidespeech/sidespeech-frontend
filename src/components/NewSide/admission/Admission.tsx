@@ -25,9 +25,7 @@ interface IAdmissionProps {
 	setNumberOfNftNeededToDivCollection: any;
 	userCollectionsData: UserCollectionsData;
 }
-interface IRequirementsRadioButtonContainerProps {
-	selected: boolean;
-}
+interface IRequirementsRadioButtonContainerProps {}
 
 const Chip = styled.span`
 	width: fit-content;
@@ -39,24 +37,32 @@ const Thumbnail = styled.img`
 	border-radius: 15px;
 `;
 const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonContainerProps>`
-	background-color: ${props => (props.selected ? 'var(--primary)' : 'var(--white-transparency-10)')};
 	border-radius: 7px;
 	padding: 0.5rem 1rem;
 	${breakpoints(
 		size.lg,
 		`{
-    height: 44px;
-    border-radius: 50px;
-  }`
+			height: 44px;
+			border-radius: 50px;
+		}`
 	)}
 	flex: 1 0 0;
 	align-items: center;
-	color: ${props => (props.selected ? 'var(--background)' : 'var(--white)')};
+	transition: all 0.2s ease;
+	background-color: var(--white-transparency-10);
+	color: var(--white);
 	display: flex;
 	cursor: pointer;
-
+	&.active {
+		background-color: var(--primary);
+		color: var(--background);
+		& > div:first-child {
+			border: 1px solid var(--background);
+		}
+	}
 	& > div:first-child {
-		border: 1px solid ${props => (props.selected ? 'var(--background)' : 'var(--white)')};
+		transition: border-color 0.2 ease;
+		border: 1px solid var(--white);
 		width: 20px;
 		height: 20px;
 		flex-shrink: 0;
@@ -82,7 +88,6 @@ const AdmissionStyled = styled.div`
 		size.lg,
 		`{
     flex-direction: row;
-    justify-content: space-between;
   }`
 	)}
 	.left-side {
@@ -271,15 +276,15 @@ export default function Admission({
 				<p className="fade-in text-secondary my-3">Collection requirements</p>
 				<div className="fade-in flex gap-20 mt-2 mb-3 w-100">
 					<RequirementsRadioButtonContainer
+						className={onlyOneRequired ? 'active' : ''}
 						onClick={() => setOnlyOneRequired(true)}
-						selected={onlyOneRequired}
 					>
 						<div>{onlyOneRequired && <div></div>}</div>
 						<div>1 collection from the list</div>
 					</RequirementsRadioButtonContainer>
 					<RequirementsRadioButtonContainer
+						className={onlyOneRequired ? '' : 'active'}
 						onClick={() => setOnlyOneRequired(false)}
-						selected={!onlyOneRequired}
 					>
 						<div>{!onlyOneRequired && <div></div>}</div>
 						<div>All collections are required</div>
