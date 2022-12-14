@@ -252,6 +252,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 							<CustomCheckbox
 								isChecked={isWithSidesChecked}
 								label="With Sides"
+								name="with-sides"
 								onClick={() => setIsWithSidesChecked(!isWithSidesChecked)}
 							/>
 						</div>
@@ -259,6 +260,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 							<CustomCheckbox
 								isChecked={isOnlyVerifiedCollectionsChecked}
 								label="Only verified collections"
+								name="only-verified"
 								onClick={() => setIsOnlyVerifiedCollectionsChecked(!isOnlyVerifiedCollectionsChecked)}
 							/>
 						</div>

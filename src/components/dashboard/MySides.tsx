@@ -269,6 +269,7 @@ const MySides = ({ collections }: MySidesProps) => {
 					<CustomCheckbox
 						isChecked={searchFilters.verifiedCollections}
 						label="Only with verified collections"
+						name="only-verified"
 						onClick={(ev: any) =>
 							setSearchFilters(prevState => ({
 								...prevState,
