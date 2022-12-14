@@ -163,6 +163,10 @@ export interface InitialStateUpdateSide {
 	priv: boolean;
 }
 
+const internalFormErrorInitialState = {
+	name: { exist: false, length: false }
+};
+
 const initialStateUpdateSide = {
 	sideImage: undefined,
 	name: '',
@@ -187,19 +191,25 @@ export default function Informations({
 }) {
 	const [formData, setFormData] = useState<InitialStateUpdateSide>(initialStateUpdateSide);
 	const [isNewSide, setIsNewSide] = useState<boolean>(true);
+	const [internalFormError, setInternalFormError] = useState<any>(internalFormErrorInitialState);
+	const [originalInfo, setOriginalInfo] = useState<InitialStateUpdateSide>(initialStateUpdateSide);
 	const [subAdmin, setSubAdmin] = useState<string>('');
+
+	const areThereChanges = JSON.stringify(originalInfo) !== JSON.stringify(formData);
 
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (window.location.href.includes('settings')) {
 			setIsNewSide(false);
-			setFormData({
+			const currentSideOriginal = {
 				sideImage: currentSide['sideImage'],
 				name: currentSide['name'],
 				description: currentSide['description'],
 				priv: currentSide['priv']
-			});
+			};
+			setOriginalInfo(currentSideOriginal);
+			setFormData(currentSideOriginal);
 		}
 	}, [currentSide]);
 
@@ -221,10 +231,19 @@ export default function Informations({
 		setFormData({ ...formData, sideImage: image });
 	};
 
-	const onChangeSideName = (event: any) => {
+	const onChangeSideName = async (event: any) => {
 		const name = event.target.value;
 		setFormData({ ...formData, name: name });
 		if (isNewSide) onChangeNewSideName(event.target.value);
+		else await validateName(name);
+	};
+
+	const validateName = async (name: string) => {
+		if (name === currentSide.name) return setInternalFormError(internalFormErrorInitialState);
+		const exist = await sideService.isSideNameExist(name);
+		const inValidLength = !(name.length < 50 && name.length > 3);
+		setInternalFormError((prevState: any) => ({ ...prevState, name: { exist, length: inValidLength } }));
+		return !(exist || inValidLength);
 	};
 
 	const onChangeSideDescription = (event: any) => {
@@ -353,34 +372,40 @@ export default function Informations({
 					<div className="name-input">
 						<InputText
 							bgColor="var(--input)"
-							defaultValue={currentSide.name}
+							value={formData.name}
 							color="var(--text)"
 							glass={false}
 							height={35}
 							onChange={onChangeSideName}
 							radius="10px"
+							maxLength={50}
 						/>
 					</div>
-					{!formError?.name.exist && formData?.name.length > 3 && (
-						<div className="success-message">
-							<svg
-								width="16"
-								height="16"
-								viewBox="0 0 16 16"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path
-									d="M6.95 11.45L12.2375 6.1625L11.1875 5.1125L6.95 9.35L4.8125 7.2125L3.7625 8.2625L6.95 11.45ZM8 15.5C6.9625 15.5 5.9875 15.303 5.075 14.909C4.1625 14.5155 3.36875 13.9813 2.69375 13.3063C2.01875 12.6313 1.4845 11.8375 1.091 10.925C0.697 10.0125 0.5 9.0375 0.5 8C0.5 6.9625 0.697 5.9875 1.091 5.075C1.4845 4.1625 2.01875 3.36875 2.69375 2.69375C3.36875 2.01875 4.1625 1.48425 5.075 1.09025C5.9875 0.69675 6.9625 0.5 8 0.5C9.0375 0.5 10.0125 0.69675 10.925 1.09025C11.8375 1.48425 12.6313 2.01875 13.3063 2.69375C13.9813 3.36875 14.5155 4.1625 14.909 5.075C15.303 5.9875 15.5 6.9625 15.5 8C15.5 9.0375 15.303 10.0125 14.909 10.925C14.5155 11.8375 13.9813 12.6313 13.3063 13.3063C12.6313 13.9813 11.8375 14.5155 10.925 14.909C10.0125 15.303 9.0375 15.5 8 15.5Z"
-									fill="#36DA81"
-								/>
-							</svg>
-							Available
-						</div>
-					)}
+					{originalInfo.name !== formData.name &&
+						!internalFormError?.name?.exist &&
+						!formError?.name.exist &&
+						formData?.name.length > 3 && (
+							<div className="success-message">
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 16 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M6.95 11.45L12.2375 6.1625L11.1875 5.1125L6.95 9.35L4.8125 7.2125L3.7625 8.2625L6.95 11.45ZM8 15.5C6.9625 15.5 5.9875 15.303 5.075 14.909C4.1625 14.5155 3.36875 13.9813 2.69375 13.3063C2.01875 12.6313 1.4845 11.8375 1.091 10.925C0.697 10.0125 0.5 9.0375 0.5 8C0.5 6.9625 0.697 5.9875 1.091 5.075C1.4845 4.1625 2.01875 3.36875 2.69375 2.69375C3.36875 2.01875 4.1625 1.48425 5.075 1.09025C5.9875 0.69675 6.9625 0.5 8 0.5C9.0375 0.5 10.0125 0.69675 10.925 1.09025C11.8375 1.48425 12.6313 2.01875 13.3063 2.69375C13.9813 3.36875 14.5155 4.1625 14.909 5.075C15.303 5.9875 15.5 6.9625 15.5 8C15.5 9.0375 15.303 10.0125 14.909 10.925C14.5155 11.8375 13.9813 12.6313 13.3063 13.3063C12.6313 13.9813 11.8375 14.5155 10.925 14.909C10.0125 15.303 9.0375 15.5 8 15.5Z"
+										fill="#36DA81"
+									/>
+								</svg>
+								Available
+							</div>
+						)}
 				</div>
-				{formError?.name.exist && <div className="mt-3 text-red">Side name already exist.</div>}
-				{formError?.name.length && (
+				{(formError?.name.exist || internalFormError?.name.exist) && (
+					<div className="mt-3 text-red">Side name already exist.</div>
+				)}
+				{(formError?.name.length || internalFormError?.name?.length) && (
 					<div className="mt-3 text-red">Side name has to be between 4 and 50 characters.</div>
 				)}
 			</div>
@@ -422,6 +447,7 @@ export default function Informations({
 			{!isNewSide ? (
 				<div className="edit-side-bottom">
 					<Button
+						disabled={!areThereChanges}
 						classes="save-btn"
 						width={'100%'}
 						height={44}

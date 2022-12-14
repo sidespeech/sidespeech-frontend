@@ -1,11 +1,10 @@
-import { Network, Alchemy, NftContract } from "alchemy-sdk";
+import {  Alchemy } from "alchemy-sdk";
 import {
   ALCHEMY_API_KEY,
   ALCHEMY_BASE_URL,
   ALCHEMY_NETWORK,
 } from "../../constants/constants";
 import {
-  alchemyNftModelToSideNftModel,
   alchemyNftsModelToSideNftsModel,
 } from "../../helpers/utilities";
 import { AlchemyCollection } from "../../models/interfaces/alchemyCollection";

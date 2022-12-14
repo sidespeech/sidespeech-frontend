@@ -13,7 +13,13 @@ import hexagon from '../../../../assets/hexagon.svg';
 import check from '../../../../assets/check_circle.svg';
 import { ProfilePictureData, SpanElipsis } from '../../../GeneralSettings/Account/Avatar';
 import Button from '../../../ui-components/Button';
-import { fixURL, getRandomId, reduceTokenId, reduceWalletAddress, connectedWallet } from '../../../../helpers/utilities';
+import {
+	fixURL,
+	getRandomId,
+	reduceTokenId,
+	reduceWalletAddress,
+	connectedWallet
+} from '../../../../helpers/utilities';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../../helpers/CustomEvent';
 import { EventType } from '../../../../constants/EventType';
 import { useNavigate } from 'react-router-dom';
@@ -42,7 +48,7 @@ export default function SideUserList({
 }) {
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 	const { currentProfile } = useSelector((state: RootState) => state.user);
-	const dispatch = useDispatch();
+	const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
 
 	useEffect(() => {}, [onlineUsers, currentProfile, currentSide]);
 
@@ -55,6 +61,7 @@ export default function SideUserList({
 				if (isMembersList && room && !isMe) return;
 				if (!isMembersList && isMe) return;
 				const url = p.profilePicture?.metadata?.image ? fixURL(p.profilePicture?.metadata?.image) : undefined;
+
 				return (
 					<React.Fragment key={index}>
 						<ReactTooltip
@@ -76,8 +83,8 @@ export default function SideUserList({
 							onClick={isMe ? () => {} : () => handleSelectedUser(p, currentProfile)}
 							onMouseEnter={() => ReactTooltip.hide()}
 							className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${
-								selectedUser && selectedUser.id === p.id && 'selected-channel'
-							} ${isMe ? '' : 'pointer'}`}
+								selectedRoom && selectedRoom.id === room?.id && !isMe ? 'selected-channel' : ''
+							} ${isMe ? '' : 'pointer channel-item'}`}
 						>
 							<div className="flex align-center">
 								{currentProfile['username'] !== p['username'] ? (
@@ -159,7 +166,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 	const handleSelectedUser = async (profile: Profile, currentProfile: Profile) => {
 		try {
 			// getting account
-			const connectedAccount = window.ethereum.selectedAddress;
+			const connectedAccount = await connectedWallet();
 			// getting room for given profile id
 			let room = currentProfile?.getRoom(profile.id);
 			if (!currentProfile || !connectedAccount || !user) return;
@@ -227,7 +234,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 						height={44}
 						background={'rgba(125, 166, 220, 0.1)'}
 					/>
-					{profile.user.accounts.toLowerCase() !== walletConnected &&
+					{profile.user.accounts.toLowerCase() !== walletConnected && (
 						<Button
 							children={'Messages'}
 							width={'117px'}
@@ -236,7 +243,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 							}}
 							height={44}
 						/>
-					}
+					)}
 				</div>
 			</TooltipContent>
 		</TooltipContainer>

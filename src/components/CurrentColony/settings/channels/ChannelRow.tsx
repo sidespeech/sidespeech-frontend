@@ -234,6 +234,7 @@ export default function ChannelRow({
 						value={channel['name']}
 						onChange={(e: any) => onChangeName(e, channel.id, placeholder ? true : false)}
 						radius="10px"
+						maxLength={100}
 					/>
 				</InputTextWithDropdown>
 			</div>
@@ -280,6 +281,7 @@ export default function ChannelRow({
 				{channel['type'] !== ChannelType.Textual && (
 					<div className="flex">
 						<CustomCheckbox
+							name="authorize-comments"
 							isChecked={channel['authorizeComments']}
 							onClick={(e: any) => {
 								onChangeAuthorizeComments(e, channel.id, placeholder ? true : false);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -21,7 +21,6 @@ import { getRandomId } from './helpers/utilities';
 // Styles
 import './App.css';
 import { RootState } from './redux/store/app.store';
-import useOpenseaCollection from './hooks/useOpenseaData';
 import Spinner from './components/ui-components/Spinner';
 
 export interface GeneralSettingsAccountContext {

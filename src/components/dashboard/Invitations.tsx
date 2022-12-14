@@ -273,10 +273,18 @@ const Invitations = ({}: InvitationsProps) => {
 				</div>
 
 				<div className="flex align-center ">
-					<span className="">Only verified collections</span>{' '}
-					<CustomCheckbox isChecked={isCheckedVerified} onClick={onFilterByVerifiedcollection} />
-					<span className="ml-4">Only eligible sides</span>{' '}
-					<CustomCheckbox isChecked={isCheckedEligible} onClick={onFilterByEligibleSide} />
+					<CustomCheckbox
+						label="Only verified collections"
+						name="only-verified"
+						isChecked={isCheckedVerified}
+						onClick={onFilterByVerifiedcollection}
+					/>
+					<CustomCheckbox
+						label="Only eligible sides"
+						name="only-eligible"
+						isChecked={isCheckedEligible}
+						onClick={onFilterByEligibleSide}
+					/>
 				</div>
 			</div>
 

@@ -49,7 +49,6 @@ interface InputProps {
     height?: number | string;
     id?: any;
     min?: any;
-    maxLength?: number;
     maxWidth?: number;
     onChange: any;
     onFocus?: any;
@@ -64,6 +63,7 @@ interface InputProps {
     value?: string;
     weight?: number;
     width?: number | string;
+    maxLength?: number;
 }
 
 const InputContainer = styled.div<any>`
@@ -151,9 +151,9 @@ const InputText = forwardRef((props: InputTextPropsType, ref: any) => {
                 defaultValue={props.defaultValue}
                 disabled={props.disabled}
                 height={props.height}
+                maxLength={props.maxLength}
                 id={props.id}
                 min={props.min}
-                maxLength={props.maxLength}
                 onBlur={() => {
                     setIsDate(false);
                     props.onBlur?.();

@@ -1,4 +1,3 @@
-import { isString } from 'lodash';
 import { Side } from '../Side';
 import { NFT } from './nft';
 
@@ -84,14 +83,14 @@ export class Collection {
 						for (let attribute of attributes) {
 							let property_exists =
 								filtered.filter(function (o: any) {
-									return o['property']['value'] == attribute['trait_type'];
+									return o['property']['value'] === attribute['trait_type'];
 								}).length > 0;
 							if (property_exists) {
 								for (let element of filtered) {
-									if (element['property']['value'] == attribute['trait_type']) {
+									if (element['property']['value'] === attribute['trait_type']) {
 										let value_exists =
 											element['values'].filter(function (o: any) {
-												return o['value'] == attribute['value'];
+												return o['value'] === attribute['value'];
 											}).length > 0;
 										if (!value_exists)
 											element['values'].push({

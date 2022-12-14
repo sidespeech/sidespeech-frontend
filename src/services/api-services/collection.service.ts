@@ -1,7 +1,6 @@
-import _ from 'lodash';
 import { BASE_URL } from '../../constants/constants';
 import { sortCollectionByVerifiedCollectionsAndVolume } from '../../helpers/utilities';
-import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
+import { Collection } from '../../models/interfaces/collection';
 import { BaseApiService } from './base-api.service';
 
 // Create an API Service class

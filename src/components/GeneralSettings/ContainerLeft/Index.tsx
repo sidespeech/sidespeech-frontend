@@ -8,6 +8,7 @@ import { useNavigate, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import { GeneralSettingsAccountContext } from '../../../App';
+import BackLink from '../../ui-components/BackLink';
 
 const GeneralSettingsMenuStyled = styled.div`
 	position: absolute;
@@ -27,8 +28,8 @@ const GeneralSettingsMenuStyled = styled.div`
 		${breakpoints(
 			size.lg,
 			`{
-      padding-bottom: 2rem;
-    }`
+				padding-bottom: 2rem;
+			}`
 		)}
 		&>div:first-of-type {
 			display: flex;
@@ -38,9 +39,9 @@ const GeneralSettingsMenuStyled = styled.div`
 			${breakpoints(
 				size.lg,
 				`{
-        display: block;
-        height: auto;
-      }`
+					display: block;
+					height: auto;
+				}`
 			)}
 		}
 	}
@@ -60,8 +61,8 @@ const GeneralSettingsMenuStyled = styled.div`
 		${breakpoints(
 			size.lg,
 			`{
-      display: none;
-    }`
+				display: none;
+			}`
 		)}
 		& h1 {
 			margin: 0;
@@ -85,10 +86,10 @@ const GeneralSettingsMenuStyled = styled.div`
 		${breakpoints(
 			size.lg,
 			`{
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(2, 1fr);
-    }`
+				display: grid;
+				gap: 1rem;
+				grid-template-columns: repeat(2, 1fr);
+			}`
 		)}
 		& > a {
 			display: flex;
@@ -99,8 +100,8 @@ const GeneralSettingsMenuStyled = styled.div`
 			${breakpoints(
 				size.lg,
 				`{
-        display: inline;
-      }`
+					display: inline;
+				}`
 			)}
 			& .arrow-right {
 				${breakpoints(
@@ -118,7 +119,12 @@ const GeneralSettingsMenuStyled = styled.div`
 			gap: 1rem;
 			padding: 1rem 0;
 			border-radius: 10px;
-			&.active {
+			transition: background-color 0.3s ease;
+			& p {
+				transition: color 0.3s ease;
+			}
+			&.active,
+			&:hover {
 				p {
 					${breakpoints(
 						size.lg,
@@ -132,20 +138,21 @@ const GeneralSettingsMenuStyled = styled.div`
 			${breakpoints(
 				size.lg,
 				`{
-        padding: 1rem;
-        background-color: var(--input);
-        flex-direction: column;
-      }`
+					padding: 1rem;
+					background-color: var(--input);
+					flex-direction: column;
+				}`
 			)}
 			& svg {
 				transform: scale(0.65);
 				${breakpoints(
 					size.lg,
 					`{
-          transform: scale(1);
-        }`
+					transform: scale(1);
+					}`
 				)}
 				& path {
+					transition: fill 0.3s ease;
 					fill: #dcedef;
 				}
 			}
@@ -157,21 +164,41 @@ const GeneralSettingsMenuStyled = styled.div`
 					}
 				}
 			}
-			&.active {
+			&.active,
+			&:hover {
 				${breakpoints(
 					size.lg,
 					`{
-          background-color: var(--primary);
-          color: var(--input);
-        }`
+						background-color: var(--primary);
+						color: var(--input);
+					}`
 				)}
 				& svg {
 					& path {
 						${breakpoints(
 							size.lg,
 							`{
-              fill: var(--background);
-            }`
+								fill: var(--background);
+							}`
+						)}
+					}
+				}
+			}
+			&.logout-tile {
+				&.active,
+				&:hover {
+					${breakpoints(
+						size.lg,
+						`{
+						background-color: var(--red);
+					}`
+					)}
+					& p {
+						${breakpoints(
+							size.lg,
+							`{
+							color: var(--background)!important;
+						}`
 						)}
 					}
 				}
@@ -206,11 +233,6 @@ const GeneralSettingsMenuStyled = styled.div`
       gap: 2rem;
     }`
 		)}
-		& .back-link {
-			display: flex;
-			gap: 1rem;
-			align-items: center;
-		}
 		& .app-name-bottom {
 			display: flex;
 			align-items: center;
@@ -354,7 +376,7 @@ export default function IndexView({
 							>
 								<path d="M2.89328 26.1502C2.20328 26.1502 1.62163 25.914 1.14834 25.4418C0.676075 24.9685 0.439941 24.3741 0.439941 23.6585V2.57516C0.439941 1.85961 0.676075 1.2657 1.14834 0.793429C1.62163 0.32014 2.20328 0.0834961 2.89328 0.0834961H12.7449V1.61683H2.89328C2.66328 1.61683 2.4527 1.71292 2.26154 1.9051C2.06936 2.09625 1.97327 2.31961 1.97327 2.57516V23.6585C1.97327 23.9141 2.06936 24.1374 2.26154 24.3286C2.4527 24.5207 2.66328 24.6168 2.89328 24.6168H12.7449V26.1502H2.89328ZM18.9549 18.5602L17.8816 17.4485L21.4083 13.8835H8.14494V12.3502H21.4083L17.8816 8.78516L18.9549 7.6735L24.3599 13.1168L18.9549 18.5602Z" />
 							</svg>
-							Disconnect
+							<p>Disconnect</p>
 						</button>
 					</div>
 				</div>
@@ -392,14 +414,8 @@ export default function IndexView({
 			</div>
 
 			<div className="fade-in-left nav-footer">
-				<Link to={'/'} className="back-link">
-					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path
-							d="M7.99984 15.3332L0.666504 7.99984L7.99984 0.666504L9.30609 1.94984L4.17275 7.08317H15.3332V8.9165H4.17275L9.30609 14.0498L7.99984 15.3332Z"
-							fill="white"
-						/>
-					</svg>
-					Back
+				<Link to="/">
+					<BackLink />
 				</Link>
 				<div className="app-name-bottom">
 					<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
