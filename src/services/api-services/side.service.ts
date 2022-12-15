@@ -28,7 +28,8 @@ class SideService extends BaseApiService {
 	// get all sides without channels
 	async getAllSides(userCollectionsData?: any, userSides?: Side[]): Promise<Side[]> {
 		const res = await this.get(`${BASE_URL}/side`);
-		const sidesList = await getSidesMetadata(res.body, userCollectionsData, userSides);
+		const sides = dtoToSideList(res['body']);
+		const sidesList = await getSidesMetadata(sides, userCollectionsData, userSides);
 		return sidesList;
 	}
 
@@ -44,7 +45,8 @@ class SideService extends BaseApiService {
 				collections && collections !== 'all' ? collections : ''
 			}`
 		);
-		const sidesList = await getSidesMetadata(res.body, userCollectionsData, userSides);
+		const sides = dtoToSideList(res['body']);
+		const sidesList = await getSidesMetadata(sides, userCollectionsData, userSides);
 		return sidesList;
 	}
 
@@ -90,7 +92,7 @@ class SideService extends BaseApiService {
 
 	async updateSide(side: InitialStateUpdateSide, id: string): Promise<Side> {
 		const res = await this.patch(`${BASE_URL}/side/${id}`).send(side);
-		return res['body']['side'];
+		return new Side(res['body']);
 	}
 	async updateSideStatus(status: SideStatus, id: string): Promise<Side> {
 		const res = await this.post(`${BASE_URL}/side/update-status`).send({
@@ -99,40 +101,47 @@ class SideService extends BaseApiService {
 		});
 		return new Side(res['body']);
 	}
+	async getMany(ids: string[]): Promise<Side[]> {
+		const res = await this.get(`${BASE_URL}/side/getMany`).query({
+			ids: ids
+		});
+		return dtoToSideList(res['body']);
+	}
 }
 export default SideService.getInstance();
 
 export async function getSidesMetadata(sides: any[], userCollectionsData?: any, userSides?: Side[]): Promise<Side[]> {
-	const sidesListWithoutCollections = dtoToSideList(sides);
 	const sidesList: Side[] = await Promise.all(
-		sidesListWithoutCollections.map(async side => {
-			const conditions = Object.keys(side.conditions);
-			conditions.pop();
-			const count = conditions.length;
-			const firstCollectionAddress = conditions[0];
-			let firstCollection;
-			if (firstCollectionAddress)
-				firstCollection = await alchemyService.getContractMetadata(firstCollectionAddress);
-			let parsedSide = {
-				...side,
-				firstCollection,
-				collectionsCount: count
-			};
-			if (!_.isEmpty(userCollectionsData)) {
-				// eslint-disable-next-line
-				const [_, eligible] = checkUserEligibility(userCollectionsData, parsedSide);
-				parsedSide = {
-					...parsedSide,
-					eligible
+		sides.map(async (side: Side) => {
+			const firstCollectionSide = side.collectionSides[0];
+			if (firstCollectionSide) {
+				const firstCollection = firstCollectionSide.collection;
+				const conditions = Object.keys(side.conditions);
+				conditions.pop();
+				const count = side.collectionSides.length;
+				let parsedSide = {
+					...side,
+					firstCollection,
+					collectionsCount: count
 				};
+				if (!_.isEmpty(userCollectionsData)) {
+					// eslint-disable-next-line
+					const [_, eligible] = checkUserEligibility(userCollectionsData, parsedSide);
+					console.log(side.name, eligible, _);
+					parsedSide = {
+						...parsedSide,
+						eligible
+					};
+				}
+				if (userSides) {
+					parsedSide = {
+						...parsedSide,
+						joined: !!userSides?.filter(side => side.id === parsedSide.id)?.[0]
+					};
+				}
+				return parsedSide;
 			}
-			if (userSides) {
-				parsedSide = {
-					...parsedSide,
-					joined: !!userSides?.filter(side => side.id === parsedSide.id)?.[0]
-				};
-			}
-			return parsedSide;
+			return new Side({});
 		})
 	);
 	return sidesList;
