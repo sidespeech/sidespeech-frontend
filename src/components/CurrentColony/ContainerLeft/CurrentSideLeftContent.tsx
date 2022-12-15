@@ -23,7 +23,7 @@ import notificationService from '../../../services/api-services/notification.ser
 import { breakpoints, size } from '../../../helpers/breakpoints';
 
 const SidebarStyled = styled.div`
-	max-height: calc(100vh - 146px);
+	height: calc(100vh - 182px);
 	overflow-y: scroll;
 	${breakpoints(
 		size.lg,
