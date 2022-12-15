@@ -33,6 +33,8 @@ import { toast } from 'react-toastify';
 import collectionService from '../../../../services/api-services/collection.service';
 import roomService from '../../../../services/api-services/room.service';
 
+const SideUserListStyled = styled.div``;
+
 export default function SideUserList({
 	dots,
 	handleSelectedUser,
@@ -53,7 +55,7 @@ export default function SideUserList({
 	useEffect(() => {}, [onlineUsers, currentProfile, currentSide]);
 
 	return currentProfile ? (
-		<div className="f-column align-start w-100">
+		<SideUserListStyled className="f-column align-start w-100">
 			{currentSide?.profiles.map((p: Profile, index: number) => {
 				const id = getRandomId();
 				const isMe = p.id === currentProfile?.id;
@@ -112,7 +114,7 @@ export default function SideUserList({
 					</React.Fragment>
 				);
 			})}
-		</div>
+		</SideUserListStyled>
 	) : null;
 }
 
