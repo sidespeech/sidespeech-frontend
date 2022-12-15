@@ -13,15 +13,7 @@ import hexagon from '../../../../assets/hexagon.svg';
 import check from '../../../../assets/check_circle.svg';
 import { ProfilePictureData, SpanElipsis } from '../../../GeneralSettings/Account/Avatar';
 import Button from '../../../ui-components/Button';
-import {
-	fixURL,
-	getRandomId,
-	reduceTokenId,
-	reduceWalletAddress,
-	connectedWallet
-} from '../../../../helpers/utilities';
-import { subscribeToEvent, unSubscribeToEvent } from '../../../../helpers/CustomEvent';
-import { EventType } from '../../../../constants/EventType';
+import { fixURL, getRandomId, reduceWalletAddress } from '../../../../helpers/utilities';
 import { useNavigate } from 'react-router-dom';
 import { setSelectedChannel, setSelectedProfile } from '../../../../redux/Slices/AppDatasSlice';
 import { Collection } from '../../../../models/interfaces/collection';
@@ -32,6 +24,7 @@ import { setSelectedRoom } from '../../../../redux/Slices/ChatSlice';
 import { toast } from 'react-toastify';
 import collectionService from '../../../../services/api-services/collection.service';
 import roomService from '../../../../services/api-services/room.service';
+import useWalletAddress from '../../../../hooks/useWalletAddress';
 
 const SideUserListStyled = styled.div``;
 
@@ -138,8 +131,8 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 	const [url, setUrl] = useState<string>(defaultPP);
 	const [collection, setCollection] = useState<Collection | null>(null);
 	const [nft, setNft] = useState<NFT | null>(null);
-	const [walletConnected, setWalletConnected] = useState<string>('');
 
+	const { walletAddress } = useWalletAddress();
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 	const { currentProfile, user } = useSelector((state: RootState) => state.user);
 
@@ -158,20 +151,13 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 			getCollection(profile.profilePicture.token_address);
 			setNft(profile.profilePicture);
 		}
-		async function setWallet() {
-			const wallet = await connectedWallet();
-			setWalletConnected(wallet);
-		}
-		setWallet();
 	}, [profile.profilePicture]);
 
 	const handleSelectedUser = async (profile: Profile, currentProfile: Profile) => {
 		try {
-			// getting account
-			const connectedAccount = await connectedWallet();
 			// getting room for given profile id
 			let room = currentProfile?.getRoom(profile.id);
-			if (!currentProfile || !connectedAccount || !user) return;
+			if (!currentProfile || !walletAddress || !user) return;
 			// if room not exist in profile
 			if (!room) {
 				// creating the room
@@ -193,8 +179,8 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 		}
 	};
 
-	const handleCopyWalletAddress = (walletAddress: string) => {
-		navigator.clipboard.writeText(walletAddress);
+	const handleCopyWalletAddress = (address: string) => {
+		navigator.clipboard.writeText(address);
 		toast.success('Address copied successfuly.', { toastId: 1 });
 	};
 
@@ -236,7 +222,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 						height={44}
 						background={'rgba(125, 166, 220, 0.1)'}
 					/>
-					{profile.user.accounts.toLowerCase() !== walletConnected && (
+					{profile.user.accounts.toLowerCase() !== walletAddress && (
 						<Button
 							children={'Messages'}
 							width={'117px'}

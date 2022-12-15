@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 //redux
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { disconnect, updateUser } from '../../redux/Slices/UserDataSlice';
 // models
@@ -13,13 +13,14 @@ import TextArea from '../ui-components/TextArea';
 import closeWalletIcon from './../../assets/close-wallet.svg';
 // other
 import { toast } from 'react-toastify';
-import { fixURL, reduceWalletAddress, validateBio, validateUsername } from '../../helpers/utilities';
+import { validateBio, validateUsername } from '../../helpers/utilities';
 import Eligibility from '../CurrentColony/settings/eligibility/eligibility';
 import styled from 'styled-components';
 import { Side } from '../../models/Side';
 import { InitialStateUser } from '../GeneralSettings/Account/GeneralSettingsAccount';
 import Avatar from '../GeneralSettings/Account/Avatar';
 import { breakpoints, size } from '../../helpers/breakpoints';
+import useWalletAddress from '../../hooks/useWalletAddress';
 
 const UserGeneralInformationsStyled = styled.div`
 	display: flex;
@@ -136,12 +137,11 @@ export default function UserGeneralInformations({
 	const [errorData, setErrorData] = useState<InitialErrorState>(initialStateError);
 
 	const [collectionName, setCollectionName] = useState<string | undefined>(undefined);
-	const [loginPage, setLoginPage] = useState<boolean>(true);
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-	const walletAddress = window.ethereum.selectedAddress;
+	const { walletAddress } = useWalletAddress();
 
 	useEffect(() => {
 		if (formData.avatar) {
@@ -167,6 +167,7 @@ export default function UserGeneralInformations({
 	};
 
 	const handleCopyWalletAddress = () => {
+		if (!walletAddress) return;
 		navigator.clipboard.writeText(walletAddress);
 		toast.success('Address copied successfuly.', { toastId: 1 });
 	};
@@ -256,7 +257,7 @@ export default function UserGeneralInformations({
 							glass={false}
 							onChange={undefined}
 							disabled={true}
-							defaultValue={walletAddress}
+							defaultValue={walletAddress || ''}
 							radius="10px"
 							className="wallet-address"
 						/>
