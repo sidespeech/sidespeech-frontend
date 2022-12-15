@@ -48,6 +48,7 @@ const FeatureSideCardStyled = styled.div<CardStyledProps>`
 			color: var(--white);
 			padding: 0.3rem 0.5rem;
 			border-radius: 5px;
+			width: 100px;
 			&.collection {
 				display: flex;
 				align-items: center;
