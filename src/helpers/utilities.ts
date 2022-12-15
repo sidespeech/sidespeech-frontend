@@ -279,7 +279,9 @@ function isEligible(result: ElligibilityResponse, required: boolean): boolean {
 function getNftsWithAttributes(nfts: any, condition: any) {
 	return nfts.filter((nft: NFT) =>
 		nft.metadata.attributes?.some(
-			a => condition['trait_type'].toLowerCase() === a.trait_type.toLowerCase() && a.value.toLowerCase() === condition['trait_value'].toLowerCase()
+			a =>
+				condition['trait_type'].toLowerCase() === a.trait_type.toLowerCase() &&
+				a.value.toLowerCase() === condition['trait_value'].toLowerCase()
 		)
 	);
 }
@@ -425,7 +427,7 @@ export function generateDarkColorHex(): string {
 }
 
 export function isColor(string: string): boolean {
-	return string.startsWith('#');
+	return string?.startsWith('#');
 }
 export async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
 	const type = dataUrl.match(/^data:(.+);base64/)?.[1];
