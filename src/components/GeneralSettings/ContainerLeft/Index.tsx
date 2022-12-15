@@ -310,8 +310,12 @@ export default function IndexView({
 								/>
 							</svg>
 						</Link>
-						<Link onClick={() => setIsSettingsMobileMenuOpen?.(false)} to="/general-settings">
-							<div className={`${location.pathname === '' ? 'active' : ''} tile`}>
+						<Link onClick={() => setIsSettingsMobileMenuOpen?.(false)} to="/general-settings/configuration">
+							<div
+								className={`${
+									location.pathname === '/general-settings/configuration' ? 'active' : ''
+								} tile`}
+							>
 								<svg
 									width="28"
 									height="29"
