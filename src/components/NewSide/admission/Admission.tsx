@@ -106,6 +106,7 @@ const AdmissionStyled = styled.div`
 			background-color: var(--white-transparency-10);
 			width: 100%;
 			max-width: 90vw;
+			animation: enter-right 0.3s ease;
 			${breakpoints(
 				size.lg,
 				`{
@@ -179,6 +180,21 @@ const AdmissionStyled = styled.div`
       max-width: 400px;
     }`
 		)}
+	}
+
+	@keyframes enter-right {
+		0% {
+			transform: translateX(100%);
+		}
+		60% {
+			transform: translateX(0) scale(0.9, 1.05);
+		}
+		70% {
+			transform: translateX(-10px) scale(1.02, 0.95);
+		}
+		100% {
+			transform: none;
+		}
 	}
 `;
 
