@@ -53,15 +53,32 @@ const DataAddress = styled.div`
 	align-items: center;
 	justify-content: start;
 	padding: 0px 17px;
-	max-width: 200px;
-	& > div {
+	max-width: 100%;
+	div.wallet {
+		padding-right: 50px;
+		text-overflow: ellipsis;
+		max-width: 100%;
+		overflow: hidden;
+	}
+	div.pointer {
 		position: absolute;
 		display: flex;
 		align-items: center;
 		right: 10px;
 		bottom: 11px;
 		gap: 6px;
+		background: #021427;
 	}
+	${breakpoints(
+		size.lg,
+		` {
+			max-width: 440px;
+		}
+			div.wallet {
+				max-width: 440px;
+			}
+    `
+	)}
 `;
 
 const PublicUserProfileStyled = styled.div`
@@ -96,8 +113,6 @@ const PublicUserProfileStyled = styled.div`
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		justify-content: center;
 		gap: 2rem;
 		${breakpoints(
 			size.lg,
@@ -316,7 +331,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 							<div className="fade-in-delay-2 user-more-info-wrapper">
 								<div className="user-name">{user.username}</div>
 								<DataAddress onClick={copyAddress}>
-									{reduceWalletAddress(user.accounts)}
+									<div className="wallet">{user.accounts}</div>
 									<div className="pointer">
 										Copy
 										<svg

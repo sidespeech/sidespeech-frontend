@@ -38,8 +38,9 @@ const UserGeneralInformationsStyled = styled.div`
     }`
         )}
     }
-    .connected-wallet {
-        max-width: 300px;
+    .wallet-address {
+        padding-right: 80px;
+        text-overflow: ellipsis;
     }
     & .copy {
         display: flex;
@@ -50,6 +51,7 @@ const UserGeneralInformationsStyled = styled.div`
         right: 10px;
         top: 50%;
         transform: translateY(-50%);
+        background: #011223;
     }
     & .closeWallet {
         margin-left: 20px;
@@ -249,11 +251,11 @@ export default function UserGeneralInformations({
                             width="100%"
                             bgColor="var(--input)"
                             glass={false}
-                            placeholder={reduceWalletAddress(user?.accounts || '')}
                             onChange={undefined}
                             disabled={true}
-                            defaultValue={reduceWalletAddress(walletAddress)}
+                            defaultValue={walletAddress}
                             radius="10px"
+                            className='wallet-address'
                         />
                         <div className="copy" onClick={handleCopyWalletAddress}>
                             <p>Copy</p>
