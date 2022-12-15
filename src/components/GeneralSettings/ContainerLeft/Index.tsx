@@ -15,7 +15,7 @@ const GeneralSettingsMenuStyled = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	background-color: var(--panels-gray);
+	background-color: var(--super-dark);
 	min-width: 100%;
 	height: 100%;
 	padding: 2rem 1rem;
@@ -129,7 +129,7 @@ const GeneralSettingsMenuStyled = styled.div`
 					${breakpoints(
 						size.lg,
 						`{
-					color: var(--background);
+					color: var(--super-dark);
 
 					}`
 					)}
@@ -139,7 +139,7 @@ const GeneralSettingsMenuStyled = styled.div`
 				size.lg,
 				`{
 					padding: 1rem;
-					background-color: var(--input);
+					background-color: var(--white-transparency-10);
 					flex-direction: column;
 				}`
 			)}
@@ -170,7 +170,7 @@ const GeneralSettingsMenuStyled = styled.div`
 					size.lg,
 					`{
 						background-color: var(--primary);
-						color: var(--input);
+						color: var(--super-dark);
 					}`
 				)}
 				& svg {
@@ -178,7 +178,7 @@ const GeneralSettingsMenuStyled = styled.div`
 						${breakpoints(
 							size.lg,
 							`{
-								fill: var(--background);
+								fill: var(--super-dark);
 							}`
 						)}
 					}
