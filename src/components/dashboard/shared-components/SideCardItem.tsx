@@ -80,6 +80,7 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
                     color: var(--white);
                     padding: 0.3rem 0.5rem;
                     border-radius: 5px;
+                    width: 100px;
                     &.collection {
                         display: flex;
                         align-items: center;
@@ -115,7 +116,9 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
         padding: 1rem;
         color: var(--text);
         .side-description {
-            height: 100%;
+            height: 50px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .side-actions {
             display: flex;
@@ -196,7 +199,7 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
             </div>
             <div className="side-content">
                 <div className={`side-description ${side.joined ? 'pointer' : ''}`} onClick={handleNavigate}>
-                    <ClampLines>{side.description}</ClampLines>
+                    {side.description}
                 </div>
                 <div className="side-actions">
                     {userSides && side.joined && side.eligible ? (

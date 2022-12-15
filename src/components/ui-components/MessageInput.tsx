@@ -20,6 +20,8 @@ import indentIcon from '../../assets/indent.svg';
 import orderedIcon from '../../assets/list-ol.svg';
 import unorderedIcon from '../../assets/list-ul.svg';
 
+import { breakpoints, size } from '../../helpers/breakpoints';
+
 import EmojisModule from './EmojisModule';
 import GifsModule from './GifsModule';
 
@@ -90,7 +92,7 @@ const MessageInputStyled = styled.div`
 	border-radius: 10px;
 	& .input-editor-wrapper {
 		width: 100%;
-		padding: 0 1rem;
+		padding: 0 1rem 50px 1rem;
 		& .message-intput-editor {
 			max-height: 250px;
 		}
