@@ -126,7 +126,7 @@ const AdmissionStyled = styled.div`
 				margin: 1rem 0;
 				.feature-selects {
 					width: 90%;
-					background-color: var(--disable);
+					background-color: var(--white-transparency-10);
 					padding: 12px 15px;
 					border-radius: 8px;
 					display: flex;
@@ -300,12 +300,12 @@ export default function Admission({
 										<div className="flex justify-between">
 											<label className="size-14">Collection</label>
 
-											<label
-												className="size-14 text-red cursor-pointer"
-												onClick={() => removeDivCollection(i)}
+											<button
+												className="reset-btn size-14 text-red"
+												onClick={() => removeDivCollection(current.collection)}
 											>
 												<i className="fa-regular fa-trash-can mr-2"></i>Remove
-											</label>
+											</button>
 										</div>
 
 										<div className="f-row collection-name">
@@ -359,7 +359,11 @@ export default function Admission({
 																setNumberOfNftNeededToDivCollection(value, i)
 															}
 															collections={collections}
-															defaultValue={1}
+															defaultValue={
+																Object.keys(current['metadata']).length !== 0
+																	? current.numberNeeded
+																	: 1
+															}
 															currentDiv={current}
 														/>
 													</div>
@@ -405,9 +409,6 @@ export default function Admission({
 																						) : (
 																							'Select trait'
 																						)
-																					}
-																					backgroundColor={
-																						'var(--black-plain)'
 																					}
 																					options={[
 																						...traitsValues.map(
@@ -469,9 +470,6 @@ export default function Admission({
 																						) : (
 																							'Select value of trait'
 																						)
-																					}
-																					backgroundColor={
-																						'var(--black-plain)'
 																					}
 																					values={[
 																						...traitsValues
