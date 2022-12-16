@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import MiddleContainerHeader from '../ui-components/MiddleContainerHeader';
 import CurrentSideLeft from './ContainerLeft/CurrentSideLeft';
-import { setCurrentColony, setSelectedChannel } from '../../redux/Slices/AppDatasSlice';
+import { setCurrentSide, setSelectedChannel } from '../../redux/Slices/AppDatasSlice';
 import { RootState } from '../../redux/store/app.store';
 import CreatePollModal from '../Modals/CreatePollModal';
 import _ from 'lodash';
@@ -185,7 +185,7 @@ export default function CurrentSide() {
 
 	useEffect(() => {
 		return () => {
-			dispatch(setCurrentColony(null));
+			dispatch(setCurrentSide(null));
 			dispatch(setCurrentProfile(null));
 		};
 	}, []);
@@ -193,7 +193,7 @@ export default function CurrentSide() {
 	useEffect(() => {
 		async function getSide() {
 			try {
-				dispatch(setCurrentColony(null));
+				dispatch(setCurrentSide(null));
 				dispatch(setCurrentProfile(null));
 				if (id && user) {
 					// Get Side data
@@ -204,13 +204,14 @@ export default function CurrentSide() {
 					// If side is inactive
 					if (res.status === SideStatus.inactive) {
 						toast.info('This side is currently inactive', { toastId: 36 });
+						dispatch(setCurrentSide(res));
 					}
 
 					// If side is active and the user is already in the Side
 					else if (isInTheSide) {
-						dispatch(setCurrentColony(res));
+						dispatch(setCurrentSide(res));
 						dispatch(setCurrentProfile(res));
-						dispatch(setSelectedChannel(res.channels.find(c => c.type === 0) || res.channels[0]));
+						dispatch(setSelectedChannel(res.channels.find(c => c.index === 0) || res.channels[0]));
 					}
 
 					// If side is active but the user is not in the Side
@@ -226,6 +227,7 @@ export default function CurrentSide() {
 		const isConnectedLocalStorage = localStorage.getItem('userAccount');
 		// If user not connected
 		if (!isConnectedLocalStorage) navigate('/');
+		else if (currentSide?.id === id) return;
 		else getSide();
 	}, [id, user]);
 
