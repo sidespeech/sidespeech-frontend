@@ -21,6 +21,7 @@ import OnBoarding from './components/OnBoarding/Onboarding';
 import PublicUserProfile from './components/PublicUserProfile/PublicUserProfile';
 import Settings from './components/CurrentColony/settings/Settings';
 import UserProfile from './components/CurrentColony/UserProfile/UserProfile';
+import GnosisSafe from './components/GnosisSafe/GnosisSafe';
 
 // Styles
 import 'react-toastify/dist/ReactToastify.css';
@@ -55,6 +56,7 @@ ReactDOM.render(
 						<Route path="/invitations" element={<DashboardPage />} />
 						<Route path="/search" element={<DashboardPage />} />
 						<Route path="new-side" element={<NewSide />} />
+						<Route path="/safe" element={<GnosisSafe />} />
 						<Route path="side/:id" element={<CurrentColony />}>
 							<Route path="profile/:username" element={<UserProfile />} />
 							<Route path="settings" element={<Settings />} />
