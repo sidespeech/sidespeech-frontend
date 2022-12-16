@@ -296,7 +296,7 @@ export default function Admission({
 						divCollections.map((current: any, i: number) => {
 							return (
 								<>
-									<div className="collection-item mb-3" key={i}>
+									<div className="collection-item bounce-from-right mb-3" key={i}>
 										<div className="flex justify-between">
 											<label className="size-14">Collection</label>
 

@@ -20,6 +20,7 @@ import { Role } from '../../../models/Profile';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import voteService from '../../../services/api-services/vote.service';
 import channelService from '../../../services/api-services/channel.service';
+import useWalletAddress from '../../../hooks/useWalletAddress';
 
 const PollsStyled = styled.div`
 	position: relative;
@@ -81,6 +82,7 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
 	const { currentProfile } = useSelector((state: RootState) => state.user);
 	// const { user } = useSelector((state: RootState) => state.user);
 	const { id } = useParams();
+	const { walletAddress } = useWalletAddress();
 
 	const [polls, setPolls] = useState<Poll[]>([]);
 
@@ -135,9 +137,9 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
 				toast.error('Error when voting', { toastId: 9 });
 				return false;
 			} else {
-				if (currentSide) {
+				if (currentSide && walletAddress) {
 					const voteOnPoll = await voteService.voteOnPoll(
-						window.ethereum.selectedAddress,
+						walletAddress,
 						callbackData.optionId,
 						Date.now().toString(),
 						signature,

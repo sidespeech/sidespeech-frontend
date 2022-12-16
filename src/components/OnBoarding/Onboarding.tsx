@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { RootState } from '../../redux/store/app.store';
 import { useNavigate } from 'react-router';
 import Welcome from './Steps/Welcome';
 import Bio from './Steps/Bio';
 import PublicNFTs from './Steps/PublicNFTs';
 import Avatar from './Steps/Avatar';
 
-import logoComplete from './../../assets/logoComplete.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import userService from '../../services/api-services/user.service';
+import useWalletAddress from '../../hooks/useWalletAddress';
 
 const OnBoardingStyled = styled.div`
 	display: flex;
@@ -171,22 +169,25 @@ export default function OnBoarding() {
 		setChosenUsername(username);
 	};
 
-	const connectedWallet = window.ethereum.selectedAddress;
+	const { loadingWallet, walletAddress } = useWalletAddress();
 
 	const navigate = useNavigate();
 
-	const checkOnBoarding = async () => {
-		if (connectedWallet == null) {
+	const checkOnBoarding = useCallback(async () => {
+		if (walletAddress == null) {
 			navigate('/');
 		} else {
-			const onBoarding = await userService.findOnBoarding(connectedWallet);
+			const onBoarding = await userService.findOnBoarding(walletAddress);
 			if (!onBoarding) {
 				//Redirect the user to the onboarding area.
 				navigate('/');
 			}
 		}
-	};
-	checkOnBoarding();
+	}, [walletAddress]);
+
+	useEffect(() => {
+		if (!loadingWallet) checkOnBoarding();
+	}, [loadingWallet]);
 
 	return (
 		<OnBoardingStyled className="onboarding">

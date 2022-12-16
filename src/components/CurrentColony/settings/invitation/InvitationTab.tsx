@@ -31,16 +31,16 @@ const InvitationsStyled = styled.div`
 	.search-and-invite {
 		position: relative;
 		padding: 20px;
-		border-radius: 20px;
+		border-radius: 7px;
 		flex: 1.2;
-		background-color: var(--input);
+		background-color: var(--white-transparency-10);
 		width: 100%;
 	}
 
 	.user-list {
 		padding: 0 20px;
 		/* flex: 1.2; */
-		background-color: var(--input);
+		background-color: transparent;
 		width: 100%;
 		height: 20rem;
 		overflow-y: auto;
@@ -240,9 +240,12 @@ export default function Invitation({
 
 	const handleSocialShare = (social: any) => {
 		let socialLink;
-		socialLink = social.label == 'Twitter' ? 'https://twitter.com/intent/tweet?text=Join%20my%20side%20on%20SideSpeech%20-%20'+sideLink : 'https://telegram.me/share/url?url='+sideLink+'&text=Join my side on SideSpeech';
+		socialLink =
+			social.label == 'Twitter'
+				? 'https://twitter.com/intent/tweet?text=Join%20my%20side%20on%20SideSpeech%20-%20' + sideLink
+				: 'https://telegram.me/share/url?url=' + sideLink + '&text=Join my side on SideSpeech';
 		window.open(socialLink, '_blank');
-	}
+	};
 
 	const getAvatarPicture = (userAvatar: string) => {
 		const jsonAvatar = JSON.parse(userAvatar);
@@ -260,11 +263,12 @@ export default function Invitation({
 			<div className="search-and-invite mb-3">
 				<InputText
 					placeholderColor="var(--inactive)"
+					border="1px solid var(--disable)"
 					color="var(--text)"
 					parentWidth={'100%'}
 					height={45}
 					width="100%"
-					bgColor="var(--disable)"
+					bgColor="var(--black-transparency-20)"
 					glass={true}
 					iconRightPos={{ top: 12, right: 20 }}
 					placeholder={'Search by username or wallet address '}
@@ -292,11 +296,11 @@ export default function Invitation({
 								) : (
 									<Button
 										classes="size-12"
-										width={'70px'}
+										width={'80px'}
 										height={27}
 										radius={5}
 										onClick={() => addInvitationUsers(user, index)}
-										background={'var(--disable)'}
+										background={'var(--white-transparency-10)'}
 									>
 										<i className="fa-solid fa-circle-plus mr-2"></i>Invite
 									</Button>
@@ -313,9 +317,10 @@ export default function Invitation({
 					<InputText
 						height={40}
 						color="var(--text)"
+						border="1px solid var(--disable)"
 						parentWidth={'100%'}
 						width="100%"
-						bgColor="var(--input)"
+						bgColor="var(--black-transparency-20)"
 						glass={false}
 						placeholder="Invitation Link"
 						onChange={undefined}
@@ -329,7 +334,7 @@ export default function Invitation({
 						height={40}
 						onClick={handleCopyWalletAddress}
 						radius={10}
-						background={'var(--disable)'}
+						background={'var(--white-transparency-10)'}
 						color={'var(--text)'}
 					>
 						Copy the link
@@ -352,7 +357,7 @@ export default function Invitation({
 							height={40}
 							onClick={() => handleSocialShare(social)}
 							radius={10}
-							background={'var(--disable)'}
+							background={'var(--white-transparency-10)'}
 							color={'var(--text)'}
 						>
 							<img src={social.icon} className="mr-2" />

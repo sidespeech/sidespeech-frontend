@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { User } from '../../models/User';
 import { FadeLoader } from 'react-spinners';
@@ -22,7 +22,7 @@ import userService from '../../services/api-services/user.service';
 import collectionService from '../../services/api-services/collection.service';
 import roomService from '../../services/api-services/room.service';
 import { breakpoints, size } from '../../helpers/breakpoints';
-import { reduceWalletAddress, connectedWallet } from '../../helpers/utilities';
+import useWalletAddress from '../../hooks/useWalletAddress';
 
 interface IDataCard {
 	background: string;
@@ -209,9 +209,9 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 	const [link, setLink] = useState<string>('');
 	const [filteredNfts, setFilteredNfts] = useState<NFT[]>([]);
 	const [selectedCollection, setSelectedCollection] = useState<string>('All');
-	const [walletConnected, setWalletConnected] = useState<string>('');
 
 	const { connectWallet } = useLogin();
+	const { getWalletAddress, walletAddress } = useWalletAddress();
 
 	useEffect(() => {
 		async function getUserData() {
@@ -228,9 +228,8 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 				setcreatedSideCount(getCreatedSideCount(user));
 				setUser(user);
 				setLink(`https://side.xyz/user/${username}`);
+				getWalletAddress();
 			}
-			const wallet = await connectedWallet();
-			setWalletConnected(wallet);
 		}
 		getUserData();
 	}, [username]);
@@ -265,33 +264,34 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 		}
 	};
 
-	const handleSelectedUser = async (profile: Profile, currentProfile: Profile) => {
-		try {
-			// getting account
-			const connectedAccount = window.ethereum.selectedAddress;
-			// getting room for given profile id
-			let room = currentProfile?.getRoom(profile.id);
-			if (!currentProfile || !connectedAccount || !user) return;
-			// if room not exist in profile
-			if (!room) {
-				// creating the room
-				room = await roomService.createRoom(currentProfile.id, profile.id);
-				// add this room in the user websocket
-				websocketService.addRoomToUsers(room.id, [user.id, profile.user.id]);
-				// add the room to profile
-				dispatch(addRoomToProfile(room));
+	const handleSelectedUser = useCallback(
+		async (profile: Profile, currentProfile: Profile) => {
+			try {
+				// getting room for given profile id
+				let room = currentProfile?.getRoom(profile.id);
+				if (!currentProfile || !walletAddress || !user) return;
+				// if room not exist in profile
+				if (!room) {
+					// creating the room
+					room = await roomService.createRoom(currentProfile.id, profile.id);
+					// add this room in the user websocket
+					websocketService.addRoomToUsers(room.id, [user.id, profile.user.id]);
+					// add the room to profile
+					dispatch(addRoomToProfile(room));
+				}
+				// selecting the room
+				dispatch(setSelectedRoom(room));
+				dispatch(setSelectedChannel(null));
+				navigate(`/${currentSide?.name}`);
+			} catch (error) {
+				console.error(error);
+				toast.error('There has been an error opening the room', {
+					toastId: 20
+				});
 			}
-			// selecting the room
-			dispatch(setSelectedRoom(room));
-			dispatch(setSelectedChannel(null));
-			navigate(`/${currentSide?.name}`);
-		} catch (error) {
-			console.error(error);
-			toast.error('There has been an error opening the room', {
-				toastId: 20
-			});
-		}
-	};
+		},
+		[walletAddress]
+	);
 
 	return (
 		<PublicUserProfileStyled>
@@ -419,7 +419,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 									<p>{user.bio}</p>
 								</div>
 								<div className="flex gap-20">
-									{userData.user && user.accounts.toLowerCase() !== walletConnected && (
+									{userData.user && user.accounts.toLowerCase() !== walletAddress && (
 										<Button
 											classes="address-btn"
 											children={'Send a message'}

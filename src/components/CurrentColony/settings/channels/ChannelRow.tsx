@@ -31,7 +31,7 @@ const ChannelRowStyled = styled.div<any>`
 		align-items: center;
 		gap: 1rem;
 		flex-shrink: 0;
-		& i {
+		& .fa-grip-lines {
 			cursor: move;
 		}
 	}
@@ -79,6 +79,7 @@ const InputTextWithDropdown = styled.div`
 	align-items: center;
 	padding-left: 4px;
 	border-radius: 7px;
+	border: 1px solid var(--disable);
 	${breakpoints(
 		size.md,
 		`{
@@ -202,7 +203,13 @@ export default function ChannelRow({
 	}, [channelsNewSide]);
 
 	return (
-		<ChannelRowStyled ref={ref} draggable style={{ opacity }} data-handler-id={handlerId}>
+		<ChannelRowStyled
+			className="bounce-from-right"
+			ref={ref}
+			draggable
+			style={{ opacity }}
+			data-handler-id={handlerId}
+		>
 			<div className="input-wrapper">
 				<i className="fa-solid fa-grip-lines fa-lg text-secondary-dark"></i>
 				<InputTextWithDropdown>
@@ -215,12 +222,12 @@ export default function ChannelRow({
 							(!channelsNewSide && placeholder !== undefined && index === 0)
 						}
 						style={{
-							radius: '7px',
+							borderRadius: '5px',
 							height: '36px',
 							width: '35%',
 							zIndex: childIndex.count - childIndex.index
 						}}
-						backgroundColor="var(--disable)"
+						backgroundColor="var(--panels)"
 						defaultValue={options[channel['type']]}
 					/>
 					<InputText

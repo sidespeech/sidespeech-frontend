@@ -54,8 +54,8 @@ const CurrentSideStyled = styled.div`
 		${breakpoints(
 			size.lg,
 			`{
-      display: none;
-    }`
+				display: none;
+				}`
 		)}
 	}
 	.current-side-middle-container {
