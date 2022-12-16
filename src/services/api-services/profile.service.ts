@@ -44,7 +44,7 @@ class ProfileService extends BaseApiService {
     profilePicture: NFT
   ): Promise<Profile> {
     const res = await this.put(`${BASE_URL}/profile/picture`).send({
-      profileId: id,
+      id: id,
       profileNftStringify: JSON.stringify(profilePicture),
     });
     return new Profile(res["body"]);

@@ -89,11 +89,12 @@ export default function Channels({
 
 	useEffect(() => {
 		if (currentSide['channels']) {
-			setAllChannels([
-				...currentSide['channels'].map(c => {
-					return { ...c, dirty: false };
+			const orderedChannels = orderBy([...currentSide['channels']], 'index');
+			setAllChannels(
+				orderedChannels.map(c => {
+					return { ...c, dirty: false, group: ChannelGroup.CURRENT };
 				})
-			]);
+			);
 		}
 	}, []);
 
@@ -121,16 +122,16 @@ export default function Channels({
 		if (channelsNewSide) {
 			handleRemoveChannel(id);
 		} else {
-			const index = _.findIndex(allChannels, c => c.id === id);
-			if (index !== -1) {
-				setAllChannels(current =>
-					update(current, {
-						$splice: [[index, 1]]
-					})
-				);
-			}
 			try {
 				await channelService.removeChannels(currentSide.id, id);
+				const index = _.findIndex(allChannels, c => c.id === id);
+				if (index !== -1) {
+					setAllChannels(current =>
+						update(current, {
+							$splice: [[index, 1]]
+						})
+					);
+				}
 				toast.success('Channel has been removed', { toastId: 36 });
 			} catch (error) {
 				toast.error('Error removing channel', { toastId: 36 });
@@ -224,13 +225,14 @@ export default function Channels({
 						[hoverIndex, 0, prevChannels[dragIndex] as Partial<IChannelExtension>]
 					],
 					$apply: (prevChannels: Partial<IChannelExtension>[]) => {
-						return prevChannels.map((channel, index) => {
-							return {
-								...channel,
-								index: index,
-								dirty: true
-							};
+						let start = dragIndex < hoverIndex ? dragIndex : hoverIndex;
+						let end: number | undefined = (dragIndex < hoverIndex ? hoverIndex : dragIndex) + 1;
+						if (end === prevChannels.length) end = undefined;
+						prevChannels.slice(start, end).forEach((channel, index) => {
+							channel.index = index + start;
+							channel.dirty = true;
 						});
+						return prevChannels;
 					}
 				})
 			);
@@ -239,13 +241,25 @@ export default function Channels({
 
 	const onSubmit = async () => {
 		try {
-			const toUpdate = _.remove(allChannels, c => !c.sideId && c.dirty).map(c => new Channel(c));
-			const toCreate = _.remove(allChannels, c => c.sideId);
+			const toUpdate = _.filter(allChannels, c => c.group === ChannelGroup.CURRENT && c.dirty).map(
+				c => new Channel(c)
+			);
+			const toCreate = _.filter(allChannels, c => c.group === ChannelGroup.ADDED);
 
 			const updatedChannels = await channelService.updateManyChannels(currentSide.id, toUpdate);
 			const createdChannels = await channelService.createManyChannels(currentSide.id, toCreate);
 
-			setAllChannels([...allChannels, ...updatedChannels, ...createdChannels]);
+			setAllChannels(current =>
+				update(current, {
+					$apply: (prevChannels: Partial<IChannelExtension>[]) => {
+						prevChannels.forEach((channel, index) => {
+							channel.group = ChannelGroup.CURRENT;
+							channel.dirty = false;
+						});
+						return prevChannels;
+					}
+				})
+			);
 			toast.success(`Saved`, {
 				toastId: 4
 			});
@@ -287,7 +301,7 @@ export default function Channels({
 							renderChannel(channel, index, channel.group !== ChannelGroup.ADDED)
 						)}
 					{allChannels.length > 0 &&
-						orderBy(allChannels, 'index').map((channel: any, index: number) =>
+						allChannels.map((channel: any, index: number) =>
 							renderChannel(channel, index, channel.group !== ChannelGroup.ADDED)
 						)}
 				</div>
@@ -328,6 +342,7 @@ export default function Channels({
 							onClick={onSubmit}
 							radius={10}
 							color={'var(--text)'}
+							disabled={allChannels.every(c => !c.dirty)}
 						>
 							Save{' '}
 						</Button>
