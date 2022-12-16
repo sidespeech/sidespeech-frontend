@@ -278,7 +278,7 @@ export default function Channels({
 
 	return (
 		<DndProvider backend={HTML5Backend}>
-			<ChannelsStyled className="fade-in">
+			<ChannelsStyled>
 				<div className="text-primary-light mb-3 text fw-600">Channels</div>
 				<div className="f-column channels-container">
 					{/* Existing channels */}
@@ -295,12 +295,12 @@ export default function Channels({
 				{/* Add new channel Section*/}
 				<div style={{ paddingLeft: 25 }}>
 					<Button
-						classes="add-channel-btn mt-4 fw-700"
+						classes="fade-in add-channel-btn mt-4 fw-700"
 						width={'100%'}
 						height={40}
 						onClick={handleAddChannel}
 						radius={10}
-						background={'var(--disable)'}
+						background={'var(--panels)'}
 						color={'var(--white)'}
 					>
 						<svg
@@ -323,7 +323,7 @@ export default function Channels({
 					{!channelsNewSide ? (
 						<Button
 							width={'100%'}
-							classes="save-btn"
+							classes="fade-in save-btn"
 							height={46}
 							onClick={onSubmit}
 							radius={10}

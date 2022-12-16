@@ -1,13 +1,13 @@
 .fade-in {
-	animation: fade-in 0.3s ease forwards;
+	animation: fade-in 0.3s ease;
 }
 
 .fade-in-left {
-	animation: fade-in-left 0.3s ease forwards;
+	animation: fade-in-left 0.3s ease;
 }
 
 .fade-in-top {
-	animation: fade-in-top 0.3s ease forwards;
+	animation: fade-in-top 0.3s ease;
 }
 
 .fade-in-delay {
@@ -23,6 +23,10 @@
 .fade-in-delay-3 {
 	opacity: 0;
 	animation: fade-in 0.3s ease forwards 0.6s;
+}
+
+.bounce-from-right {
+	animation: enter-right 0.3s ease;
 }
 
 @keyframes fade-in {
@@ -43,7 +47,7 @@
 	}
 	to {
 		opacity: 1;
-		transform: translateX(0);
+		transform: none;
 	}
 }
 
@@ -54,6 +58,21 @@
 	}
 	to {
 		opacity: 1;
-		transform: translateY(0);
+		transform: none;
+	}
+}
+
+@keyframes enter-right {
+	0% {
+		transform: translateX(100%);
+	}
+	60% {
+		transform: translateX(0) scale(0.9, 1.05);
+	}
+	70% {
+		transform: translateX(-10px) scale(1.02, 0.95);
+	}
+	100% {
+		transform: none;
 	}
 }

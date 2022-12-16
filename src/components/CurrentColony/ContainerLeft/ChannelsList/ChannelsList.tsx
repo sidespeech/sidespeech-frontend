@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import _, { orderBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { Channel} from '../../../../models/Channel';
+import { Channel } from '../../../../models/Channel';
 import { RootState } from '../../../../redux/store/app.store';
 import { Dot } from '../../../ui-components/styled-components/shared-styled-components';
 import Icons from '../../../ui-components/ChannelIcons';

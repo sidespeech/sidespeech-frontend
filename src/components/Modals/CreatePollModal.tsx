@@ -21,6 +21,7 @@ import InputText from '../ui-components/InputText';
 import TextArea from '../ui-components/TextArea';
 import { getRandomId } from '../../helpers/utilities';
 import pollService from '../../services/api-services/poll.service';
+import useWalletAddress from '../../hooks/useWalletAddress';
 
 const CreatePollModalStyled = styled.div`
 	display: flex;
@@ -81,6 +82,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
 	const [question, setQuestion] = useState<string>('');
 	const [proposalTitle, setProposalTitle] = useState<string>('');
 	const [endDate, setEndDate] = useState<string>('');
+	const { walletAddress } = useWalletAddress();
 
 	const dispatch = useDispatch();
 	const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
@@ -123,11 +125,12 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
 	const handleSavePoll = async () => {
 		try {
 			setIsLoading(true);
+			if (!walletAddress) throw new Error('No wallet connected');
 			if (!selectedChannel) throw new Error('No channel selected');
 			// Grab values from Poll.
 			const createThePoll = await pollService.createPoll(
 				selectedChannel?.id,
-				window.ethereum.selectedAddress,
+				walletAddress,
 				proposalTitle,
 				endDate,
 				question,

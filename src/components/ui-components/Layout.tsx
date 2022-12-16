@@ -14,7 +14,7 @@ const LayoutStyled = styled.div`
 	display: flex;
 	overflow: hidden;
 	& .left-container {
-		background-color: var(--panels-gray);
+		background-color: var(--super-dark);
 		width: 70px;
 		display: none;
 		flex-direction: column;
