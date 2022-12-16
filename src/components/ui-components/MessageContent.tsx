@@ -47,6 +47,18 @@ interface MessageContentProps {
 }
 
 const MessageContentStyled = styled.div`
+	max-width: calc(100vw - 22rem);
+	min-height: 3rem;
+	scrollbar-width: none;
+	overflow: hidden;
+	& .input-content-wrapper {
+		width: 100%;
+		padding: 0 1rem;
+		& .message-content-editor {
+			max-width: calc(100% - 2rem);
+			overflow-x: hidden;
+		}
+	}
 	.images-wrapper {
 		flex-wrap: wrap;
 		max-width: 650px;
@@ -101,7 +113,6 @@ const EditorStyled = styled(Editor)<MessageContentProps>`
 	border: ${props => (props.border ? props.border : '')};
 	background-color: ${props => (props.bgColor ? props.bgColor : 'var(--input)')};
 	border-radius: ${props => (props.radius ? props.radius : '40px')};
-	height: ${props => (props.height ? props.height : 35)}px;
 	color: ${props => (props.color ? props.color : 'var(--inactive)')};
 	padding: ${props => (props.padding ? props.padding : '0px 20px')};
 	font-size: ${props => (props.size ? props.size : '15')}px;
@@ -205,7 +216,7 @@ const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Re
 				alt: imgMd.trim().split('![')[1].split(']')[0]
 			}));
 			setImagesArray(imagesObjectsArray);
-		} else setImagesArray([])
+		} else setImagesArray([]);
 	}, [props.message]);
 
 	if (!props.message) return null;
@@ -217,7 +228,7 @@ const MessageContent = forwardRef((props: MessageContentPropTypes, ref: React.Re
 
 	return (
 		<MessageContentStyled>
-			<div className="relative flex align-end" style={{ width: props.parentWidth ? props.parentWidth : '100%' }}>
+			<div className="input-content-wrapper">
 				<EditorStyled
 					bgColor={props.bgColor}
 					border={props.border}
