@@ -608,15 +608,18 @@ export default function Admission({
 								<Chip>{d['numberNeeded'] || 1} NFT</Chip> From the{' '}
 								<Chip>{collections.find(c => c.address === d['collection'])?.name || ''}</Chip>
 								collection{' '}
-								{d['trait_selected'] && d['value_selected'] && (
-									<>
-										{' '}
-										that has this trait : <br />
-										<Chip>
-											{d['trait_selected']} - {d['value_selected']}
-										</Chip>
-									</>
-								)}
+								{d['features'].map((f: any, index: number) => {
+									return (
+										<>
+											{' '}
+											{index === 0 ? 'that has this trait : ' : 'OR'}
+											<br />
+											<Chip>
+												{f['trait_selected'] || ''} - {f['value_selected'] || ''}
+											</Chip>
+										</>
+									);
+								})}
 								<br />
 								{index < divCollections.length - 1 && <>{onlyOneRequired ? 'OR' : 'AND'}</>}
 								<br />
