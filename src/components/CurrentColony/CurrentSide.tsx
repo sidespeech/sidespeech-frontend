@@ -193,6 +193,8 @@ export default function CurrentSide() {
 	useEffect(() => {
 		async function getSide() {
 			try {
+				dispatch(setCurrentColony(null));
+				dispatch(setCurrentProfile(null));
 				if (id && user) {
 					// Get Side data
 					const res = await sideService.getSideByName(id);
@@ -290,9 +292,9 @@ export default function CurrentSide() {
 					</div>
 				)
 			) : (
-				<div className="spinner-wrapper f-column align-center justify-center w-100 vh-100">
-					<Spinner color={'var(--green)'} size={3} />
-					<div className="size-18 mt-3 text-green">Loading Side "{id}" information...</div>
+				<div className="spinner-wrapper f-column align-center justify-center gap-20 w-100 vh-100">
+					<Spinner color={'var(--primary)'} size={2} />
+					<div className="size-18 mt-3 text-primary">Loading Side "{id}" information...</div>
 				</div>
 			)}
 		</CurrentSideStyled>
