@@ -18,7 +18,15 @@ import { setCurrentColony } from '../../redux/Slices/AppDatasSlice';
 import { setCurrentProfile } from '../../redux/Slices/UserDataSlice';
 
 const UserSidesStyled = styled.div`
+	max-height: calc(100vh - 4rem - 48px);
+	overflow-y: scroll;
+	overflow-x: hidden;
+	scrollbar-width: none;
+	::-webkit-scrollbar {
+		width: 0;
+	}
 	.colony-badge {
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -75,8 +83,8 @@ export default function UserSides() {
 			setSide(side);
 			setDisplayModal(true);
 		} else {
-			dispatch(setCurrentColony(null))
-			dispatch(setCurrentProfile(null))
+			dispatch(setCurrentColony(null));
+			dispatch(setCurrentProfile(null));
 			navigate('side/' + side.name);
 		}
 	};
@@ -159,7 +167,7 @@ export default function UserSides() {
 	return (
 		<>
 			<UserSidesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
-				{userData.sides.map((c, i) => {
+				{userData.sides?.map((c, i) => {
 					return (
 						<div
 							onClick={() => {

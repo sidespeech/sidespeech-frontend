@@ -207,7 +207,7 @@ export default function ChannelRow({
 			className="bounce-from-right"
 			ref={ref}
 			draggable
-			style={{ opacity }}
+			style={{ opacity, position: 'relative', zIndex: 9999 - index }}
 			data-handler-id={handlerId}
 		>
 			<div className="input-wrapper">

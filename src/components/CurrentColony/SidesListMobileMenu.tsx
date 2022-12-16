@@ -38,7 +38,7 @@ const SidesListMobileMenuStyled = styled.div`
 			display: flex;
 			flex-direction: column;
 			flex: 1 0;
-			padding: 2rem 0;
+			padding: 2rem 0 0 0;
 			gap: 1rem;
 			& h2 {
 				font-size: 1.5rem;
@@ -49,6 +49,9 @@ const SidesListMobileMenuStyled = styled.div`
 				display: flex;
 				flex-direction: column;
 				flex: 1 0;
+				overflow-y: scroll;
+				overflow-x: hidden;
+				max-height: calc(100vh - 127px - 5rem);
 				& .side-item {
 					display: flex;
 					align-items: center;
@@ -70,8 +73,8 @@ const SidesListMobileMenuStyled = styled.div`
 						font-size: 22px;
 						font-weight: 700;
 						text-transform: uppercase;
-                        text-align: center;
-                        line-height: 38px;
+						text-align: center;
+						line-height: 38px;
 					}
 				}
 			}
@@ -114,7 +117,7 @@ const SidesListMobileMenu = ({ currentSide, onClose, open }: SidesListMobileMenu
 				<div className="content">
 					<h2>Sides</h2>
 					<div className="sides-list">
-						{userData.sides.map(side => (
+						{userData.sides?.map(side => (
 							<Link
 								to={`/side/${side.name}`}
 								key={side.id}
