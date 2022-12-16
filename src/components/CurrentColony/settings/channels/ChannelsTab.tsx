@@ -48,6 +48,7 @@ export enum ChannelGroup {
 export interface IChannelExtension extends Channel {
 	group: ChannelGroup;
 	sideId: string;
+	dirty: boolean;
 }
 
 export interface InitialChannelsState {
@@ -88,7 +89,12 @@ export default function Channels({
 
 	useEffect(() => {
 		if (currentSide['channels']) {
-			setAllChannels([...currentSide['channels']]);
+			const orderedChannels = orderBy([...currentSide['channels']], 'index');
+			setAllChannels(
+				orderedChannels.map(c => {
+					return { ...c, dirty: false, group: ChannelGroup.CURRENT };
+				})
+			);
 		}
 	}, []);
 
@@ -116,16 +122,16 @@ export default function Channels({
 		if (channelsNewSide) {
 			handleRemoveChannel(id);
 		} else {
-			const index = _.findIndex(allChannels, c => c.id === id);
-			if (index !== -1) {
-				setAllChannels(current =>
-					update(current, {
-						$splice: [[index, 1]]
-					})
-				);
-			}
 			try {
-				await channelService.removeChannels(id);
+				await channelService.removeChannels(currentSide.id, id);
+				const index = _.findIndex(allChannels, c => c.id === id);
+				if (index !== -1) {
+					setAllChannels(current =>
+						update(current, {
+							$splice: [[index, 1]]
+						})
+					);
+				}
 				toast.success('Channel has been removed', { toastId: 36 });
 			} catch (error) {
 				toast.error('Error removing channel', { toastId: 36 });
@@ -137,6 +143,11 @@ export default function Channels({
 		if (channelsNewSide) {
 			handleAddNewChannel();
 		} else {
+			if (allChannels.length >= 50) {
+				toast.error('You can not create more than 50 channels.');
+				return;
+			}
+
 			const newChannel: Partial<IChannelExtension> = {
 				id: v4(),
 				name: '',
@@ -157,7 +168,9 @@ export default function Channels({
 			const index = _.findIndex(allChannels, c => c.id === id);
 			console.log(event.target.value, index, id, allChannels);
 			if (index !== -1) {
-				setAllChannels(current => update(current, { [index]: { name: { $set: event.target.value } } }));
+				setAllChannels(current =>
+					update(current, { [index]: { name: { $set: event.target.value }, dirty: { $set: true } } })
+				);
 			}
 		}
 	};
@@ -167,7 +180,9 @@ export default function Channels({
 		} else {
 			const index = _.findIndex(allChannels, c => c.id === id);
 			if (index !== -1) {
-				setAllChannels(current => update(current, { [index]: { type: { $set: value } } }));
+				setAllChannels(current =>
+					update(current, { [index]: { type: { $set: value }, dirty: { $set: true } } })
+				);
 			}
 		}
 	};
@@ -179,7 +194,9 @@ export default function Channels({
 			const index = _.findIndex(allChannels, c => c.id === id);
 			if (index !== -1) {
 				setAllChannels(current =>
-					update(current, { [index]: { authorizeComments: { $set: event.target.checked } } })
+					update(current, {
+						[index]: { authorizeComments: { $set: event.target.checked }, dirty: { $set: true } }
+					})
 				);
 			}
 		}
@@ -191,7 +208,9 @@ export default function Channels({
 			// Change name on existing channel
 			const index = _.findIndex(allChannels, c => c.id === id);
 			if (index !== -1) {
-				setAllChannels(current => update(current, { [index]: { isVisible: { $set: value } } }));
+				setAllChannels(current =>
+					update(current, { [index]: { isVisible: { $set: value }, dirty: { $set: true } } })
+				);
 			}
 		}
 	};
@@ -205,13 +224,16 @@ export default function Channels({
 						[dragIndex, 1],
 						[hoverIndex, 0, prevChannels[dragIndex] as Partial<IChannelExtension>]
 					],
-					$apply: (prevChannels: any[]) =>
-						prevChannels.map((channel, index) => {
-							return {
-								...channel,
-								index: index
-							};
-						})
+					$apply: (prevChannels: Partial<IChannelExtension>[]) => {
+						let start = dragIndex < hoverIndex ? dragIndex : hoverIndex;
+						let end: number | undefined = (dragIndex < hoverIndex ? hoverIndex : dragIndex) + 1;
+						if (end === prevChannels.length) end = undefined;
+						prevChannels.slice(start, end).forEach((channel, index) => {
+							channel.index = index + start;
+							channel.dirty = true;
+						});
+						return prevChannels;
+					}
 				})
 			);
 		}
@@ -219,11 +241,25 @@ export default function Channels({
 
 	const onSubmit = async () => {
 		try {
-			const updatedChannels = await channelService.updateManyChannels(
-				allChannels.filter(c => !c.sideId).map(c => new Channel(c))
+			const toUpdate = _.filter(allChannels, c => c.group === ChannelGroup.CURRENT && c.dirty).map(
+				c => new Channel(c)
 			);
-			const createdChannels = await channelService.createManyChannels(allChannels.filter(c => c.sideId));
-			setAllChannels([...updatedChannels, ...createdChannels]);
+			const toCreate = _.filter(allChannels, c => c.group === ChannelGroup.ADDED);
+
+			const updatedChannels = await channelService.updateManyChannels(currentSide.id, toUpdate);
+			const createdChannels = await channelService.createManyChannels(currentSide.id, toCreate);
+
+			setAllChannels(current =>
+				update(current, {
+					$apply: (prevChannels: Partial<IChannelExtension>[]) => {
+						prevChannels.forEach((channel, index) => {
+							channel.group = ChannelGroup.CURRENT;
+							channel.dirty = false;
+						});
+						return prevChannels;
+					}
+				})
+			);
 			toast.success(`Saved`, {
 				toastId: 4
 			});
@@ -265,7 +301,7 @@ export default function Channels({
 							renderChannel(channel, index, channel.group !== ChannelGroup.ADDED)
 						)}
 					{allChannels.length > 0 &&
-						orderBy(allChannels, 'index').map((channel: any, index: number) =>
+						allChannels.map((channel: any, index: number) =>
 							renderChannel(channel, index, channel.group !== ChannelGroup.ADDED)
 						)}
 				</div>
@@ -306,6 +342,7 @@ export default function Channels({
 							onClick={onSubmit}
 							radius={10}
 							color={'var(--text)'}
+							disabled={allChannels.every(c => !c.dirty)}
 						>
 							Save{' '}
 						</Button>

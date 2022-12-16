@@ -12,16 +12,24 @@ class ChannelService extends BaseApiService {
 		return instance;
 	}
 
+	/////// GET //////
+
 	async getChannelAnnouncements(id: string): Promise<Announcement[]> {
 		const res = await this.get(`${BASE_URL}/channel/announcements`).query({
 			id
 		});
 		return res.body.map((m: any) => new Announcement(m));
 	}
+	async getChannelPolls(channelId: string): Promise<Poll[]> {
+		const res = await this.get(`${BASE_URL}/channel/${channelId}/polls`);
+		return res.body.map((m: any) => new Poll(m));
+	}
 
-	async createChannel(sideId: string, name: string, type: ChannelType): Promise<Channel> {
-		const res = await this.post(`${BASE_URL}/channel`).send({
-			sideId,
+	/////// POST //////
+
+	async createChannel(id: string, name: string, type: ChannelType): Promise<Channel> {
+		const res = await this.post(`${BASE_URL}/channel/${id}`).send({
+			sideId: id,
 			name,
 			type,
 			isVisible: true
@@ -29,25 +37,23 @@ class ChannelService extends BaseApiService {
 		return new Channel(res.body);
 	}
 
-	async createManyChannels(channels: any[]): Promise<any> {
-		const res = await this.post(`${BASE_URL}/channel/many`).send(channels);
+	async createManyChannels(id: string, channels: any[]): Promise<any> {
+		const res = await this.post(`${BASE_URL}/channel/${id}/many`).send(channels);
 		return res.body.map((c: any) => new Channel(c));
 	}
+	/////// PATCH //////
 
-	async updateManyChannels(channels: Channel[]): Promise<any> {
-		const res = await this.patch(`${BASE_URL}/channel/many`).send(channels);
+	async updateManyChannels(id: string, channels: Channel[]): Promise<any> {
+		const res = await this.patch(`${BASE_URL}/channel/${id}/many`).send(channels);
 		return res.body.map((c: any) => new Channel(c));
 	}
-	async removeChannels(ids: string | string[]): Promise<any> {
-		const res = await this.delete(`${BASE_URL}/channel/many`).send({
+	/////// DELETE //////
+
+	async removeChannels(id: string, ids: string | string[]): Promise<any> {
+		const res = await this.delete(`${BASE_URL}/channel/${id}/many`).send({
 			ids: ids
 		});
 		return res.body;
-	}
-
-	async getChannelPolls(channelId: string): Promise<Poll[]> {
-		const res = await this.get(`${BASE_URL}/channel/${channelId}/polls`);
-		return res.body.map((m: any) => new Poll(m));
 	}
 }
 
