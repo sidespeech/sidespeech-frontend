@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { fixURL } from '../../helpers/utilities';
+import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 
+import check from '../../assets/check_circle.svg';
 import defaultPP from '../../assets/default-pp.png';
 import hexagon from '../../assets/hexagon.svg';
 import { SpanElipsis } from '../GeneralSettings/Account/Avatar';
@@ -13,6 +15,7 @@ const UserAvatarContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding-bottom: 15px;
 	${breakpoints(
 		size.lg,
 		`{
@@ -27,12 +30,13 @@ const UserAvatarContainer = styled.div`
 		max-width: 200px;
 		object-fit: cover;
 		border-radius: 10px;
+		height: 113px;
 		${breakpoints(
 			size.lg,
 			`{
-                height: 313px;
+				height: 273px;
                 max-width: none;
-                border-radius: 0;
+                border-radius: 10px;
             }`
 		)}
 	}
@@ -61,9 +65,32 @@ const UserAvatarContainer = styled.div`
 			justify-content: center;
 		}
 	}
+	.nft-image-bg {
+		height: 100%;
+		width: 100%;
+		position: relative;
+		display: block;
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position: top center;
+		margin-bottom: 10px;
+	}
+	.nft-image-bg img {
+		visibility: hidden;
+	}
+	.nft-info {
+		flex-wrap: wrap;
+	}
+	.token-id {
+		max-width: 80px;
+	}
+	.collection-name {
+		flex-basis: 100%;
+		text-align: center;
+	}
 `;
 
-export const UserAvatar = ({ className = '', nft, name, userName }: any) => {
+export const UserAvatar = ({ className = '', nft, name, userName, verified }: any) => {
 	const [url, setUrl] = useState<string>(defaultPP);
 
 	useEffect(() => {
@@ -72,21 +99,31 @@ export const UserAvatar = ({ className = '', nft, name, userName }: any) => {
 		} else {
 			setUrl(defaultPP);
 		}
+
 	}, [nft]);
 
 	return (
 		<UserAvatarContainer className={className}>
-			<img className="nft-image" src={url} />
+			<div 
+			className="nft-image-bg" 
+			style={{ 
+      			backgroundImage: `url(${url})`
+    		}}>
+				<img className="nft-image" src={url} />
+			</div>
 			<div className="bottom-container">
 				{userName && <p className="user-name">{userName}</p>}
 				<div className="nft-info">
 					<img src={hexagon} className="mr-3" />
 					{name && nft ? (
 						<>
-							<SpanElipsis title={nft.token_id} className="mr-2 size-12">
+							<SpanElipsis title={nft.token_id} className="mr-2 size-12 token-id">
 								#{nft.token_id}
 							</SpanElipsis>
-							<span className="size-12">{name}</span>
+							{verified.safelistRequestStatus === OpenSeaRequestStatus.verified && (
+								<img src={check} />
+							)}
+							<span className="size-12 collection-name">{name}</span>
 						</>
 					) : (
 						<span>No avatar selected</span>

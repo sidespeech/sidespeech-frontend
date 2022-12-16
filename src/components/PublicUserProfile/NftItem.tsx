@@ -23,7 +23,7 @@ export const NftItem = ({ nft, collection }: { nft: NFT; collection: Collection 
                 <div>#{nft.token_id}</div>
                 {collection && (
                     <div>
-                        {collection.name}
+                        {collection.getName()}
                         {collection.safelistRequestStatus === OpenSeaRequestStatus.verified && (
                             <img src={check} />
                         )}
