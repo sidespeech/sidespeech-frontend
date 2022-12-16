@@ -48,6 +48,7 @@ export enum ChannelGroup {
 export interface IChannelExtension extends Channel {
 	group: ChannelGroup;
 	sideId: string;
+	dirty: boolean;
 }
 
 export interface InitialChannelsState {
@@ -88,7 +89,11 @@ export default function Channels({
 
 	useEffect(() => {
 		if (currentSide['channels']) {
-			setAllChannels([...currentSide['channels']]);
+			setAllChannels([
+				...currentSide['channels'].map(c => {
+					return { ...c, dirty: false };
+				})
+			]);
 		}
 	}, []);
 
@@ -125,7 +130,7 @@ export default function Channels({
 				);
 			}
 			try {
-				await channelService.removeChannels(id);
+				await channelService.removeChannels(currentSide.id, id);
 				toast.success('Channel has been removed', { toastId: 36 });
 			} catch (error) {
 				toast.error('Error removing channel', { toastId: 36 });
@@ -137,6 +142,11 @@ export default function Channels({
 		if (channelsNewSide) {
 			handleAddNewChannel();
 		} else {
+			if (allChannels.length >= 50) {
+				toast.error('You can not create more than 50 channels.');
+				return;
+			}
+
 			const newChannel: Partial<IChannelExtension> = {
 				id: v4(),
 				name: '',
@@ -157,7 +167,9 @@ export default function Channels({
 			const index = _.findIndex(allChannels, c => c.id === id);
 			console.log(event.target.value, index, id, allChannels);
 			if (index !== -1) {
-				setAllChannels(current => update(current, { [index]: { name: { $set: event.target.value } } }));
+				setAllChannels(current =>
+					update(current, { [index]: { name: { $set: event.target.value }, dirty: { $set: true } } })
+				);
 			}
 		}
 	};
@@ -167,7 +179,9 @@ export default function Channels({
 		} else {
 			const index = _.findIndex(allChannels, c => c.id === id);
 			if (index !== -1) {
-				setAllChannels(current => update(current, { [index]: { type: { $set: value } } }));
+				setAllChannels(current =>
+					update(current, { [index]: { type: { $set: value }, dirty: { $set: true } } })
+				);
 			}
 		}
 	};
@@ -179,7 +193,9 @@ export default function Channels({
 			const index = _.findIndex(allChannels, c => c.id === id);
 			if (index !== -1) {
 				setAllChannels(current =>
-					update(current, { [index]: { authorizeComments: { $set: event.target.checked } } })
+					update(current, {
+						[index]: { authorizeComments: { $set: event.target.checked }, dirty: { $set: true } }
+					})
 				);
 			}
 		}
@@ -191,7 +207,9 @@ export default function Channels({
 			// Change name on existing channel
 			const index = _.findIndex(allChannels, c => c.id === id);
 			if (index !== -1) {
-				setAllChannels(current => update(current, { [index]: { isVisible: { $set: value } } }));
+				setAllChannels(current =>
+					update(current, { [index]: { isVisible: { $set: value }, dirty: { $set: true } } })
+				);
 			}
 		}
 	};
@@ -205,13 +223,15 @@ export default function Channels({
 						[dragIndex, 1],
 						[hoverIndex, 0, prevChannels[dragIndex] as Partial<IChannelExtension>]
 					],
-					$apply: (prevChannels: any[]) =>
-						prevChannels.map((channel, index) => {
+					$apply: (prevChannels: Partial<IChannelExtension>[]) => {
+						return prevChannels.map((channel, index) => {
 							return {
 								...channel,
-								index: index
+								index: index,
+								dirty: true
 							};
-						})
+						});
+					}
 				})
 			);
 		}
@@ -219,11 +239,13 @@ export default function Channels({
 
 	const onSubmit = async () => {
 		try {
-			const updatedChannels = await channelService.updateManyChannels(
-				allChannels.filter(c => !c.sideId).map(c => new Channel(c))
-			);
-			const createdChannels = await channelService.createManyChannels(allChannels.filter(c => c.sideId));
-			setAllChannels([...updatedChannels, ...createdChannels]);
+			const toUpdate = _.remove(allChannels, c => !c.sideId && c.dirty).map(c => new Channel(c));
+			const toCreate = _.remove(allChannels, c => c.sideId);
+
+			const updatedChannels = await channelService.updateManyChannels(currentSide.id, toUpdate);
+			const createdChannels = await channelService.createManyChannels(currentSide.id, toCreate);
+
+			setAllChannels([...allChannels, ...updatedChannels, ...createdChannels]);
 			toast.success(`Saved`, {
 				toastId: 4
 			});
