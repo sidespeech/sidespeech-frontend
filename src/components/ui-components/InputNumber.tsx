@@ -53,12 +53,17 @@ export default function CustomInputNumber({ onChange, defaultValue, collections,
 
 	return (
 		<div className="relative" style={{ width: 'fit-content' }}>
-			<InputNumber ref={ref} type={'number'} defaultValue={defaultValue} />
+			<InputNumber
+				ref={ref}
+				type={'number'}
+				value={defaultValue}
+				onChange={ev => onChange(ev.target.value || 1)}
+			/>
 			<div className="f-column absolute" style={style.container}>
-				<div style={style.plusDiv} onClick={() => signClick(1)}>
+				<div className="cursor-pointer" style={style.plusDiv} onClick={() => signClick(1)}>
 					+
 				</div>
-				<div style={style.lessDiv} onClick={() => signClick(-1)}>
+				<div className="cursor-pointer" style={style.lessDiv} onClick={() => signClick(-1)}>
 					-
 				</div>
 			</div>

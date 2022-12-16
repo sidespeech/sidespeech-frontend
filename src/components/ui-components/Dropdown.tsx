@@ -101,7 +101,7 @@ export default function Dropdown({
 		} else if (defaultValue === null) {
 			setHeaderTitle(options[0]);
 		}
-	}, []);
+	}, [defaultValue, options]);
 
 	useEffect(() => {
 		if (ref.current && isOpen) {

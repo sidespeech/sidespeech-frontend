@@ -635,10 +635,8 @@ export default function NewSide() {
 	};
 
 	// Remove collection div in condition
-	const removeDivCollection = (index: number) => {
-		let current_divs = [...divCollections];
-		current_divs.splice(index, 1);
-		setDivCollection(current_divs);
+	const removeDivCollection = (collectionId: string) => {
+		setDivCollection(prevState => prevState.filter(divColl => divColl.collection !== collectionId));
 	};
 
 	// ----- Functions for Admission component **end

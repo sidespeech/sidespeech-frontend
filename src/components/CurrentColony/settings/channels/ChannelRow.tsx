@@ -214,7 +214,7 @@ export default function ChannelRow({
 			className="bounce-from-right"
 			ref={ref}
 			draggable
-			style={{ opacity }}
+			style={{ opacity, position: 'relative', zIndex: 9999 - index }}
 			isHover={isHover}
 			draggingDownwards={draggingWay === DraggingWay.DOWNWARDS}
 			data-handler-id={handlerId}
