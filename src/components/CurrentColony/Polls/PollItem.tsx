@@ -15,6 +15,7 @@ import { sum } from 'lodash';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import pollService from '../../../services/api-services/poll.service';
 import Votes from '../../ui-components/Votes';
+import useWalletAddress from '../../../hooks/useWalletAddress';
 
 const PollItemStyled = styled.div`
 	display: flex;
@@ -80,7 +81,7 @@ interface PollItemProps {
 }
 
 const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThread, poll, sideId }: PollItemProps) => {
-	const walletAddress = window.ethereum.selectedAddress;
+	const { walletAddress } = useWalletAddress();
 	const [comments, setComments] = useState<Comment[]>([]);
 
 	const { account } = useSelector((state: RootState) => state.user);

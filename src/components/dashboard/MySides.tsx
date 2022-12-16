@@ -20,7 +20,7 @@ import { EventType } from '../../constants/EventType';
 import { Announcement } from '../../models/Announcement';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import notificationService from '../../services/api-services/notification.service';
-import { getSidesMetadata } from '../../services/api-services/side.service';
+import sideService, { getSidesMetadata } from '../../services/api-services/side.service';
 
 interface MySidesStyledProps {}
 
@@ -168,7 +168,8 @@ const MySides = ({ collections }: MySidesProps) => {
 		async function getSearchSides() {
 			try {
 				setSidesLoading(true);
-				const response = await getSidesMetadata(sides, userCollectionsData, sides);
+				const sidesData = await sideService.getMany(sides.map(s => s.id));
+				const response = await getSidesMetadata(sidesData, userCollectionsData, sides);
 				setFilteredSides(response);
 			} catch (error) {
 				console.error(error);
@@ -177,7 +178,7 @@ const MySides = ({ collections }: MySidesProps) => {
 				setSidesLoading(false);
 			}
 		}
-		getSearchSides();
+		if (sides.length && Object.keys(userCollectionsData).length) getSearchSides();
 	}, [sides, userCollectionsData]);
 
 	useEffect(() => {

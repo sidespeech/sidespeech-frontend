@@ -20,10 +20,18 @@ import Accordion from '../../ui-components/Accordion';
 import { NotificationType } from '../../../models/Notification';
 import roomService from '../../../services/api-services/room.service';
 import notificationService from '../../../services/api-services/notification.service';
+import { breakpoints, size } from '../../../helpers/breakpoints';
 
 const SidebarStyled = styled.div`
-	max-height: 100vh;
+	height: calc(100vh - 182px);
 	overflow-y: scroll;
+	${breakpoints(
+		size.lg,
+		`{
+		max-height: 100vh;
+		overflow-y: visible;
+	}`
+	)}
 	& .channel-item {
 		transition: background-color 0.2s ease;
 		&:hover {
@@ -187,7 +195,6 @@ export default function CurrentSideLeftContent() {
 			<SidebarStyled className="px-1">
 				<Accordion
 					initialAnimation={300}
-					className="fade-in"
 					AccordionButton={() => (
 						<span className="fw-400 size-11 flex align-center">
 							<svg

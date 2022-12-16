@@ -105,10 +105,9 @@ export default function Requests({
 						</Button>
 						<Button
 							width={'159px'}
-							height={46}
 							onClick={undefined}
 							radius={10}
-							background={'var(--disable)'}
+							background={'var(--panels)'}
 							color={'white'}
 						>
 							Accept all

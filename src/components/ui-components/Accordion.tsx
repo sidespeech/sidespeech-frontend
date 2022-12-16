@@ -56,7 +56,7 @@ const AccordionStyled = styled.div<AccordionStyledProps>`
 
 	@keyframes hide {
 		from {
-			max-height: 100vh;
+			max-height: 3000vh;
 		}
 		to {
 			max-height: 0;
@@ -68,7 +68,7 @@ const AccordionStyled = styled.div<AccordionStyledProps>`
 			max-height: 0;
 		}
 		to {
-			max-height: 100vh;
+			max-height: 3000vh;
 		}
 	}
 `;
