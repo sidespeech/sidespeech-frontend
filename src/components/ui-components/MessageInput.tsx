@@ -90,14 +90,31 @@ const MessageInputStyled = styled.div`
 	scrollbar-width: none;
 	border-radius: 10px;
 	border: 1px solid var(--disable);
-	max-width: calc(100vw - 22rem);
+	width: 100%;
+	${breakpoints(
+		size.lg,
+		`{
+		max-width: calc(100vw - 22rem);
+	}`
+	)}
 	& .input-editor-wrapper {
 		width: 100%;
-		padding: 0 1rem;
+		padding: 0 1rem 50px 1rem;
+		${breakpoints(
+			size.lg,
+			`{
+			padding: 0 1rem;
+		}`
+		)}
 		& .message-input-editor {
 			max-height: 250px;
-			max-width: 77%;
 			overflow-x: hidden;
+			${breakpoints(
+				size.lg,
+				`{
+				max-width: calc(100% - 13rem);
+			}`
+			)}
 		}
 	}
 

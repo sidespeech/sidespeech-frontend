@@ -7,6 +7,7 @@ import { ContentBlock, ContentState, convertFromRaw, EditorState } from 'draft-j
 import { markdownToDraft } from 'markdown-draft-js';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { breakpoints, size } from '../../helpers/breakpoints';
 
 interface MessageContentPropTypes {
 	bgColor?: string;
@@ -47,16 +48,27 @@ interface MessageContentProps {
 }
 
 const MessageContentStyled = styled.div`
-	max-width: calc(100vw - 22rem);
+	width: 100%;
 	min-height: 3rem;
 	scrollbar-width: none;
 	overflow: hidden;
+	${breakpoints(
+		size.lg,
+		`{
+		max-width: calc(100vw - 22rem);
+	}`
+	)}
 	& .input-content-wrapper {
 		width: 100%;
 		padding: 0 1rem;
 		& .message-content-editor {
-			max-width: calc(100% - 2rem);
 			overflow-x: hidden;
+			${breakpoints(
+				size.lg,
+				`{
+				max-width: calc(100% - 2rem);
+			}`
+			)}
 		}
 	}
 	.images-wrapper {
