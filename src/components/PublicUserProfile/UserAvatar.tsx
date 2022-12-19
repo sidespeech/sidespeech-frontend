@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { fixURL } from '../../helpers/utilities';
 import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 
-import check from '../../assets/check_circle.svg';
+import check from '../../assets/green-verified.svg';
 import defaultPP from '../../assets/default-pp.png';
 import hexagon from '../../assets/hexagon.svg';
 import { SpanElipsis } from '../GeneralSettings/Account/Avatar';
@@ -34,7 +34,7 @@ const UserAvatarContainer = styled.div`
 		${breakpoints(
 			size.lg,
 			`{
-				height: 273px;
+				height: 280px;
                 max-width: none;
                 border-radius: 10px;
             }`

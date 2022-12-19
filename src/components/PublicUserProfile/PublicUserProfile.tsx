@@ -171,6 +171,12 @@ const PublicUserProfileStyled = styled.div`
 				)}
 				.title {
 					margin-bottom: 4px;
+					${breakpoints(
+						size.lg,
+						`{
+						margin-bottom: 10px;
+					}`
+					)}
 				}
 				& .side-card:first-of-type {
 					grid-column: 1/3;
@@ -276,7 +282,7 @@ const PublicUserProfileStyled = styled.div`
 		font-size: 20px;
 		margin-left:-10px;
 		${breakpoints(
-			size.md,
+			size.lg,
 			`{
             font-size: 40px;
 			margin-left:0px;
@@ -575,7 +581,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 													classes="px-3 py-2"
 													width="fit-content"
 													height={36}
-													children={c.name}
+													children={c.getName()}
 													color={isSelected ? 'var(--dark-gray)' : 'var(--text)'}
 													background={
 														isSelected ? 'var(--primary)' : 'var(--white-transparency-10)'
