@@ -103,8 +103,17 @@ export const NftItemContainer = styled.div`
         display: inline-block;
         vertical-align: top;
         margin-right: 10px;
-        max-width: 140px;
+        max-width: 90px;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    .collection-name img {
+			display: inline-block;
+		}
+        ${breakpoints(
+			size.lg,
+			`.collection-name p {
+			max-width: 140px;
+		}`
+		)}	
 `;

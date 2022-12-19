@@ -67,7 +67,7 @@ export default function useLogin() {
 
             // Create the signer message
             const signerMessage =
-                'Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: ' +
+                'Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: https://side.xyz/general-settings/terms This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: ' +
                 address +
                 '  \n \n  Nonce: ' +
                 randomNonceString;
