@@ -254,6 +254,7 @@ const MiddleContainerHeaderStyled = styled.header`
 				display: flex;
 				align-items: center;
 				gap: 1rem;
+				flex-grow: 1;
 				& .image {
 					width: 36px;
 					height: 36px;
@@ -268,6 +269,12 @@ const MiddleContainerHeaderStyled = styled.header`
 						width: 100%;
 						object-fit: cover;
 					}
+				}
+				& .mobile-side-name {
+					display: inline-block;
+					text-align: left;
+					max-width: calc(100% - 36px - 2rem);
+					word-break: break-word;
 				}
 			}
 		}
@@ -604,7 +611,7 @@ export default function MiddleContainerHeader({
 									<div>{currentSide?.name[0]}</div>
 								)}
 							</div>
-							<span>{currentSide?.name}</span>
+							<span className="mobile-side-name">{currentSide?.name}</span>
 							{currentSide?.firstCollection?.safelistRequestStatus === OpenSeaRequestStatus.verified && (
 								<svg
 									width="13"
