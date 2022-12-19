@@ -4,7 +4,7 @@ import { fixURL } from '../../helpers/utilities';
 import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { NFT } from '../../models/interfaces/nft';
 import defaultPP from '../../assets/default-pp.png';
-import check from '../../assets/check_circle.svg';
+import check from '../../assets/green-verified.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
 
 export const NftItem = ({ nft, collection }: { nft: NFT; collection: Collection }) => {
@@ -18,12 +18,18 @@ export const NftItem = ({ nft, collection }: { nft: NFT; collection: Collection 
 
     return (
         <NftItemContainer>
-            <img className="nft-img" src={url} />
+            <div 
+			className="nft-image-bg" 
+			style={{ 
+      			backgroundImage: `url(${url})`
+    		}}>
+				<img className="nft-img" src={url} />
+			</div>
             <NftData>
-                <div>#{nft.token_id}</div>
+                <div className="token-id">#{nft.token_id}</div>
                 {collection && (
-                    <div>
-                        {collection.getName()}
+                    <div className="collection-name">
+                        <p>{collection.getName()}</p>
                         {collection.safelistRequestStatus === OpenSeaRequestStatus.verified && (
                             <img src={check} />
                         )}
@@ -74,5 +80,31 @@ export const NftItemContainer = styled.div`
             height: 251px;
         }`
         )}
+    }
+    .nft-image-bg {
+		height: 100%;
+		width: 100%;
+		position: relative;
+		display: block;
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position: top center;
+		margin-bottom: 10px;
+	}
+	.nft-image-bg img {
+		visibility: hidden;
+	}
+    .token-id {
+        max-width: 86px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .collection-name p {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 10px;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 `;
