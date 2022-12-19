@@ -110,6 +110,7 @@ export default function ChannelRow({
 	index,
 	onChangeName,
 	handleRemove,
+	newChannel,
 	placeholder,
 	onChangeType,
 	onChangeAuthorizeComments,
@@ -121,6 +122,7 @@ export default function ChannelRow({
 	index: number;
 	onChangeName: any;
 	handleRemove: any;
+	newChannel?: boolean;
 	onChangeType: any;
 	placeholder?: string;
 	onChangeAuthorizeComments: any;
@@ -211,7 +213,7 @@ export default function ChannelRow({
 
 	return (
 		<ChannelRowStyled
-			className="bounce-from-right"
+			className={newChannel ? 'bounce-from-right' : 'fade-in'}
 			ref={ref}
 			draggable
 			style={{ opacity, position: 'relative', zIndex: 9999 - index }}
