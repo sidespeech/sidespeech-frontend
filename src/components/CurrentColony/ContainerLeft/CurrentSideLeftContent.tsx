@@ -184,8 +184,10 @@ export default function CurrentSideLeftContent() {
 	}, [currentSide, account]);
 
 	useEffect(() => {
-		const account = localStorage.getItem('userAccount');
-		if (account) getAndSetRoomNotifications(account);
+		if(selectedRoom && selectedChannel){
+			const account = localStorage.getItem('userAccount');
+			if (account) getAndSetRoomNotifications(account);
+		}
 	}, [selectedRoom, selectedChannel]);
 
 	if (!currentSide) return <>No side selected</>;
