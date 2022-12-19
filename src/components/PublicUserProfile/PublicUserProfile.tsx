@@ -38,7 +38,7 @@ const DataCard = styled.div<IDataCard>`
 	${breakpoints(
 		size.lg,
 		`{
-      max-width: 200px;
+     
     }`
 	)}
 `;
@@ -59,6 +59,7 @@ const DataAddress = styled.div`
 		text-overflow: ellipsis;
 		max-width: 100%;
 		overflow: hidden;
+		color: #B6E5E54D;
 	}
 	div.pointer {
 		position: absolute;
@@ -72,7 +73,7 @@ const DataAddress = styled.div`
 	${breakpoints(
 		size.lg,
 		` {
-			max-width: 440px;
+			max-width: 66%;
 		}
 			div.wallet {
 				max-width: 440px;
@@ -101,10 +102,11 @@ const PublicUserProfileStyled = styled.div`
 		}
 		& span {
 			font-size: 2rem;
+			color: #fff;
 			${breakpoints(
 				size.lg,
 				`{
-              font-size: 3rem;
+              font-size: 33.67px;
             }`
 			)}
 		}
@@ -127,12 +129,16 @@ const PublicUserProfileStyled = styled.div`
 			gap: 1rem;
 			justify-content: space-between;
 			max-width: 100%;
+			flex: 1;
+			margin-top: -20px;
 			${breakpoints(
 				size.lg,
 				`{
               max-width: 750px;
+			  margin-top: 0;
             }`
 			)}
+			
 			& .user-name {
 				display: none;
 				${breakpoints(
@@ -148,27 +154,88 @@ const PublicUserProfileStyled = styled.div`
 				display: grid;
 				grid-template-columns: repeat(2, 1fr);
 				gap: 1rem;
+
+				.side-card {
+					height: 60px;
+					padding: 10px 23px;
+				}
 				${breakpoints(
 					size.lg,
 					`{
                   display: flex;
-                }`
+                }
+				.side-card {
+					height: auto;
+					padding: 18px 23px;
+				}`
 				)}
+				.title {
+					margin-bottom: 4px;
+					${breakpoints(
+						size.lg,
+						`{
+						margin-bottom: 10px;
+					}`
+					)}
+				}
 				& .side-card:first-of-type {
 					grid-column: 1/3;
+				}
+				& .side-card .prefix{
+					font-weight: 700;
+					color:#fff;
+					font-size: 12px;
+					${breakpoints(
+					size.lg,
+					`{
+                    font-size: 14px;
+                }`
+				)}
+				}
+				.side-count-logo {
+					width: 18px;
+    				height: 18px;
+					${breakpoints(
+						size.lg,
+						`{
+							width: 37px;
+							height: 37px;
+					}`
+					)}
 				}
 			}
 			& .user-bio {
 				h3 {
 					margin: 0;
+					margin-bottom: 10px;
+					font-size: 14px;
 				}
+				${breakpoints(
+					size.lg,
+					`h3 {
+						font-size: 12px;
+					}`
+				)}
 			}
 			& .address-btn {
 				width: 100%;
-				min-width: 150px;
+				max-width: 50%;
+				${breakpoints(
+					size.lg,
+					`	max-width: 150px;`
+				)}
+			}
+			& .copy {
+				max-width: 50%;
+				${breakpoints(
+					size.lg,
+					`max-width: 131px;`
+				)}
 			}
 			& .user-link {
 				display: none;
+				max-width: 321px;
+				height: 48px;
 				${breakpoints(
 					size.lg,
 					`{
@@ -177,6 +244,9 @@ const PublicUserProfileStyled = styled.div`
 				)}
 			}
 		}
+	}
+	.user-bio p {
+		word-break: break-all;
 	}
 	& .nfts-wrapper {
 		display: grid;
@@ -188,6 +258,34 @@ const PublicUserProfileStyled = styled.div`
 			`{
             display: flex;
             flex-wrap: wrap;
+        }`
+		)}
+	}
+	.bottom-container {
+		height: 55px;
+	}
+	.nftsHeader {
+		font-weight: 700;
+	}
+	.main-title {
+		gap: 0px;
+		grid-gap: 0px;
+		${breakpoints(
+			size.md,
+			`{
+				gap: 20px;
+				grid-gap: 20px;
+        }`
+		)}
+	}
+	.length {
+		font-size: 20px;
+		margin-left:-10px;
+		${breakpoints(
+			size.lg,
+			`{
+            font-size: 40px;
+			margin-left:0px;
         }`
 		)}
 	}
@@ -297,7 +395,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 		<PublicUserProfileStyled>
 			<div className="f-column w-100 align-center justify-start gap-30" style={{ maxWidth: 1094 }}>
 				{!profile && (
-					<h1 className="fade-in flex align-center gap-20 fw-700 text-white">
+					<h1 className="fade-in flex align-center gap-20 fw-700 text-white main-title">
 						<svg
 							className="app-logo"
 							width="79"
@@ -311,14 +409,14 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 								fill="var(--primary)"
 							/>
 						</svg>
-						<span>SideSpeech</span>
+						<span className='wording'>Side.xyz</span>
 					</h1>
 				)}
 				{user ? (
 					<>
 						<div className="user-container">
 							<UserAvatar
-								className="fade-in-delay"
+								className="fade-in-delay user-avatar"
 								nft={profile ? profile.profilePicture : user.userAvatar}
 								name={
 									profile
@@ -327,6 +425,10 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 										: collections?.find(c => c.address === user.userAvatar?.token_address)?.name
 								}
 								userName={user.username}
+								verified={
+									profile ? collections?.find(c => c.address === profile.profilePicture.token_address)
+											: collections?.find(c => c.address === user.userAvatar?.token_address)
+								}
 							/>
 							<div className="fade-in-delay-2 user-more-info-wrapper">
 								<div className="user-name">{user.username}</div>
@@ -350,7 +452,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 								</DataAddress>
 								<div className="side-cards-wrapper">
 									<DataCard className="side-card" background="#705CE926" color="var(--primary)">
-										<div className="flex align-center  gap-20 mb-3">
+										<div className="flex align-center  gap-20 mb-3 title">
 											<svg
 												className="side-count-logo"
 												width="28"
@@ -364,12 +466,12 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 													fill="var(--primary)"
 												/>
 											</svg>
-											<span className="size-40">{user.profiles.length}</span>
+											<span className="size-40 length">{user.profiles.length}</span>
 										</div>
-										<div className="text-white"> Joined Sides</div>
+										<div className="text-white prefix"> Joined Sides</div>
 									</DataCard>
-									<DataCard className="side-card" background="#5CD8E926" color="var(--green)">
-										<div className="flex align-center  gap-20 mb-3">
+									<DataCard className="side-card" background="#5CD8E926" color="var(--blue)">
+										<div className="flex align-center  gap-20 mb-3 title">
 											<svg
 												className="side-count-logo"
 												width="28"
@@ -380,15 +482,15 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 											>
 												<path
 													d="M15.9588 11.243L12.7487 11.2363C11.2681 11.2363 10.0627 10.0005 10.0627 8.48261V8.28112C10.0627 6.76325 11.2681 5.52747 12.7487 5.52747H28C26.7029 3.29096 24.9733 1.39698 22.8376 0H12.7422C8.28732 0 4.67103 3.71408 4.67103 8.27441V8.47589C4.67103 9.44303 4.83481 10.3699 5.13617 11.2363C6.24988 14.4466 9.23725 16.757 12.7487 16.757L15.9588 16.7637C17.4394 16.7637 18.6448 17.9995 18.6448 19.5174V19.7189C18.6448 21.2367 17.4394 22.4725 15.9588 22.4725H0C1.29715 24.709 3.04633 26.603 5.18203 28H15.9523C20.4071 28 24.0234 24.2859 24.0234 19.7256V19.5241C24.0234 18.557 23.8596 17.6301 23.5583 16.7637C22.4576 13.5534 19.4637 11.243 15.9588 11.243Z"
-													fill="var(--green)"
+													fill="var(--blue)"
 												/>
 											</svg>
-											<span className="size-40">{createdSideCount}</span>
+											<span className="size-40 length">{createdSideCount}</span>
 										</div>
-										<div className="text-white"> Created Sides</div>
+										<div className="text-white prefix"> Created Sides</div>
 									</DataCard>
 									<DataCard className="side-card" background="#FFBD3C26" color="var(--warning)">
-										<div className="flex align-center gap-20 mb-3">
+										<div className="flex align-center gap-20 mb-3 title">
 											<svg
 												className="side-count-logo"
 												width="28"
@@ -403,14 +505,14 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 												/>
 											</svg>
 											{userData.user ? (
-												<span className="size-40">{sharedSidesCount}</span>
+												<span className="size-40 length">{sharedSidesCount}</span>
 											) : (
 												<span style={{ lineHeight: '12px' }}>
 													Connect <br /> your wallet
 												</span>
 											)}
 										</div>
-										<div className="text-white">Sides together</div>
+										<div className="text-white prefix">Sides together</div>
 									</DataCard>
 								</div>
 
@@ -446,7 +548,7 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 									</DataAddress>
 									<Button
 										background="var(--white-transparency-10)"
-										classes="address-btn"
+										classes="address-btn copy" 
 										children={'Copy the link'}
 										onClick={copyLink}
 									/>
@@ -455,13 +557,13 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 						</div>
 						{((profile && profile.showNfts) || !profile) && (
 							<div className="fade-in-delay-3 f-column gap-20 w-100">
-								<div>Public NFTs</div>
+								<div className="nftsHeader">Public NFTs</div>
 								<div className="flex f-wrap gap-20">
 									<Button
 										width={'61px'}
 										height={36}
 										children={'All'}
-										color={selectedCollection === 'All' ? 'var(--white)' : 'var(--text)'}
+										color={selectedCollection === 'All' ? 'var(--dark-gray)' : 'var(--text)'}
 										onClick={() => setSelectedCollection('All')}
 										background={
 											selectedCollection === 'All'
@@ -479,8 +581,8 @@ export default function PublicUserProfile({ profile }: { profile?: Profile }) {
 													classes="px-3 py-2"
 													width="fit-content"
 													height={36}
-													children={c.name}
-													color={isSelected ? 'var(--white)' : 'var(--text)'}
+													children={c.getName()}
+													color={isSelected ? 'var(--dark-gray)' : 'var(--text)'}
 													background={
 														isSelected ? 'var(--primary)' : 'var(--white-transparency-10)'
 													}
