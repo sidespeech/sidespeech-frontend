@@ -635,10 +635,8 @@ export default function NewSide() {
 	};
 
 	// Remove collection div in condition
-	const removeDivCollection = (index: number) => {
-		let current_divs = [...divCollections];
-		current_divs.splice(index, 1);
-		setDivCollection(current_divs);
+	const removeDivCollection = (collectionId: string) => {
+		setDivCollection(prevState => prevState.filter(divColl => divColl.collection !== collectionId));
 	};
 
 	// ----- Functions for Admission component **end
@@ -657,6 +655,10 @@ export default function NewSide() {
 	};
 
 	const handleAddNewChannel = () => {
+		if (channels.length >= 50) {
+			toast.error('You can not create more than 50 channels.');
+			return;
+		}
 		const newChannel: Partial<IChannelExtension> = {
 			id: v4(),
 			name: '',

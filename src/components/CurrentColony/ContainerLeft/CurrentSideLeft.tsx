@@ -33,7 +33,7 @@ const ContainerLeftStyled = styled.div`
 			`{
       display: flex;
 	  height: 100vh;
-		overflow-y: scroll;
+		overflow-y: auto;
 		background-color: var(--panels);
     }`
 		)}

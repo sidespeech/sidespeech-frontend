@@ -20,7 +20,7 @@ const LayoutStyled = styled.div`
 		flex-direction: column;
 		text-align: center;
 		justify-content: space-between;
-		padding: 13px 0px 21px 0px;
+		padding: 1rem 0;
 		${breakpoints(
 			size.lg,
 			`{

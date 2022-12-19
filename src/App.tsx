@@ -111,10 +111,10 @@ function App() {
 			setIsSettingsMobileMenuOpen={setIsSettingsMobileMenuOpen}
 		>
 			{onboarding || fetchingUser || loadingWallet ? (
-				<div style={{ height: '100vh', width: '100%', display: 'grid', placeItems: 'center' }}>
+				<div style={{ height: '100vh', width: '100%', display: 'grid', placeItems: 'center', gap: '1rem' }}>
 					<div>
-						<Spinner color={'var(--green)'} size={3} />
-						<div className="size-18 mt-3 text-green">Loading data...</div>
+						<Spinner color={'var(--primary)'} size={2} />
+						<div className="size-18 mt-3 text-primary">Loading data...</div>
 					</div>
 				</div>
 			) : (

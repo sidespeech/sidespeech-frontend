@@ -55,12 +55,14 @@ const DropdownContainer = styled.div<any>`
 	& .dd-list {
 		transition: all 0.3s ease;
 		overflow-y: hidden;
+		display: none;
 		max-height: 0;
 		padding-top: 0.5rem;
 		&.open {
 			max-height: 100vh;
 			transition: all 0.3s ease;
 			padding-top: 0;
+			display: block;
 		}
 		& .filterSearch {
 			padding: 1rem 1rem 0.5rem 1rem;
@@ -99,7 +101,7 @@ export default function Dropdown({
 		} else if (defaultValue === null) {
 			setHeaderTitle(options[0]);
 		}
-	}, []);
+	}, [defaultValue, options]);
 
 	useEffect(() => {
 		if (ref.current && isOpen) {
