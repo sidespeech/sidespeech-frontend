@@ -3,12 +3,13 @@ import styled from 'styled-components';
 import { fixURL } from '../../helpers/utilities';
 import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { NFT } from '../../models/interfaces/nft';
-import defaultPP from '../../assets/default-pp.png';
+import nftIcon from './../../assets/images/bad_image_loading@2x.svg';
+
 import check from '../../assets/green-verified.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
 
 export const NftItem = ({ nft, collection }: { nft: NFT; collection: Collection }) => {
-    const [url, setUrl] = useState<string>(defaultPP);
+    const [url, setUrl] = useState<string>(nftIcon);
 
     useEffect(() => {
         if (nft && nft.metadata && nft.metadata.image) {
