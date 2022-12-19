@@ -39,7 +39,7 @@ interface MessageInputPropsType {
 	imageUpload?: boolean;
 	height?: number;
 	iconSize?: number;
-	keyBindingFn?:any;
+	keyBindingFn?: any;
 	id?: any;
 	maxLength?: number;
 	maxWidth?: number;
@@ -78,23 +78,43 @@ interface MessageInputProps {
 	radius?: string;
 	size?: number;
 	weight?: number;
-	keyBindingFn?:any;
+	keyBindingFn?: any;
 	width?: number | string;
 }
 
 const MessageInputStyled = styled.div`
 	position: relative;
 	min-height: 3rem;
-	background-color: var(--disable);
+	background-color: var(--black-transparency-20);
 	color: var(--text);
 	scrollbar-width: none;
-	background-color: var(--disable);
 	border-radius: 10px;
+	border: 1px solid var(--disable);
+	width: 100%;
+	${breakpoints(
+		size.lg,
+		`{
+		max-width: calc(100vw - 22rem);
+	}`
+	)}
 	& .input-editor-wrapper {
 		width: 100%;
 		padding: 0 1rem 50px 1rem;
-		& .message-intput-editor {
+		${breakpoints(
+			size.lg,
+			`{
+			padding: 0 1rem;
+		}`
+		)}
+		& .message-input-editor {
 			max-height: 250px;
+			overflow-x: hidden;
+			${breakpoints(
+				size.lg,
+				`{
+				max-width: calc(100% - 13rem);
+			}`
+			)}
 		}
 	}
 
@@ -315,23 +335,23 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 	// Iterate through files array and upload each file
 
 	const handleUploadFiles = (ev: any): void => {
-		const images:FileList | null = ev.target.files
+		const images: FileList | null = ev.target.files;
 		if (!images) return;
 		for (let i = 0; i < images.length; i++) {
 			handleUploadFile(images[i]);
 		}
-		ev.target.value=null
+		ev.target.value = null;
 	};
 
-	const keyBindingFn = (e:any) => {
-		if (!e.metaKey && e.code === 'Enter') {
-		  handleSubmit();
-		  return false
+	const keyBindingFn = (e: any) => {
+		if (!e.metaKey && (e.code === 'Enter' || e.code === 'NumpadEnter')) {
+			handleSubmit();
+			return false;
 		}
-	  
+
 		// Return Draft's default command for this key.
-		return Draft.getDefaultKeyBinding(e)
-	  }
+		return Draft.getDefaultKeyBinding(e);
+	};
 
 	// Upload a single file and update state within the message input
 
@@ -390,8 +410,8 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 			message = `${message} [IMAGES] ${arrayOfImagesMarkdown}`;
 		}
 		if (message.trim()) {
+			setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()));
 			props.onSubmit(message);
-			setEditorState(EditorState.createEmpty());
 			setImagesToUpload([]);
 		}
 	};
@@ -404,7 +424,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 					border={props.border}
 					color={props.color}
 					disabled={props.disabled}
-					editorClassName="message-intput-editor"
+					editorClassName="message-input-editor"
 					editorState={editorState}
 					height={props.height}
 					id={props.id}
@@ -413,7 +433,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 					onEditorStateChange={(state: EditorState) => {
 						if (isGiphyOpen) setIsGiphyOpen(false);
 						if (isEmojiMenuOpen) setIsEmojiMenuOpen(false);
-						setEditorState(EditorState.moveFocusToEnd(state));
+						setEditorState(state);
 					}}
 					placeholder={props.placeholder}
 					placeholderColor={props.placeholderColor}
@@ -547,7 +567,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 							name={imageInputId}
 							accept="image/*"
 							multiple
-							onChange={ev => handleUploadFiles(ev)  }
+							onChange={ev => handleUploadFiles(ev)}
 							style={{
 								position: 'absolute',
 								pointerEvents: 'none',
