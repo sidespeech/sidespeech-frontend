@@ -311,7 +311,9 @@ function createResponseObject(valid: boolean, nfts: any, message: string, id: st
 }
 
 export function fixURL(url: string) {
-	if (url.startsWith('ipfs')) {
+	if (url.startsWith('ipfs://ipfs')) {
+		return 'https://ipfs.io/' + url.split('ipfs://').slice(-1)[0];
+	} else if (url.startsWith('ipfs')) {
 		return 'https://ipfs.io/ipfs/' + url.split('ipfs://').slice(-1)[0];
 	} else if (url.startsWith('https://')) {
 		return url;
