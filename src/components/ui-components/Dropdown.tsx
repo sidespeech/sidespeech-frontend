@@ -26,25 +26,56 @@ const DropdownContainer = styled.div<any>`
 
 		width: 100%;
 		height: inherit;
-		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--disable)')};
+		border: 1px solid var(--disable);
+		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--black-transparency-20)')};
 		${props => props.selected && 'border-bottom: 1px solid var(--inactive);'}
 		display: flex;
+		gap: 1rem;
 		align-items: center;
-		justify-content: center;
+		justify-content: space-between;
+		padding: 0 1rem;
 	}
 	& > div[role='list'] > div > div > button {
 		width: 100%;
-		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--disable)')};
+		transition: background-color 0.2s ease;
+		background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'var(--panels)')};
+		border: 1px solid var(--disable);
 
 		height: 40px;
 		border-bottom: 1px solid var(--inactive);
 	}
-	& > div[role='list'] > div > div > button:hover {
-		background-color: var(--panels);
+	& > div[role='list'] > div > div > button:hover,
+	& > div[role='list'] > div > div > button:focus {
+		background-color: var(--background);
 	}
 	& > div[role='list'] > div > div > button:last-child {
 		width: 100%;
 		border-radius: ${props => (props.radius ? props.radius : '0px 0px 7px 7px')};
+	}
+	& .dd-list {
+		transition: all 0.3s ease;
+		overflow-y: hidden;
+		display: none;
+		max-height: 0;
+		padding-top: 0.5rem;
+		&.open {
+			max-height: 100vh;
+			transition: all 0.3s ease;
+			padding-top: 0;
+			display: block;
+		}
+		& .filterSearch {
+			padding: 1rem 1rem 0.5rem 1rem;
+			background-color: var(--panels);
+			border: 1px solid var(--disable);
+			& .resultsNumbers {
+				display: block;
+				margin-top: 0.5rem;
+				padding: 0 0.5rem;
+				width: 100%;
+				text-align: right;
+			}
+		}
 	}
 `;
 
@@ -70,7 +101,7 @@ export default function Dropdown({
 		} else if (defaultValue === null) {
 			setHeaderTitle(options[0]);
 		}
-	}, []);
+	}, [defaultValue, options]);
 
 	useEffect(() => {
 		if (ref.current && isOpen) {
@@ -111,32 +142,29 @@ export default function Dropdown({
 				style={{ ...style }}
 			>
 				<button type="button" onClick={toggleList}>
-					<div className="m-auto">{headerTitle}</div>
-					<div className={`${isOpen ? 'selected' : ''} mr-2`}>
+					<div className="">{headerTitle}</div>
+					<div className={`${isOpen ? 'selected' : ''}`}>
 						<i className="fa-solid fs-22 fa-angle-down"></i>
 					</div>
 				</button>
-				{isOpen && (
-					<div role="list" className="dd-list">
-						{filterDropdownList && (
-							<div className="py-2 filterSearch px-2" style={{ backgroundColor: 'var(--disable)' }}>
-								<InputText
-									ref={ref}
-									border="1px solid var(--primary)"
-									onChange={filterDropdownList}
-									glass
-									iconRightPos={{ top: 9, right: 15 }}
-								/>
-								{resultsNumbers ? (
-									<label className="resultsNumbers">{resultsNumbers} results</label>
-								) : null}
-							</div>
-						)}
-						<List height={300} itemCount={values.length} itemSize={44} width={'100%'}>
-							{Row}
-						</List>
-					</div>
-				)}
+				<div role="list" className={`dd-list ${isOpen ? 'open' : ''}`}>
+					{filterDropdownList && (
+						<div className="filterSearch">
+							<InputText
+								ref={ref}
+								bgColor="var(--panels)"
+								border="1px solid var(--primary)"
+								onChange={filterDropdownList}
+								glass
+								iconRightPos={{ top: 9, right: 15 }}
+							/>
+							{resultsNumbers ? <label className="resultsNumbers">{resultsNumbers} results</label> : null}
+						</div>
+					)}
+					<List height={300} itemCount={values.length} itemSize={44} width={'100%'}>
+						{Row}
+					</List>
+				</div>
 			</DropdownContainer>
 		</ClickAwayListener>
 	);

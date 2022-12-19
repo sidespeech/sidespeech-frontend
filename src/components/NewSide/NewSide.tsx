@@ -81,6 +81,7 @@ const NewSideStyled = styled.div`
 			height: 2rem;
 			border-radius: 2rem;
 			font-size: 0.7rem;
+			cursor: pointer;
 			&::after {
 				content: '';
 				position: absolute;
@@ -94,16 +95,17 @@ const NewSideStyled = styled.div`
 			&:last-of-type::after {
 				display: none;
 			}
-			&.active {
-				background-color: var(--primary);
-				color: var(--white);
-			}
 			&.completed {
 				background-color: var(--green);
 				color: var(--disable);
 				&::after {
 					background-color: var(--green);
 				}
+			}
+			&.active {
+				border: 1px solid var(--primary);
+				background-color: var(--black-transparency-20);
+				color: var(--white);
 			}
 		}
 	}
@@ -129,12 +131,15 @@ const NewSideStyled = styled.div`
 				gap: 0.5rem;
 				align-items: center;
 				justify-content: space-between;
+				transition: color 0.2s ease;
+				cursor: pointer;
 				& > div {
 					display: flex;
 					gap: 0.5rem;
 					align-items: center;
 					& .step-icon {
 						background-color: var(--disable);
+						transition: background-color 0.2s ease;
 						display: flex;
 						flex-shrink: 0;
 						align-items: center;
@@ -145,21 +150,22 @@ const NewSideStyled = styled.div`
 						font-size: 0.7rem;
 					}
 				}
-				&.active {
-					color: var(--primary) !important;
-					background-color: transparent !important;
-					border-right: 2px solid var(--primary);
-					& .step-icon {
-						background-color: var(--primary);
-						color: var(--white);
-					}
-				}
 				&.completed {
 					color: var(--green) !important;
 					background-color: transparent !important;
 					& .step-icon {
 						background-color: var(--green);
 						color: var(--disable);
+					}
+				}
+				&.active {
+					color: var(--primary) !important;
+					background-color: transparent !important;
+					border-right: 2px solid var(--primary);
+					& .step-icon {
+						border: 1px solid var(--primary);
+						background-color: var(--black-transparency-20);
+						color: var(--white);
 					}
 				}
 				& .fa-check {
@@ -254,7 +260,7 @@ const channelInitalState = [
 ];
 
 const Middle = styled.div`
-	overflow: scroll;
+	overflow-y: scroll;
 	height: calc(100vh - 62px - 77px);
 	padding-bottom: calc(2rem + 77px);
 	${breakpoints(
@@ -629,10 +635,8 @@ export default function NewSide() {
 	};
 
 	// Remove collection div in condition
-	const removeDivCollection = (index: number) => {
-		let current_divs = [...divCollections];
-		current_divs.splice(index, 1);
-		setDivCollection(current_divs);
+	const removeDivCollection = (collectionId: string) => {
+		setDivCollection(prevState => prevState.filter(divColl => divColl.collection !== collectionId));
 	};
 
 	// ----- Functions for Admission component **end
@@ -651,6 +655,10 @@ export default function NewSide() {
 	};
 
 	const handleAddNewChannel = () => {
+		if (channels.length >= 50) {
+			toast.error('You can not create more than 50 channels.');
+			return;
+		}
 		const newChannel: Partial<IChannelExtension> = {
 			id: v4(),
 			name: '',
@@ -771,12 +779,13 @@ export default function NewSide() {
 			</div>
 
 			<div className="tabs-wrapper_mobile">
-				{steps.map((step: any) => (
+				{steps.map((step: any, index: number) => (
 					<i
 						className={`${step['icon']} ${step['active'] ? 'active' : ''} ${
 							step['completed'] ? 'completed' : ''
 						} step-icon`}
 						key={step['icon']}
+						onClick={() => handleTabs(index)}
 					></i>
 				))}
 			</div>

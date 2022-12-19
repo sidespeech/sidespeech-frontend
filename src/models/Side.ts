@@ -1,5 +1,6 @@
 import { Channel } from './Channel';
 import { CollectionSides } from './CollectionSides';
+import { Collection } from './interfaces/collection';
 import { MetadataSides } from './MetadataSides';
 import { Profile } from './Profile';
 
@@ -22,7 +23,7 @@ export class Side {
 	priv: boolean;
 	private?: boolean;
 	status: SideStatus;
-	firstCollection: any;
+	firstCollection: Collection;
 	collectionsCount: number;
 	// this will be a json containing an object with the token related to a condition as key and
 	// his value will be the property key and the property value related to this collection
@@ -50,7 +51,7 @@ export class Side {
 		this.creatorAddress = _data.creatorAddress;
 		this.description = _data.description;
 		this.eligible = false;
-		this.firstCollection = {};
+		this.firstCollection = new Collection({});
 		this.id = _data.id;
 		this.invitations = _data.invitations;
 		this.isCreatorOwner = _data.isCreatorOwner;

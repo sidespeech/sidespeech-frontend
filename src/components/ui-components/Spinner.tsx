@@ -4,17 +4,27 @@ import styled from 'styled-components';
 const SpinnerStyled = styled.div<any>`
 	width: ${props => props.size * 50}px;
 	height: ${props => props.size * 50}px;
-	border: 5px solid ${props => (props.color ? props.color : 'var(--inactive)')};
-	border-bottom-color: transparent;
-	border-radius: ${props => props.size * 50}px;
-	animation: 1.5s linear infinite spinner;
+	position: relative;
+	&::after {
+		position: absolute;
+		z-index: 2;
+		content: '';
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border: ${props => props.size * 2 + 5}px solid ${props => (props.color ? props.color : 'var(--inactive)')};
+		border-bottom-color: transparent;
+		border-radius: ${props => props.size * 50}px;
+		animation: 1.5s linear infinite spinner;
+	}
 
 	@keyframes spinner {
 		0% {
-			transform: rotate(0deg);
+			transform: rotate(0deg) translate(0);
 		}
 		100% {
-			transform: rotate(360deg);
+			transform: rotate(360deg) translate(0);
 		}
 	}
 `;

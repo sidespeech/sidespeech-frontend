@@ -15,6 +15,7 @@ interface CoverImgProps {
 const CoverImg = styled.div<CoverImgProps>`
 	height: 146px;
 	width: 100%;
+	flex-shrink: 0;
 	background: linear-gradient(180deg, rgba(27, 29, 48, 0) 0%, #1b1d30 100%),
 		linear-gradient(0deg, rgba(27, 29, 48, 0.3), rgba(27, 29, 48, 0.3)), url(${props => props.backgroundImage});
 	background-position: center;
@@ -31,6 +32,9 @@ const ContainerLeftStyled = styled.div`
 			size.lg,
 			`{
       display: flex;
+	  height: 100vh;
+		overflow-y: auto;
+		background-color: var(--panels);
     }`
 		)}
 	}
@@ -55,8 +59,8 @@ const ContainerLeftStyled = styled.div`
 			${breakpoints(
 				size.lg,
 				`{
-        display: none;
-      }`
+					display: none;
+				}`
 			)}
 			.menu-icon {
 				margin-right: 1rem;
@@ -72,12 +76,14 @@ const ContainerLeftStyled = styled.div`
 		}
 		.toolbar-content {
 			background-color: var(--panel);
-			transform: scaleY(0);
+			transition: max-height 0.3s ease;
+			max-height: 0;
+			overflow: hidden;
 			position: absolute;
+			z-index: 9901;
 			&.open {
 				position: relative;
-				transform: scaleY(1);
-				min-height: calc(100vh - 77px - 6rem);
+				max-height: calc(100vh - 77px - 6rem);
 			}
 		}
 	}
@@ -127,7 +133,7 @@ export default function CurrentSideLeft({}: CurrentSideLeftProps) {
 				</ContainerLeft>
 			</div>
 
-			<div className="toolbar-mobile fade-in-top">
+			<div className="toolbar-mobile">
 				<button onClick={() => setIsToolbarOpen(prevState => !prevState)} className="toolbar-wrapper">
 					{isToolbarOpen ? (
 						<>

@@ -10,7 +10,7 @@ import Requests from './requests/requests';
 import { RootState } from '../../../redux/store/app.store';
 import ContainerLeft from '../../ui-components/ContainerLeft';
 import TabItems from '../../ui-components/TabItems';
-import { setCurrentColony, setSelectedChannel, setSettingsOpen } from '../../../redux/Slices/AppDatasSlice';
+import { setCurrentSide, setSelectedChannel, setSettingsOpen } from '../../../redux/Slices/AppDatasSlice';
 import { Dot } from '../../ui-components/styled-components/shared-styled-components';
 import { Role } from '../../../models/Profile';
 import { State, Type } from '../../../models/Invitation';
@@ -191,7 +191,7 @@ export default function Settings() {
 		async function getSide() {
 			if (currentSide) {
 				const res = await sideService.getSideById(currentSide['id']);
-				dispatch(setCurrentColony(res));
+				dispatch(setCurrentSide(res));
 				dispatch(setSelectedChannel(res.channels.find(c => c.type === 0) || res.channels[0]));
 			}
 		}

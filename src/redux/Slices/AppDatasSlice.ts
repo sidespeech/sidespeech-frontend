@@ -22,7 +22,7 @@ export const appDatasSlice = createSlice({
   name: "appDatas",
   initialState,
   reducers: {
-    setCurrentColony: (state: AppDatas, action: PayloadAction<Side | null>) => {
+    setCurrentSide: (state: AppDatas, action: PayloadAction<Side | null>) => {
       if (action.payload) state.currentSide = { ...action.payload };
       else state.currentSide = null;
     },
@@ -64,7 +64,7 @@ export const appDatasSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-  setCurrentColony,
+  setCurrentSide,
   setSelectedChannel,
   updateChannel,
   addChannel,

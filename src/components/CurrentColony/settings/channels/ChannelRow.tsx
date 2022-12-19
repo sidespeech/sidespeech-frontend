@@ -7,7 +7,7 @@ import Dropdown from '../../../ui-components/Dropdown';
 import InputText from '../../../ui-components/InputText';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
 import _ from 'lodash';
-import { useDrag, useDrop } from 'react-dnd';
+import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 import { ItemTypes } from './ChannelsTab';
 import type { Identifier, XYCoord } from 'dnd-core';
 
@@ -31,7 +31,12 @@ const ChannelRowStyled = styled.div<any>`
 		align-items: center;
 		gap: 1rem;
 		flex-shrink: 0;
-		& i {
+		${props =>
+			props.isHover &&
+			(props.draggingDownwards
+				? 'border-bottom: 3px solid var(--green);'
+				: 'border-top: 3px solid var(--green);')}
+		& .fa-grip-lines {
 			cursor: move;
 		}
 	}
@@ -79,6 +84,7 @@ const InputTextWithDropdown = styled.div`
 	align-items: center;
 	padding-left: 4px;
 	border-radius: 7px;
+	border: 1px solid var(--disable);
 	${breakpoints(
 		size.md,
 		`{
@@ -92,6 +98,11 @@ interface DragItem {
 	id: string;
 	type: string;
 	current: boolean;
+}
+
+enum DraggingWay {
+	UPWARDS,
+	DOWNWARDS
 }
 
 export default function ChannelRow({
@@ -119,14 +130,17 @@ export default function ChannelRow({
 }) {
 	// const [channels, setChannels] = useState<any>(initialChannelsState);
 	const [childIndex, setChildIndex] = useState<any>({ index: 0, count: 0 });
+	const [draggingWay, setDraggingWay] = useState<DraggingWay | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
-	const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
+	const [{ handlerId, isHover }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null; isHover: boolean }>({
 		accept: ItemTypes.CHANNEL,
 		collect(monitor) {
 			return {
-				handlerId: monitor.getHandlerId()
+				handlerId: monitor.getHandlerId(),
+				isHover: monitor.isOver({ shallow: true })
 			};
 		},
+
 		hover(item: DragItem, monitor) {
 			if (!ref.current) {
 				return;
@@ -157,22 +171,16 @@ export default function ChannelRow({
 
 			// Dragging downwards
 			if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-				return;
+				setDraggingWay(DraggingWay.DOWNWARDS);
 			}
 
 			// Dragging upwards
 			if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-				return;
+				setDraggingWay(DraggingWay.UPWARDS);
 			}
-
-			// Time to actually perform the action
-			moveCard(dragIndex, hoverIndex);
-
-			// Note: we're mutating the monitor item here!
-			// Generally it's better to avoid mutations,
-			// but it's good here for the sake of performance
-			// to avoid expensive index searches.
-			item.index = hoverIndex;
+		},
+		drop(item: DragItem, monitor: DropTargetMonitor<DragItem, void>) {
+			moveCard(item.index, index);
 		}
 	});
 
@@ -202,7 +210,15 @@ export default function ChannelRow({
 	}, [channelsNewSide]);
 
 	return (
-		<ChannelRowStyled ref={ref} draggable style={{ opacity }} data-handler-id={handlerId}>
+		<ChannelRowStyled
+			className="bounce-from-right"
+			ref={ref}
+			draggable
+			style={{ opacity, position: 'relative', zIndex: 9999 - index }}
+			isHover={isHover}
+			draggingDownwards={draggingWay === DraggingWay.DOWNWARDS}
+			data-handler-id={handlerId}
+		>
 			<div className="input-wrapper">
 				<i className="fa-solid fa-grip-lines fa-lg text-secondary-dark"></i>
 				<InputTextWithDropdown>
@@ -210,17 +226,14 @@ export default function ChannelRow({
 						onChange={(value: any) => onChangeType(value, channel.id, placeholder ? true : false)}
 						options={options}
 						values={[ChannelType.Announcement, ChannelType.Poll, ChannelType.Textual]}
-						disable={
-							(channelsNewSide && !placeholder && index === 0) ||
-							(!channelsNewSide && placeholder !== undefined && index === 0)
-						}
+						disable={channelsNewSide && !placeholder && index === 0}
 						style={{
-							radius: '7px',
+							borderRadius: '5px',
 							height: '36px',
 							width: '35%',
 							zIndex: childIndex.count - childIndex.index
 						}}
-						backgroundColor="var(--disable)"
+						backgroundColor="var(--panels)"
 						defaultValue={options[channel['type']]}
 					/>
 					<InputText
@@ -234,6 +247,7 @@ export default function ChannelRow({
 						value={channel['name']}
 						onChange={(e: any) => onChangeName(e, channel.id, placeholder ? true : false)}
 						radius="10px"
+						maxLength={100}
 					/>
 				</InputTextWithDropdown>
 			</div>
@@ -280,6 +294,7 @@ export default function ChannelRow({
 				{channel['type'] !== ChannelType.Textual && (
 					<div className="flex">
 						<CustomCheckbox
+							name="authorize-comments"
 							isChecked={channel['authorizeComments']}
 							onClick={(e: any) => {
 								onChangeAuthorizeComments(e, channel.id, placeholder ? true : false);

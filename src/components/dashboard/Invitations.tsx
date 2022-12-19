@@ -251,8 +251,8 @@ const Invitations = ({}: InvitationsProps) => {
 	};
 
 	return (
-		<InvitationsStyled className="fade-in">
-			<h2 className="title">
+		<InvitationsStyled>
+			<h2 className="fade-in title">
 				Invitations {filteredInvitations.length ? '(' + filteredInvitations.length + ')' : null}
 			</h2>
 
@@ -273,10 +273,18 @@ const Invitations = ({}: InvitationsProps) => {
 				</div>
 
 				<div className="flex align-center ">
-					<span className="">Only verified collections</span>{' '}
-					<CustomCheckbox isChecked={isCheckedVerified} onClick={onFilterByVerifiedcollection} />
-					<span className="ml-4">Only eligible sides</span>{' '}
-					<CustomCheckbox isChecked={isCheckedEligible} onClick={onFilterByEligibleSide} />
+					<CustomCheckbox
+						label="Only verified collections"
+						name="only-verified"
+						isChecked={isCheckedVerified}
+						onClick={onFilterByVerifiedcollection}
+					/>
+					<CustomCheckbox
+						label="Only eligible sides"
+						name="only-eligible"
+						isChecked={isCheckedEligible}
+						onClick={onFilterByEligibleSide}
+					/>
 				</div>
 			</div>
 
@@ -290,7 +298,7 @@ const Invitations = ({}: InvitationsProps) => {
 									? JSON.parse(invitation['recipient']['userAvatar'])?.metadata?.thumbnail
 									: 'https://images.unsplash.com/photo-1662948291101-691f9fa850d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80';
 							return (
-								<div className="requests-list" key={index}>
+								<div className="requests-list bounce-from-right" key={index}>
 									{/* Side data */}
 									<div>
 										<div className="flex align-center gap-20">

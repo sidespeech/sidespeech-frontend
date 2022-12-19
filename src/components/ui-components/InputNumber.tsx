@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { InputHTMLAttributes, useRef } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 
@@ -7,7 +7,8 @@ const InputNumber = styled.input`
 	height: 44px;
 	width: 73px;
 	border-radius: 7px;
-	background-color: var(--disable);
+	background-color: var(--black-transparency-20);
+	border: 1px solid var(--disable);
 `;
 
 const style = {
@@ -52,12 +53,17 @@ export default function CustomInputNumber({ onChange, defaultValue, collections,
 
 	return (
 		<div className="relative" style={{ width: 'fit-content' }}>
-			<InputNumber ref={ref} type={'number'} defaultValue={defaultValue} />
+			<InputNumber
+				ref={ref}
+				type={'number'}
+				value={defaultValue}
+				onChange={ev => onChange(ev.target.value || 1)}
+			/>
 			<div className="f-column absolute" style={style.container}>
-				<div style={style.plusDiv} onClick={() => signClick(1)}>
+				<div className="cursor-pointer" style={style.plusDiv} onClick={() => signClick(1)}>
 					+
 				</div>
-				<div style={style.lessDiv} onClick={() => signClick(-1)}>
+				<div className="cursor-pointer" style={style.lessDiv} onClick={() => signClick(-1)}>
 					-
 				</div>
 			</div>

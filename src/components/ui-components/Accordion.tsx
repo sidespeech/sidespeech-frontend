@@ -47,30 +47,28 @@ const AccordionStyled = styled.div<AccordionStyledProps>`
 	.accordion-content {
 		padding-top: 0.5rem;
 		overflow: hidden;
-		animation: ${props => (props.open ? 'show .3s ease forwards' : 'hide .3s ease .1s forwards')};
+		max-height: 0;
+		animation: ${props => (props.open ? 'show 1s ease forwards' : 'hide .3s ease forwards')};
 		& > div {
 			height: 100%;
-			transition: transform 0.3s ease;
-			transform-origin: top;
-			transform: ${props => (props.open ? '' : 'translateY(-150%)')};
 		}
 	}
 
 	@keyframes hide {
 		from {
-			height: auto;
+			max-height: 3000vh;
 		}
 		to {
-			height: 0;
+			max-height: 0;
 		}
 	}
 
 	@keyframes show {
 		from {
-			height: 0;
+			max-height: 0;
 		}
 		to {
-			height: auto;
+			max-height: 3000vh;
 		}
 	}
 `;

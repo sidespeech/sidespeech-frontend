@@ -14,13 +14,13 @@ const LayoutStyled = styled.div`
 	display: flex;
 	overflow: hidden;
 	& .left-container {
-		background-color: var(--panels-gray);
+		background-color: var(--super-dark);
 		width: 70px;
 		display: none;
 		flex-direction: column;
 		text-align: center;
 		justify-content: space-between;
-		padding: 13px 0px 21px 0px;
+		padding: 1rem 0;
 		${breakpoints(
 			size.lg,
 			`{

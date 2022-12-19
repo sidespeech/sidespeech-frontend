@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import { EventType } from '../../constants/EventType';
 import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
 import { Announcement } from '../../models/Announcement';
@@ -16,7 +16,15 @@ import notificationService from '../../services/api-services/notification.servic
 import { isColor } from '../../helpers/utilities';
 
 const UserSidesStyled = styled.div`
+	max-height: calc(100vh - 4rem - 48px);
+	overflow-y: scroll;
+	overflow-x: hidden;
+	scrollbar-width: none;
+	::-webkit-scrollbar {
+		width: 0;
+	}
 	.colony-badge {
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -28,13 +36,16 @@ const UserSidesStyled = styled.div`
 		margin: 0px 12px;
 		overflow: hidden;
 		z-index: 50;
-		transition: border 0.2s ease;
+		transition: all 0.2s ease;
 		font-size: 27px;
 		font-weight: 700;
 		text-transform: uppercase;
 
 		&.active {
 			border: 2px solid var(--primary);
+		}
+		&:hover {
+			outline: 2px solid var(--primary);
 		}
 		& > img {
 			object-fit: cover;
@@ -51,18 +62,15 @@ const UserSidesStyled = styled.div`
 
 export default function UserSides() {
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
+	const { id } = useParams();
 
-	const { currentSide, settingsOpen } = useSelector((state: RootState) => state.appDatas);
+	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 	const userData = useSelector((state: RootState) => state.user);
 	const [isSideAdmin, SetIsSideAdmin] = useState<any>(null);
 	const [displayModal, setDisplayModal] = useState<boolean>(false);
 	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
 	const [side, setSide] = useState<Side | null>(null);
 
-	// const [showCreateModal, setshowCreateModal] = useState<boolean>(false);
-	// const [collectionHolder, setCollectionHolder] = useState<string[]>([]);
-	// const [isSubscribe, setIsSubscribe] = useState<boolean>(false);
 	const [dots, setDots] = useState<any>({});
 
 	const displaySide = (side: Side) => {
@@ -152,13 +160,13 @@ export default function UserSides() {
 	return (
 		<>
 			<UserSidesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
-				{userData.sides.map((c, i) => {
+				{userData.sides?.map((c, i) => {
 					return (
 						<div
 							onClick={() => {
 								displaySide(c);
 							}}
-							className={`colony-badge pointer ${currentSide?.name === c.name ? 'active' : ''}`}
+							className={`colony-badge pointer ${id === c.name ? 'active' : ''}`}
 							style={{ backgroundColor: isColor(c.sideImage) ? c.sideImage : '' }}
 							key={c.id}
 						>

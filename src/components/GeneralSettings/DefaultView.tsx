@@ -25,7 +25,7 @@ const InnerPageStyled = styled.div`
 		a:focus,
 		a:active {
 			color: #b4c1d2;
-			text-decoration: underline!important;
+			text-decoration: underline !important;
 		}
 	}
 	&.themes {
@@ -152,6 +152,14 @@ export const Icons = {
 			/>
 		</svg>
 	),
+	settings: () => (
+		<svg width="28" height="29" viewBox="0 0 28 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path
+				d="M11.5251 28.1503L10.9884 23.7036C10.5028 23.5758 9.97282 23.3525 9.39833 23.0336C8.82282 22.7136 8.3434 22.3747 7.96007 22.017L3.8584 23.742L0.983398 18.7586L4.5484 16.0753C4.49729 15.8197 4.45282 15.5448 4.415 15.2504C4.37615 14.957 4.35673 14.6697 4.35673 14.3886C4.35673 14.1331 4.37615 13.8581 4.415 13.5637C4.45282 13.2703 4.49729 12.9575 4.5484 12.6253L0.983398 9.94196L3.8584 5.03529L7.92173 6.72196C8.38173 6.33863 8.87393 5.99363 9.39833 5.68696C9.92171 5.38029 10.439 5.15029 10.9501 4.99696L11.5251 0.550293H17.2751L17.8117 4.99696C18.3995 5.22696 18.9173 5.46974 19.365 5.72529C19.8117 5.98085 20.2778 6.31307 20.7634 6.72196L24.9417 5.03529L27.8167 9.94196L24.1367 12.702C24.239 13.0086 24.2901 13.2964 24.2901 13.5652V14.3503C24.2901 14.5803 24.2839 14.8297 24.2717 15.0986C24.2584 15.3664 24.2134 15.692 24.1367 16.0753L27.7401 18.7586L24.8651 23.742L20.7634 21.9786C20.2778 22.3875 19.7989 22.7325 19.3267 23.0136C18.8534 23.2947 18.3484 23.5247 17.8117 23.7036L17.2751 28.1503H11.5251ZM14.3617 18.1836C15.4351 18.1836 16.3423 17.8131 17.0834 17.072C17.8245 16.3308 18.1951 15.4236 18.1951 14.3503C18.1951 13.277 17.8245 12.3697 17.0834 11.6286C16.3423 10.8875 15.4351 10.517 14.3617 10.517C13.2884 10.517 12.3812 10.8875 11.6401 11.6286C10.899 12.3697 10.5284 13.277 10.5284 14.3503C10.5284 15.4236 10.899 16.3308 11.6401 17.072C12.3812 17.8131 13.2884 18.1836 14.3617 18.1836ZM14.3617 16.6503C13.7228 16.6503 13.18 16.4264 12.7333 15.9787C12.2856 15.532 12.0617 14.9892 12.0617 14.3503C12.0617 13.7114 12.2856 13.1686 12.7333 12.7219C13.18 12.2742 13.7228 12.0503 14.3617 12.0503C15.0006 12.0503 15.5439 12.2742 15.9917 12.7219C16.4384 13.1686 16.6617 13.7114 16.6617 14.3503C16.6617 14.9892 16.4384 15.532 15.9917 15.9787C15.5439 16.4264 15.0006 16.6503 14.3617 16.6503ZM12.8667 26.617H15.8567L16.4317 22.477C17.1984 22.2725 17.895 21.9914 18.5217 21.6336C19.1473 21.2758 19.7795 20.7775 20.4184 20.1386L24.2134 21.787L25.7467 19.1803L22.4117 16.6503C22.5395 16.2158 22.6228 15.8131 22.6617 15.442C22.6995 15.072 22.7184 14.7081 22.7184 14.3503C22.7184 13.967 22.6995 13.6025 22.6617 13.257C22.6228 12.9125 22.5395 12.5231 22.4117 12.0886L25.8234 9.52029L24.2901 6.91363L20.3801 8.56196C19.9201 8.05085 19.3134 7.57143 18.56 7.12369C17.8056 6.67698 17.0834 6.37696 16.3934 6.22363L15.9334 2.08363H12.8667L12.4067 6.22363C11.6401 6.37696 10.9306 6.63865 10.2785 7.00869C9.62731 7.37976 8.98229 7.88474 8.3434 8.52363L4.51007 6.91363L2.97673 9.52029L6.31173 12.012C6.18395 12.3442 6.09451 12.7147 6.0434 13.1236C5.99229 13.5325 5.96673 13.9542 5.96673 14.3886C5.96673 14.772 5.99229 15.1553 6.0434 15.5386C6.09451 15.922 6.17118 16.2925 6.2734 16.6503L2.97673 19.1803L4.51007 21.787L8.30506 20.177C8.9184 20.7903 9.54451 21.2758 10.1834 21.6336C10.8223 21.9914 11.5506 22.2725 12.3684 22.477L12.8667 26.617Z"
+				fill="#DCEDEF"
+			/>
+		</svg>
+	),
 	terms: () => (
 		<svg width="23" height="29" viewBox="0 0 23 29" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path
@@ -193,6 +201,20 @@ export default function DefaultView() {
 				</InnerPageStyled>
 			);
 
+		case '/general-settings/configuration':
+			return (
+				<InnerPageStyled className="themes">
+					<PageTitle
+						title="Settings"
+						Icon={Icons.settings}
+						onBack={() => setIsSettingsMobileMenuOpen?.(true)}
+					/>
+					<div className="content">
+						<div className="coming-soon"></div>
+					</div>
+				</InnerPageStyled>
+			);
+
 		case '/general-settings/privacy':
 			return (
 				<InnerPageStyled className="privacy">
@@ -204,31 +226,45 @@ export default function DefaultView() {
 					<div className="fade-in-delay content">
 						<div className="inner">
 							<p>
-							Side utilizes state-of-the-art security to provide private messaging and Internet calling services to users worldwide (“Services”).
+								Side utilizes state-of-the-art security to provide private messaging and Internet
+								calling services to users worldwide (“Services”).
 							</p>
 							<h3>Information you provide</h3>
 							<p>
-							Additional technical information is stored on our servers, including randomly generated authentication tokens, keys, push tokens, and other material that is necessary to transmit messages or other actions. Side limits this additional technical information to the minimum required to operate the Services.
+								Additional technical information is stored on our servers, including randomly generated
+								authentication tokens, keys, push tokens, and other material that is necessary to
+								transmit messages or other actions. Side limits this additional technical information to
+								the minimum required to operate the Services.
 							</p>
 							<p>
-								<strong>User Support.</strong> If you contact Side User Support, any personal data you may share with us is kept only for the purposes of researching the issue and contacting you about your case.
+								<strong>User Support.</strong> If you contact Side User Support, any personal data you
+								may share with us is kept only for the purposes of researching the issue and contacting
+								you about your case.
 							</p>
 							<p>
-								<strong>Managing your information.</strong> You can manage your personal information in Side’s profile Settings.
+								<strong>Managing your information.</strong> You can manage your personal information in
+								Side’s profile Settings.
 							</p>
 							<h3>Updates</h3>
 							<p>
-							We will update this privacy policy as needed so that it is current, accurate, and as clear as possible. Your continued use of our Services confirms your acceptance of our updated Privacy Policy.
+								We will update this privacy policy as needed so that it is current, accurate, and as
+								clear as possible. Your continued use of our Services confirms your acceptance of our
+								updated Privacy Policy.
 							</p>
 							<h3>Terms</h3>
 							<p>
-							Please also read our <a onClick={() => navigate(`/general-settings/terms`)}>Terms</a> which also governs the terms of this Privacy Policy.
+								Please also read our <a onClick={() => navigate(`/general-settings/terms`)}>Terms</a>
+								 which also governs the terms of this Privacy Policy.
 							</p>
 							<h3>Contact Us</h3>
 							<p>
-							If you have questions about our Privacy Policy please contact us at <a href="mailto:hello@side.xyz">hello@side.xyz</a>.<br/><br/>
-							Effective as of December 1, 2022.<br/><br/>
-							Updated December 1, 20122. 
+								If you have questions about our Privacy Policy please contact us at 
+								<a href="mailto:hello@side.xyz">hello@side.xyz</a>.<br />
+								<br />
+								Effective as of December 1, 2022.
+								<br />
+								<br />
+								Updated December 1, 20122.
 							</p>
 						</div>
 					</div>
@@ -246,41 +282,92 @@ export default function DefaultView() {
 					<div className="content">
 						<div className="inner">
 							<p>
-								You agree to our Terms of Service (“Terms”) by using our app, services, or website (together, “Services”).
+								You agree to our Terms of Service (“Terms”) by using our app, services, or website
+								(together, “Services”).
 							</p>
 
 							<h3>About our services</h3>
 
 							<p>
-							<strong>Minimum Age.</strong> You must be at least 13 years old to use our Services. The minimum age to use our Services without parental approval may be higher in your home country.
+								<strong>Minimum Age.</strong> You must be at least 13 years old to use our Services. The
+								minimum age to use our Services without parental approval may be higher in your home
+								country.
 							</p>
 							<p>
-							<strong>Profile Creation.</strong> To create a profile on Side, you must connect your wallet or use <a href="https://tokenproof.xyz/auth" target="_blank">tokenproof online authentification</a>. When you connect your MetaMask or Wallet Connect to Side for the first time, you have to sign a message to confirm that you are the owner of the wallet address. This signature does NOT allow Side to have access to your wallet or to make transactions with it.
+								<strong>Profile Creation.</strong> To create a profile on Side, you must connect your
+								wallet or use{' '}
+								<a href="https://tokenproof.xyz/auth" target="_blank">
+									tokenproof online authentification
+								</a>
+								. When you connect your MetaMask or Wallet Connect to Side for the first time, you have
+								to sign a message to confirm that you are the owner of the wallet address. This
+								signature does NOT allow Side to have access to your wallet or to make transactions with
+								it.
 							</p>
-							<p><strong>Privacy of user data.</strong> Side does not sell, rent or monetize your personal data or content in any way – ever.</p>
-							<p>Please read our <a onClick={() => navigate(`/general-settings/privacy`)}>Privacy Policy</a> to understand how we safeguard the information you provide when using our Services. For the purpose of operating our Services, you agree to our data practices as described in our Privacy Policy.</p>
+							<p>
+								<strong>Privacy of user data.</strong> Side does not sell, rent or monetize your
+								personal data or content in any way – ever.
+							</p>
+							<p>
+								Please read our 
+								<a onClick={() => navigate(`/general-settings/privacy`)}>Privacy Policy</a> to
+								understand how we safeguard the information you provide when using our Services. For the
+								purpose of operating our Services, you agree to our data practices as described in our
+								Privacy Policy.
+							</p>
 
 							<h3>Using Side</h3>
 							<p>
-								<strong>Our Terms and Policies.</strong> You must use our Services according to our Terms and posted policies. 
+								<strong>Our Terms and Policies.</strong> You must use our Services according to our
+								Terms and posted policies.
 							</p>
 							<p>
-								<strong>Legal and Acceptable Use.</strong> You agree to use our Services only for legal, authorized, and acceptable purposes. You will not use (or assist others in using) our Services in ways that: (a) violate or infringe the rights of Side, our users, or others, including privacy, publicity, intellectual property, or other proprietary rights; (b) involve sending illegal or impermissible communications such as bulk messaging, auto-messaging, and auto-dialing. 
+								<strong>Legal and Acceptable Use.</strong> You agree to use our Services only for legal,
+								authorized, and acceptable purposes. You will not use (or assist others in using) our
+								Services in ways that: (a) violate or infringe the rights of Side, our users, or others,
+								including privacy, publicity, intellectual property, or other proprietary rights; (b)
+								involve sending illegal or impermissible communications such as bulk messaging,
+								auto-messaging, and auto-dialing.
 							</p>
 							<p>
-								<strong>Harm to Side.</strong> You must not (or assist others to) access, use, modify, distribute, transfer, or exploit our Services in unauthorized manners, or in ways that harm Side, our Services, or systems. For example you must not (a) gain or try to gain unauthorized access to our Services or systems; (b) disrupt the integrity or performance of our Services; (c) create accounts for our Services through unauthorized or automated means; (d) collect information about our users in any unauthorized manner; or (e) sell, rent, or charge for our Services.
+								<strong>Harm to Side.</strong> You must not (or assist others to) access, use, modify,
+								distribute, transfer, or exploit our Services in unauthorized manners, or in ways that
+								harm Side, our Services, or systems. For example you must not (a) gain or try to gain
+								unauthorized access to our Services or systems; (b) disrupt the integrity or performance
+								of our Services; (c) create accounts for our Services through unauthorized or automated
+								means; (d) collect information about our users in any unauthorized manner; or (e) sell,
+								rent, or charge for our Services.
 							</p>
 							<p>
-								<strong>Keeping Your Account Secure.</strong> You are responsible for keeping your device, your Side account and your wallet safe and secure.
+								<strong>Keeping Your Account Secure.</strong> You are responsible for keeping your
+								device, your Side account and your wallet safe and secure.
 							</p>
 							<p>
-								<strong>Security of your Private Keys, seed words or other credentials.</strong> We shall not be responsible to secure your Private Keys, seed words, credentials or other means of authorization of your Wallet. You must own and control any Wallet you use in connection with our Services. You are responsible for implementing all appropriate measures for securing any Wallet you use, including any Private Key, seed words, credentials or other means of authorization necessary to access such storage mechanism. We exclude any and all liability for any security breaches or other acts or omissions, which result in your loss of access or custody of any cryptographic assets stored thereon.
+								<strong>Security of your Private Keys, seed words or other credentials.</strong> We
+								shall not be responsible to secure your Private Keys, seed words, credentials or other
+								means of authorization of your Wallet. You must own and control any Wallet you use in
+								connection with our Services. You are responsible for implementing all appropriate
+								measures for securing any Wallet you use, including any Private Key, seed words,
+								credentials or other means of authorization necessary to access such storage mechanism.
+								We exclude any and all liability for any security breaches or other acts or omissions,
+								which result in your loss of access or custody of any cryptographic assets stored
+								thereon.
 							</p>
 							<p>
-								<strong>Third-party services.</strong> Our Services may allow you to access, use, or interact with third-party websites, apps, content, and other products and services. When you use third-party services, their terms and privacy policies govern your use of those services.
+								<strong>Third-party services.</strong> Our Services may allow you to access, use, or
+								interact with third-party websites, apps, content, and other products and services. When
+								you use third-party services, their terms and privacy policies govern your use of those
+								services.
 							</p>
 							<p>
-								<strong>Third-party risks.</strong> The Services rely in part on third party and open-source software, including the Ethereum Blockchain, and the continued development and support by third parties. There is no assurance or guarantee that those third parties will maintain their support of their software or that open source software will continue to be maintained. There is also no guarantee that these third parties cannot suffer from a security breach in the future. This may have a material adverse effect on the Services. Side cannot be held responsible for any breach of security of a third party that can effect on the Services.
+								<strong>Third-party risks.</strong> The Services rely in part on third party and
+								open-source software, including the Ethereum Blockchain, and the continued development
+								and support by third parties. There is no assurance or guarantee that those third
+								parties will maintain their support of their software or that open source software will
+								continue to be maintained. There is also no guarantee that these third parties cannot
+								suffer from a security breach in the future. This may have a material adverse effect on
+								the Services. Side cannot be held responsible for any breach of security of a third
+								party that can effect on the Services.
 							</p>
 
 							<h3>Your Rights and License with Side</h3>
@@ -288,32 +375,81 @@ export default function DefaultView() {
 								<strong>Your Rights.</strong> You own the information you submit through our Services.
 							</p>
 							<p>
-								<strong>Side’s Rights.</strong> We own all copyrights, trademarks, domains, logos, trade dress, trade secrets, patents, and other intellectual property rights associated with our Services. You may not use our copyrights, trademarks, domains, logos, trade dress, patents, and other intellectual property rights unless you have our written permission. To report copyright, trademark, or other intellectual property infringement, please contact <a href="mailto:hello@side.xyz">hello@side.xyz</a>.
+								<strong>Side’s Rights.</strong> We own all copyrights, trademarks, domains, logos, trade
+								dress, trade secrets, patents, and other intellectual property rights associated with
+								our Services. You may not use our copyrights, trademarks, domains, logos, trade dress,
+								patents, and other intellectual property rights unless you have our written permission.
+								To report copyright, trademark, or other intellectual property infringement, please
+								contact <a href="mailto:hello@side.xyz">hello@side.xyz</a>.
 							</p>
 							<p>
-								<strong>Side’s License to You.</strong> Side grants you a limited, revocable, non-exclusive, and non-transferable license to use our Services in accordance with these Terms.
+								<strong>Side’s License to You.</strong> Side grants you a limited, revocable,
+								non-exclusive, and non-transferable license to use our Services in accordance with these
+								Terms.
 							</p>
 
 							<h3>Disclaimers and Limitations</h3>
 							<p>
-								<strong>Disclaimers.</strong> YOU USE OUR SERVICES AT YOUR OWN RISK AND SUBJECT TO THE FOLLOWING DISCLAIMERS. WE PROVIDE OUR SERVICES ON AN “AS IS” BASIS WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, AND FREEDOM FROM COMPUTER VIRUS OR OTHER HARMFUL CODE. SIDE DOES NOT WARRANT THAT ANY INFORMATION PROVIDED BY US IS ACCURATE, COMPLETE, OR USEFUL, THAT OUR SERVICES WILL BE OPERATIONAL, ERROR-FREE, SECURE, OR SAFE, OR THAT OUR SERVICES WILL FUNCTION WITHOUT DISRUPTIONS, DELAYS, OR IMPERFECTIONS. WE DO NOT CONTROL, AND ARE NOT RESPONSIBLE FOR, CONTROLLING HOW OR WHEN OUR USERS USE OUR SERVICES. WE ARE NOT RESPONSIBLE FOR THE ACTIONS OR INFORMATION (INCLUDING CONTENT) OF OUR USERS OR OTHER THIRD PARTIES. YOU RELEASE US, AFFILIATES, DIRECTORS, OFFICERS, EMPLOYEES, PARTNERS, AND AGENTS (TOGETHER, “SIDE PARTIES”) FROM ANY CLAIM, COMPLAINT, CAUSE OF ACTION, CONTROVERSY, OR DISPUTE (TOGETHER, “CLAIM”) AND DAMAGES, KNOWN AND UNKNOWN, RELATING TO, ARISING OUT OF, OR IN ANY WAY CONNECTED WITH ANY SUCH CLAIM YOU HAVE AGAINST ANY THIRD PARTIES.
+								<strong>Disclaimers.</strong> YOU USE OUR SERVICES AT YOUR OWN RISK AND SUBJECT TO THE
+								FOLLOWING DISCLAIMERS. WE PROVIDE OUR SERVICES ON AN “AS IS” BASIS WITHOUT ANY EXPRESS
+								OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY,
+								FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, AND FREEDOM FROM COMPUTER
+								VIRUS OR OTHER HARMFUL CODE. SIDE DOES NOT WARRANT THAT ANY INFORMATION PROVIDED BY US
+								IS ACCURATE, COMPLETE, OR USEFUL, THAT OUR SERVICES WILL BE OPERATIONAL, ERROR-FREE,
+								SECURE, OR SAFE, OR THAT OUR SERVICES WILL FUNCTION WITHOUT DISRUPTIONS, DELAYS, OR
+								IMPERFECTIONS. WE DO NOT CONTROL, AND ARE NOT RESPONSIBLE FOR, CONTROLLING HOW OR WHEN
+								OUR USERS USE OUR SERVICES. WE ARE NOT RESPONSIBLE FOR THE ACTIONS OR INFORMATION
+								(INCLUDING CONTENT) OF OUR USERS OR OTHER THIRD PARTIES. YOU RELEASE US, AFFILIATES,
+								DIRECTORS, OFFICERS, EMPLOYEES, PARTNERS, AND AGENTS (TOGETHER, “SIDE PARTIES”) FROM ANY
+								CLAIM, COMPLAINT, CAUSE OF ACTION, CONTROVERSY, OR DISPUTE (TOGETHER, “CLAIM”) AND
+								DAMAGES, KNOWN AND UNKNOWN, RELATING TO, ARISING OUT OF, OR IN ANY WAY CONNECTED WITH
+								ANY SUCH CLAIM YOU HAVE AGAINST ANY THIRD PARTIES.
 							</p>
 							<p>
-								<strong>Limitation of liability.</strong>THE SIDE PARTIES WILL NOT BE LIABLE TO YOU FOR ANY LOST PROFITS OR CONSEQUENTIAL, SPECIAL, PUNITIVE, INDIRECT, OR INCIDENTAL DAMAGES RELATING TO, ARISING OUT OF, OR IN ANY WAY IN CONNECTION WITH OUR TERMS, US, OR OUR SERVICES. THE FOREGOING DISCLAIMER OF CERTAIN DAMAGES AND LIMITATION OF LIABILITY WILL APPLY TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW. THE LAWS OF SOME STATES OR JURISDICTIONS MAY NOT ALLOW THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES, SO SOME OR ALL OF THE EXCLUSIONS AND LIMITATIONS SET FORTH ABOVE MAY NOT APPLY TO YOU. NOTWITHSTANDING ANYTHING TO THE CONTRARY IN OUR TERMS, IN SUCH CASES, THE LIABILITY OF THE SIDE PARTIES WILL BE LIMITED TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW.
+								<strong>Limitation of liability.</strong>THE SIDE PARTIES WILL NOT BE LIABLE TO YOU FOR
+								ANY LOST PROFITS OR CONSEQUENTIAL, SPECIAL, PUNITIVE, INDIRECT, OR INCIDENTAL DAMAGES
+								RELATING TO, ARISING OUT OF, OR IN ANY WAY IN CONNECTION WITH OUR TERMS, US, OR OUR
+								SERVICES. THE FOREGOING DISCLAIMER OF CERTAIN DAMAGES AND LIMITATION OF LIABILITY WILL
+								APPLY TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW. THE LAWS OF SOME STATES OR
+								JURISDICTIONS MAY NOT ALLOW THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES, SO SOME OR
+								ALL OF THE EXCLUSIONS AND LIMITATIONS SET FORTH ABOVE MAY NOT APPLY TO YOU.
+								NOTWITHSTANDING ANYTHING TO THE CONTRARY IN OUR TERMS, IN SUCH CASES, THE LIABILITY OF
+								THE SIDE PARTIES WILL BE LIMITED TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW.
 							</p>
 							<p>
-								<strong>Availability of Our Services.</strong> Our Services may be interrupted, including for maintenance, upgrades, or network or equipment failures. We may discontinue some or all of our Services, including certain features and the support for certain devices and platforms, at any time.
+								<strong>Availability of Our Services.</strong> Our Services may be interrupted,
+								including for maintenance, upgrades, or network or equipment failures. We may
+								discontinue some or all of our Services, including certain features and the support for
+								certain devices and platforms, at any time.
 							</p>
 							<h3>Ending Terms</h3>
 							<p>
-								<strong>Ending these Terms. </strong> You may end these Terms with Side at any time by deleting Side from your device and discontinuing use of our Services. We may modify, suspend, or terminate your access to or use of our Services anytime for any reason, such as if you violate the letter or spirit of our Terms or create harm, risk, or possible legal exposure for Side. The following provisions will survive termination of your relationship with Side: “Licenses,” “Disclaimers,” “Limitation of Liability,” “Resolving dispute,” “Availability” and “Ending these Terms,” and “General”.
+								<strong>Ending these Terms. </strong> You may end these Terms with Side at any time by
+								deleting Side from your device and discontinuing use of our Services. We may modify,
+								suspend, or terminate your access to or use of our Services anytime for any reason, such
+								as if you violate the letter or spirit of our Terms or create harm, risk, or possible
+								legal exposure for Side. The following provisions will survive termination of your
+								relationship with Side: “Licenses,” “Disclaimers,” “Limitation of Liability,” “Resolving
+								dispute,” “Availability” and “Ending these Terms,” and “General”.
 							</p>
 							<h3>General</h3>
 							<p>
-							Side may update the Terms from time to time. When we update our Terms, we will update the “Last Modified” date associated with the updated Terms. Your continued use of our Services confirms your acceptance of our updated Terms and supersedes any prior Terms. You will comply with all applicable export control and trade sanctions laws. Our Terms cover the entire agreement between you and Side regarding our Services. If you do not agree with our Terms, you should stop using our Services.
+								Side may update the Terms from time to time. When we update our Terms, we will update
+								the “Last Modified” date associated with the updated Terms. Your continued use of our
+								Services confirms your acceptance of our updated Terms and supersedes any prior Terms.
+								You will comply with all applicable export control and trade sanctions laws. Our Terms
+								cover the entire agreement between you and Side regarding our Services. If you do not
+								agree with our Terms, you should stop using our Services.
 							</p>
 							<p>
-							If we fail to enforce any of our Terms, that does not mean we waive the right to enforce them. If any provision of the Terms is deemed unlawful, void, or unenforceable, that provision shall be deemed severable from our Terms and shall not affect the enforceability of the remaining provisions. Our Services are not intended for distribution to or use in any country where such distribution or use would violate local law or would subject us to any regulations in another country. We reserve the right to limit our Services in any country. If you have specific questions about these Terms, please contact us at <a href="mailto:hello@side.xyz">hello@side.xyz</a>.
+								If we fail to enforce any of our Terms, that does not mean we waive the right to enforce
+								them. If any provision of the Terms is deemed unlawful, void, or unenforceable, that
+								provision shall be deemed severable from our Terms and shall not affect the
+								enforceability of the remaining provisions. Our Services are not intended for
+								distribution to or use in any country where such distribution or use would violate local
+								law or would subject us to any regulations in another country. We reserve the right to
+								limit our Services in any country. If you have specific questions about these Terms,
+								please contact us at <a href="mailto:hello@side.xyz">hello@side.xyz</a>.
 							</p>
 						</div>
 					</div>

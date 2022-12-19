@@ -87,8 +87,12 @@ export default function Requests({
 						radius="5px"
 					/>
 					<div className="flex align-center ">
-						<span className="mr-4">Only verified users</span>{' '}
-						<CustomCheckbox isChecked={false} onClick={undefined} />
+						<CustomCheckbox
+							label="Only verified users"
+							name="only-verified"
+							isChecked={false}
+							onClick={undefined}
+						/>
 						<Button
 							width={'159px'}
 							height={46}
@@ -101,10 +105,9 @@ export default function Requests({
 						</Button>
 						<Button
 							width={'159px'}
-							height={46}
 							onClick={undefined}
 							radius={10}
-							background={'var(--disable)'}
+							background={'var(--panels)'}
 							color={'white'}
 						>
 							Accept all

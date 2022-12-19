@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -21,15 +21,13 @@ import { getRandomId } from './helpers/utilities';
 // Styles
 import './App.css';
 import { RootState } from './redux/store/app.store';
-import useOpenseaCollection from './hooks/useOpenseaData';
 import Spinner from './components/ui-components/Spinner';
+import useWalletAddress from './hooks/useWalletAddress';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
 	setIsSettingsMobileMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const walletAddress = window.ethereum?.selectedAddress || null;
 
 function App() {
 	const [isSettingsMobileMenuOpen, setIsSettingsMobileMenuOpen] = useState<boolean>(false);
@@ -37,11 +35,12 @@ function App() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { loadingWallet, walletAddress } = useWalletAddress();
 
 	const userData = useSelector((state: RootState) => state.user);
 
 	const [onboarding, setCheckingOnboarding] = useState<boolean>(true);
-	const [fetchingUser, setFetchingUser] = useState<boolean>(true);
+	const [fetchingUser, setFetchingUser] = useState<boolean>(false);
 
 	const isUserOnboarded = useCallback(async (walletAddress: string) => {
 		try {
@@ -57,7 +56,6 @@ function App() {
 
 	useEffect(() => {
 		if (!location.pathname.includes('new-side')) {
-			console.log(location);
 			const newSideDraft = sessionStorage.getItem('create-side-data');
 			if (newSideDraft) sessionStorage.removeItem('create-side-data');
 		}
@@ -76,9 +74,11 @@ function App() {
 	}, [fetchingUser, onboarding, userData]);
 
 	useEffect(() => {
-		if (walletAddress) isUserOnboarded(walletAddress);
-		else setCheckingOnboarding(false);
-	}, [isUserOnboarded]);
+		if (!loadingWallet) {
+			if (walletAddress) isUserOnboarded(walletAddress);
+			else setCheckingOnboarding(false);
+		}
+	}, [isUserOnboarded, loadingWallet, walletAddress]);
 
 	useEffect(() => {
 		websocketService.connectToWebSocket();
@@ -97,24 +97,12 @@ function App() {
 			}
 		}
 
-		// This is needed because the metamask extension connection isn't picked up on just normal useEffect after refresh.
-		window.onload = event => {
-			const addressFromLocalStorage = localStorage.getItem('userAccount');
-			if (localStorage.getItem('jwtToken') && (walletAddress || addressFromLocalStorage))
-				getUser(walletAddress || addressFromLocalStorage);
-			else {
-				setTimeout(() => {
-					if (localStorage.getItem('jwtToken') && (walletAddress || addressFromLocalStorage))
-						getUser(walletAddress || addressFromLocalStorage);
-					else setFetchingUser(false);
-				}, 1000);
-			}
-		};
+		if (!loadingWallet && localStorage.getItem('jwtToken') && walletAddress) getUser(walletAddress);
 
 		return () => {
 			websocketService.deconnectWebsocket();
 		};
-	}, []);
+	}, [loadingWallet, walletAddress]);
 
 	return (
 		<Layout
@@ -122,11 +110,11 @@ function App() {
 			isSettingsMobileMenuOpen={isSettingsMobileMenuOpen}
 			setIsSettingsMobileMenuOpen={setIsSettingsMobileMenuOpen}
 		>
-			{onboarding || fetchingUser ? (
-				<div style={{ height: '100vh', width: '100%', display: 'grid', placeItems: 'center' }}>
+			{onboarding || fetchingUser || loadingWallet ? (
+				<div style={{ height: '100vh', width: '100%', display: 'grid', placeItems: 'center', gap: '1rem' }}>
 					<div>
-						<Spinner color={'var(--green)'} size={3} />
-						<div className="size-18 mt-3 text-green">Loading data...</div>
+						<Spinner color={'var(--primary)'} size={2} />
+						<div className="size-18 mt-3 text-primary">Loading data...</div>
 					</div>
 				</div>
 			) : (

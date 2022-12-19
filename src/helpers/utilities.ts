@@ -3,7 +3,6 @@ import { Duration } from 'date-fns';
 import { Side } from '../models/Side';
 import { NFT } from '../models/interfaces/nft';
 import { Collection, OpenSeaRequestStatus } from '../models/interfaces/collection';
-import { Metadata } from '../models/Metadata';
 import { groupBy } from 'lodash';
 
 export function weiToDecimals(value: number, exposant: number = NUMBER_OF_DECIMALS) {
@@ -280,7 +279,9 @@ function isEligible(result: ElligibilityResponse, required: boolean): boolean {
 function getNftsWithAttributes(nfts: any, condition: any) {
 	return nfts.filter((nft: NFT) =>
 		nft.metadata.attributes?.some(
-			a => condition['trait_type'] === a.trait_type && a.value === condition['trait_value']
+			a =>
+				condition['trait_type'].toLowerCase() === a.trait_type.toLowerCase() &&
+				a.value.toLowerCase() === condition['trait_value'].toLowerCase()
 		)
 	);
 }
@@ -426,7 +427,7 @@ export function generateDarkColorHex(): string {
 }
 
 export function isColor(string: string): boolean {
-	return string.startsWith('#');
+	return string?.startsWith('#');
 }
 export async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
 	const type = dataUrl.match(/^data:(.+);base64/)?.[1];

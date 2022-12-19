@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Message, Room } from "../../models/Room";
+import { Room } from "../../models/Room";
 
 export interface ChatDatas {
   rooms: Room[];

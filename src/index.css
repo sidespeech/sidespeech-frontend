@@ -19,6 +19,8 @@
 	--panels-gray: #1b1d30; /* Dark 3 */
 	--warning: #f09e22; /* Orange */
 	--black-plain: #1d1e2a;
+	--dark-gray: #050E0D;
+	--super-dark: #09111f;
 }
 
 .open-sans {
@@ -522,6 +524,13 @@
 }
 .float-right {
 	float: right;
+}
+
+.reset-btn {
+	background-color: transparent;
+	border: none;
+	outline: none;
+	box-shadow: none;
 }
 
 /*///////////////////////////////////////////////////////////*/

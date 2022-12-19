@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { UserTokensData } from '../../models/UserTokensData';
@@ -10,8 +10,7 @@ import { Side } from '../../models/Side';
 import { UserCollectionsData } from '../../models/interfaces/UserCollectionsData';
 import { Collection } from '../../models/interfaces/collection';
 import alchemyService from '../../services/web3-services/alchemy.service';
-import { RootState } from '../store/app.store';
-import { Metadata } from '../../models/Metadata';
+
 import collectionService from '../../services/api-services/collection.service';
 import userService from '../../services/api-services/user.service';
 import sideService, { getSidesMetadata } from '../../services/api-services/side.service';
@@ -53,9 +52,6 @@ export const flattenChannels = (array: any, key: string) => {
 	}, []);
 };
 
-function uniqByFilter<T>(array: T[]) {
-	return array.filter((value, index) => array.indexOf(value) === index);
-}
 export const refreshConnectedUser = createAsyncThunk(
 	'userData/refreshConnectedUser',
 	async (account: string, { dispatch, getState }) => {
@@ -180,13 +176,11 @@ export const userDataSlice = createSlice({
 		},
 		updateUser: (state: UserData, action: PayloadAction<any>) => {
 			state.user = { ...state.user, ...action.payload };
-			if (state.sides) {
-				state.sides = action.payload.profiles
-					? action.payload.profiles.map((p: Profile) => {
-							p.side['profiles'] = [p];
-							return p.side;
-					  })
-					: [];
+			if (state.sides && action.payload.profiles?.length) {
+				state.sides = action.payload.profiles.map((p: Profile) => {
+					p.side['profiles'] = [p];
+					return p.side;
+				});
 			}
 		},
 		updateProfiles: (state: UserData, action: PayloadAction<any>) => {

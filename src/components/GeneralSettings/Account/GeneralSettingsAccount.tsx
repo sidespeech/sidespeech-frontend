@@ -39,20 +39,21 @@ const GeneralSettingsAccountStyled = styled.div`
 			${breakpoints(
 				size.lg,
 				`{
-        height: calc(100vh - 4rem - 22px);
-        overflow-y: hidden;
-        padding-right: 0;
-        padding-bottom: 0;
-      }`
+					height: calc(100vh - 4rem - 22px);
+					max-width: 500px;
+					overflow-y: hidden;
+					padding-right: 0;
+					padding-bottom: 0;
+				}`
 			)}
 		}
 		& .nft-collections-wrapper {
 			display: none;
 			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
+			top: -6rem;
+			left: -1rem;
+			width: 100vw;
+			height: 100vh;
 			z-index: 9905;
 			background-color: var(--background);
 			padding: 1rem;
@@ -62,12 +63,15 @@ const GeneralSettingsAccountStyled = styled.div`
 			${breakpoints(
 				size.lg,
 				`{
-        display: block;
-        position: relative;
-        height: auto;
-        width: 100%;
-        padding: 0;
-      }`
+					display: block;
+					top: 0;
+					left: 0;
+					position: relative;
+					height: auto;
+					width: 100%;
+					max-width: 500px;
+					padding: 0;
+				}`
 			)}
 			& .close-modal-btn {
 				position: absolute;

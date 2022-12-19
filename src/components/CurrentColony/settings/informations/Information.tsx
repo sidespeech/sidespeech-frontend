@@ -378,6 +378,7 @@ export default function Informations({
 							height={35}
 							onChange={onChangeSideName}
 							radius="10px"
+							maxLength={50}
 						/>
 					</div>
 					{originalInfo.name !== formData.name &&

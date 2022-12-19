@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import CustomSelect from '../../ui-components/CustomSelect';
 import check from '../../../assets/check_circle.svg';
 import Button from '../../ui-components/Button';
-import Switch from '../../ui-components/Switch';
 import styled from 'styled-components';
 import Dropdown from '../../ui-components/Dropdown';
 import { Collection, OpenSeaRequestStatus } from '../../../models/interfaces/collection';
-import { fixURL, hasTraitInCollection, hasTraitValueInCollection } from '../../../helpers/utilities';
+import { hasTraitInCollection, hasTraitValueInCollection } from '../../../helpers/utilities';
 import CustomInputNumber from '../../ui-components/InputNumber';
-import { filter, unionBy } from 'lodash';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import { UserCollectionsData } from '../../../models/interfaces/UserCollectionsData';
 
@@ -28,9 +25,7 @@ interface IAdmissionProps {
 	setNumberOfNftNeededToDivCollection: any;
 	userCollectionsData: UserCollectionsData;
 }
-interface IRequirementsRadioButtonContainerProps {
-	selected: boolean;
-}
+interface IRequirementsRadioButtonContainerProps {}
 
 const Chip = styled.span`
 	width: fit-content;
@@ -42,24 +37,32 @@ const Thumbnail = styled.img`
 	border-radius: 15px;
 `;
 const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonContainerProps>`
-	background-color: ${props => (props.selected ? 'var(--primary)' : 'var(--input)')};
 	border-radius: 7px;
-	padding: 0.5rem;
+	padding: 0.5rem 1rem;
 	${breakpoints(
 		size.lg,
 		`{
-    height: 44px;
-    border-radius: 50px;
-  }`
+			height: 44px;
+			border-radius: 50px;
+		}`
 	)}
 	flex: 1 0 0;
 	align-items: center;
-	color: ${props => (props.selected ? 'var(--white)' : 'var(--inactive)')};
+	transition: all 0.2s ease;
+	background-color: var(--white-transparency-10);
+	color: var(--white);
 	display: flex;
 	cursor: pointer;
-
+	&.active {
+		background-color: var(--primary);
+		color: var(--background);
+		& > div:first-child {
+			border: 1px solid var(--background);
+		}
+	}
 	& > div:first-child {
-		border: 1px solid ${props => (props.selected ? 'var(--white)' : 'var(--inactive)')};
+		transition: border-color 0.2 ease;
+		border: 1px solid var(--white);
 		width: 20px;
 		height: 20px;
 		flex-shrink: 0;
@@ -69,7 +72,7 @@ const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonCont
 		justify-content: center;
 		align-items: center;
 		& div {
-			background-color: var(--white);
+			background-color: var(--background);
 			width: 12px;
 			height: 12px;
 			border-radius: 8px;
@@ -81,14 +84,10 @@ const AdmissionStyled = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
-	.filterSearch {
-		text-align: right;
-	}
 	${breakpoints(
 		size.lg,
 		`{
     flex-direction: row;
-    justify-content: space-between;
   }`
 	)}
 	.left-side {
@@ -104,7 +103,7 @@ const AdmissionStyled = styled.div`
 		.collection-item {
 			padding: 1rem;
 			border-radius: 7px;
-			background-color: var(--input);
+			background-color: var(--white-transparency-10);
 			width: 100%;
 			max-width: 90vw;
 			${breakpoints(
@@ -127,7 +126,7 @@ const AdmissionStyled = styled.div`
 				margin: 1rem 0;
 				.feature-selects {
 					width: 90%;
-					background-color: var(--disable);
+					background-color: var(--white-transparency-10);
 					padding: 12px 15px;
 					border-radius: 8px;
 					display: flex;
@@ -277,15 +276,15 @@ export default function Admission({
 				<p className="fade-in text-secondary my-3">Collection requirements</p>
 				<div className="fade-in flex gap-20 mt-2 mb-3 w-100">
 					<RequirementsRadioButtonContainer
+						className={onlyOneRequired ? 'active' : ''}
 						onClick={() => setOnlyOneRequired(true)}
-						selected={onlyOneRequired}
 					>
 						<div>{onlyOneRequired && <div></div>}</div>
 						<div>1 collection from the list</div>
 					</RequirementsRadioButtonContainer>
 					<RequirementsRadioButtonContainer
+						className={onlyOneRequired ? '' : 'active'}
 						onClick={() => setOnlyOneRequired(false)}
-						selected={!onlyOneRequired}
 					>
 						<div>{!onlyOneRequired && <div></div>}</div>
 						<div>All collections are required</div>
@@ -297,16 +296,16 @@ export default function Admission({
 						divCollections.map((current: any, i: number) => {
 							return (
 								<>
-									<div className="collection-item mb-3" key={i}>
+									<div className="collection-item bounce-from-right mb-3" key={i}>
 										<div className="flex justify-between">
 											<label className="size-14">Collection</label>
 
-											<label
-												className="size-14 text-red cursor-pointer"
-												onClick={() => removeDivCollection(i)}
+											<button
+												className="reset-btn size-14 text-red"
+												onClick={() => removeDivCollection(current.collection)}
 											>
 												<i className="fa-regular fa-trash-can mr-2"></i>Remove
-											</label>
+											</button>
 										</div>
 
 										<div className="f-row collection-name">
@@ -360,7 +359,11 @@ export default function Admission({
 																setNumberOfNftNeededToDivCollection(value, i)
 															}
 															collections={collections}
-															defaultValue={1}
+															defaultValue={
+																Object.keys(current['metadata']).length !== 0
+																	? current.numberNeeded
+																	: 1
+															}
 															currentDiv={current}
 														/>
 													</div>
@@ -406,9 +409,6 @@ export default function Admission({
 																						) : (
 																							'Select trait'
 																						)
-																					}
-																					backgroundColor={
-																						'var(--black-plain)'
 																					}
 																					options={[
 																						...traitsValues.map(
@@ -470,9 +470,6 @@ export default function Admission({
 																						) : (
 																							'Select value of trait'
 																						)
-																					}
-																					backgroundColor={
-																						'var(--black-plain)'
 																					}
 																					values={[
 																						...traitsValues
@@ -589,7 +586,7 @@ export default function Admission({
 					width={'100%'}
 					height={46}
 					radius={10}
-					background={'var(--disable)'}
+					background={'var(--white-transparency-10)'}
 					color={'var(--text)'}
 					onClick={() => {
 						setFilter('');
@@ -611,15 +608,18 @@ export default function Admission({
 								<Chip>{d['numberNeeded'] || 1} NFT</Chip> From the{' '}
 								<Chip>{collections.find(c => c.address === d['collection'])?.name || ''}</Chip>
 								collection{' '}
-								{d['trait_selected'] && d['value_selected'] && (
-									<>
-										{' '}
-										that has this trait : <br />
-										<Chip>
-											{d['trait_selected']} - {d['value_selected']}
-										</Chip>
-									</>
-								)}
+								{d['features'].map((f: any, index: number) => {
+									return (
+										<>
+											{' '}
+											{index === 0 ? 'that has this trait : ' : 'OR'}
+											<br />
+											<Chip>
+												{f['trait_selected'] || ''} - {f['value_selected'] || ''}
+											</Chip>
+										</>
+									);
+								})}
 								<br />
 								{index < divCollections.length - 1 && <>{onlyOneRequired ? 'OR' : 'AND'}</>}
 								<br />

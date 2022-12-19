@@ -25,12 +25,33 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
 		justify-items: center;
 		grid-gap: 1rem;
 		grid-template-columns: repeat(2, 1fr);
+		.title-wrapper .title {
+			min-height: 20px;
+			margin-top: 0px;
+		}
+		.title-wrapper .avatar {
+			margin-top: 10px;
+		}
+		.title-wrapper svg {
+			margin-top: -30px;
+		}
 		${breakpoints(
 			size.md,
 			`
         {
                 grid-template-columns: repeat(3, 1fr);
             }
+			.title-wrapper .avatar {
+				margin-top: 0;
+			}
+			.title-wrapper .title {
+				margin-top: 12px;
+				    width: 190px;
+			}
+			.title-wrapper svg {
+			    margin-top: -4px;
+    width: 40px;
+			}
         `
 		)}
 		${breakpoints(
@@ -252,6 +273,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 							<CustomCheckbox
 								isChecked={isWithSidesChecked}
 								label="With Sides"
+								name="with-sides"
 								onClick={() => setIsWithSidesChecked(!isWithSidesChecked)}
 							/>
 						</div>
@@ -259,6 +281,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 							<CustomCheckbox
 								isChecked={isOnlyVerifiedCollectionsChecked}
 								label="Only verified collections"
+								name="only-verified"
 								onClick={() => setIsOnlyVerifiedCollectionsChecked(!isOnlyVerifiedCollectionsChecked)}
 							/>
 						</div>
