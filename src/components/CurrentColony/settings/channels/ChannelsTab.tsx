@@ -1,8 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '../../../ui-components/Button';
-import InputText from '../../../ui-components/InputText';
-import UserLine from '../../../ui-components/UserLine';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import ChannelRow from './ChannelRow';
@@ -14,8 +12,6 @@ import channelService from '../../../../services/api-services/channel.service';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
-import { uuid } from 'uuidv4';
-import { id } from 'date-fns/locale';
 import { v4 } from 'uuid';
 
 export const ItemTypes = {
@@ -49,6 +45,7 @@ export interface IChannelExtension extends Channel {
 	group: ChannelGroup;
 	sideId: string;
 	dirty: boolean;
+	newChannel?: boolean;
 }
 
 export interface InitialChannelsState {
@@ -152,6 +149,7 @@ export default function Channels({
 				id: v4(),
 				name: '',
 				isVisible: true,
+				newChannel: true,
 				type: ChannelType.Announcement,
 				sideId: currentSide.id,
 				group: ChannelGroup.ADDED,
@@ -270,7 +268,7 @@ export default function Channels({
 	};
 
 	const renderChannel = useCallback(
-		(channel: Channel, index: number, placeholder: boolean) => {
+		(channel: Channel, index: number, placeholder: boolean, newChannel?: boolean) => {
 			return (
 				<ChannelRow
 					key={channel.id}
@@ -278,6 +276,7 @@ export default function Channels({
 					index={index}
 					onChangeName={onChangeName}
 					handleRemove={handleRemove}
+					newChannel={newChannel}
 					placeholder={placeholder ? channel['name'] : undefined}
 					onChangeType={onChangeType}
 					onChangeAuthorizeComments={onChangeAuthorizeComments}
@@ -298,11 +297,11 @@ export default function Channels({
 					{/* Existing channels */}
 					{channelsNewSide &&
 						channelsNewSide.map((channel: any, index: number) =>
-							renderChannel(channel, index, channel.group !== ChannelGroup.ADDED)
+							renderChannel(channel, index, channel.group !== ChannelGroup.ADDED, channel.newChannel)
 						)}
 					{allChannels.length > 0 &&
 						allChannels.map((channel: any, index: number) =>
-							renderChannel(channel, index, channel.group !== ChannelGroup.ADDED)
+							renderChannel(channel, index, channel.group !== ChannelGroup.ADDED, channel.newChannel)
 						)}
 				</div>
 
