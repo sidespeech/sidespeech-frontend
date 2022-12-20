@@ -52,7 +52,8 @@ export default function GnosisSafe() {
         await safeService.savednewSafe({
             contractAddress : newSafeAddress,
             threshold: threshold,
-            sideId : user!['profiles'][0]['side']['id']
+            sideId : user!['profiles'][0]['side']['id'],
+            profileId : user!['profiles'][0]['id']
         });
     }
 
@@ -127,7 +128,7 @@ export default function GnosisSafe() {
         if (user) {
 
             console.log('user :', user)
-            console.log('user :', user['profiles'][0]['side'])
+            console.log('user :', user['profiles'][0]['id'])
             getSigner()
         }
     }, [user]);

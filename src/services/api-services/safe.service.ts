@@ -14,6 +14,7 @@ class SafeService extends BaseApiService {
 
   async savednewSafe(data: Safe) {
     const res = await this.post(`${BASE_URL}/gnosis-safe/${data['sideId']}`).send(data);
+    console.log(res)
     return res;
   }
 
