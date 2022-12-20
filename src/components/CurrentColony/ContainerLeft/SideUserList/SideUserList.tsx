@@ -54,7 +54,7 @@ export default function SideUserList({
 				const isMe = p.id === currentProfile?.id;
 				const room = currentProfile?.getRoom(p.id);
 				if (isMembersList && room && !isMe) return;
-				if (!isMembersList && isMe) return;
+				if (!isMembersList && (isMe || !room)) return;
 				const url = p.profilePicture?.metadata?.image ? fixURL(p.profilePicture?.metadata?.image) : undefined;
 
 				return (

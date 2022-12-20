@@ -635,8 +635,10 @@ export default function NewSide() {
 	};
 
 	// Remove collection div in condition
-	const removeDivCollection = (collectionId: string) => {
-		setDivCollection(prevState => prevState.filter(divColl => divColl.collection !== collectionId));
+	const removeDivCollection = (collectionId: string, index: number) => {
+		if (collectionId)
+			setDivCollection(prevState => prevState.filter(divColl => divColl.collection !== collectionId));
+		else setDivCollection(prevState => prevState.filter((divColl, i) => i !== index));
 	};
 
 	// ----- Functions for Admission component **end
@@ -662,6 +664,7 @@ export default function NewSide() {
 		const newChannel: Partial<IChannelExtension> = {
 			id: v4(),
 			name: '',
+			newChannel: true,
 			isVisible: true,
 			type: ChannelType.Announcement,
 			sideId: currentSide.id,

@@ -21,6 +21,7 @@ import { NotificationType } from '../../../models/Notification';
 import roomService from '../../../services/api-services/room.service';
 import notificationService from '../../../services/api-services/notification.service';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import Skeleton from '../../ui-components/Skeleton';
 
 const SidebarStyled = styled.div`
 	height: calc(100vh - 182px);
@@ -64,6 +65,15 @@ export default function CurrentSideLeftContent() {
 	const { user } = useSelector((state: RootState) => state.user);
 	const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
 	const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+
+	const filteredRooms = currentSide?.profiles.map((p: Profile, index: number) => {
+		const isMe = p.id === currentProfile?.id;
+		const room = currentProfile?.getRoom(p.id);
+		if (isMe || !room) return 'member';
+		return 'conversation';
+	});
+	const numberOfMembers = filteredRooms?.filter(type => type === 'member').length;
+	const numberOfConversations = filteredRooms?.filter(type => type === 'conversation').length;
 
 	const onChannelSelected = (c: Channel) => {
 		dispatch(setSelectedChannel(c));
@@ -190,7 +200,12 @@ export default function CurrentSideLeftContent() {
 		}
 	}, [selectedRoom, selectedChannel]);
 
-	if (!currentSide) return <>No side selected</>;
+	if (!currentSide)
+		return (
+			<div className="my-4 mx-2">
+				<Skeleton />
+			</div>
+		);
 
 	return (
 		<>
@@ -240,7 +255,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Members ({currentSide.profiles.length || 0})</p>
+							<p className="size-14">Members ({numberOfMembers || 0})</p>
 						</span>
 					)}
 				>
@@ -270,7 +285,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Conversations ({currentSide.profiles.length || 0})</p>
+							<p className="size-14">Conversations ({numberOfConversations || 0})</p>
 						</span>
 					)}
 				>

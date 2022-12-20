@@ -1,13 +1,20 @@
 import React, { MouseEventHandler } from 'react';
 import styled from 'styled-components';
 
-const CustomCheckboxStyled = styled.div`
-	/* Customize the label (the container) */
+interface CustomCheckboxStyledProps {
+	labelPosition?: 'left' | 'right' | 'top';
+	size?: 'sm' | 'default';
+}
+
+const CustomCheckboxStyled = styled.div<CustomCheckboxStyledProps>`
 	.checkbox-container {
-		display: block;
+		display: flex;
+		align-items: center;
+		flex-direction: ${props =>
+			props.labelPosition === 'right' ? 'row-reverse' : props.labelPosition === 'top' ? 'column' : 'row'};
 		position: relative;
-		padding-right: calc(20px + 1rem);
-		height: 20px;
+		gap: 0.5rem;
+		height: ${props => (props.size === 'sm' ? '15px' : '20px')};
 		cursor: pointer;
 		font-size: 1rem;
 		color: var(--text);
@@ -15,64 +22,50 @@ const CustomCheckboxStyled = styled.div`
 		-moz-user-select: none;
 		-ms-user-select: none;
 		user-select: none;
-	}
-
-	/* Hide the browser's default checkbox */
-	.checkbox-container input {
-		position: absolute;
-		opacity: 0;
-		cursor: pointer;
-		height: 0;
-		width: 0;
-	}
-
-	/* Create a custom checkbox */
-	.checkmark {
-		position: absolute;
-		top: 0;
-		right: 0;
-		height: 100%;
-		width: 20px;
-		background-color: var(--input);
-		border: 1px solid var(--inactive);
-		border-radius: 5px;
-	}
-
-	/* On mouse-over, add a grey background color */
-	.checkbox-container:hover input ~ .checkmark {
-		transition: background-color 0.2s ease;
-		background-color: transparent;
-	}
-
-	/* When the checkbox is checked, add a blue background */
-	.checkbox-container input:checked ~ .checkmark {
-		background-color: var(--primary);
-	}
-
-	/* Create the checkmark/indicator (hidden when not checked) */
-	.checkmark:after {
-		content: '';
-		position: absolute;
-		transition: opacity 0.2s ease;
-		opacity: 0;
-	}
-
-	/* Show the checkmark when checked */
-	.checkbox-container input:checked ~ .checkmark:after {
-		opacity: 1;
-	}
-
-	/* Style the checkmark/indicator */
-	.checkbox-container .checkmark:after {
-		left: 7px;
-		top: 3px;
-		width: 5px;
-		height: 10px;
-		border: 1px solid var(--white);
-		border-width: 0 3px 3px 0;
-		-webkit-transform: rotate(45deg);
-		-ms-transform: rotate(45deg);
-		transform: rotate(45deg);
+		& span {
+			font-size: ${props => (props.size === 'sm' ? '12px' : '1rem')};
+			white-space: nowrap;
+		}
+		& input {
+			position: absolute;
+			opacity: 0;
+			cursor: pointer;
+			height: 0;
+			width: 0;
+			&:checked ~ .checkmark {
+				background-color: var(--primary);
+				&:after {
+					opacity: 1;
+				}
+			}
+		}
+		& .checkmark {
+			position: relative;
+			flex-shrink: 0;
+			height: 100%;
+			width: ${props => (props.size === 'sm' ? '15px' : '20px')};
+			background-color: var(--input);
+			border: 1px solid var(--inactive);
+			border-radius: 5px;
+			&:after {
+				content: '';
+				position: absolute;
+				transition: opacity 0.2s ease;
+				opacity: 0;
+				left: ${props => (props.size === 'sm' ? '4px' : '7px')};
+				top: ${props => (props.size === 'sm' ? '2px' : '3px')};
+				width: 5px;
+				height: ${props => (props.size === 'sm' ? '8px' : '10px')};
+				border: 1px solid var(--white);
+				border-width: 0 3px 3px 0;
+				-webkit-transform: rotate(45deg);
+				-ms-transform: rotate(45deg);
+				transform: rotate(45deg);
+			}
+		}
+		&:hover input ~ .checkmark {
+			transition: background-color 0.2s ease;
+		}
 	}
 `;
 
@@ -81,16 +74,28 @@ interface CustomCheckboxProps {
 	id?: string;
 	isChecked?: boolean;
 	label?: string;
+	labelPosition?: 'left' | 'right' | 'top';
 	name?: string;
 	onClick?: MouseEventHandler | undefined;
+	size?: 'sm' | 'default';
 	style?: object;
 }
 
-export default function CustomCheckbox({ className, id, isChecked, label, name, onClick, style }: CustomCheckboxProps) {
+export default function CustomCheckbox({
+	className,
+	id,
+	isChecked,
+	label,
+	labelPosition,
+	name,
+	onClick,
+	size = 'default',
+	style
+}: CustomCheckboxProps) {
 	return (
-		<CustomCheckboxStyled className={className} id={id} style={style}>
+		<CustomCheckboxStyled className={className} id={id} labelPosition={labelPosition} size={size} style={style}>
 			<label htmlFor={name} className="checkbox-container">
-				{label}
+				<span>{label}</span>
 				<input type="checkbox" name={name} id={name} defaultChecked={isChecked} onClick={onClick} />
 				<span className="checkmark"></span>
 			</label>
