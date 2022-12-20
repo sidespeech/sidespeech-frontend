@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import Button from '../../../ui-components/Button';
 import InputText from '../../../ui-components/InputText';
 import { useDispatch } from 'react-redux';
@@ -9,6 +10,25 @@ import { Side } from '../../../../models/Side';
 import { State, Type } from '../../../../models/Invitation';
 import userService from '../../../../services/api-services/user.service';
 import invitationService from '../../../../services/api-services/invitation.service';
+import emptyListImg from '../../../../assets/invitations_empty_screen_shape.svg';
+
+const RequestsStyled = styled.div`
+	& .no-results {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 1.2rem;
+		width: 100%;
+		min-height: 400px;
+		color: var(--text);
+		flex-direction: column;
+		background-image: url(${emptyListImg});
+		background-position: center center;
+		background-size: contain;
+		background-repeat: no-repeat;
+		margin: 80px 0;
+	}
+`;
 
 export default function Requests({
 	currentSide,
@@ -68,7 +88,7 @@ export default function Requests({
 	};
 
 	return (
-		<>
+		<RequestsStyled>
 			{/* Search Section */}
 			<div className="f-column mt-5 fade-in">
 				<div className="text-primary-light mb-3 text fw-600">They want to join your side</div>
@@ -116,53 +136,59 @@ export default function Requests({
 				</div>
 			</div>
 
-			{requests.map((request, index) => {
-				return (
-					<div className="f-column mt-3 requests-list fade-in-delay" key={index}>
-						<div className="flex align-center justify-between">
-							<div>
-								<small className="date-label">
-									{moment.utc(request['created_at']).local().startOf('seconds').fromNow()}
-								</small>
-								<div className="flex mt-2">
-									<label className="profile-image-user f-column align-center justify-center">
-										<img
-											style={{ height: 'inherit', width: 'inherit', objectFit: 'cover' }}
-											src={request['image']}
-											alt="file"
-										/>
-									</label>
-									<label className="align-center justify-center mt-2 ml-3">
-										{request['accounts'].replace(request['accounts'].substring(4, 30), '...')}
-									</label>
+			{requests.length ? (
+				requests.map((request, index) => {
+					return (
+						<div className="f-column mt-3 requests-list fade-in-delay" key={index}>
+							<div className="flex align-center justify-between">
+								<div>
+									<small className="date-label">
+										{moment.utc(request['created_at']).local().startOf('seconds').fromNow()}
+									</small>
+									<div className="flex mt-2">
+										<label className="profile-image-user f-column align-center justify-center">
+											<img
+												style={{ height: 'inherit', width: 'inherit', objectFit: 'cover' }}
+												src={request['image']}
+												alt="file"
+											/>
+										</label>
+										<label className="align-center justify-center mt-2 ml-3">
+											{request['accounts'].replace(request['accounts'].substring(4, 30), '...')}
+										</label>
+									</div>
+								</div>
+								<div className="flex align-center">
+									<Button
+										width={'159px'}
+										height={46}
+										onClick={() => onDecline(request, index)}
+										radius={10}
+										background={'var(--red-opacity)'}
+										color={'var(--red)'}
+										classes={'mr-4'}
+									>
+										Decline
+									</Button>
+									<Button
+										width={'159px'}
+										height={46}
+										onClick={() => onAccept(request, index)}
+										radius={10}
+										color={'var(--text)'}
+									>
+										Accept
+									</Button>
 								</div>
 							</div>
-							<div className="flex align-center">
-								<Button
-									width={'159px'}
-									height={46}
-									onClick={() => onDecline(request, index)}
-									radius={10}
-									background={'var(--red-opacity)'}
-									color={'var(--red)'}
-									classes={'mr-4'}
-								>
-									Decline
-								</Button>
-								<Button
-									width={'159px'}
-									height={46}
-									onClick={() => onAccept(request, index)}
-									radius={10}
-									color={'var(--text)'}
-								>
-									Accept
-								</Button>
-							</div>
 						</div>
-					</div>
-				);
-			})}
-		</>
+					);
+				})
+			) : (
+				<div className="no-results">
+					<p>No requests</p>
+				</div>
+			)}
+		</RequestsStyled>
 	);
 }
