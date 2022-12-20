@@ -21,6 +21,7 @@ import { NotificationType } from '../../../models/Notification';
 import roomService from '../../../services/api-services/room.service';
 import notificationService from '../../../services/api-services/notification.service';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import Skeleton from '../../ui-components/Skeleton';
 
 const SidebarStyled = styled.div`
 	height: calc(100vh - 182px);
@@ -197,7 +198,12 @@ export default function CurrentSideLeftContent() {
 		if (account) getAndSetRoomNotifications(account);
 	}, [selectedRoom, selectedChannel]);
 
-	if (!currentSide) return <>No side selected</>;
+	if (!currentSide)
+		return (
+			<div className="my-4 mx-2">
+				<Skeleton />
+			</div>
+		);
 
 	return (
 		<>

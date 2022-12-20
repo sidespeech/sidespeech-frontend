@@ -8,10 +8,7 @@ import { RootState } from '../../redux/store/app.store';
 import CreatePollModal from '../Modals/CreatePollModal';
 import _ from 'lodash';
 import { Announcement } from '../../models/Announcement';
-import ChatComponent from './ChatComponent/ChatComponent';
-import { ChannelType } from '../../models/Channel';
 import { setCurrentProfile, connect } from '../../redux/Slices/UserDataSlice';
-// import websocketService from "../../services/websocket.service";
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { Poll } from '../../models/Poll';
@@ -22,8 +19,8 @@ import { toast } from 'react-toastify';
 import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import sideService from '../../services/api-services/side.service';
-import { FadeLoader } from 'react-spinners';
-import Spinner from '../ui-components/Spinner';
+import Skeleton from '../ui-components/Skeleton';
+import { setSelectedRoom } from '../../redux/Slices/ChatSlice';
 
 const CurrentSideStyled = styled.div`
 	width: 100vw;
@@ -151,14 +148,11 @@ export default function CurrentSide() {
 	const { currentSide, selectedChannel, settingsOpen } = useSelector((state: RootState) => state.appDatas);
 	const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
 	const { user } = useSelector((state: RootState) => state.user);
-
-	// const [displayEditChannelModal, setDisplayEditChannelModal] = useState<boolean>(false);
 	const [createPollModal, setCreatePollModal] = useState<boolean>(false);
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const ref = useRef<HTMLInputElement>(null);
-	const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 	const [extend, setExtend] = useState<string>('');
 	const [thread, setThread] = useState<Announcement | Poll | null>(null);
 	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
@@ -168,20 +162,6 @@ export default function CurrentSide() {
 	useEffect(() => {
 		if (!announcementId) setThread(null);
 	}, [announcementId]);
-
-	useEffect(() => {
-		if (selectedChannel && selectedChannel.announcements) {
-			setAnnouncements([..._.orderBy(selectedChannel.announcements, 'createdAt')]);
-		}
-	}, [selectedChannel]);
-
-	useEffect(() => {
-		function updateScroll() {
-			var element = document.getElementById('announcement-list');
-			if (element) element.scrollTop = element.scrollHeight;
-		}
-		updateScroll();
-	}, [announcements]);
 
 	useEffect(() => {
 		return () => {
@@ -195,6 +175,8 @@ export default function CurrentSide() {
 			try {
 				dispatch(setCurrentSide(null));
 				dispatch(setCurrentProfile(null));
+				dispatch(setSelectedChannel(null));
+				dispatch(setSelectedRoom(null));
 				if (id && user) {
 					// Get Side data
 					const res = await sideService.getSideByName(id);
@@ -237,51 +219,45 @@ export default function CurrentSide() {
 
 	return (
 		<CurrentSideStyled>
-			{currentSide ? (
-				currentSide.status === SideStatus.active ? (
-					<>
-						{!settingsOpen && (
-							<div className="left-side-desktop">
-								<CurrentSideLeft />
-							</div>
-						)}
+			{!settingsOpen && (
+				<div className="left-side-desktop">
+					<CurrentSideLeft />
+				</div>
+			)}
 
-						<div className="current-side-middle-container">
-							<MiddleContainerHeader
-								channel={selectedChannel}
-								className="header-desktop"
-								isMobileSettingsMenuOpen={isMobileSettingsMenuOpen}
-								room={selectedRoom}
-								setIsMobileSettingsMenuOpen={setIsMobileSettingsMenuOpen}
-								setThread={setThread}
-								thread={thread}
-							/>
-							{!settingsOpen && (
-								<div className="left-side-mobile">
-									<CurrentSideLeft />
-								</div>
-							)}
-							<Outlet
-								context={{
-									announcementId,
-									isMobileMenuOpen: isMobileSettingsMenuOpen,
-									selectedChannel,
-									selectedRoom,
-									setCreatePollModal,
-									setIsMobileMenuOpen: setIsMobileSettingsMenuOpen,
-									setThread,
-									thread
-								}}
-							/>
-						</div>
-						{createPollModal && selectedChannel && <CreatePollModal showModal={setCreatePollModal} />}
-					</>
-				) : displayEligibility && sideEligibility ? (
-					<SideEligibilityModal
-						setDisplayLeaveSide={() => {}}
-						setDisplayEligibility={setDisplayEligibility}
-						selectedSide={sideEligibility}
+			<div className="current-side-middle-container">
+				<MiddleContainerHeader
+					channel={selectedChannel}
+					className="header-desktop"
+					isMobileSettingsMenuOpen={isMobileSettingsMenuOpen}
+					room={selectedRoom}
+					setIsMobileSettingsMenuOpen={setIsMobileSettingsMenuOpen}
+					setThread={setThread}
+					thread={thread}
+				/>
+				{!settingsOpen && (
+					<div className="left-side-mobile">
+						<CurrentSideLeft />
+					</div>
+				)}
+				{currentSide?.status === SideStatus.active ? (
+					<Outlet
+						context={{
+							announcementId,
+							isMobileMenuOpen: isMobileSettingsMenuOpen,
+							selectedChannel,
+							selectedRoom,
+							setCreatePollModal,
+							setIsMobileMenuOpen: setIsMobileSettingsMenuOpen,
+							setThread,
+							thread
+						}}
 					/>
+				) : !currentSide ? (
+					<div className="spinner-wrapper f-column align-center justify-center gap-20 w-100 vh-100">
+						<Skeleton />
+						{/* <div className="size-18 mt-3 text-primary">Loading Side "{id}" information...</div> */}
+					</div>
 				) : (
 					<div className="f-column align-center justify-center w-100 vh-100 text-green">
 						<i className="fa-solid fa-lock size-60"></i>
@@ -292,12 +268,15 @@ export default function CurrentSide() {
 							Please try again later.
 						</div>
 					</div>
-				)
-			) : (
-				<div className="spinner-wrapper f-column align-center justify-center gap-20 w-100 vh-100">
-					<Spinner color={'var(--primary)'} size={2} />
-					<div className="size-18 mt-3 text-primary">Loading Side "{id}" information...</div>
-				</div>
+				)}
+			</div>
+			{createPollModal && selectedChannel && <CreatePollModal showModal={setCreatePollModal} />}
+			{displayEligibility && sideEligibility && (
+				<SideEligibilityModal
+					setDisplayLeaveSide={() => {}}
+					setDisplayEligibility={setDisplayEligibility}
+					selectedSide={sideEligibility}
+				/>
 			)}
 		</CurrentSideStyled>
 	);
