@@ -21,6 +21,7 @@ import { breakpoints, size } from '../../../helpers/breakpoints';
 import voteService from '../../../services/api-services/vote.service';
 import channelService from '../../../services/api-services/channel.service';
 import useWalletAddress from '../../../hooks/useWalletAddress';
+import Skeleton from '../../ui-components/Skeleton';
 
 const PollsStyled = styled.div`
 	position: relative;
@@ -37,6 +38,12 @@ const PollsStyled = styled.div`
             max-height: calc(100vh - 6rem);
         }`
 	)}
+	& .skeleton {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+	}
 	.create-poll-btn {
 		position: fixed;
 		bottom: calc(77px + 2rem);
@@ -80,6 +87,7 @@ interface PollsListProps {
 export default function PollsList({ setCreatePollModal, pollId, setThread, thread }: PollsListProps) {
 	const { selectedChannel, currentSide } = useSelector((state: RootState) => state.appDatas);
 	const { currentProfile } = useSelector((state: RootState) => state.user);
+	const [loading, setLoading] = useState<boolean>(true);
 	// const { user } = useSelector((state: RootState) => state.user);
 	const { id } = useParams();
 	const { walletAddress } = useWalletAddress();
@@ -160,8 +168,10 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
 	const getChannelPolls = useCallback(async () => {
 		if (!selectedChannel) return;
 		try {
+			setLoading(true);
 			const polls = await channelService.getChannelPolls(selectedChannel.id);
 			setPolls(polls);
+			setLoading(false);
 		} catch (error) {
 			toast.error('Error fetching polls', { toastId: 10 });
 		}
@@ -195,7 +205,11 @@ export default function PollsList({ setCreatePollModal, pollId, setThread, threa
 
 	return (
 		<PollsStyled className="polls-list w-100 f-column text-secondary">
-			{polls.length ? (
+			{loading ? (
+				<div className="skeleton">
+					<Skeleton />
+				</div>
+			) : polls.length ? (
 				thread ? (
 					<PollItem
 						authorizeComments={selectedChannel?.authorizeComments}
