@@ -9,6 +9,7 @@ import { ethers } from 'ethers';
 import EthersAdapter from '@safe-global/safe-ethers-lib'
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import safeService from '../../services/api-services/safe.service';
 
 
 const randomNonce = function (length: number) {
@@ -47,6 +48,12 @@ export default function GnosisSafe() {
 
         const newSafeAddress = safeSdk.getAddress();
         console.log('newSafeAddress :', newSafeAddress)
+
+        await safeService.savednewSafe({
+            contractAddress : newSafeAddress,
+            threshold: threshold,
+            sideId : user!['profiles'][0]['side']['id']
+        });
     }
 
     async function getSigner() {
@@ -117,11 +124,12 @@ export default function GnosisSafe() {
     }
 
     useEffect(() => {
-        console.log('user :', user)
-        getSigner()
+        if (user) {
 
-
-
+            console.log('user :', user)
+            console.log('user :', user['profiles'][0]['side'])
+            getSigner()
+        }
     }, [user]);
 
     return (
