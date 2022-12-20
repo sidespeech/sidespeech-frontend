@@ -178,7 +178,7 @@ const MessageInputStyled = styled.div`
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		background-color: var(--disable);
+		background-color: transparent;
 		border-bottom-left-radius: 10px;
 		border-bottom-right-radius: 10px;
 		padding: 0.5rem 1rem;
@@ -208,7 +208,9 @@ const MessageInputStyled = styled.div`
 			}
 
 			& .image-actions button {
-				background-color: var(--disable);
+				display: grid;
+				place-items: center;
+				background-color: var(--inactive);
 				border: none;
 				border-radius: 20px;
 				width: 20px;
@@ -218,7 +220,7 @@ const MessageInputStyled = styled.div`
 			}
 
 			& .image-actions button > i {
-				color: var(--inactive);
+				color: var(--text);
 				font-size: 0.8rem;
 			}
 		}

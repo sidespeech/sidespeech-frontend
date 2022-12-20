@@ -65,6 +65,15 @@ export default function CurrentSideLeftContent() {
 	const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
 	const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
+	const filteredRooms = currentSide?.profiles.map((p: Profile, index: number) => {
+		const isMe = p.id === currentProfile?.id;
+		const room = currentProfile?.getRoom(p.id);
+		if (isMe || !room) return 'member';
+		return 'conversation';
+	});
+	const numberOfMembers = filteredRooms?.filter(type => type === 'member').length;
+	const numberOfConversations = filteredRooms?.filter(type => type === 'conversation').length;
+
 	const onChannelSelected = (c: Channel) => {
 		dispatch(setSelectedChannel(c));
 		dispatch(setSelectedRoom(null));
@@ -238,7 +247,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Members ({currentSide.profiles.length || 0})</p>
+							<p className="size-14">Members ({numberOfMembers || 0})</p>
 						</span>
 					)}
 				>
@@ -268,7 +277,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Conversations ({currentSide.profiles.length || 0})</p>
+							<p className="size-14">Conversations ({numberOfConversations || 0})</p>
 						</span>
 					)}
 				>

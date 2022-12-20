@@ -316,7 +316,7 @@ export default function Admission({
 
 											<button
 												className="reset-btn size-14 text-red"
-												onClick={() => removeDivCollection(current.collection)}
+												onClick={() => removeDivCollection(current.collection, i)}
 											>
 												<i className="fa-regular fa-trash-can mr-2"></i>Remove
 											</button>
