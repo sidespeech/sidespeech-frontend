@@ -54,7 +54,7 @@ export default function SideUserList({
 				const isMe = p.id === currentProfile?.id;
 				const room = currentProfile?.getRoom(p.id);
 				if (isMembersList && room && !isMe) return;
-				if (!isMembersList && isMe) return;
+				if (!isMembersList && (isMe || !room)) return;
 				const url = p.profilePicture?.metadata?.image ? fixURL(p.profilePicture?.metadata?.image) : undefined;
 
 				return (
@@ -134,24 +134,24 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 
 	const { walletAddress } = useWalletAddress();
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
-	const { currentProfile, user } = useSelector((state: RootState) => state.user);
+	const { currentProfile, user, userCollectionsData } = useSelector((state: RootState) => state.user);
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		async function getCollection(address: string) {
-			const collection = await collectionService.getCollectionByAddress(address);
+			const collection = userCollectionsData[address];
 			setCollection(collection);
 		}
 		if (profile.profilePicture && profile.profilePicture.metadata && profile.profilePicture.metadata.image) {
 			setUrl(fixURL(profile.profilePicture.metadata.image));
 		}
-		if (profile.profilePicture.token_address) {
+		if (profile.profilePicture.token_address && Object.keys(userCollectionsData).length && !collection) {
 			getCollection(profile.profilePicture.token_address);
 			setNft(profile.profilePicture);
 		}
-	}, [profile.profilePicture]);
+	}, [profile.profilePicture, userCollectionsData]);
 
 	const handleSelectedUser = async (profile: Profile, currentProfile: Profile) => {
 		try {

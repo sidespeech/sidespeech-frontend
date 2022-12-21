@@ -26,7 +26,7 @@
 }
 
 .bounce-from-right {
-	animation: enter-right 0.3s ease;
+	animation: enter-right 0.5s ease;
 }
 
 @keyframes fade-in {

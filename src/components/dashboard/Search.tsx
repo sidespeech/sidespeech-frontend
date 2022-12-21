@@ -209,7 +209,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 		} catch (error) {
 			console.error(error);
 			toast.error('Ooops! Something went wrong fetching your Sides', {
-				toastId: getRandomId()
+				toastId: 36
 			});
 		} finally {
 			setSidesLoading(false);

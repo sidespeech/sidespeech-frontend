@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import InputText from './InputText';
 import ClickAwayListener from 'react-click-away-listener';
 import { FixedSizeList as List } from 'react-window';
+import CustomCheckbox from './CustomCheckbox';
 
 const DropdownLine = styled.div<any>`
 	position: relative;
@@ -68,12 +69,20 @@ const DropdownContainer = styled.div<any>`
 			padding: 1rem 1rem 0.5rem 1rem;
 			background-color: var(--panels);
 			border: 1px solid var(--disable);
-			& .resultsNumbers {
-				display: block;
-				margin-top: 0.5rem;
-				padding: 0 0.5rem;
-				width: 100%;
-				text-align: right;
+			& .filters-wrapper {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				& .resultsNumbers {
+					display: block;
+					margin-top: 0.5rem;
+					padding: 0 0.5rem;
+					width: 100%;
+					text-align: right;
+				}
+				& .filter-checkbox {
+					margin-top: 0.5rem;
+				}
 			}
 		}
 	}
@@ -85,6 +94,9 @@ export default function Dropdown({
 	key,
 	values,
 	style,
+	filterByCheckbox,
+	checkboxDefaultValue,
+	checkboxLabel = 'filter',
 	filterDropdownList,
 	backgroundColor,
 	defaultValue,
@@ -158,7 +170,19 @@ export default function Dropdown({
 								glass
 								iconRightPos={{ top: 9, right: 15 }}
 							/>
-							{resultsNumbers ? <label className="resultsNumbers">{resultsNumbers} results</label> : null}
+							<div className="filters-wrapper">
+								{filterByCheckbox && (
+									<CustomCheckbox
+										className="filter-checkbox"
+										isChecked={checkboxDefaultValue}
+										label={checkboxLabel}
+										labelPosition="right"
+										onClick={filterByCheckbox}
+										size="sm"
+									/>
+								)}
+								{resultsNumbers && <label className="resultsNumbers">{resultsNumbers} results</label>}
+							</div>
 						</div>
 					)}
 					<List height={300} itemCount={values.length} itemSize={44} width={'100%'}>

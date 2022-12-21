@@ -191,6 +191,11 @@ function collectionFilterByName(c: Collection, filter: string) {
 	);
 }
 
+function collectionFilterByVerified(c: Collection, filter: boolean) {
+	if (!filter) return true;
+	return c.safelistRequestStatus === OpenSeaRequestStatus.verified;
+}
+
 function sortByValue(a: any, b: any) {
 	if (a['value'] < b['value']) return -1;
 	if (a['value'] > b['value']) return 1;
@@ -226,21 +231,30 @@ export default function Admission({
 	const [value, setValue] = useState(false);
 	const [filteredCollections, setFilteredCollections] = useState<Collection[]>([]);
 	const [filter, setFilter] = useState<string>('');
+	const [onlyVerifiedCollections, setOnlyVerifiedCollections] = useState<boolean>(true);
 
 	useEffect(() => {
 		const selectedCollections: string[] = divCollections.map((d: any) => d.collection);
 		let filtered = collections.filter(
-			c => !selectedCollections.includes(c.address) && collectionFilterByName(c, filter)
+			c =>
+				!selectedCollections.includes(c.address) &&
+				collectionFilterByName(c, filter) &&
+				collectionFilterByVerified(c, onlyVerifiedCollections)
 		);
 		if (!onlyOneRequired) {
 			filtered = filtered.filter(c => userCollectionsData[c.address]);
 		}
 		setFilteredCollections(filtered);
-	}, [divCollections, filter, onlyOneRequired, collections]);
+	}, [divCollections, filter, onlyOneRequired, onlyVerifiedCollections, collections]);
 
 	const filterDropdownList = (e: any) => {
 		const value = e.target.value;
 		setFilter(value);
+	};
+
+	const filterByVerifiedDropdownList = (e: any) => {
+		const value = e.target.checked;
+		setOnlyVerifiedCollections(value);
 	};
 
 	const CollectionRow = ({ c, fi, userData }: { c: Collection; fi: number; userData: any }) => {
@@ -302,7 +316,7 @@ export default function Admission({
 
 											<button
 												className="reset-btn size-14 text-red"
-												onClick={() => removeDivCollection(current.collection)}
+												onClick={() => removeDivCollection(current.collection, i)}
 											>
 												<i className="fa-regular fa-trash-can mr-2"></i>Remove
 											</button>
@@ -315,6 +329,9 @@ export default function Admission({
 														style={{
 															zIndex: 6 * (divCollections.length - i)
 														}}
+														filterByCheckbox={filterByVerifiedDropdownList}
+														checkboxLabel="Only verified"
+														checkboxDefaultValue={onlyVerifiedCollections}
 														resultsNumbers={filteredCollections.length}
 														values={
 															filteredCollections.length
