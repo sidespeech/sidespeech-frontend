@@ -16,6 +16,7 @@ import { fixURL } from '../../../helpers/utilities';
 import roomService from '../../../services/api-services/room.service';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import Skeleton from '../../ui-components/Skeleton';
+import { User } from '../../../models/User';
 
 const ChatComponentStyled = styled.div`
 	display: flex;
@@ -135,6 +136,11 @@ export default function ChatComponent(props: IChatComponentProps) {
 		};
 	}, [messages]);
 
+	const getUserBySenderId = (senderId: string): User | undefined => {
+		const profile = currentSide?.profiles.find(p => p.user.accounts?.toLowerCase() === senderId?.toLowerCase());
+		return profile?.user;
+	};
+
 	return (
 		<ChatComponentStyled>
 			{loading ? (
@@ -146,10 +152,9 @@ export default function ChatComponent(props: IChatComponentProps) {
 					<div className="chat-list">
 						<div>
 							{_.orderBy(messages, ['timestamp'], ['desc']).map((m: Message, i) => {
-								const profile = currentSide?.profiles.find(p => p.user.accounts === m.sender);
-								const url = profile?.profilePicture?.metadata?.image
-									? fixURL(profile.profilePicture?.metadata?.image)
-									: '';
+								const user = getUserBySenderId(m.sender);
+								const url = user?.userAvatar?.metadata?.image || '';
+								const username = user?.username || '';
 								return (
 									<div className={`chat-item ${i !== 0 ? 'border-bottom' : ''}`} key={i}>
 										<div className="flex w-100 gap-20">
@@ -159,7 +164,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 												weight={700}
 												fontSize={14}
 												avatar={url}
-												username={profile?.user.username || ''}
+												username={username}
 											/>
 											<div
 												className="size-11 fw-500 open-sans"

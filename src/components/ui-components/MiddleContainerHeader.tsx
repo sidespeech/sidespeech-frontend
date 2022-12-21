@@ -382,8 +382,8 @@ export default function MiddleContainerHeader({
 
 	useEffect(() => {
 		if (roomProfile) {
-			const url = roomProfile.profilePicture?.metadata?.image
-				? fixURL(roomProfile.profilePicture?.metadata?.image)
+			const url = roomProfile.user?.userAvatar?.metadata?.image
+				? roomProfile.user?.userAvatar?.metadata?.image
 				: defaultPP;
 			setUrl(url);
 		}

@@ -55,7 +55,7 @@ export default function SideUserList({
 				const room = currentProfile?.getRoom(p.id);
 				if (isMembersList && room && !isMe) return;
 				if (!isMembersList && (isMe || !room)) return;
-				const url = p.profilePicture?.metadata?.image ? fixURL(p.profilePicture?.metadata?.image) : undefined;
+				const url = p.user?.userAvatar?.metadata?.image ? p.user?.userAvatar?.metadata?.image : undefined;
 
 				return (
 					<React.Fragment key={index}>
@@ -144,8 +144,8 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 			const collection = userCollectionsData[address];
 			setCollection(collection);
 		}
-		if (profile.profilePicture && profile.profilePicture.metadata && profile.profilePicture.metadata.image) {
-			setUrl(fixURL(profile.profilePicture.metadata.image));
+		if (profile?.user?.userAvatar?.metadata?.image) {
+			setUrl(profile.user.userAvatar.metadata.image);
 		}
 		if (profile.profilePicture.token_address && Object.keys(userCollectionsData).length && !collection) {
 			getCollection(profile.profilePicture.token_address);

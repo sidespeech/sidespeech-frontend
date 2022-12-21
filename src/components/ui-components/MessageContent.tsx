@@ -55,7 +55,7 @@ const MessageContentStyled = styled.div`
 	${breakpoints(
 		size.lg,
 		`{
-		max-width: calc(100vw - 22rem);
+		max-width: calc(100vw - 26rem);
 	}`
 	)}
 	& .input-content-wrapper {
