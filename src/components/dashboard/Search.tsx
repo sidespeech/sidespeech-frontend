@@ -186,6 +186,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 	const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 	const [sidesList, setSidesList] = useState<Side[]>([]);
 	const [sidesLoading, setSidesLoading] = useState<boolean>(false);
+	const [numberOfPages, setNumberOfPages] = useState<number>(0);
 	const [totalResults, setTotalResults] = useState<number>(0);
 
 	const { sides, user, userCollectionsData } = useSelector((state: RootState) => state.user);
@@ -233,12 +234,13 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 			);
 		}
 		setTotalResults(parsedArray.length);
-		const { array } = paginateArray({
+		const { array, pages } = paginateArray({
 			array: parsedArray,
 			currentPage: pagination.currentPage,
 			pageSize: pagination.pageSize
 		});
 		setSidesList(array);
+		setNumberOfPages(pages);
 	}, [filteredSides, pagination, searchFilters]);
 
 	const handleEligibilityCheck = (side: Side) => {
@@ -371,13 +373,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 						currentPage: page
 					}));
 				}}
-				totalPages={
-					paginateArray({
-						array: sidesList,
-						currentPage: pagination.currentPage,
-						pageSize: pagination.pageSize
-					}).pages
-				}
+				totalPages={numberOfPages}
 			/>
 
 			{displayEligibility && selectedSide && (
