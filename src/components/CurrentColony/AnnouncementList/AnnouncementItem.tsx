@@ -105,32 +105,32 @@ export default function AnnouncementItem({
 			p => p.user.accounts.toLowerCase() === announcement.creatorAddress.toLowerCase()
 		);
 		if (profile) {
-			const url = profile?.profilePicture?.metadata?.image ? fixURL(profile.profilePicture?.metadata?.image) : '';
+			const url = profile?.user?.userAvatar ? profile.user.userAvatar?.metadata?.image : '';
 			setData({ profile: profile, url: url });
 		}
 	}, [announcement.creatorAddress, currentSide]);
 
-    return (
-        <AnnouncementItemStyled className={`${className || ''} ${!announcement.lastMessageSameCreator ? 'border' : 'no-border'}`}>
-
-            {!announcement.lastMessageSameCreator ? (
-              <div className="flex w-100 gap-20">
-                <UserBadge
-                    check
-                    color={reduceWalletAddressForColor(announcement.creatorAddress)}
-                    weight={700}
-                    fontSize={14}
-                    avatar={data.url}
-                    username={data.profile?.user.username}
-                />
-                <div className="size-11 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
-                    {formatDistance(new Date(Number.parseInt(announcement.timestamp)), new Date(), {
-                        addSuffix: true
-                    })}
-                </div>
-            </div>
-            ) : null }
-          
+	return (
+		<AnnouncementItemStyled
+			className={`${className || ''} ${!announcement.lastMessageSameCreator ? 'border' : 'no-border'}`}
+		>
+			{!announcement.lastMessageSameCreator ? (
+				<div className="flex w-100 gap-20">
+					<UserBadge
+						check
+						color={reduceWalletAddressForColor(announcement.creatorAddress)}
+						weight={700}
+						fontSize={14}
+						avatar={data.url}
+						username={data.profile?.user.username}
+					/>
+					<div className="size-11 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
+						{formatDistance(new Date(Number.parseInt(announcement.timestamp)), new Date(), {
+							addSuffix: true
+						})}
+					</div>
+				</div>
+			) : null}
 
 			<MessageContent message={announcement.content} />
 

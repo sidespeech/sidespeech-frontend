@@ -136,7 +136,8 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
 						color={reduceWalletAddressForColor(poll.creator)}
 						weight={700}
 						fontSize={14}
-						address={poll.creator}
+						avatar={poll.user?.userAvatar?.metadata?.image}
+						username={poll.user?.username}
 					/>
 					<div className="size-11 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
 						{formatDistance(new Date(Number.parseInt(poll.createdAt || '2022-09-11')), new Date(), {
