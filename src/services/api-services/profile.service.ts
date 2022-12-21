@@ -66,10 +66,8 @@ class ProfileService extends BaseApiService {
 
 
   async linkSafeProfile(data: any) {
-    console.log('data: ', data)
     const res = await this.post(`${BASE_URL}/profile/link-safe-profile/${data['sideId']}`).send(data);
-    console.log(res['body'])
-    return res;
+    return new Profile(res['body']);
   }
 
 }

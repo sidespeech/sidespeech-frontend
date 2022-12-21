@@ -12,6 +12,11 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import safeService from '../../services/api-services/safe.service';
 import profileService from '../../services/api-services/profile.service';
 import { safeRole } from '../../models/Profile';
+import categoryProposalService from '../../services/api-services/category-proposal.service';
+import proposalService from '../../services/api-services/proposal.service';
+import { Proposal, Status } from '../../models/Proposal';
+
+import moment from 'moment'
 
 
 const randomNonce = function (length: number) {
@@ -28,36 +33,6 @@ export default function GnosisSafe() {
     const navigate = useNavigate();
 
     const { userCollectionsData, user } = useSelector((state: RootState) => state.user);
-
-    async function createSafe(ethAdapter: EthersAdapter) {
-        const safeFactory = await SafeFactory.create({ ethAdapter })
-
-        console.log('safeFactory :', safeFactory);
-
-        const owners = ['0xafEE34F5064539b53E5B7102f8B3BB2951b3591A']
-        const threshold = 1
-        const safeAccountConfig: SafeAccountConfig = {
-            owners,
-            threshold,
-        }
-
-        console.log('safeAccountConfig :', safeAccountConfig);
-
-
-        const safeSdk: Safe = await safeFactory.deploySafe({ safeAccountConfig })
-
-        console.log('safeSdk :', safeSdk);
-
-        const newSafeAddress = safeSdk.getAddress();
-        console.log('newSafeAddress :', newSafeAddress)
-
-        await safeService.savednewSafe({
-            contractAddress : newSafeAddress,
-            threshold: threshold,
-            sideId : user!['profiles'][0]['side']['id'],
-            profileId : user!['profiles'][0]['id']
-        });
-    }
 
     async function getSigner() {
         // This is the all of the providers that are needed...
@@ -119,32 +94,51 @@ export default function GnosisSafe() {
 
             console.log('signature :', signature)
 
-            const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer });
-            console.log("ethAdapter :", ethAdapter)
-
-            createSafe(ethAdapter)
+            
+            safeService.createSafe(signer, '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A', user!['profiles'][0]['side']['id'], user!['profiles'][0]['id'])
         }
     }
 
 
-    async function test(user:any) {
-        await profileService.linkSafeProfile({
-            safeId : 'a1c2029e-0487-4e08-80ba-004c56d6c2f3',
+    async function linkSafeToProfile(user:any) {
+        const profile = await profileService.linkSafeProfile({
+            safeId : "945abc4d-0016-45eb-b560-103f4e15b87f",
             profileId: 'ec0d6ee8-482a-4fd7-8793-033684a3d76b',
             sideId : user!['profiles'][0]['side']['id'],
             safeRole: safeRole.unsigned
         });
+        console.log("profile :", profile);
     }
+
+
+    async function getAllCategoriesAndCreateProposal() {
+        const categories = await categoryProposalService.getAllCategories();
+        let example = categories.find((item:any) => item['name'] === "Open funding round");
+        const proposal = await createProposal({
+            categoryId : example['id'],
+            safeId : "2ea3f5d9-81c2-48d0-9d50-36aedd84e4a6",
+            status: Status.Open,
+            details: {
+                currency : 'ETH',
+                start_date: moment(Date.now()).format('DD-MM-YYYY HH:mm:ss'),
+                end_date: moment(Date.now()).add(1, 'days').format('DD-MM-YYYY HH:mm:ss'),
+            }
+        })
+    }
+
+
+    async function createProposal(data:Proposal) {
+        const proposal = await proposalService.saveProposal(data);
+        return proposal
+    }
+    
     useEffect(() => {
         if (user) {
 
             console.log('user :', user)
-            console.log('user :', user['profiles'][0]['id'])
-            // test(user)
-
-
 
             // getSigner()
+            // getAllCategoriesAndCreateProposal();
         }
     }, [user]);
 

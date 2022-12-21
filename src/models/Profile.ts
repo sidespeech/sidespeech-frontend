@@ -1,5 +1,6 @@
 import { NFT } from "./interfaces/nft";
 import { Room } from "./Room";
+import { Safe } from "./Safe";
 import { Side } from "./Side";
 import { User } from "./User";
 
@@ -22,12 +23,15 @@ export class Profile {
   username: string;
   showNfts: boolean;
   role: Role;
+  safeRole: safeRole;
+
   profilePicture: NFT;
 
   rooms: Room[];
 
   side: Side;
   user: User;
+  safe: Safe;
 
   constructor(_data: any) {
     this.id = _data.id;
@@ -38,6 +42,8 @@ export class Profile {
     this.rooms = _data.rooms?.map((r: any) => new Room(r)) || [];
     this.side = _data.side;
     this.user = _data.user;
+    this.safeRole = _data.safeRole;
+    this.safe = _data.safe;
   }
 
   /**
