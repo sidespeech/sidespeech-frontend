@@ -127,8 +127,8 @@ export default function UserSides() {
 				let sideFounded: any;
 
 				if (notification['type'] == NotificationType.Channel) {
-					sideFounded = userData.sides.find((s: Side) => {
-						return s.channels.find((c: any) => c.id === notification['name']);
+					sideFounded = userData.sides?.find((s: Side) => {
+						return s.channels?.find((c: any) => c.id === notification['name']);
 					});
 				} else {
 					sideFounded = userData.sides.find((s: Side) => {
@@ -138,7 +138,7 @@ export default function UserSides() {
 					});
 				}
 
-				if (currentSide && sideFounded!['id'] !== currentSide['id'])
+				if (currentSide && sideFounded?.['id'] && sideFounded!['id'] !== currentSide['id'])
 					dots_object[sideFounded!['id']] = dots_object[sideFounded!['id']]++ || 1;
 			}
 		}
