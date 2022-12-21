@@ -18,6 +18,7 @@ import defaultPP from '../../assets/default-pp.png';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import SidesListMobileMenu from '../CurrentColony/SidesListMobileMenu';
 import { OpenSeaRequestStatus } from '../../models/interfaces/collection';
+import { User } from '../../models/User';
 
 const MiddleContainerHeaderStyled = styled.header`
 	width: 100%;
@@ -389,6 +390,13 @@ export default function MiddleContainerHeader({
 		}
 	}, [roomProfile]);
 
+	const getUserBySenderId = (senderId: string): User | undefined => {
+		const profile = currentSide?.profiles.find(p => p.user.accounts?.toLowerCase() === senderId?.toLowerCase());
+		return profile?.user;
+	};
+
+	const threadCreator = thread ? getUserBySenderId(thread.creator || thread.creatorAddress) : null;
+
 	return (
 		<MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>
 			<div className="desktop-header fade-in-top">
@@ -420,10 +428,10 @@ export default function MiddleContainerHeader({
 									)
 								}}
 								alt=""
-								src={thread?.creator || thread?.creatorAddress || ''}
+								src={threadCreator?.userAvatar?.metadata?.image || ''}
 							/>
 							<div className="user-name-address">
-								<p className="user-name size-14">{thread?.creator || thread?.creatorAddress}</p>
+								<p className="user-name size-14">{threadCreator?.username}</p>
 								<p className="user-address size-14">13 hours ago</p>
 							</div>
 						</div>
