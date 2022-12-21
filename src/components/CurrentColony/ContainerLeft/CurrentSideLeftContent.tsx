@@ -122,36 +122,62 @@ export default function CurrentSideLeftContent() {
 
 	const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
 		const account = localStorage.getItem('userAccount');
-		if (account) getAndSetRoomNotifications(account, true);
+		if (account) setChannelsNotifications(detail);
 	};
 
 	const handleReceiveMessage = async (m: any) => {
 		const { detail } = m;
 		const account = localStorage.getItem('userAccount');
-		if (account) getAndSetRoomNotifications(account, true);
+		if (account) setRoomsNotifications(detail);
 	};
 
+	const setChannelsNotifications = (data: any) => {
+		const number = dotsChannel[data.channelId] || 0;
+		if ((selectedChannel && selectedChannel.id !== data.channelId) || selectedRoom)
+			setDotsChannel({ ...dotsChannel, [data.channelId]: number + 1 });
+	};
+	const setRoomsNotifications = (data: any) => {
+		const number = dotsPrivateMessage[data.room.id] || 0;
+		if ((selectedRoom && selectedRoom.id !== data.room.id) || selectedChannel)
+			setDotsPrivateMessage({ ...dotsPrivateMessage, [data.room.id]: number + 1 });
+	};
+
+	const setNotifications = async () => {
+		const account = localStorage.getItem('userAccount');
+		const notifications = await notificationService.getNotification(account!);
+		let dotsPrivateMessageCopy: any = {};
+		let dotsChannelCopy: any = {};
+		for (let notification of notifications) {
+			if (notification['type'] === NotificationType.Channel) {
+				const num = dotsChannelCopy[notification['name']] || 0;
+				dotsChannelCopy[notification['name']] = num + 1;
+			} else {
+				const num = dotsPrivateMessageCopy[notification['name']] || 0;
+				dotsPrivateMessageCopy[notification['name']] = num + 1;
+			}
+		}
+		if (JSON.stringify(dotsPrivateMessageCopy) !== JSON.stringify(dotsPrivateMessage))
+			setDotsPrivateMessage(dotsPrivateMessageCopy);
+		if (JSON.stringify(dotsChannelCopy) !== JSON.stringify(dotsChannel)) {
+			setDotsChannel(dotsChannelCopy);
+		}
+	};
 	// Function to get notification from db and assign them to the state variable
 	async function getAndSetRoomNotifications(account: string, from_ws = false) {
 		const notifications = await notificationService.getNotification(account!);
-
-		let dotsPrivateMessageCopy: any = {};
+		let dotsPrivateMessageCopy: any = { ...dotsPrivateMessage };
 		let dotsChannelCopy: any = { ...dotsChannel };
 		for (let notification of notifications) {
 			if (notification['type'] === NotificationType.Channel) {
-				if (!selectedChannel && notification['name'] in dotsChannelCopy)
-					dotsChannelCopy[notification.name] += 1;
-				else if (selectedChannel && notification['name'] === selectedChannel!.id) {
+				if (selectedChannel && notification['name'] === selectedChannel!.id) {
 					dotsChannelCopy[notification['name']] = 0;
 					await notificationService.deleteNotification(selectedChannel!.id, account!);
-				} else dotsChannelCopy[notification['name']] = 1;
+				}
 			} else {
-				if (!selectedRoom && notification['name'] in dotsPrivateMessageCopy) {
-					dotsPrivateMessageCopy[notification.name] += 1;
-				} else if (selectedRoom && notification['name'] === selectedRoom!.id) {
+				if (selectedRoom && notification['name'] === selectedRoom!.id) {
 					dotsPrivateMessageCopy[notification['name']] = 0;
 					await notificationService.deleteNotification(selectedRoom!.id, account!);
-				} else dotsPrivateMessageCopy[notification['name']] = 1;
+				}
 			}
 		}
 		if (JSON.stringify(dotsPrivateMessageCopy) !== JSON.stringify(dotsPrivateMessage))
@@ -168,14 +194,14 @@ export default function CurrentSideLeftContent() {
 		return () => {
 			unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
 		};
-	});
+	}, [dotsChannel, selectedChannel, selectedRoom]);
 
 	useEffect(() => {
 		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
 		return () => {
 			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
 		};
-	});
+	}, [dotsPrivateMessage, selectedRoom, selectedChannel]);
 
 	useEffect(() => {
 		subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
@@ -194,7 +220,11 @@ export default function CurrentSideLeftContent() {
 	}, [currentSide, account]);
 
 	useEffect(() => {
-		if(selectedRoom && selectedChannel){
+		setNotifications();
+	}, []);
+
+	useEffect(() => {
+		if (selectedRoom || selectedChannel) {
 			const account = localStorage.getItem('userAccount');
 			if (account) getAndSetRoomNotifications(account);
 		}

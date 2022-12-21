@@ -173,6 +173,7 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
 						ref={ref}
 						size={14}
 						weight={600}
+						maxLength={1000}
 					/>
 				</div>
 			)}

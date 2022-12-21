@@ -183,7 +183,7 @@ export default function CurrentSideLeft({}: CurrentSideLeftProps) {
 					onClick={() => setIsToolbarOpen(false)}
 					className={`toolbar-content ${isToolbarOpen ? 'open' : ''}`}
 				>
-					<CurrentSideLeftContent />
+					{/* <CurrentSideLeftContent /> */}
 				</div>
 			</div>
 		</ContainerLeftStyled>

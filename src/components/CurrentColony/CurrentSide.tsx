@@ -235,11 +235,11 @@ export default function CurrentSide() {
 					setThread={setThread}
 					thread={thread}
 				/>
-				{!settingsOpen && (
+				{/* {!settingsOpen && (
 					<div className="left-side-mobile">
 						<CurrentSideLeft />
 					</div>
-				)}
+				)} */}
 				{currentSide?.status === SideStatus.active ? (
 					<Outlet
 						context={{

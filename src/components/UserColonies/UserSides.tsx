@@ -14,6 +14,7 @@ import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
 import notificationService from '../../services/api-services/notification.service';
 import { isColor } from '../../helpers/utilities';
+import ReactTooltip from 'react-tooltip';
 
 const UserSidesStyled = styled.div`
 	max-height: calc(100vh - 4rem - 48px);
@@ -84,13 +85,31 @@ export default function UserSides() {
 
 	const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
 		const account = localStorage.getItem('userAccount');
-		if (currentSide && account) getAndSetRoomNotifications(account);
+		if (currentSide && account) {
+			const sideFounded = userData.sides.find((s: Side) => {
+				return s.channels.find((c: any) => c.id === detail['channelId']);
+			});
+			if (sideFounded && sideFounded!['id'] !== currentSide['id']) {
+				const number = dots[sideFounded['id']] || 0;
+				setDots({ ...dots, [sideFounded!['id']]: number + 1 });
+			}
+		}
 	};
 
 	const handleReceiveMessage = async (m: any) => {
 		const { detail } = m;
 		const account = localStorage.getItem('userAccount');
-		if (currentSide && account) getAndSetRoomNotifications(account);
+		if (currentSide && account) {
+			const sideFounded = userData.sides.find((s: Side) => {
+				return s.profiles.find((p: Profile) => {
+					return p.rooms.find(el => el.id === detail.room['id']);
+				});
+			});
+			if (sideFounded && sideFounded!['id'] !== currentSide['id']) {
+				const number = dots[sideFounded['id']] || 0;
+				setDots({ ...dots, [sideFounded!['id']]: number + 1 });
+			}
+		}
 	};
 
 	// LISTENING WS =====================================================================
@@ -112,7 +131,7 @@ export default function UserSides() {
 	// Function to get notification from db and assign them to the state variable
 	async function getAndSetRoomNotifications(account: string) {
 		const notifications = await notificationService.getNotification(account!);
-		let dots_object: any = { ...dots };
+		let dots_object: any = {};
 
 		const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
 		for (let notification of notifications) {
@@ -137,9 +156,11 @@ export default function UserSides() {
 						});
 					});
 				}
-
-				if (currentSide && sideFounded!['id'] !== currentSide['id'])
-					dots_object[sideFounded!['id']] = dots_object[sideFounded!['id']]++ || 1;
+				console.log('dots', dots_object, 'side', currentSide?.id, 'founded', sideFounded);
+				if (currentSide && sideFounded!['id'] !== currentSide['id']) {
+					const number = dots_object[sideFounded!['id']] || 0;
+					dots_object[sideFounded!['id']] = number + 1;
+				}
 			}
 		}
 		notifications.length ? setDots(dots_object) : setDots({});
@@ -148,7 +169,9 @@ export default function UserSides() {
 	useEffect(() => {
 		const account = localStorage.getItem('userAccount');
 		if (currentSide && account) getAndSetRoomNotifications(account);
+	}, [currentSide]);
 
+	useEffect(() => {
 		if (userData.user && side) {
 			const sideProfile = userData.user?.profiles.find(profile => profile.side?.id === side?.id);
 
@@ -162,21 +185,28 @@ export default function UserSides() {
 			<UserSidesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
 				{userData.sides?.map((c, i) => {
 					return (
-						<div
-							onClick={() => {
-								displaySide(c);
-							}}
-							className={`colony-badge pointer ${id === c.name ? 'active' : ''}`}
-							style={{ backgroundColor: isColor(c.sideImage) ? c.sideImage : '' }}
-							key={c.id}
-						>
-							{!isColor(c.sideImage) ? (
-								<img alt="colony-icon" src={c.sideImage} />
-							) : (
-								<div>{c.name[0]}</div>
-							)}
-							{c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
-						</div>
+						<>
+							<div
+								data-tip
+								data-for={c.id}
+								onClick={() => {
+									displaySide(c);
+								}}
+								className={`colony-badge pointer ${id === c.name ? 'active' : ''}`}
+								style={{ backgroundColor: isColor(c.sideImage) ? c.sideImage : '' }}
+								key={c.id}
+							>
+								{!isColor(c.sideImage) ? (
+									<img alt="colony-icon" src={c.sideImage} />
+								) : (
+									<div>{c.name[0]}</div>
+								)}
+								{c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
+							</div>
+							<ReactTooltip backgroundColor="var(--panels)" id={c.id} effect="solid">
+								{c.name}
+							</ReactTooltip>
+						</>
 					);
 				})}
 				{/* <Link to={"/new-side"}>

@@ -340,9 +340,9 @@ const Invitations = ({}: InvitationsProps) => {
 														classes={'override-width'}
 													>
 														{invitation['side']['collectionSides'].length
-															? invitation['side']['collectionSides'][0]['collection'][
-																	'name'
-															  ]
+															? invitation['side']['collectionSides'][0][
+																	'collection'
+															  ].getName()
 															: 'Collection Name'}{' '}
 														<i className="fa-solid fa-circle-check ml-2 text-blue"></i>
 													</Button>

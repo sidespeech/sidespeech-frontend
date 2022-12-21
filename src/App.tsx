@@ -81,8 +81,6 @@ function App() {
 	}, [isUserOnboarded, loadingWallet, walletAddress]);
 
 	useEffect(() => {
-		websocketService.connectToWebSocket();
-
 		async function getUser(account: string) {
 			try {
 				setFetchingUser(true);
@@ -97,10 +95,13 @@ function App() {
 			}
 		}
 
-		if (!loadingWallet && localStorage.getItem('jwtToken') && walletAddress) getUser(walletAddress);
+		if (!loadingWallet && localStorage.getItem('jwtToken') && walletAddress) {
+			websocketService.connectToWebSocket();
+			getUser(walletAddress);
+		}
 
 		return () => {
-			websocketService.deconnectWebsocket();
+			// websocketService.deconnectWebsocket();
 		};
 	}, [loadingWallet, walletAddress]);
 
