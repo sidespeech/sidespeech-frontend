@@ -10,6 +10,8 @@ import EthersAdapter from '@safe-global/safe-ethers-lib'
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import safeService from '../../services/api-services/safe.service';
+import profileService from '../../services/api-services/profile.service';
+import { safeRole } from '../../models/Profile';
 
 
 const randomNonce = function (length: number) {
@@ -124,12 +126,25 @@ export default function GnosisSafe() {
         }
     }
 
+
+    async function test(user:any) {
+        await profileService.linkSafeProfile({
+            safeId : 'a1c2029e-0487-4e08-80ba-004c56d6c2f3',
+            profileId: 'ec0d6ee8-482a-4fd7-8793-033684a3d76b',
+            sideId : user!['profiles'][0]['side']['id'],
+            safeRole: safeRole.unsigned
+        });
+    }
     useEffect(() => {
         if (user) {
 
             console.log('user :', user)
             console.log('user :', user['profiles'][0]['id'])
-            getSigner()
+            // test(user)
+
+
+
+            // getSigner()
         }
     }, [user]);
 

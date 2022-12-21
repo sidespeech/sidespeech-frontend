@@ -9,6 +9,14 @@ export enum Role {
   subadmin,
 }
 
+export enum safeRole {
+  inactive,
+  unsigned,
+  signed,
+  blacklisted,
+  deleted
+}
+
 export class Profile {
   id: string;
   username: string;
