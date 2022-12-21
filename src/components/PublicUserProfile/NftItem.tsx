@@ -88,7 +88,7 @@ export const NftItemContainer = styled.div`
 		display: block;
 		background-size: contain;
 		background-repeat: no-repeat;
-		background-position: top center;
+		background-position: center;
 		margin-bottom: 10px;
 	}
 	.nft-image-bg img {
