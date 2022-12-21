@@ -156,7 +156,7 @@ const MySides = ({ collections }: MySidesProps) => {
 	// const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
 	const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
 	const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
-	// const [selectedSide, setSelectedSide] = useState<Side | null>(null);
+	const [numberOfPages, setNumberOfPages] = useState<number>(0);
 
 	const { sides, user, userCollectionsData } = useSelector((state: RootState) => state.user);
 
@@ -192,11 +192,12 @@ const MySides = ({ collections }: MySidesProps) => {
 				Object.keys(side.conditions).includes(searchFilters.collections?.split?.(',')?.[0] || '')
 			);
 		}
-		const { array } = paginateArray({
+		const { array, pages } = paginateArray({
 			array: parsedArray,
 			currentPage: pagination.currentPage,
 			pageSize: pagination.pageSize
 		});
+		setNumberOfPages(pages);
 		setSidesList(array);
 	}, [filteredSides, pagination, searchFilters]);
 
@@ -339,13 +340,7 @@ const MySides = ({ collections }: MySidesProps) => {
 						currentPage: page
 					}));
 				}}
-				totalPages={
-					paginateArray({
-						array: filteredSides,
-						currentPage: pagination.currentPage,
-						pageSize: pagination.pageSize
-					}).pages
-				}
+				totalPages={numberOfPages}
 			/>
 		</MySidesStyled>
 	);

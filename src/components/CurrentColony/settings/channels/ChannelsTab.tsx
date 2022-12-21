@@ -84,6 +84,15 @@ export default function Channels({
 	const dispatch = useDispatch();
 	const [allChannels, setAllChannels] = useState<Partial<IChannelExtension>[]>([]);
 
+	// Remove "New" status to all channels after creation to avoid multiple animations
+
+	useEffect(() => {
+		if (allChannels.some(channel => channel.newChannel))
+			setTimeout(() => {
+				setAllChannels(prevState => prevState.map(channel => ({ ...channel, newChannel: false })));
+			}, 500);
+	}, [allChannels]);
+
 	useEffect(() => {
 		if (currentSide['channels']) {
 			const orderedChannels = orderBy([...currentSide['channels']], 'index');

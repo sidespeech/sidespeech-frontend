@@ -306,6 +306,15 @@ export default function NewSide() {
 
 	const collections = useGetCollections();
 
+	// Remove "New" status to all channels after creation to avoid multiple animations
+
+	useEffect(() => {
+		if (channels.some(channel => channel.newChannel))
+			setTimeout(() => {
+				setChannels(prevState => prevState.map(channel => ({ ...channel, newChannel: false })));
+			}, 500);
+	}, [channels]);
+
 	const saveDataBeforeUnload = () => {
 		const dataToSave = {
 			formData,

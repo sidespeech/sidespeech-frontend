@@ -187,6 +187,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 	const [isWithSidesChecked, setIsWithSidesChecked] = useState<boolean>(false);
 	const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
 	const [viewMode, setViewMode] = useState<string>('card');
+	const [numberOfPages, setNumberOfPages] = useState<number>(0);
 
 	useEffect(() => {
 		if (userCollectionsData) {
@@ -210,11 +211,12 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 
 	useEffect(() => {
 		if (filteredCollections.length) {
-			const { array } = paginateArray({
+			const { array, pages } = paginateArray({
 				array: filteredCollections,
 				currentPage: pagination.currentPage,
 				pageSize: pagination.pageSize
 			});
+			setNumberOfPages(pages);
 			setUserCollections(array);
 		}
 	}, [filteredCollections, pagination]);
@@ -355,13 +357,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 							currentPage: page
 						}));
 					}}
-					totalPages={
-						paginateArray({
-							array: filteredCollections,
-							currentPage: pagination.currentPage,
-							pageSize: pagination.pageSize
-						}).pages
-					}
+					totalPages={numberOfPages}
 				/>
 			</div>
 		</UserCollectionsStyled>
