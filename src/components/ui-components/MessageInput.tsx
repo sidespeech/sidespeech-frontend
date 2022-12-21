@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { Editor } from 'react-draft-wysiwyg';
@@ -336,7 +336,9 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 
 	// Iterate through files array and upload each file
 
-	const handleUploadFiles = (ev: any): void => {
+	const handleUploadFiles = (ev: any, ref: any): void => {
+		console.log(ref);
+		ref.current.focusEditor();
 		const images: FileList | null = ev.target.files;
 		if (!images) return;
 		for (let i = 0; i < images.length; i++) {
@@ -416,6 +418,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 			props.onSubmit(message);
 			setImagesToUpload([]);
 		}
+		console.log(imagesToUpload);
 	};
 
 	return (
@@ -429,7 +432,6 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 					editorClassName="message-input-editor"
 					editorState={editorState}
 					height={props.height}
-					id={props.id}
 					maxLength={props.maxLength}
 					keyBindingFn={keyBindingFn}
 					onEditorStateChange={(state: EditorState) => {
@@ -569,7 +571,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 							name={imageInputId}
 							accept="image/*"
 							multiple
-							onChange={ev => handleUploadFiles(ev)}
+							onChange={ev => handleUploadFiles(ev, ref)}
 							style={{
 								position: 'absolute',
 								pointerEvents: 'none',

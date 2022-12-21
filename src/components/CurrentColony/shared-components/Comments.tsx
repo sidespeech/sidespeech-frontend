@@ -12,6 +12,9 @@ import UserBadge from '../../ui-components/UserBadge';
 import _ from 'lodash';
 import { Editor } from 'react-draft-wysiwyg';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import { User } from '../../../models/User';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/app.store';
 
 const CommentsContainerStyled = styled.div`
 	width: 100%;
@@ -56,6 +59,13 @@ const Comments = ({ channel, comments, handleComment, isThread, sideId }: Commen
 	const navigate = useNavigate();
 
 	const ref = useRef<Editor>(null);
+
+	const { currentSide } = useSelector((state: RootState) => state.appDatas);
+
+	const getUserBySenderId = (senderId: string): User | undefined => {
+		const profile = currentSide?.profiles.find(p => p.user.accounts?.toLowerCase() === senderId?.toLowerCase());
+		return profile?.user;
+	};
 
 	return (
 		<>
@@ -106,33 +116,42 @@ const Comments = ({ channel, comments, handleComment, isThread, sideId }: Commen
 				<CommentsContainerStyled className="mt-3">
 					<div className="comments-scroll-container">
 						{_.orderBy(channel.comments?.concat(comments), ['timestamp'], ['asc']).map(
-							(comment: Comment) => (
-								<div
-									className=""
-									key={comment.content + getRandomId()}
-									style={{
-										gap: '.5rem',
-										padding: '.5rem 0px',
-										borderTop: '1px solid var(--disable)'
-									}}
-								>
-									<div className="flex gap-20 w-100">
-										<UserBadge
-											check
-											color={reduceWalletAddressForColor(comment.creatorAddress)}
-											weight={700}
-											fontSize={14}
-											address={comment.creatorAddress}
-										/>
-										<div className="size-11 fw-500 open-sans" style={{ color: '#7F8CA4' }}>
-											{formatDistance(new Date(Number.parseInt(comment.timestamp)), new Date(), {
-												addSuffix: true
-											})}
+							(comment: Comment) => {
+								const user = getUserBySenderId(comment.creatorAddress);
+
+								return (
+									<div
+										className=""
+										key={comment.content + getRandomId()}
+										style={{
+											gap: '.5rem',
+											padding: '.5rem 0px',
+											borderTop: '1px solid var(--disable)'
+										}}
+									>
+										<div className="flex gap-20 w-100">
+											<UserBadge
+												check
+												color={reduceWalletAddressForColor(comment.creatorAddress)}
+												weight={700}
+												fontSize={14}
+												username={user?.username}
+												avatar={user?.userAvatar?.metadata?.image || undefined}
+											/>
+											<div className="size-11 fw-500 open-sans" style={{ color: '#7F8CA4' }}>
+												{formatDistance(
+													new Date(Number.parseInt(comment.timestamp)),
+													new Date(),
+													{
+														addSuffix: true
+													}
+												)}
+											</div>
 										</div>
+										<MessageContent message={comment.content} />
 									</div>
-									<MessageContent message={comment.content} />
-								</div>
-							)
+								);
+							}
 						)}
 					</div>
 				</CommentsContainerStyled>

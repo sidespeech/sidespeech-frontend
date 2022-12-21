@@ -213,7 +213,7 @@ export default function ChannelRow({
 
 	return (
 		<ChannelRowStyled
-			className={newChannel ? 'bounce-from-right' : 'fade-in'}
+			className={newChannel ? 'bounce-from-right' : ''}
 			ref={ref}
 			draggable
 			style={{ opacity, position: 'relative', zIndex: 9999 - index }}
