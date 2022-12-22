@@ -96,6 +96,7 @@ const GeneralSettingsMenuStyled = styled.div`
 			justify-content: space-between;
 			align-items: center;
 			width: 100%;
+			height: 100%;
 			color: inherit;
 			${breakpoints(
 				size.lg,
@@ -116,7 +117,9 @@ const GeneralSettingsMenuStyled = styled.div`
 			background-color: transparent;
 			display: flex;
 			align-items: center;
+			justify-content: space-between;
 			gap: 1rem;
+			height: 100%;
 			padding: 1rem 0;
 			border-radius: 10px;
 			transition: background-color 0.3s ease;
