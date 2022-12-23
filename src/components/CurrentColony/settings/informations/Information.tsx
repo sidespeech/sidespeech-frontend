@@ -193,7 +193,6 @@ export default function Informations({
 	const [isNewSide, setIsNewSide] = useState<boolean>(true);
 	const [internalFormError, setInternalFormError] = useState<any>(internalFormErrorInitialState);
 	const [originalInfo, setOriginalInfo] = useState<InitialStateUpdateSide>(initialStateUpdateSide);
-	const [subAdmin, setSubAdmin] = useState<string>('');
 
 	const areThereChanges = JSON.stringify(originalInfo) !== JSON.stringify(formData);
 

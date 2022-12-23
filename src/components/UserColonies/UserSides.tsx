@@ -157,9 +157,9 @@ export default function UserSides() {
 						});
 					});
 				}
-				if (currentSide && sideFounded!['id'] !== currentSide['id']) {
-					const number = dots_object[sideFounded!['id']] || 0;
-					dots_object[sideFounded!['id']] = number + 1;
+				if (currentSide && sideFounded?.['id'] !== currentSide['id']) {
+					const number = dots_object[sideFounded?.['id']] || 0;
+					dots_object[sideFounded?.['id']] = number + 1;
 				}
 			}
 		}
