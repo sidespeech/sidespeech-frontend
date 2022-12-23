@@ -135,7 +135,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 				dispatch(updateProfiles(profile));
 				dispatch(addUserParsedSide(props.selectedSide));
 				toast.success('Great! You join the side', { toastId: 26 });
-				navigate('/side/' + props.selectedSide.name);
+				navigate('/side/' + props.selectedSide.name.replace(/\s/g, '-').toLowerCase());
 				setIsLoading(false);
 			}
 		} catch (error: any) {
@@ -165,7 +165,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 		async function updateSide() {
 			const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
 			props.setDisplayEligibility(false);
-			navigate('side/' + side.name);
+			navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
 		}
 		if (isEligible && props.selectedSide.status === SideStatus.inactive && props.isSideAdmin) {
 			updateSide();

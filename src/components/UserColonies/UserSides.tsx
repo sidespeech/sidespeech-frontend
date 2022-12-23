@@ -80,7 +80,7 @@ export default function UserSides() {
 			setSide(side);
 			setDisplayModal(true);
 		} else {
-			navigate('side/' + side.name);
+			navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
 		}
 	};
 

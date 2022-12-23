@@ -143,7 +143,7 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 
     const handleNavigate = () => {
         if (!side.joined) return;
-        navigate(`/side/${side.name}`);
+        navigate(`/side/${side.name.replace(/\s/g, '-').toLowerCase()}`);
     };
 
     let alertsCount = 0;
