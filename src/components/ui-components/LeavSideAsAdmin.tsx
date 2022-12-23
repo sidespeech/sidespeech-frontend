@@ -66,6 +66,10 @@ const LeavSideAsAdmin = ({ className, id, style, handleLeaveSide, side }: LeaveS
 				setUsers(users.filter((user: any) => user.accounts?.toLowerCase() !== userAccount?.toLowerCase()));
 				const subadmin = side.profiles.filter(p => p.role === Role.subadmin)[0];
 				if (subadmin) setNewSubAdmin(subadmin.user.username);
+				else {
+					const normalUser = side.profiles.filter(p => p.role === Role.User)[0];
+					if (normalUser) setNewSubAdmin(normalUser.user.username);
+				}
 			}
 		}
 		if (side) {
@@ -81,13 +85,13 @@ const LeavSideAsAdmin = ({ className, id, style, handleLeaveSide, side }: LeaveS
 	};
 
 	const leaveSide = async () => {
-		try {
-			if (side) {
+		if (side) {
+			try {
 				await userService.updateSubAdmin(newSubAdmin, side.id);
-				handleLeaveSide();
+			} catch (error) {
+				console.error('Sub admin could not be updated: ', error);
 			}
-		} catch (error) {
-			toast.error('Error when updating sub-admin.');
+			handleLeaveSide();
 		}
 	};
 
@@ -126,7 +130,7 @@ const LeavSideAsAdmin = ({ className, id, style, handleLeaveSide, side }: LeaveS
 					placeholder="Type something"
 					placeholderColor="var(--white)"
 					radius="10px"
-					value={inputValue}
+					value={inputValue || newSubAdmin}
 					autocomplete
 					data={users?.map(p => p.username)}
 					onSelected={(value: any) => setNewSubAdmin(value)}

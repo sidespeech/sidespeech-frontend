@@ -274,12 +274,16 @@ export default function Informations({
 	};
 
 	const onSubmitLeaveSide = async () => {
-		let result = await profileService.leaveSide(userData['currentProfile']);
-		if (result['error']) toast.error(result['message'], { toastId: 3 });
-		else {
-			toast.success(result['message'], { toastId: 4 });
-			dispatch(removeSide(userData['currentProfile'].side.id));
-			navigate('/');
+		try {
+			let result = await profileService.leaveSide(userData['currentProfile']);
+			if (result['error']) toast.error(result['message'], { toastId: 3 });
+			else {
+				toast.success(result['message'], { toastId: 4 });
+				dispatch(removeSide(userData['currentProfile'].side.id));
+				navigate('/');
+			}
+		} catch (error: any) {
+			toast.error('Please provide a Sub Admin to replace you as Administrator', { toastId: 5 });
 		}
 	};
 
