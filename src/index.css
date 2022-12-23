@@ -1,9 +1,9 @@
 :root {
 	/* new styles */
 	--primary: #0ccf99; /* Main color */
-	--primary-opacity: #0ccf99; /* Main color */
+	--primary-opacity: #0ccf9833; /* Main color */
 	--red: #dc4964;
-	--red-opacity: #dc49641a;
+	--red-opacity: #dc47621a;
 	--green: #36da81;
 	--green-opacity: #36da811a;
 	--blue: #3db4e7;

@@ -19,6 +19,8 @@ import SideCardItem from './shared-components/SideCardItem';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg';
 import sideService from '../../services/api-services/side.service';
+import { Role } from '../../models/Profile';
+import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
 
 interface SearchStyledProps {}
 
@@ -179,7 +181,6 @@ const paginationInitialState = {
 };
 
 const Search = ({ collections, searchFilters, searchText, setSearchFilters }: SearchProps) => {
-	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
 	const [filteredSides, setFilteredSides] = useState<Side[]>([]);
 	const [isFiltersShowing, setIsFiltersShowing] = useState<boolean>(false);
 	const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
@@ -188,6 +189,9 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 	const [sidesLoading, setSidesLoading] = useState<boolean>(false);
 	const [numberOfPages, setNumberOfPages] = useState<number>(0);
 	const [totalResults, setTotalResults] = useState<number>(0);
+	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
+	const [isSideAdmin, setIsSideAdmin] = useState<boolean>(false);
+	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
 
 	const { sides, user, userCollectionsData } = useSelector((state: RootState) => state.user);
 
@@ -245,6 +249,11 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 
 	const handleEligibilityCheck = (side: Side) => {
 		setSelectedSide(side);
+		if (user && side) {
+			const sideProfile = user?.profiles.find(profile => profile.side?.id === side?.id);
+			const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
+			setIsSideAdmin(isSideAdminResponse);
+		}
 		setDisplayEligibility(true);
 	};
 
@@ -378,9 +387,17 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 
 			{displayEligibility && selectedSide && (
 				<SideEligibilityModal
-					setDisplayLeaveSide={() => {}}
+					setDisplayLeaveSide={setDisplayLeaveSide}
 					setDisplayEligibility={setDisplayEligibility}
 					selectedSide={selectedSide}
+					isSideAdmin={isSideAdmin}
+				/>
+			)}
+			{displayLeaveSide && selectedSide && (
+				<LeaveSideConfirmationModal
+					side={selectedSide}
+					setIsLeaveConfirmationModalOpen={setDisplayLeaveSide}
+					isSideAdmin={isSideAdmin}
 				/>
 			)}
 		</SearchStyled>
