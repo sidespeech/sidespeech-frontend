@@ -437,8 +437,9 @@ export default function Informations({
 						<div className="text-primary-light mb-1 text fw-600 mr-3">Private Side</div>
 						<Switch onClick={onChangePrivate} value={currentSide.priv} />
 					</div>
-					<div className="size-12">
-						Only invited users will be able to join this Side. All invitations will be received as requests.
+					<div className="size-12 mt-2" style={{ minHeight: '1.2rem' }}>
+						{formData.priv &&
+							'Only invited users will be able to join this Side. All invitations will be received as requests.'}
 					</div>
 				</div>
 			) : null}
