@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import MiddleContainerHeader from '../ui-components/MiddleContainerHeader';
 import CurrentSideLeft from './ContainerLeft/CurrentSideLeft';
-import { setCurrentSide, setSelectedChannel } from '../../redux/Slices/AppDatasSlice';
+import { setCurrentSide, setEligibilityOpen, setSelectedChannel } from '../../redux/Slices/AppDatasSlice';
 import { RootState } from '../../redux/store/app.store';
 import CreatePollModal from '../Modals/CreatePollModal';
 import _ from 'lodash';
@@ -16,7 +16,6 @@ import { Poll } from '../../models/Poll';
 import { Outlet, useOutletContext } from 'react-router-dom';
 import { SideStatus } from '../../models/Side';
 import { toast } from 'react-toastify';
-import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import sideService from '../../services/api-services/side.service';
 import Skeleton from '../ui-components/Skeleton';
@@ -152,11 +151,8 @@ export default function CurrentSide() {
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const ref = useRef<HTMLInputElement>(null);
 	const [extend, setExtend] = useState<string>('');
 	const [thread, setThread] = useState<Announcement | Poll | null>(null);
-	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
-	const [sideEligibility, setSideEligibility] = useState<any>(null);
 	const [isMobileSettingsMenuOpen, setIsMobileSettingsMenuOpen] = useState<boolean>(true);
 
 	useEffect(() => {
@@ -198,8 +194,7 @@ export default function CurrentSide() {
 
 					// If side is active but the user is not in the Side
 					else {
-						setSideEligibility(res);
-						setDisplayEligibility(true);
+						dispatch(setEligibilityOpen({ open: true, side: res }));
 					}
 				}
 			} catch (error) {
@@ -271,13 +266,6 @@ export default function CurrentSide() {
 				)}
 			</div>
 			{createPollModal && selectedChannel && <CreatePollModal showModal={setCreatePollModal} />}
-			{displayEligibility && sideEligibility && (
-				<SideEligibilityModal
-					setDisplayLeaveSide={() => {}}
-					setDisplayEligibility={setDisplayEligibility}
-					selectedSide={sideEligibility}
-				/>
-			)}
 		</CurrentSideStyled>
 	);
 }

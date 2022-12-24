@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -21,9 +21,8 @@ import { Announcement } from '../../models/Announcement';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import notificationService from '../../services/api-services/notification.service';
 import sideService, { getSidesMetadata } from '../../services/api-services/side.service';
-import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
 import { Role } from '../../models/Profile';
-import SideEligibilityModal from '../Modals/SideEligibilityModal';
+import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
 
 interface MySidesStyledProps {}
 
@@ -160,10 +159,10 @@ const MySides = ({ collections }: MySidesProps) => {
 	const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
 	const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
 	const [numberOfPages, setNumberOfPages] = useState<number>(0);
-	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
 	const [isSideAdmin, setIsSideAdmin] = useState<boolean>(false);
 	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
 	const [selectedSide, setSelectedSide] = useState<Side | null>(null);
+	const dispatch = useDispatch();
 
 	const { sides, user, userCollectionsData } = useSelector((state: RootState) => state.user);
 
@@ -253,7 +252,8 @@ const MySides = ({ collections }: MySidesProps) => {
 			const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
 			setIsSideAdmin(isSideAdminResponse);
 		}
-		setDisplayEligibility(true);
+		dispatch(setEligibilityOpen({ open: true, side: side }));
+
 	};
 
 	return (
@@ -357,21 +357,6 @@ const MySides = ({ collections }: MySidesProps) => {
 					totalPages={numberOfPages}
 				/>
 			</MySidesStyled>
-			{displayEligibility && selectedSide && (
-				<SideEligibilityModal
-					setDisplayLeaveSide={setDisplayLeaveSide}
-					setDisplayEligibility={setDisplayEligibility}
-					selectedSide={selectedSide}
-					isSideAdmin={isSideAdmin}
-				/>
-			)}
-			{displayLeaveSide && selectedSide && (
-				<LeaveSideConfirmationModal
-					side={selectedSide}
-					setIsLeaveConfirmationModalOpen={setDisplayLeaveSide}
-					isSideAdmin={isSideAdmin}
-				/>
-			)}
 		</>
 	);
 };

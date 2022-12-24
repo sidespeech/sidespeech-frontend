@@ -18,6 +18,8 @@ import invitationService from '../../services/api-services/invitation.service';
 import sideService from '../../services/api-services/side.service';
 import profileService from '../../services/api-services/profile.service';
 import { breakpoints, size } from '../../helpers/breakpoints';
+import { setLeaveSideOpen } from '../../redux/Slices/AppDatasSlice';
+import useSideEligibility from '../../hooks/useSideEligibility';
 
 const eligibilityTexts = {
 	success: {
@@ -97,8 +99,7 @@ const FooterStyled = styled.div`
 
 interface ISideEligibilityModalProps {
 	selectedSide: Side;
-	setDisplayEligibility: React.Dispatch<React.SetStateAction<boolean>>;
-	setDisplayLeaveSide: React.Dispatch<React.SetStateAction<boolean>>;
+	setDisplayEligibility: (value: boolean) => void;
 	isSideAdmin?: boolean;
 	setSelectedSide?: React.Dispatch<React.SetStateAction<Side | null>>;
 }
@@ -109,9 +110,9 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 
 	const { userCollectionsData, user } = useSelector((state: RootState) => state.user);
 
-	const [isEligible, setIsEligible] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [details, setDetails] = useState<any>({});
+
+	const [isEligible, details] = useSideEligibility(props.selectedSide);
 
 	const handleJoinSide = async () => {
 		if (!user) return;
@@ -152,14 +153,6 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 			setIsLoading(false);
 		}
 	};
-
-	useEffect(() => {
-		if (userCollectionsData) {
-			const [res, isEligible] = checkUserEligibility(userCollectionsData, props.selectedSide);
-			setIsEligible(isEligible);
-			setDetails(res);
-		}
-	}, [userCollectionsData]);
 
 	useEffect(() => {
 		async function updateSide() {
@@ -234,7 +227,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 							)}
 						</EligibilityResult>
 						<div className="conditions-wrapper">
-							<Eligibility side={props.selectedSide} />
+							<Eligibility side={props.selectedSide} details={details} />
 						</div>
 					</SideEligibilityModalStyled>
 				) : (
@@ -271,7 +264,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 									background={'var(--disable)'}
 									children={'Choose a sub-admin'}
 									onClick={() => {
-										props.setDisplayLeaveSide(true);
+										dispatch(setLeaveSideOpen({ open: true, side: props.selectedSide }));
 										props.setDisplayEligibility(false);
 									}}
 								/>

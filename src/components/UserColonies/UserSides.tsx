@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { EventType } from '../../constants/EventType';
 import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
@@ -10,11 +10,10 @@ import { Side, SideStatus } from '../../models/Side';
 import { Dot } from '../ui-components/styled-components/shared-styled-components';
 import { Profile, Role } from '../../models/Profile';
 import { NotificationType } from '../../models/Notification';
-import SideEligibilityModal from '../Modals/SideEligibilityModal';
-import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
 import notificationService from '../../services/api-services/notification.service';
 import { isColor } from '../../helpers/utilities';
 import ReactTooltip from 'react-tooltip';
+import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
 
 const UserSidesStyled = styled.div`
 	max-height: calc(100vh - 4rem - 48px);
@@ -65,11 +64,11 @@ const UserSidesStyled = styled.div`
 export default function UserSides() {
 	const navigate = useNavigate();
 	const { id } = useParams();
+	const dispatch = useDispatch();
 
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 	const userData = useSelector((state: RootState) => state.user);
 	const [isSideAdmin, SetIsSideAdmin] = useState<any>(null);
-	const [displayModal, setDisplayModal] = useState<boolean>(false);
 	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
 	const [side, setSide] = useState<Side | null>(null);
 
@@ -77,8 +76,7 @@ export default function UserSides() {
 
 	const displaySide = (side: Side) => {
 		if (side.status === SideStatus.inactive) {
-			setSide(side);
-			setDisplayModal(true);
+			dispatch(setEligibilityOpen({ open: true, side: side }));
 		} else {
 			navigate('side/' + side.name);
 		}
@@ -215,22 +213,7 @@ export default function UserSides() {
             // onClick={() => changeStateModal(true)}
           ></i>
         </Link> */}
-				{displayModal && side && (
-					<SideEligibilityModal
-						selectedSide={side}
-						setDisplayEligibility={setDisplayModal}
-						setDisplayLeaveSide={setDisplayLeaveSide}
-						isSideAdmin={isSideAdmin}
-						setSelectedSide={setSide}
-					/>
-				)}
-				{displayLeaveSide && side && (
-					<LeaveSideConfirmationModal
-						side={side}
-						setIsLeaveConfirmationModalOpen={setDisplayLeaveSide}
-						isSideAdmin={isSideAdmin}
-					/>
-				)}
+
 			</UserSidesStyled>
 		</>
 	);

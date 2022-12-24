@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Invitation, State } from '../../models/Invitation';
 import { User } from '../../models/User';
@@ -11,12 +11,12 @@ import moment from 'moment';
 import { checkUserEligibility, getRandomId, isColor } from '../../helpers/utilities';
 import Spinner from '../ui-components/Spinner';
 import { Side } from '../../models/Side';
-import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import { Link } from 'react-router-dom';
 import emptyListImg from '../../assets/invitations_empty_screen_shape.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import invitationService from '../../services/api-services/invitation.service';
 import { toast } from 'react-toastify';
+import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
 
 interface InvitationsStyledProps {}
 
@@ -155,15 +155,12 @@ interface InvitationsProps {}
 
 const Invitations = ({}: InvitationsProps) => {
 	const userData = useSelector((state: RootState) => state.user);
+	const dispatch = useDispatch();
 	const [invitations, setInvitations] = useState<any[]>([]);
 	const [filteredInvitations, setFilteredInvitations] = useState<any[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isCheckedVerified, setIsCheckedVerified] = useState<boolean>(false);
 	const [isCheckedEligible, setIsCheckedEligible] = useState<boolean>(false);
-
-	// Variable for modal eligibility
-	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
-	const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
 	const getInvitations = async (user: User) => {
 		try {
@@ -246,8 +243,7 @@ const Invitations = ({}: InvitationsProps) => {
 	};
 
 	const handleEligibilityCheck = (side: Side) => {
-		setSelectedSide(side);
-		setDisplayEligibility(true);
+		dispatch(setEligibilityOpen({ open: true, side: side }));
 	};
 
 	return (
@@ -461,14 +457,6 @@ const Invitations = ({}: InvitationsProps) => {
 				</div>
 			)}
 			{/* Invitations List **end */}
-
-			{displayEligibility && selectedSide && (
-				<SideEligibilityModal
-					setDisplayLeaveSide={() => {}}
-					setDisplayEligibility={setDisplayEligibility}
-					selectedSide={selectedSide}
-				/>
-			)}
 		</InvitationsStyled>
 	);
 };

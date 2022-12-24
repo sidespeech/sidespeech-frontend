@@ -115,7 +115,7 @@ export async function connectedWallet() {
 }
 
 export interface ElligibilityResponse {
-	[key: string]: any[];
+	[key: string]: { numberNeeded: any; propertyResults: any[] };
 }
 export function hasTraitInCollection(collection: Collection, trait: string): boolean {
 	if (!collection || !collection.nfts) return false;
@@ -163,72 +163,55 @@ export function checkEligibilityByCondition(conditions: any, nfts: NFT[]): boole
 
 export function checkUserEligibility(nfts: any, selectedSide: Side): [ElligibilityResponse, boolean] {
 	const res: ElligibilityResponse = {};
-
+	console.log(selectedSide);
 	if (selectedSide) {
-		let checkingWithAttribute = [];
-		let checkingWithoutAttribute: any[] = [];
-
-		// Filter conditons with and without attributes
-		for (let collection of selectedSide.collectionSides) {
-			const withAttributes = selectedSide['metadataSides'].filter(
-				elem => elem['metadata']['address'] === collection['collectionId']
-			);
-			if (withAttributes.length) checkingWithAttribute.push(collection);
-			else checkingWithoutAttribute.push(collection);
-		}
-
-		// Checking eligibilty with attributes
-		selectedSide.metadataSides?.forEach(item => {
-			const tab = [];
-			const token_address = item['metadata']['address'];
-
-			const collectionSide = selectedSide.collectionSides.find(elem => elem['collectionId'] === token_address);
+		selectedSide.collectionSides?.forEach(item => {
+			const token_address = item['collectionId'];
+			res[token_address] = { numberNeeded: 1, propertyResults: [] };
 			const collection = nfts[token_address];
-
+			const metadataSides = selectedSide.metadataSides.filter(data => data.metadata.address === token_address);
 			const condition = {
-				numberNeeded: collectionSide!['numberNeeded'],
-				trait_type: item['metadata']['traitProperty'],
-				trait_value: item['metadata']['traitValue']
+				numberNeeded: item!['numberNeeded']
 			};
-
 			if (!collection) {
-				tab.push(
-					validateNftsWithAttributes([], condition, {
-						address: token_address
-					})
+				res[token_address]['numberNeeded'] = createResponseObject(
+					false,
+					[],
+					`You need ${condition['numberNeeded']} nfts more to meet the condition.`,
+					token_address,
+					condition,
+					'number'
 				);
 			} else {
-				// get nfts from collection with needed attributes
-				const filteredNfts = getNftsWithAttributes(collection.nfts, condition);
-
-				// validate number
-				tab.push(validateNumberOfNfts(condition, collection));
-
-				// if no nfts corresponding to the condition returning error response
-				tab.push(validateNftsWithAttributes(filteredNfts, condition, collection));
+				res[token_address]['numberNeeded'] = validateNumberOfNfts(condition, collection);
 			}
-			res[token_address] = tab;
-		});
-
-		// Checking eligibilty without attributes
-		selectedSide.collectionSides?.forEach(item => {
-			const tab = [];
-			const token_address = item['collectionId'];
-			const collection = nfts[token_address];
-
-			if (checkingWithoutAttribute.includes(item)) {
+			metadataSides?.forEach((item, index) => {
+				console.log('metadata', index, item);
+				const tab = [];
 				const condition = {
-					numberNeeded: item['numberNeeded']
+					trait_type: item['metadata']['traitProperty'],
+					trait_value: item['metadata']['traitValue']
 				};
+				console.log('condition', index, condition);
+				console.log('collection', index, collection);
 
-				if (collection) {
-					tab.push(validateNumberOfNfts(condition, collection));
+				if (!collection) {
+					tab.push(
+						validateNftsWithAttributes([], condition, {
+							address: token_address
+						})
+					);
 				} else {
-					tab.push(validateNumberOfNfts(condition, { nfts: [], address: item['collectionId'] }));
+					// get nfts from collection with needed attributes
+					const filteredNfts = getNftsWithAttributes(collection.nfts, condition);
+					console.log('nfts', index, filteredNfts);
+					// if no nfts corresponding to the condition returning error response
+					tab.push(validateNftsWithAttributes(filteredNfts, condition, collection));
 				}
-
-				res[token_address] = tab;
-			}
+				res[token_address]['propertyResults'] = res[token_address]['propertyResults']
+					? [...res[token_address]['propertyResults'], ...tab]
+					: tab;
+			});
 		});
 	}
 
@@ -267,12 +250,23 @@ function validateNumberOfNfts(condition: any, collection: Collection | { nfts: a
 }
 
 function isEligible(result: ElligibilityResponse, required: boolean): boolean {
+	console.log('is Eligible', result, required);
 	if (required) {
 		// verifying if all collection are fully success
-		return Object.values(result).every(res => res.every(value => value.type.includes('success')));
+		return Object.values(result).every(
+			res =>
+				(!res['propertyResults'].length ||
+					res['propertyResults'].some(value => value.type.includes('success'))) &&
+				res['numberNeeded'].type.includes('success')
+		);
 	} else {
 		// verifying if one of the collection are fully success
-		return Object.values(result).some(res => res.every(value => value.type.includes('success')));
+		return Object.values(result).some(
+			res =>
+				(!res['propertyResults'].length ||
+					res['propertyResults'].some(value => value.type.includes('success'))) &&
+				res['numberNeeded'].type.includes('success')
+		);
 	}
 }
 
@@ -297,7 +291,8 @@ function createResponseObject(valid: boolean, nfts: any, message: string, id: st
 			type: `success-${type}`,
 			property: condition['trait_type'],
 			value: condition['trait_value'],
-			usefulNfts: nfts
+			usefulNfts: nfts,
+			numberNeeded: condition['numberNeeded']
 		};
 	} else {
 		return {
@@ -305,7 +300,8 @@ function createResponseObject(valid: boolean, nfts: any, message: string, id: st
 			type: `error-${type}`,
 			message: message,
 			property: condition['trait_type'],
-			value: condition['trait_value']
+			value: condition['trait_value'],
+			numberNeeded: condition['numberNeeded']
 		};
 	}
 }

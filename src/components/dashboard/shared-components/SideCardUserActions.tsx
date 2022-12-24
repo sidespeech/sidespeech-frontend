@@ -120,14 +120,6 @@ const SideCardUserActions = ({
                     Leave
                 </button>
             </SideCardUserActionsStyled>
-
-            {isLeaveConfirmationModalOpen && (
-                <LeaveSideConfirmationModal
-                    side={side}
-                    isSideAdmin={isSideAdmin}
-                    setIsLeaveConfirmationModalOpen={setIsLeaveConfirmationModalOpen}
-                />
-            )}
         </>
     );
 };

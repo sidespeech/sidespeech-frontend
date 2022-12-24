@@ -19,8 +19,9 @@
 	--panels-gray: #1b1d30; /* Dark 3 */
 	--warning: #f09e22; /* Orange */
 	--black-plain: #1d1e2a;
-	--dark-gray: #050E0D;
+	--dark-gray: #050e0d;
 	--super-dark: #09111f;
+	--light-30: #b6e5e54d;
 }
 
 .open-sans {
@@ -37,6 +38,9 @@
 }
 .text-secondary {
 	color: var(--text);
+}
+.text-light-30 {
+	color: var(--light-30);
 }
 .text-red {
 	color: var(--red);

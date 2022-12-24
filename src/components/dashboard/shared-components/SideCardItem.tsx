@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
 import { OpenSeaRequestStatus } from '../../../models/interfaces/collection';
 import { Side } from '../../../models/Side';
-import SideEligibilityModal from '../../Modals/SideEligibilityModal';
 import ClampLines from '../../ui-components/ClampLines';
 import SideCardJoinActions from './SideCardJoinActions';
 import SideCardUserActions from './SideCardUserActions';

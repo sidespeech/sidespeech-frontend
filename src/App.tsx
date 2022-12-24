@@ -23,6 +23,10 @@ import './App.css';
 import { RootState } from './redux/store/app.store';
 import Spinner from './components/ui-components/Spinner';
 import useWalletAddress from './hooks/useWalletAddress';
+import SideEligibilityModal from './components/Modals/SideEligibilityModal';
+import { setEligibilityOpen, setLeaveSideOpen } from './redux/Slices/AppDatasSlice';
+import useIsSideAdmin from './hooks/useIsSideAdmin';
+import LeaveSideConfirmationModal from './components/Modals/LeaveSideConfirmationModal';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -38,9 +42,12 @@ function App() {
 	const { loadingWallet, walletAddress } = useWalletAddress();
 
 	const userData = useSelector((state: RootState) => state.user);
+	const { openEligibilityModal, openLeaveSideModal } = useSelector((state: RootState) => state.appDatas);
 
 	const [onboarding, setCheckingOnboarding] = useState<boolean>(true);
 	const [fetchingUser, setFetchingUser] = useState<boolean>(false);
+
+	const isSideAdmin = useIsSideAdmin(openEligibilityModal.side);
 
 	const isUserOnboarded = useCallback(async (walletAddress: string) => {
 		try {
@@ -105,6 +112,13 @@ function App() {
 		};
 	}, [loadingWallet, walletAddress]);
 
+	const setDisplayEligibility = (value: boolean) => {
+		dispatch(setEligibilityOpen({ open: value, side: null }));
+	};
+	const setDisplayLeaveSide = (value: boolean) => {
+		dispatch(setLeaveSideOpen({ open: value, side: null }));
+	};
+
 	return (
 		<Layout
 			generalSettings
@@ -124,6 +138,20 @@ function App() {
 						isSettingsMobileMenuOpen,
 						setIsSettingsMobileMenuOpen
 					}}
+				/>
+			)}
+			{openEligibilityModal.open && openEligibilityModal.side && (
+				<SideEligibilityModal
+					setDisplayEligibility={setDisplayEligibility}
+					selectedSide={openEligibilityModal.side}
+					isSideAdmin={isSideAdmin}
+				/>
+			)}
+			{openLeaveSideModal.open && openLeaveSideModal.side && (
+				<LeaveSideConfirmationModal
+					side={openLeaveSideModal.side}
+					setIsLeaveConfirmationModalOpen={setDisplayLeaveSide}
+					isSideAdmin={isSideAdmin}
 				/>
 			)}
 		</Layout>

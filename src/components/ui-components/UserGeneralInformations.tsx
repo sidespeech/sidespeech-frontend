@@ -21,6 +21,7 @@ import { InitialStateUser } from '../GeneralSettings/Account/GeneralSettingsAcco
 import Avatar from '../GeneralSettings/Account/Avatar';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import useWalletAddress from '../../hooks/useWalletAddress';
+import useSideEligibility from '../../hooks/useSideEligibility';
 
 const UserGeneralInformationsStyled = styled.div`
 	display: flex;
@@ -139,6 +140,8 @@ export default function UserGeneralInformations({
 	const [errorData, setErrorData] = useState<InitialErrorState>(initialStateError);
 
 	const [collectionName, setCollectionName] = useState<string | undefined>(undefined);
+
+	const [isEligible, details] = useSideEligibility(currentSide);
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -328,7 +331,7 @@ export default function UserGeneralInformations({
 			)}
 
 			{/* Eligibility Section */}
-			{currentSide && <Eligibility side={currentSide} />}
+			{currentSide && <Eligibility side={currentSide} details={details} />}
 
 			{!currentSide && renderConnectedWallet()}
 

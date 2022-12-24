@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -8,7 +8,6 @@ import useDebounceValue from '../../hooks/useDebounceValue';
 import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
-import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import CustomSelect from '../ui-components/CustomSelect';
@@ -20,7 +19,7 @@ import { breakpoints, size } from '../../helpers/breakpoints';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg';
 import sideService from '../../services/api-services/side.service';
 import { Role } from '../../models/Profile';
-import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
+import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
 
 interface SearchStyledProps {}
 
@@ -189,11 +188,11 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 	const [sidesLoading, setSidesLoading] = useState<boolean>(false);
 	const [numberOfPages, setNumberOfPages] = useState<number>(0);
 	const [totalResults, setTotalResults] = useState<number>(0);
-	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
 	const [isSideAdmin, setIsSideAdmin] = useState<boolean>(false);
 	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
 
 	const { sides, user, userCollectionsData } = useSelector((state: RootState) => state.user);
+	const dispatch = useDispatch();
 
 	const _searchText = useDebounceValue(searchText);
 
@@ -254,7 +253,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 			const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
 			setIsSideAdmin(isSideAdminResponse);
 		}
-		setDisplayEligibility(true);
+		dispatch(setEligibilityOpen({ open: true, side: side }));
 	};
 
 	return (
@@ -384,22 +383,6 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 				}}
 				totalPages={numberOfPages}
 			/>
-
-			{displayEligibility && selectedSide && (
-				<SideEligibilityModal
-					setDisplayLeaveSide={setDisplayLeaveSide}
-					setDisplayEligibility={setDisplayEligibility}
-					selectedSide={selectedSide}
-					isSideAdmin={isSideAdmin}
-				/>
-			)}
-			{displayLeaveSide && selectedSide && (
-				<LeaveSideConfirmationModal
-					side={selectedSide}
-					setIsLeaveConfirmationModalOpen={setDisplayLeaveSide}
-					isSideAdmin={isSideAdmin}
-				/>
-			)}
 		</SearchStyled>
 	);
 };
