@@ -163,7 +163,6 @@ export function checkEligibilityByCondition(conditions: any, nfts: NFT[]): boole
 
 export function checkUserEligibility(nfts: any, selectedSide: Side): [ElligibilityResponse, boolean] {
 	const res: ElligibilityResponse = {};
-	console.log(selectedSide);
 	if (selectedSide) {
 		selectedSide.collectionSides?.forEach(item => {
 			const token_address = item['collectionId'];
@@ -186,14 +185,11 @@ export function checkUserEligibility(nfts: any, selectedSide: Side): [Elligibili
 				res[token_address]['numberNeeded'] = validateNumberOfNfts(condition, collection);
 			}
 			metadataSides?.forEach((item, index) => {
-				console.log('metadata', index, item);
 				const tab = [];
 				const condition = {
 					trait_type: item['metadata']['traitProperty'],
 					trait_value: item['metadata']['traitValue']
 				};
-				console.log('condition', index, condition);
-				console.log('collection', index, collection);
 
 				if (!collection) {
 					tab.push(
@@ -204,7 +200,6 @@ export function checkUserEligibility(nfts: any, selectedSide: Side): [Elligibili
 				} else {
 					// get nfts from collection with needed attributes
 					const filteredNfts = getNftsWithAttributes(collection.nfts, condition);
-					console.log('nfts', index, filteredNfts);
 					// if no nfts corresponding to the condition returning error response
 					tab.push(validateNftsWithAttributes(filteredNfts, condition, collection));
 				}
@@ -250,7 +245,6 @@ function validateNumberOfNfts(condition: any, collection: Collection | { nfts: a
 }
 
 function isEligible(result: ElligibilityResponse, required: boolean): boolean {
-	console.log('is Eligible', result, required);
 	if (required) {
 		// verifying if all collection are fully success
 		return Object.values(result).every(
