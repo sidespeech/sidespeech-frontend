@@ -25,7 +25,9 @@ interface IAdmissionProps {
 	setNumberOfNftNeededToDivCollection: any;
 	userCollectionsData: UserCollectionsData;
 }
-interface IRequirementsRadioButtonContainerProps {}
+interface IRequirementsRadioButtonContainerProps {
+	disable?: boolean;
+}
 
 const Chip = styled.span`
 	width: fit-content;
@@ -39,6 +41,7 @@ const Thumbnail = styled.img`
 const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonContainerProps>`
 	border-radius: 7px;
 	padding: 0.5rem 1rem;
+	${props => props.disable && 'pointer-events: none; opacity: 0.2;'}
 	${breakpoints(
 		size.lg,
 		`{
@@ -247,6 +250,12 @@ export default function Admission({
 		setFilteredCollections(filtered);
 	}, [divCollections, filter, onlyOneRequired, onlyVerifiedCollections, collections]);
 
+	useEffect(() => {
+		if (divCollections.length <= 1 && !onlyOneRequired) {
+			setOnlyOneRequired(true);
+		}
+	}, [divCollections, onlyOneRequired]);
+
 	const filterDropdownList = (e: any) => {
 		const value = e.target.value;
 		setFilter(value);
@@ -299,6 +308,7 @@ export default function Admission({
 					<RequirementsRadioButtonContainer
 						className={onlyOneRequired ? '' : 'active'}
 						onClick={() => setOnlyOneRequired(false)}
+						disable={divCollections.length <= 1}
 					>
 						<div>{!onlyOneRequired && <div></div>}</div>
 						<div>All collections are required</div>
