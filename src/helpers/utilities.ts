@@ -130,35 +130,36 @@ export function hasTraitValueInCollection(collection: Collection, trait: string,
 	);
 }
 export function checkEligibilityByCondition(conditions: any, nfts: NFT[]): boolean {
-	const res: any[] = [];
+	const res: { [key: string]: boolean[] } = {};
 	const groupedNfts = groupBy(nfts, 'token_address');
 	const keys = Object.keys(conditions);
 	// pop to remove the required object in the conditions
 	keys.pop();
 	keys.forEach((address: string) => {
 		const condition = conditions[address];
-		if (!groupedNfts[address]) res.push(false);
-		else if (condition['features'] && condition['features'].length) {
-			for (let feature of condition['features']) {
-				const type = feature['property'].toLowerCase();
-				const value = feature['value'].toLowerCase();
-				const anafNft = groupedNfts[address].length >= condition['numberNeeded'];
-				const meetCondition = groupedNfts[address].some(nft =>
-					nft.metadata.attributes.some(
-						a => a['trait_type'].toLowerCase() === type && a['value'].toLowerCase() === value
-					)
-				);
-				if (!anafNft || !meetCondition) res.push(false);
-				else res.push(true);
-			}
-		} else {
+		res[address] = [];
+		if (!groupedNfts[address]) res[address].push(false);
+		else {
 			const anafNft = groupedNfts[address].length >= condition['numberNeeded'];
-			if (!anafNft) res.push(false);
-			else res.push(true);
+			if (!anafNft) res[address].push(false);
+			else res[address].push(true);
+			if (condition['features'] && condition['features'].length) {
+				for (let feature of condition['features']) {
+					const type = feature['property'].toLowerCase();
+					const value = feature['value'].toLowerCase();
+					const meetCondition = groupedNfts[address].some(nft =>
+						nft.metadata.attributes.some(
+							a => a['trait_type'].toLowerCase() === type && a['value'].toLowerCase() === value
+						)
+					);
+					if (!meetCondition) res[address].push(false);
+					else res[address].push(true);
+				}
+			}
 		}
 	});
-	if (conditions['required']) return res.some(r => r);
-	else return res.every(r => r);
+	if (conditions['required']) return Object.values(res).some(r => r[0] === true && r.some(a => a));
+	else return Object.values(res).every(r => r[0] === true && r.some(a => a));
 }
 
 export function checkUserEligibility(nfts: any, selectedSide: Side): [ElligibilityResponse, boolean] {
@@ -245,6 +246,7 @@ function validateNumberOfNfts(condition: any, collection: Collection | { nfts: a
 }
 
 function isEligible(result: ElligibilityResponse, required: boolean): boolean {
+	console.log(result, required);
 	if (required) {
 		// verifying if all collection are fully success
 		return Object.values(result).every(
