@@ -127,7 +127,6 @@ export async function getSidesMetadata(sides: any[], userCollectionsData?: any, 
 				if (!_.isEmpty(userCollectionsData)) {
 					// eslint-disable-next-line
 					const [_, eligible] = checkUserEligibility(userCollectionsData, parsedSide);
-					console.log(side.name, eligible, _);
 					parsedSide = {
 						...parsedSide,
 						eligible

@@ -5,6 +5,22 @@ import ClickAwayListener from 'react-click-away-listener';
 import { FixedSizeList as List } from 'react-window';
 import CustomCheckbox from './CustomCheckbox';
 
+interface IDropdownProps {
+	onChange: any;
+	options: any[];
+	key?: string;
+	values: any[];
+	style?: any;
+	filterByCheckbox?: any;
+	checkboxDefaultValue?: boolean;
+	checkboxLabel?: string;
+	filterDropdownList?: any;
+	backgroundColor?: string;
+	defaultValue?: any;
+	disable?: boolean;
+	resultsNumbers?: number;
+}
+
 const DropdownLine = styled.div<any>`
 	position: relative;
 	width: ${props => (props.width ? props.width : '148px')};
@@ -102,7 +118,7 @@ export default function Dropdown({
 	defaultValue,
 	disable,
 	resultsNumbers
-}: any) {
+}: IDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [headerTitle, setHeaderTitle] = useState<any>(options[0]);
 	const ref = useRef<HTMLInputElement>();
