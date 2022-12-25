@@ -3,7 +3,10 @@ import defaultPP from '../../../../assets/default-pp.png';
 import { fixURL, getRoleColor, reduceWalletAddress } from '../../../../helpers/utilities';
 import { Profile } from '../../../../models/Profile';
 import { Side } from '../../../../models/Side';
+import { User } from '../../../../models/User';
 import profileService from '../../../../services/api-services/profile.service';
+import ConfirmationModal from '../../../Modals/ConfirmationModal';
+import LeaveSideConfirmationModal from '../../../Modals/LeaveSideConfirmationModal';
 import Button from '../../../ui-components/Button';
 import CustomSelect from '../../../ui-components/CustomSelect';
 
@@ -11,6 +14,8 @@ export default function MemberListItem({ side, user }: { side: Side; user: Profi
 	const [isCreator, setIsCreator] = useState<boolean>(false);
 	const [connectedUserIsCreator, setConnectedUserIsCreator] = useState<boolean>(false);
 	const [newRole, setNewRole] = useState('');
+	const [userToEject, setUserToEject] = useState<Profile | undefined>(undefined);
+	const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false);
 
 	const handleRoleChange = (event: any) => {
 		setNewRole(event.target.value);
@@ -25,8 +30,18 @@ export default function MemberListItem({ side, user }: { side: Side; user: Profi
 	useEffect(() => {}, []);
 
 	const onClickEject = async (user: any) => {
-		await profileService.removeProfile(user['id']);
-		window.location.reload();
+		setUserToEject(user);
+		setConfirmationModalOpen(true);
+	};
+
+	const handleConfirm = async (value: boolean) => {
+		if (value) {
+			await profileService.removeProfile(user['id']);
+			window.location.reload();
+		} else {
+			setUserToEject(undefined);
+			setConfirmationModalOpen(false);
+		}
 	};
 
 	const handleSaveRole = async () => {};
@@ -85,6 +100,13 @@ export default function MemberListItem({ side, user }: { side: Side; user: Profi
 					</Button>
 				) : null}
 			</div>
+			{confirmationModalOpen && (
+				<ConfirmationModal
+					message={`Are you sure you want to eject ${userToEject?.user.username}?`}
+					handleConfirm={handleConfirm}
+					setIsConfirmationModalOpen={setConfirmationModalOpen}
+				/>
+			)}
 		</div>
 		// <div className="flex align-center my-2">
 		//   <div className="flex flex-1 align-end">
