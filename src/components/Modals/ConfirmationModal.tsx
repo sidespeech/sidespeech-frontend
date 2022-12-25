@@ -2,7 +2,7 @@ import Button from '../ui-components/Button';
 import Modal from '../ui-components/Modal';
 
 interface IConfirmationModal {
-	message: string;
+	message: string | JSX.Element;
 	handleConfirm: (value: boolean) => void;
 	setIsConfirmationModalOpen: (value: boolean) => void;
 }

@@ -102,7 +102,9 @@ export default function MemberListItem({ side, user }: { side: Side; user: Profi
 			</div>
 			{confirmationModalOpen && (
 				<ConfirmationModal
-					message={`Are you sure you want to eject ${userToEject?.user.username}?`}
+					message={
+						<span className="size-20">Are you sure you want to eject {userToEject?.user.username}?</span>
+					}
 					handleConfirm={handleConfirm}
 					setIsConfirmationModalOpen={setConfirmationModalOpen}
 				/>

@@ -44,8 +44,31 @@ export default function SideUserList({
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 	const { currentProfile } = useSelector((state: RootState) => state.user);
 	const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	useEffect(() => {}, [onlineUsers, currentProfile, currentSide]);
+
+	const handleOnClickName = (profile: Profile) => {
+		try {
+			// getting room for given profile id
+			let room = currentProfile?.getRoom(profile.id);
+			if (!room) throw new Error('Room not found');
+			// selecting the room
+			dispatch(setSelectedRoom(room));
+			dispatch(setSelectedChannel(null));
+			navigate(`/side/${currentSide?.name}`);
+		} catch (error) {
+			console.error(error);
+			toast.error('There has been an error opening the room', {
+				toastId: 20
+			});
+		}
+	};
+	const handleOnClickPicture = (profile: Profile) => {
+		dispatch(setSelectedProfile(profile));
+		navigate(`/user/${profile.user.username}`);
+	};
 
 	return currentProfile ? (
 		<SideUserListStyled className="f-column align-start w-100">
@@ -59,24 +82,26 @@ export default function SideUserList({
 
 				return (
 					<React.Fragment key={index}>
-						<ReactTooltip
-							id={id}
-							globalEventOff="click"
-							place="right"
-							className="tooltip-radius"
-							backgroundColor="#3a445d"
-							effect="float"
-							clickable
-						>
-							<ProfileTooltip profile={p} />
-						</ReactTooltip>
+						{isMembersList && (
+							<ReactTooltip
+								id={id}
+								globalEventOff="click"
+								place="right"
+								className="tooltip-radius"
+								backgroundColor="#3a445d"
+								effect="solid"
+								clickable
+							>
+								<ProfileTooltip profile={p} />
+							</ReactTooltip>
+						)}
 						<div
 							data-tip
 							data-event="click"
 							data-for={id}
 							key={index}
-							onClick={isMe ? () => {} : () => handleSelectedUser(p, currentProfile)}
 							onMouseEnter={() => ReactTooltip.hide()}
+							onClick={() => !isMembersList && handleOnClickName(p)}
 							className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${
 								selectedRoom && selectedRoom.id === room?.id && !isMe ? 'selected-channel' : ''
 							} ${isMe ? '' : 'pointer channel-item'}`}
@@ -89,6 +114,7 @@ export default function SideUserList({
 										fontSize={11}
 										username={p.user.username}
 										connect={onlineUsers.includes(p['username'])}
+										onClickPicture={() => !isMembersList && handleOnClickPicture(p)}
 									/>
 								) : (
 									<UserBadge
