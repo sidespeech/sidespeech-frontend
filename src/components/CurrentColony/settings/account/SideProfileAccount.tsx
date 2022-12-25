@@ -105,11 +105,15 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 
 	const [formData, setFormData] = useState<InitialStateUser>(initialStateUser);
 
+	const [initialData, setInitialData] = useState<InitialStateUser>(initialStateUser);
+
 	const [filteredUserCollections, setFilteredUserCollections] = useState<Collection[]>([]);
 
 	const [displayNftsCollection, setDisplayNftsCollection] = useState<boolean>(false);
 
 	const dispatch = useDispatch();
+
+	const areThereChanges = JSON.stringify(initialData) !== JSON.stringify(formData);
 
 	useEffect(() => {
 		if (userData.userCollectionsData && userData.user) {
@@ -122,6 +126,11 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 	useEffect(() => {
 		if (currentProfile?.profilePicture) {
 			setFormData({
+				...formData,
+				avatar: currentProfile.profilePicture,
+				showNfts: currentProfile.showNfts
+			});
+			setInitialData({
 				...formData,
 				avatar: currentProfile.profilePicture,
 				showNfts: currentProfile.showNfts
@@ -183,6 +192,7 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 					sideSettingsPage
 					userCollectionsData={userData.userCollectionsData}
 					leaveSide={leaveSide}
+					areThereChanges={areThereChanges}
 				/>
 			</div>
 			{displayNftsCollection &&
