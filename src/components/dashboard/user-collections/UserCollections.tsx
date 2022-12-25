@@ -193,7 +193,7 @@ const UserCollections = ({ setSearchFilters }: UserCollectionsProps) => {
 		if (userCollectionsData) {
 			let filteredArray = _.orderBy(userCollectionsData, 'name');
 
-			// if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
+			if (isWithSidesChecked) filteredArray = filteredArray.filter(collection => collection.sideCount > 0);
 			if (isOnlyVerifiedCollectionsChecked)
 				filteredArray = filteredArray.filter(
 					collection => collection.safelistRequestStatus === OpenSeaRequestStatus.verified
