@@ -15,6 +15,8 @@ import LeaveSideConfirmationModal from '../Modals/LeaveSideConfirmationModal';
 import notificationService from '../../services/api-services/notification.service';
 import { isColor } from '../../helpers/utilities';
 import ReactTooltip from 'react-tooltip';
+import { useNotificationsContext } from '../../providers/NotificationsProvider';
+import useWalletAddress from '../../hooks/useWalletAddress';
 
 const UserSidesStyled = styled.div`
 	max-height: calc(100vh - 4rem - 48px);
@@ -73,6 +75,9 @@ export default function UserSides() {
 	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
 	const [side, setSide] = useState<Side | null>(null);
 
+	const { newAnnouncements, newMessages } = useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
+
 	const [dots, setDots] = useState<any>({});
 
 	const displaySide = (side: Side) => {
@@ -84,26 +89,25 @@ export default function UserSides() {
 		}
 	};
 
-	const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-		const account = localStorage.getItem('userAccount');
-		if (currentSide && account) {
+	// LISTENING WS =====================================================================
+	useEffect(() => {
+		if (currentSide && walletAddress) {
 			const sideFounded = userData.sides.find((s: Side) => {
-				return s.channels.find((c: any) => c.id === detail['channelId']);
+				return s.channels.find((c: any) => c.id === newAnnouncements[newAnnouncements.length - 1]?.channelId);
 			});
+			console.log(sideFounded);
 			if (sideFounded && sideFounded!['id'] !== currentSide['id']) {
 				const number = dots[sideFounded['id']] || 0;
 				setDots({ ...dots, [sideFounded!['id']]: number + 1 });
 			}
 		}
-	};
+	}, [dots, userData, currentSide, newAnnouncements]);
 
-	const handleReceiveMessage = async (m: any) => {
-		const { detail } = m;
-		const account = localStorage.getItem('userAccount');
-		if (currentSide && account) {
+	useEffect(() => {
+		if (currentSide && walletAddress) {
 			const sideFounded = userData.sides.find((s: Side) => {
 				return s.profiles.find((p: Profile) => {
-					return p.rooms.find(el => el.id === detail.room['id']);
+					return p.rooms.find(el => el.id === newMessages[newMessages.length - 1]?.room['id']);
 				});
 			});
 			if (sideFounded && sideFounded!['id'] !== currentSide['id']) {
@@ -111,22 +115,7 @@ export default function UserSides() {
 				setDots({ ...dots, [sideFounded!['id']]: number + 1 });
 			}
 		}
-	};
-
-	// LISTENING WS =====================================================================
-	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		};
-	}, [dots, userData, currentSide]);
-
-	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		};
-	}, [dots, userData, currentSide]);
+	}, [dots, userData, currentSide, newMessages]);
 	// LISTENING WS =====================================================================
 
 	// Function to get notification from db and assign them to the state variable
