@@ -19,7 +19,7 @@ const UserSidesStyled = styled.div`
 	overflow-y: scroll;
 	overflow-x: hidden;
 	scrollbar-width: none;
-	padding-top: 0.5rem;
+	padding: 0.5rem 0;
 	::-webkit-scrollbar {
 		width: 0;
 	}

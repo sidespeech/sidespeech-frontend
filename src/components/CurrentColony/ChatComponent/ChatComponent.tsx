@@ -18,6 +18,8 @@ import { breakpoints, size } from '../../../helpers/breakpoints';
 import Skeleton from '../../ui-components/Skeleton';
 import { User } from '../../../models/User';
 import emptyScreenImg from '../../../assets/channel_empty_screen_shape.svg';
+import { useNotificationsContext } from '../../../providers/NotificationsProvider';
+import useWalletAddress from '../../../hooks/useWalletAddress';
 
 const EmptyListStyled = styled.div`
 	width: 100%;
@@ -137,6 +139,9 @@ export default function ChatComponent(props: IChatComponentProps) {
 
 	const [messages, setMessages] = useState<Message[]>([]);
 
+	const { lastMessage } = useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
+
 	const handleSendMessage = (value: string) => {
 		websocketService.sendMessage(value, props.room.id, userData.account || 'error');
 		setMessages([
@@ -147,10 +152,6 @@ export default function ChatComponent(props: IChatComponentProps) {
 				sender: userData.account
 			})
 		]);
-	};
-
-	const handleReceiveMessage = ({ detail }: { detail: Message }) => {
-		setMessages([...messages, detail]);
 	};
 
 	useEffect(() => {
@@ -170,11 +171,8 @@ export default function ChatComponent(props: IChatComponentProps) {
 	}, [selectedRoom]);
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		};
-	}, [messages]);
+		if (walletAddress && lastMessage) setMessages(prevState => [...prevState, lastMessage]);
+	}, [lastMessage, walletAddress]);
 
 	const getUserBySenderId = (senderId: string): User | undefined => {
 		const profile = currentSide?.profiles.find(p => p.user.accounts?.toLowerCase() === senderId?.toLowerCase());
