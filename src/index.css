@@ -19,7 +19,7 @@
 	--panels-gray: #1b1d30; /* Dark 3 */
 	--warning: #f09e22; /* Orange */
 	--black-plain: #1d1e2a;
-	--dark-gray: #050E0D;
+	--dark-gray: #050e0d;
 	--super-dark: #09111f;
 }
 
@@ -540,6 +540,10 @@
 	scrollbar-width: thin;
 	outline: none;
 	box-sizing: border-box;
+}
+
+html {
+	background-color: var(--background);
 }
 
 body {

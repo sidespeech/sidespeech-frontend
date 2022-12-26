@@ -4,38 +4,64 @@ import { subscribeToEvent, unSubscribeToEvent } from '../helpers/CustomEvent';
 import useWalletAddress from '../hooks/useWalletAddress';
 import { Announcement } from '../models/Announcement';
 import { MessageWithRoom } from '../models/Room';
+import notificationService from '../services/api-services/notification.service';
 
 interface NotificationsContextProps {
+	lastAnnouncement: Announcement | null;
+	lastMessage: MessageWithRoom | null;
 	newAnnouncements: Announcement[];
 	newMessages: MessageWithRoom[];
 	onlineUsers: string[];
+	staticNotifications: any[];
 }
 
 const NotificationsContextInitialState = {
+	lastAnnouncement: null,
+	lastMessage: null,
 	newAnnouncements: [],
 	newMessages: [],
-	onlineUsers: []
+	onlineUsers: [],
+	staticNotifications: []
 };
 
 const NotificationsContext = createContext<NotificationsContextProps>(NotificationsContextInitialState);
 
 const NotificationsProvider = (props: any) => {
+	const [lastAnnouncement, setLastAnnouncements] = useState<Announcement | null>(null);
+	const [lastMessage, setLastMessage] = useState<MessageWithRoom | null>(null);
 	const [newAnnouncements, setNewAnnouncements] = useState<Announcement[]>([]);
 	const [newMessages, setNewMessages] = useState<MessageWithRoom[]>([]);
 	const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+	const [staticNotifications, setStaticNotifications] = useState<any[]>([]);
 
 	const { walletAddress } = useWalletAddress();
 
+	const getStaticNotifications = useCallback(async () => {
+		try {
+			if (!walletAddress) return;
+			const notifications = await notificationService.getNotification(walletAddress);
+			setStaticNotifications(notifications);
+		} catch (error) {
+			console.error(error);
+		}
+	}, [walletAddress]);
+
 	const handleReceiveAnnouncement = useCallback(
 		({ detail }: { detail: Announcement }) => {
-			if (walletAddress) setNewAnnouncements(prevState => [...prevState, detail]);
+			if (walletAddress) {
+				setLastAnnouncements(detail);
+				setNewAnnouncements(prevState => [...prevState, detail]);
+			}
 		},
 		[walletAddress]
 	);
 
 	const handleReceiveMessage = useCallback(
 		({ detail }: { detail: MessageWithRoom }) => {
-			if (walletAddress) setNewMessages(prevState => [...prevState, detail]);
+			if (walletAddress) {
+				setLastMessage(detail);
+				setNewMessages(prevState => [...prevState, detail]);
+			}
 		},
 		[walletAddress]
 	);
@@ -50,6 +76,10 @@ const NotificationsProvider = (props: any) => {
 		},
 		[walletAddress]
 	);
+
+	useEffect(() => {
+		if (walletAddress) getStaticNotifications();
+	}, [walletAddress]);
 
 	useEffect(() => {
 		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
@@ -73,9 +103,12 @@ const NotificationsProvider = (props: any) => {
 	}, [handleUsersStatus]);
 
 	const value = {
+		lastAnnouncement,
+		lastMessage,
 		newAnnouncements,
 		newMessages,
-		onlineUsers
+		onlineUsers,
+		staticNotifications
 	};
 
 	return <NotificationsContext.Provider {...props} value={value} />;
