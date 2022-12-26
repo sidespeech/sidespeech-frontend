@@ -19,6 +19,8 @@ import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEve
 import { EventType } from '../../../constants/EventType';
 import websocketService from '../../../services/websocket-services/websocket.service';
 import commentService from '../../../services/api-services/comment.service';
+import { useNotificationsContext } from '../../../providers/NotificationsProvider';
+import useWalletAddress from '../../../hooks/useWalletAddress';
 
 const AnnouncementItemStyled = styled.div`
 	display: flex;
@@ -69,13 +71,16 @@ export default function AnnouncementItem({
 	const { account } = useSelector((state: RootState) => state.user);
 	const [data, setData] = useState<any>({ profile: null, url: '' });
 
+	const { lastComment } = useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
+
 	// This will handle sending an comment to the api.
 	const handleComment = async (value: string) => {
 		// This will need to be made dynamic.
 		const creatorAddress = account;
 		try {
 			const newComment = await commentService.sendComment(value, creatorAddress, announcement.id);
-			setComments([...comments, newComment]);
+			setComments(prevState => [...prevState, newComment]);
 			websocketService.sendComment(newComment);
 		} catch (error) {
 			console.error(error);
@@ -85,20 +90,9 @@ export default function AnnouncementItem({
 		}
 	};
 
-	const handleReceiveComment = useCallback(
-		({ detail }: { detail: any }) => {
-			setComments([...detail['announcement']['comments'], detail]);
-		},
-		// eslint-disable-next-line
-		[selectedChannel]
-	);
-
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
-		};
-	}, [comments, handleReceiveComment]);
+		if (lastComment && walletAddress) setComments(prevState => [...prevState, lastComment]);
+	}, [lastComment, walletAddress]);
 
 	useEffect(() => {
 		const profile = currentSide?.profiles.find(

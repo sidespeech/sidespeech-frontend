@@ -3,13 +3,16 @@ import { EventType } from '../constants/EventType';
 import { subscribeToEvent, unSubscribeToEvent } from '../helpers/CustomEvent';
 import useWalletAddress from '../hooks/useWalletAddress';
 import { Announcement } from '../models/Announcement';
+import { Comment } from '../models/Comment';
 import { MessageWithRoom } from '../models/Room';
 import notificationService from '../services/api-services/notification.service';
 
 interface NotificationsContextProps {
 	lastAnnouncement: Announcement | null;
+	lastComment: Comment | null;
 	lastMessage: MessageWithRoom | null;
 	newAnnouncements: Announcement[];
+	newComments: Comment[];
 	newMessages: MessageWithRoom[];
 	onlineUsers: string[];
 	staticNotifications: any[];
@@ -17,8 +20,10 @@ interface NotificationsContextProps {
 
 const NotificationsContextInitialState = {
 	lastAnnouncement: null,
+	lastComment: null,
 	lastMessage: null,
 	newAnnouncements: [],
+	newComments: [],
 	newMessages: [],
 	onlineUsers: [],
 	staticNotifications: []
@@ -27,9 +32,11 @@ const NotificationsContextInitialState = {
 const NotificationsContext = createContext<NotificationsContextProps>(NotificationsContextInitialState);
 
 const NotificationsProvider = (props: any) => {
-	const [lastAnnouncement, setLastAnnouncements] = useState<Announcement | null>(null);
+	const [lastAnnouncement, setLastAnnouncement] = useState<Announcement | null>(null);
+	const [lastComment, setLastComment] = useState<Comment | null>(null);
 	const [lastMessage, setLastMessage] = useState<MessageWithRoom | null>(null);
 	const [newAnnouncements, setNewAnnouncements] = useState<Announcement[]>([]);
+	const [newComments, setNewComments] = useState<Comment[]>([]);
 	const [newMessages, setNewMessages] = useState<MessageWithRoom[]>([]);
 	const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 	const [staticNotifications, setStaticNotifications] = useState<any[]>([]);
@@ -49,7 +56,7 @@ const NotificationsProvider = (props: any) => {
 	const handleReceiveAnnouncement = useCallback(
 		({ detail }: { detail: Announcement }) => {
 			if (walletAddress) {
-				setLastAnnouncements(detail);
+				setLastAnnouncement(detail);
 				setNewAnnouncements(prevState => [...prevState, detail]);
 			}
 		},
@@ -61,6 +68,16 @@ const NotificationsProvider = (props: any) => {
 			if (walletAddress) {
 				setLastMessage(detail);
 				setNewMessages(prevState => [...prevState, detail]);
+			}
+		},
+		[walletAddress]
+	);
+
+	const handleReceiveComment = useCallback(
+		({ detail }: { detail: Comment }) => {
+			if (walletAddress) {
+				setLastComment(detail);
+				setNewComments(prevState => [...prevState, detail]);
 			}
 		},
 		[walletAddress]
@@ -96,6 +113,13 @@ const NotificationsProvider = (props: any) => {
 	}, [handleReceiveMessage]);
 
 	useEffect(() => {
+		subscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
+		return () => {
+			unSubscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
+		};
+	}, [handleReceiveComment]);
+
+	useEffect(() => {
 		subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
 		return () => {
 			unSubscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
@@ -104,8 +128,10 @@ const NotificationsProvider = (props: any) => {
 
 	const value = {
 		lastAnnouncement,
+		lastComment,
 		lastMessage,
 		newAnnouncements,
+		newComments,
 		newMessages,
 		onlineUsers,
 		staticNotifications

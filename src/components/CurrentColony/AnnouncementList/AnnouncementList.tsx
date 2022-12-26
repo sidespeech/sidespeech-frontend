@@ -20,6 +20,8 @@ import { breakpoints, size } from '../../../helpers/breakpoints';
 import channelService from '../../../services/api-services/channel.service';
 import announcementService from '../../../services/api-services/announcement.service';
 import Skeleton from '../../ui-components/Skeleton';
+import useWalletAddress from '../../../hooks/useWalletAddress';
+import { useNotificationsContext } from '../../../providers/NotificationsProvider';
 
 const AnnouncementListStyled = styled.div`
 	display: flex;
@@ -80,14 +82,10 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
 	const { selectedChannel } = useSelector((state: RootState) => state.appDatas);
 	const { account, currentProfile } = useSelector((state: RootState) => state.user);
 
-	const ref = useRef<Editor>(null);
+	const { lastAnnouncement } = useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
 
-	const handleReceiveAnnouncement = useCallback(
-		({ detail }: { detail: Announcement }) => {
-			if (selectedChannel?.id === detail.channelId) setAnnouncements(prevState => [...prevState, detail]);
-		},
-		[selectedChannel]
-	);
+	const ref = useRef<Editor>(null);
 
 	useEffect(() => {
 		const announcementThread = announcements.filter((announ: any) => announ.id === announcementId)[0];
@@ -96,11 +94,8 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
 	}, [announcements, announcementId]);
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		};
-	}, [announcements, handleReceiveAnnouncement]);
+		if (walletAddress && lastAnnouncement) setAnnouncements(prevState => [...prevState, lastAnnouncement]);
+	}, [lastAnnouncement, walletAddress]);
 
 	useEffect(() => {
 		async function getChannelAnnouncements() {
