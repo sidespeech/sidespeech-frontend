@@ -8,6 +8,7 @@ import { MessageWithRoom } from '../models/Room';
 import notificationService from '../services/api-services/notification.service';
 
 interface NotificationsContextProps {
+	getStaticNotifications: () => void;
 	lastAnnouncement: Announcement | null;
 	lastComment: Comment | null;
 	lastMessage: MessageWithRoom | null;
@@ -19,6 +20,7 @@ interface NotificationsContextProps {
 }
 
 const NotificationsContextInitialState = {
+	getStaticNotifications: () => {},
 	lastAnnouncement: null,
 	lastComment: null,
 	lastMessage: null,
@@ -127,6 +129,7 @@ const NotificationsProvider = (props: any) => {
 	}, [handleUsersStatus]);
 
 	const value = {
+		getStaticNotifications,
 		lastAnnouncement,
 		lastComment,
 		lastMessage,

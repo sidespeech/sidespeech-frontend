@@ -47,7 +47,8 @@ const SidebarStyled = styled.div`
 export default function CurrentSideLeftContent() {
 	const { account, currentProfile } = useSelector((state: RootState) => state.user);
 
-	const { lastAnnouncement, lastMessage, onlineUsers, staticNotifications } = useNotificationsContext();
+	const { getStaticNotifications, lastAnnouncement, lastMessage, onlineUsers, staticNotifications } =
+		useNotificationsContext();
 	const { walletAddress } = useWalletAddress();
 
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -152,11 +153,13 @@ export default function CurrentSideLeftContent() {
 					if (selectedChannel && notification['name'] === selectedChannel!.id) {
 						dotsChannelCopy[notification['name']] = 0;
 						await notificationService.deleteNotification(selectedChannel!.id, account!);
+						getStaticNotifications();
 					}
 				} else {
 					if (selectedRoom && notification['name'] === selectedRoom!.id) {
 						dotsPrivateMessageCopy[notification['name']] = 0;
 						await notificationService.deleteNotification(selectedRoom!.id, account!);
+						getStaticNotifications();
 					}
 				}
 			}
