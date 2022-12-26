@@ -91,12 +91,16 @@ export default function GnosisSafe() {
             if (signerAddr !== address) {
                 return false;
             }
-
             console.log('signature :', signature)
-
-            
-            safeService.createSafe(signer, '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A', user!['profiles'][0]['side']['id'], user!['profiles'][0]['id'])
+            return signer            
         }
+    }
+
+    async function createSafe() {
+        const signer = await getSigner();
+        if (signer)
+            await safeService.createSafe(signer, '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A', "55a57b3c-a207-4e76-befa-513274d3e2b8", "ec0d6ee8-482a-4fd7-8793-033684a3d76b")
+
     }
 
 
@@ -131,14 +135,26 @@ export default function GnosisSafe() {
         const proposal = await proposalService.saveProposal(data);
         return proposal
     }
+
+
+    async function connectToSafe() {
+        const safeAddress = "0x4924F203F0B9a4A9a24F2fb4F741c0EEbDd44b80"
+        const signer = await getSigner();
+
+        if (signer){
+            const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
+            await safeService.createSafeTransaction(safeSdk, '0x9e339352232149ce1957af39596445ce9d4f59a6', 1, signer)
+        }
+    }
     
     useEffect(() => {
         if (user) {
 
             console.log('user :', user)
 
-            // getSigner()
+            // createSafe()
             // getAllCategoriesAndCreateProposal();
+            connectToSafe()
         }
     }, [user]);
 

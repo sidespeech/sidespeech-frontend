@@ -1,6 +1,6 @@
 import { Side } from "./Side";
 
-export class Safe {
+export class GnosisSafe {
   public id?: string;
   public contractAddress: string;
   public threshold: number;

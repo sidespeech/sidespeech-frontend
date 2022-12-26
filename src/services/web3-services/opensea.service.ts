@@ -14,6 +14,13 @@ class OpenseaService {
     const body = await res.json();
     return body;
   }
+  async getContractDataTestnet(address: string): Promise<any> {
+    const res = await fetch(
+      `https://testnets-api.opensea.io/api/v1/asset/${address}`
+    );
+    const body = await res.json();
+    return body;
+  }
   async getCollectionData(slug: string): Promise<any> {
     const res = await fetch(`https://api.opensea.io/api/v1/collection/${slug}`);
     const body = await res.json();

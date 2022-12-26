@@ -5,6 +5,7 @@
   "dependencies": {
     "@giphy/js-fetch-api": "^4.4.0",
     "@giphy/react-components": "^6.2.0",
+    "@gnosis.pm/safe-deployments": "^1.17.0",
     "@microsoft/signalr": "^6.0.6",
     "@reduxjs/toolkit": "^1.8.3",
     "@safe-global/safe-core-sdk": "^3.2.1",

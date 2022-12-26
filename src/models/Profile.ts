@@ -1,6 +1,6 @@
 import { NFT } from "./interfaces/nft";
 import { Room } from "./Room";
-import { Safe } from "./Safe";
+import { GnosisSafe } from "./GnosisSafe";
 import { Side } from "./Side";
 import { User } from "./User";
 
@@ -31,7 +31,7 @@ export class Profile {
 
   side: Side;
   user: User;
-  safe: Safe;
+  safe: GnosisSafe;
 
   constructor(_data: any) {
     this.id = _data.id;

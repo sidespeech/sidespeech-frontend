@@ -2150,7 +2150,7 @@
     react-use "17.4.0"
     throttle-debounce "^3.0.1"
 
-"@gnosis.pm/safe-deployments@1.17.0":
+"@gnosis.pm/safe-deployments@1.17.0", "@gnosis.pm/safe-deployments@^1.17.0":
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-deployments/-/safe-deployments-1.17.0.tgz#52a7b0e75c08b4a829f491b594e2babbdd6606c5"
   integrity sha512-vfl13IuSMqJZxTPraRcKZqJcaSCDWTt/JXH6VURa8LHMYATOqd96IGbqqOKRPAgSzAyXpA2thOD4YUQ0X8XKyQ==

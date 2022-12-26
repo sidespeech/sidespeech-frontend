@@ -1,5 +1,5 @@
 import { CategoryProposal } from "./CategoryProposal";
-import { Safe } from "./Safe";
+import { GnosisSafe } from "./GnosisSafe";
 
 
 export enum Status {
@@ -17,7 +17,7 @@ export class Proposal {
   public categoryId?: string;
   public safeId?: string;
   public categoryProposal?: CategoryProposal;
-  public safe?: Safe;
+  public safe?: GnosisSafe;
   public details: Object;
 
   constructor(_data: any) {
