@@ -16,3 +16,5 @@ export const ALCHEMY_NETWORK =
     : Network.ETH_MAINNET;
 
 export const FALLBACK_BG_IMG = bannerImage;
+
+export const OPENSEA_ADDRESS = "0x00000000006c3852cbEf3e08E8dF289169EdE581"

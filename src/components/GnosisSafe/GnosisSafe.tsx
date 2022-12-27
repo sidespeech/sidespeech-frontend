@@ -36,18 +36,22 @@ export default function GnosisSafe() {
 
     async function getSigner() {
         // This is the all of the providers that are needed...
+        // See the thing is that 
+        // prolble is the nft doens't gets transferred to your address
+        // assumpation is that maybe due to the worng network 
+        // txn -> georli network 
         const providerOptions = {
             walletconnect: {
                 package: WalletConnectProvider,
                 options: {
-                    infuraId: 'b49e48dbbec944eea653e7a44ca67500'
+                    infuraId: 'c0db0b85222f4f5c82dd2bed1fc843f9' // b49e48dbbec944eea653e7a44ca67500
                 }
             }
         };
 
         // Setup the web3 modal...
         const web3Modal = new Web3Modal({
-            network: 'mainnet', // optional
+            network: 'goerli', // optional
             cacheProvider: false, // optional
             providerOptions // required
         });
@@ -141,9 +145,15 @@ export default function GnosisSafe() {
         const safeAddress = "0x4924F203F0B9a4A9a24F2fb4F741c0EEbDd44b80"
         const signer = await getSigner();
 
+
+        const nftAddress = "0x9e339352232149ce1957af39596445ce9d4f59a6"
+
+        const to_address = '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A';
+        const value_to_transfers = '0.05'
         if (signer){
-            const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
-            await safeService.createSafeTransaction(safeSdk, '0x9e339352232149ce1957af39596445ce9d4f59a6', 1, signer)
+            // const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
+            // await safeService.createSafeTransaction(safeSdk, signer, to_address, value_to_transfers)
+            await safeService.createRegularTransaction(signer, safeAddress, value_to_transfers);
         }
     }
     

@@ -1,4 +1,4 @@
-import { BASE_URL } from "../../constants/constants";
+import { BASE_URL, OPENSEA_ADDRESS } from "../../constants/constants";
 import { GnosisSafe } from "../../models/GnosisSafe";
 import { BaseApiService } from "./base-api.service";
 import Safe, { SafeFactory, SafeAccountConfig, ContractNetworksConfig, SafeDeploymentConfig } from '@safe-global/safe-core-sdk';
@@ -7,7 +7,7 @@ import { SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types'
 import { ethers } from 'ethers';
 import EthersAdapter, { EthersTransactionOptions } from '@safe-global/safe-ethers-lib'
 import openseaService from '../../services/web3-services/opensea.service';
-import { ERC20ABI, ERC721ABI } from "../../constants/ABI";
+import { ABI, OPENSEA_ABI } from "../../constants/ABI";
 
 // Create an API Service class
 let instance: SafeService;
@@ -76,63 +76,52 @@ class SafeService extends BaseApiService {
     console.log('safeSdk :', safeSdk);
     console.log('safeSdk.getAddress() :', safeSdk.getAddress());
     return safeSdk
-    // const safeTransactionData: SafeTransactionDataPartial = {to: }
   }
 
-  async createSafeTransaction(safeSdk:Safe, address:string, id:number, signer: ethers.providers.JsonRpcSigner) {
+  async createSafeTransaction(safeSdk:Safe, signer: ethers.providers.JsonRpcSigner, to_address:string, value:string) {
 
-    const abi = ERC20ABI;
+    const contractInterface = new ethers.utils.Interface(ABI);
 
-    const contractInterface = new ethers.utils.Interface(abi);
     const data = contractInterface.encodeFunctionData('transfer', [
-        address,
-        ethers.utils.parseUnits('1')
+        to_address,
+        ethers.utils.parseUnits(value,"ether").toString()
     ]);
 
-    console.log('data :', data);
-
-    const data_contract = await openseaService.getContractDataTestnet(`${address}/${id}`);
-    console.log('data_contract :', data_contract)
-
     const safeTransactionData: SafeTransactionDataPartial = {
-      to: address,
-      value: ethers.utils.parseUnits("0.001","ether").toString(),
+      to: to_address,
+      value: ethers.utils.parseUnits(value,"ether").toString(),
       data: data,
       gasPrice: 28000,
       baseGas: 28000,
       safeTxGas: 28000,
     }
 
-
-
-
-    console.log('safeTransactionData :', safeTransactionData);
-
     const safeTransaction = await safeSdk.createTransaction({ safeTransactionData })
-
-    console.log('safeTransaction :', safeTransaction);
-
-    // const txHash = await safeSdk.getTransactionHash(safeTransaction)
-    // console.log('txHash :', txHash);
-
-    // const options: EthersTransactionOptions = {
-    //   gasLimit: ethers.utils.parseUnits("0.0006","ether").toNumber()
-    // }
-
-    // console.log('options :', options);
-
-    // const txResponse = await safeSdk.approveTransactionHash(txHash, options)
-    // console.log('txResponse :', txResponse);
-
     // signature of owned 1 is offchain
     const signedSafeTransaction = await safeSdk.signTransaction(safeTransaction)
 
-    console.log('signedSafeTransaction :', signedSafeTransaction);
-
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction);
-
     console.log('executeTxResponse :', executeTxResponse);
+  }
 
+  async buySafeNft(safeSdk:Safe, signer: ethers.providers.JsonRpcSigner, nft_address:string, value:string) {
+
+    // const contract = new ethers.Contract(nft_address, ABI, signer);
+    // console.log('contract :', contract)
+
+    
+  }
+  
+  async createRegularTransaction(signer: ethers.providers.JsonRpcSigner, to_address:string, value:string) {
+
+    const transaction = {
+      to: to_address,
+      value: ethers.utils.parseEther(value),
+  };
+  
+  // Now we can sign and send the transaction using the Signer
+  const executeTxResponse = await signer.sendTransaction(transaction);
+  console.log('executeTxResponse :', executeTxResponse);
 
   }
 
