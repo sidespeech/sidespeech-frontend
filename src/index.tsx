@@ -41,7 +41,7 @@ ReactDOM.render(
 			draggable={false}
 			pauseOnHover
 			toastStyle={{
-				background: 'var(--input)',
+				background: 'var(--panels)',
 				color: 'white'
 			}}
 		/>
