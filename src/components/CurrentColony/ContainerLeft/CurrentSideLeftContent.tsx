@@ -117,7 +117,14 @@ export default function CurrentSideLeftContent() {
 				return { ...prevState, [data.channelId]: number + 1 };
 			});
 	};
-	const setRoomsNotifications = (data: any) => {
+	const setRoomsNotifications = async (data: any) => {
+		const roomExists = currentSide?.profiles?.some(
+			(p: Profile) => currentProfile?.getRoom(p.id)?.id === data?.room?.id
+		);
+		if (!roomExists) {
+			const room = await roomService.getRoomByName(data.room.name);
+			if (room) dispatch(addRoomToProfile(room));
+		}
 		if ((selectedRoom && selectedRoom.id !== data.room.id) || selectedChannel)
 			setDotsPrivateMessage((prevState: any) => {
 				const number = prevState[data.room.id] || 0;

@@ -102,7 +102,7 @@ const NotificationsProvider = (props: any) => {
 		({ detail }: { detail: any }) => {
 			let onlineUsersObj: any = [];
 			if (detail !== 'transport close') {
-				for (let socket of detail) onlineUsersObj.push(socket['user']['username']);
+				for (let socket of detail) onlineUsersObj.push(socket?.['user']?.['username']);
 				setOnlineUsers(onlineUsersObj);
 			}
 		},

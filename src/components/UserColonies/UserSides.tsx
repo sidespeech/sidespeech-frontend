@@ -48,7 +48,7 @@ const UserSidesStyled = styled.div`
 			outline: 2px solid var(--primary);
 		}
 		& > img {
-			object-fit: cover;
+			object-fit: contain;
 			width: 100%;
 			height: 100%;
 		}
