@@ -8,6 +8,7 @@ import { MessageWithRoom } from '../models/Room';
 import notificationService from '../services/api-services/notification.service';
 
 interface NotificationsContextProps {
+	clearNotificationsState: () => void;
 	getStaticNotifications: () => void;
 	lastAnnouncement: Announcement | null;
 	lastComment: Comment | null;
@@ -20,6 +21,7 @@ interface NotificationsContextProps {
 }
 
 const NotificationsContextInitialState = {
+	clearNotificationsState: () => {},
 	getStaticNotifications: () => {},
 	lastAnnouncement: null,
 	lastComment: null,
@@ -44,6 +46,17 @@ const NotificationsProvider = (props: any) => {
 	const [staticNotifications, setStaticNotifications] = useState<any[]>([]);
 
 	const { walletAddress } = useWalletAddress();
+
+	const clearNotificationsState = useCallback(() => {
+		setLastAnnouncement(NotificationsContextInitialState.lastAnnouncement);
+		setLastComment(NotificationsContextInitialState.lastComment);
+		setLastMessage(NotificationsContextInitialState.lastMessage);
+		setNewAnnouncements(NotificationsContextInitialState.newAnnouncements);
+		setNewComments(NotificationsContextInitialState.newComments);
+		setNewMessages(NotificationsContextInitialState.newMessages);
+		setOnlineUsers(NotificationsContextInitialState.onlineUsers);
+		setStaticNotifications(NotificationsContextInitialState.staticNotifications);
+	}, []);
 
 	const getStaticNotifications = useCallback(async () => {
 		try {
@@ -104,31 +117,36 @@ const NotificationsProvider = (props: any) => {
 		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
 		return () => {
 			unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
+			clearNotificationsState();
 		};
-	}, [handleReceiveAnnouncement]);
+	}, [clearNotificationsState, handleReceiveAnnouncement]);
 
 	useEffect(() => {
 		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
 		return () => {
 			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
+			clearNotificationsState();
 		};
-	}, [handleReceiveMessage]);
+	}, [clearNotificationsState, handleReceiveMessage]);
 
 	useEffect(() => {
 		subscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
 		return () => {
 			unSubscribeToEvent(EventType.RECEIVE_COMMENT, handleReceiveComment);
+			clearNotificationsState();
 		};
-	}, [handleReceiveComment]);
+	}, [clearNotificationsState, handleReceiveComment]);
 
 	useEffect(() => {
 		subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
 		return () => {
 			unSubscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
+			clearNotificationsState();
 		};
-	}, [handleUsersStatus]);
+	}, [clearNotificationsState, handleUsersStatus]);
 
 	const value = {
+		clearNotificationsState,
 		getStaticNotifications,
 		lastAnnouncement,
 		lastComment,

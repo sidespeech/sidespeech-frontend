@@ -91,7 +91,12 @@ export default function AnnouncementItem({
 	};
 
 	useEffect(() => {
-		if (lastComment && walletAddress) setComments(prevState => [...prevState, lastComment]);
+		if (
+			walletAddress &&
+			lastComment?.announcement?.id === announcement?.id &&
+			announcement.comments?.filter(comment => comment.id === lastComment.id).length === 0
+		)
+			setComments(prevState => [...prevState, lastComment]);
 	}, [lastComment, walletAddress]);
 
 	useEffect(() => {
