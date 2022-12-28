@@ -187,7 +187,6 @@ const Invitations = ({}: InvitationsProps) => {
 		await invitationService.updateInvitationState(invitation['id']!, State.Declined);
 		if (userData && userData['user']) await getInvitations(userData['user']);
 		setIsLoading(false);
-		window.location.reload();
 	};
 
 	const onAccept = async (invitation: Invitation, index: number) => {
@@ -195,7 +194,6 @@ const Invitations = ({}: InvitationsProps) => {
 		await invitationService.acceptInvitation(invitation);
 		if (userData && userData['user']) await getInvitations(userData['user']);
 		setIsLoading(false);
-		window.location.reload();
 	};
 
 	const onFilterByVerifiedcollection = async () => {

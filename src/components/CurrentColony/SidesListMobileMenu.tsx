@@ -124,7 +124,7 @@ const SidesListMobileMenu = ({ currentSide, onClose, open }: SidesListMobileMenu
 					<div className="sides-list">
 						{userData.sides?.map(side => (
 							<Link
-								to={`/side/${side.name}`}
+								to={`/side/${side.name.replace(/\s/g, '-').toLowerCase()}`}
 								key={side.id}
 								className={`side-item ${currentSide?.id === side.id ? 'active' : ''}`}
 							>

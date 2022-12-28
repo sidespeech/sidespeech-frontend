@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
+import useWalletAddress from '../../../hooks/useWalletAddress';
 import { OpenSeaRequestStatus } from '../../../models/interfaces/collection';
 import { Side } from '../../../models/Side';
 import ClampLines from '../../ui-components/ClampLines';
@@ -139,28 +140,32 @@ interface SideCardItemProps {
 
 const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides }: SideCardItemProps) => {
 	const navigate = useNavigate();
+	const { walletAddress } = useWalletAddress();
 
 	const handleNavigate = () => {
 		if (!side.joined || !side.eligible) return;
-		navigate(`/side/${side.name}`);
+		navigate(`/side/${side.name.replace(/\s/g, '-').toLowerCase()}`);
 	};
 
 	let alertsCount = 0;
-	side?.channels?.forEach(channel => {
-		const countOfAlertsByChannel =
-			alerts?.map(message => message.name || message.channelId).filter(message => message === channel.id)
-				?.length || 0;
-		alertsCount += countOfAlertsByChannel;
+	alerts?.forEach(alert => {
+		if (alert.sideId === side.id) alertsCount += 1;
+		else
+			side.channels?.forEach(channel => {
+				if (alert.channelId === channel?.id) alertsCount += 1;
+			});
 	});
 
 	let messagesCount = 0;
-	side?.profiles?.forEach(profile => {
-		profile?.rooms?.forEach((room: any) => {
-			const countOfMessageByChannel =
-				messages?.map(message => message.name || message.room?.id).filter(message => message === room.id)
-					?.length || 0;
-			messagesCount += countOfMessageByChannel;
-		});
+	messages?.forEach(message => {
+		if (message.sideId === side.id) messagesCount += 1;
+		else
+			side?.profiles
+				?.filter(profile => profile.user?.accounts?.toLowerCase() !== walletAddress?.toLowerCase())
+				?.forEach(profile => {
+					if (profile.rooms?.some(room => room.id === message.name || room.id === message.room?.id))
+						messagesCount += 1;
+				});
 	});
 
 	return (

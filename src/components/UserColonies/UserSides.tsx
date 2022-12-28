@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { EventType } from '../../constants/EventType';
-import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
-import { Announcement } from '../../models/Announcement';
 import { RootState } from '../../redux/store/app.store';
 import { Side, SideStatus } from '../../models/Side';
 import { Dot } from '../ui-components/styled-components/shared-styled-components';
 import { Profile, Role } from '../../models/Profile';
 import { NotificationType } from '../../models/Notification';
-import notificationService from '../../services/api-services/notification.service';
 import { isColor } from '../../helpers/utilities';
 import ReactTooltip from 'react-tooltip';
+import { useNotificationsContext } from '../../providers/NotificationsProvider';
+import useWalletAddress from '../../hooks/useWalletAddress';
 import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
 
 const UserSidesStyled = styled.div`
@@ -20,11 +18,12 @@ const UserSidesStyled = styled.div`
 	overflow-y: scroll;
 	overflow-x: hidden;
 	scrollbar-width: none;
-	padding-top: 0.5rem;
+	padding: 0.5rem 0;
 	::-webkit-scrollbar {
 		width: 0;
 	}
 	.colony-badge {
+		position: relative;
 		flex-shrink: 0;
 		display: flex;
 		align-items: center;
@@ -35,7 +34,6 @@ const UserSidesStyled = styled.div`
 		border: 1px solid black;
 		border-radius: 25px;
 		margin: 0px 12px;
-		overflow: hidden;
 		z-index: 50;
 		transition: all 0.2s ease;
 		font-size: 27px;
@@ -49,7 +47,7 @@ const UserSidesStyled = styled.div`
 			outline: 2px solid var(--primary);
 		}
 		& > img {
-			object-fit: cover;
+			object-fit: contain;
 			width: 100%;
 			height: 100%;
 		}
@@ -57,7 +55,8 @@ const UserSidesStyled = styled.div`
 
 	.badge-notification {
 		position: absolute;
-		margin-top: -21px;
+		top: 0;
+		right: -5px;
 	}
 `;
 
@@ -72,71 +71,60 @@ export default function UserSides() {
 	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
 	const [side, setSide] = useState<Side | null>(null);
 
+	const { lastAnnouncement, lastMessage, staticNotifications } = useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
+
 	const [dots, setDots] = useState<any>({});
 
 	const displaySide = (side: Side) => {
 		if (side.status === SideStatus.inactive) {
 			dispatch(setEligibilityOpen({ open: true, side: side }));
 		} else {
-			navigate('side/' + side.name);
-		}
-	};
-
-	const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-		const account = localStorage.getItem('userAccount');
-		if (currentSide && account) {
-			const sideFounded = userData.sides.find((s: Side) => {
-				return s.channels.find((c: any) => c.id === detail['channelId']);
-			});
-			if (sideFounded && sideFounded!['id'] !== currentSide['id']) {
-				const number = dots[sideFounded['id']] || 0;
-				setDots({ ...dots, [sideFounded!['id']]: number + 1 });
-			}
-		}
-	};
-
-	const handleReceiveMessage = async (m: any) => {
-		const { detail } = m;
-		const account = localStorage.getItem('userAccount');
-		if (currentSide && account) {
-			const sideFounded = userData.sides.find((s: Side) => {
-				return s.profiles.find((p: Profile) => {
-					return p.rooms.find(el => el.id === detail.room['id']);
-				});
-			});
-			if (sideFounded && sideFounded!['id'] !== currentSide['id']) {
-				const number = dots[sideFounded['id']] || 0;
-				setDots({ ...dots, [sideFounded!['id']]: number + 1 });
-			}
+			navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
 		}
 	};
 
 	// LISTENING WS =====================================================================
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		};
-	}, [dots, userData, currentSide]);
+		if (walletAddress) {
+			const sideFounded = userData.sides.find((s: Side) => {
+				return s.channels.find((c: any) => c.id === lastAnnouncement?.channelId);
+			});
+			if (sideFounded && sideFounded!['id'] !== currentSide?.['id']) {
+				setDots((prevState: any) => {
+					const number = prevState[sideFounded['id']] || 0;
+					return { ...prevState, [sideFounded!['id']]: number + 1 };
+				});
+			}
+		}
+	}, [userData, currentSide, lastAnnouncement]);
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		};
-	}, [dots, userData, currentSide]);
+		if (walletAddress) {
+			const sideFounded = userData.sides.find((s: Side) => {
+				return s.profiles.find((p: Profile) => {
+					return p.rooms.find(el => el.id === lastMessage?.room['id']);
+				});
+			});
+			if (sideFounded && sideFounded!['id'] !== currentSide?.['id']) {
+				setDots((prevState: any) => {
+					const number = prevState[sideFounded['id']] || 0;
+					return { ...prevState, [sideFounded!['id']]: number + 1 };
+				});
+			}
+		}
+	}, [userData, currentSide, lastMessage]);
 	// LISTENING WS =====================================================================
 
 	// Function to get notification from db and assign them to the state variable
-	async function getAndSetRoomNotifications(account: string) {
-		const notifications = await notificationService.getNotification(account!);
+	async function setRoomNotifications(notifications: any[]) {
 		let dots_object: any = {};
 
-		const currentChannelsIds = currentSide!.channels.map((c: any) => c.id);
+		const currentChannelsIds = currentSide?.channels?.map((c: any) => c.id);
 		for (let notification of notifications) {
 			// If the message is for current Side
 			if (
-				currentChannelsIds.includes(notification['name']) ||
+				currentChannelsIds?.includes(notification['name']) ||
 				currentSide?.profiles.find((p: Profile) => p.rooms.some(el => el.id === notification['name']))
 			) {
 				dots_object[currentSide!['id']] = 0;
@@ -165,9 +153,8 @@ export default function UserSides() {
 	}
 
 	useEffect(() => {
-		const account = localStorage.getItem('userAccount');
-		if (currentSide && account) getAndSetRoomNotifications(account);
-	}, [currentSide]);
+		if (staticNotifications.length) setRoomNotifications(staticNotifications);
+	}, [staticNotifications]);
 
 	useEffect(() => {
 		if (userData.user && side) {

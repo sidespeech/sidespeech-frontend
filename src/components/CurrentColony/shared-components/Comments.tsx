@@ -111,7 +111,7 @@ const Comments = ({ channel, comments, handleComment, isThread, sideId }: Commen
 				)}
 				hideOpenIcon
 				locked
-				openInitialState={!!isThread}
+				openInitialState={isThread}
 			>
 				<CommentsContainerStyled className="mt-3">
 					<div className="comments-scroll-container">
@@ -155,18 +155,20 @@ const Comments = ({ channel, comments, handleComment, isThread, sideId }: Commen
 						)}
 					</div>
 				</CommentsContainerStyled>
-				<CommentInputStyled isThread={isThread}>
-					<MessageInput
-						id={`sendcomment-${channel.id}`}
-						imageUpload
-						onSubmit={handleComment}
-						placeholder={'Type your message here'}
-						radius="10px"
-						ref={ref}
-						size={14}
-						weight={600}
-					/>
-				</CommentInputStyled>
+				{isThread && (
+					<CommentInputStyled isThread={isThread}>
+						<MessageInput
+							id={`sendcomment-${channel.id}`}
+							imageUpload
+							onSubmit={handleComment}
+							placeholder={'Type your message here'}
+							radius="10px"
+							ref={ref}
+							size={14}
+							weight={600}
+						/>
+					</CommentInputStyled>
+				)}
 			</Accordion>
 		</>
 	);

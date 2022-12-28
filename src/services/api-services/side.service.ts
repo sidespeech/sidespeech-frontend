@@ -25,6 +25,12 @@ class SideService extends BaseApiService {
 		return dtoToSide(res.body);
 	}
 
+	// get side by slug
+	async getSideBySlug(name: string): Promise<Side> {
+		const res = await this.get(`${BASE_URL}/side/byslug/${name}`);
+		return dtoToSide(res.body);
+	}
+
 	// get all sides without channels
 	async getAllSides(userCollectionsData?: any, userSides?: Side[]): Promise<Side[]> {
 		const res = await this.get(`${BASE_URL}/side`);
@@ -106,6 +112,10 @@ class SideService extends BaseApiService {
 			ids: ids
 		});
 		return dtoToSideList(res['body']);
+	}
+	async removeSide(sideId: string): Promise<any> {
+		const response = await this.delete(`${BASE_URL}/side/${sideId}`);
+		return response;
 	}
 }
 export default SideService.getInstance();

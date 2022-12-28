@@ -30,11 +30,9 @@ class WebSocketService {
 		});
 
 		this.socket.on('message', async data => {
-			console.log('message', data);
 			trigger(EventType.RECEIVE_MESSAGE, { ...data, timestamp: parseInt(data.timestamp) });
 		});
 		this.socket.on('newAnnouncement', async data => {
-			console.log(data);
 			trigger(EventType.RECEIVE_ANNOUNCEMENT, data);
 		});
 		this.socket.on('newComment', async data => {

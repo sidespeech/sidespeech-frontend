@@ -751,7 +751,7 @@ export default function NewSide() {
 
 					setIsLoading(false);
 					sessionStorage.removeItem('create-side-data');
-					navigate('/side/' + newSide.name);
+					navigate('/side/' + newSide.name.replace(/\s/g, '-').toLowerCase());
 				} else {
 					toast.error('You do not meet the conditions to create this side.');
 				}

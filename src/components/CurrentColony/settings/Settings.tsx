@@ -66,6 +66,14 @@ const SettingsStyled = styled.div`
 				fill: var(--text);
 				fill-opacity: 0.4;
 			}
+			&.backbutton{
+				    color: #ffff;
+				& svg path {
+					fill: var(--white);
+					fill-opacity: 1;
+			}
+				
+			}
 			& .arrow-right {
 				position: absolute;
 				right: 2rem;
@@ -114,6 +122,9 @@ const SettingsStyled = styled.div`
         }`
 			)}
 		}
+	}
+	.backbutton {
+		cursor: pointer;
 	}
 `;
 
@@ -211,7 +222,9 @@ export default function Settings() {
 			navigate(`/`);
 		} else {
 			!settingsOpen && dispatch(setSettingsOpen(true));
-			userData && userData['currentProfile'] && userData['currentProfile']['role'] === Role.Admin
+			userData &&
+			userData['currentProfile'] &&
+			(userData['currentProfile']['role'] === Role.Admin || userData['currentProfile']['role'] === Role.subadmin)
 				? handleTabs('Informations')
 				: handleTabs('Account');
 		}
@@ -272,7 +285,8 @@ export default function Settings() {
 									submenu['admin'] === true ? (
 										userData &&
 										userData['currentProfile'] &&
-										userData['currentProfile']['role'] === 0 ? (
+										(userData['currentProfile']['role'] === Role.Admin ||
+											userData['currentProfile']['role'] === Role.subadmin) ? (
 											<div key={index} className="mt-2">
 												<label className="pl-4 sidebar-title">{submenu['title']}</label>
 
@@ -346,6 +360,13 @@ export default function Settings() {
 													</TabItems>
 												);
 											})}
+											<a 
+											className="backbutton nav-link"
+											onClick={e => {
+												
+												navigate('/side/'+currentSide.name.replace(/\s/g, '-').toLowerCase())
+											}}
+											><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.99984 15.3332L0.666504 7.99984L7.99984 0.666504L9.30609 1.94984L4.17275 7.08317H15.3332V8.9165H4.17275L9.30609 14.0498L7.99984 15.3332Z" fill="white"></path></svg> Back to side</a>
 										</div>
 									)
 								);

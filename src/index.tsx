@@ -27,6 +27,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './override.css';
 import './index.css';
 import './animations.css';
+import NotificationsProvider from './providers/NotificationsProvider';
 
 ReactDOM.render(
 	<Provider store={store}>
@@ -47,27 +48,29 @@ ReactDOM.render(
 		/>
 		<React.StrictMode>
 			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<App />}>
-						<Route index element={<DashboardPage />} />
-						<Route path="/login" element={<Login />} />
-						<Route path="/my-sides" element={<DashboardPage />} />
-						<Route path="/invitations" element={<DashboardPage />} />
-						<Route path="/search" element={<DashboardPage />} />
-						<Route path="new-side" element={<NewSide />} />
-						<Route path="side/:id" element={<CurrentColony />}>
-							<Route path="profile/:username" element={<UserProfile />} />
-							<Route path="settings" element={<Settings />} />
-							<Route path="thread/:announcementId" element={<ChannelView />} />
-							<Route index element={<CurrentSideMiddle />} />
+				<NotificationsProvider>
+					<Routes>
+						<Route path="/" element={<App />}>
+							<Route index element={<DashboardPage />} />
+							<Route path="/login" element={<Login />} />
+							<Route path="/my-sides" element={<DashboardPage />} />
+							<Route path="/invitations" element={<DashboardPage />} />
+							<Route path="/search" element={<DashboardPage />} />
+							<Route path="new-side" element={<NewSide />} />
+							<Route path="side/:id" element={<CurrentColony />}>
+								<Route path="profile/:username" element={<UserProfile />} />
+								<Route path="settings" element={<Settings />} />
+								<Route path="thread/:announcementId" element={<ChannelView />} />
+								<Route index element={<CurrentSideMiddle />} />
+							</Route>
+							<Route path="/onboarding" element={<OnBoarding />} />
+							<Route path="/general-settings" element={<GeneralSettingsAccount />} />
+							<Route path="/general-settings/:page" element={<GeneralSettings />} />
+							<Route path="/user/:username" element={<PublicUserProfile />} />
 						</Route>
-						<Route path="/onboarding" element={<OnBoarding />} />
-						<Route path="/general-settings" element={<GeneralSettingsAccount />} />
-						<Route path="/general-settings/:page" element={<GeneralSettings />} />
-						<Route path="/user/:username" element={<PublicUserProfile />} />
-					</Route>
-					<Route path="*" element={<Navigate to="/" />} />
-				</Routes>
+						<Route path="*" element={<Navigate to="/" />} />
+					</Routes>
+				</NotificationsProvider>
 			</BrowserRouter>
 		</React.StrictMode>
 	</Provider>,

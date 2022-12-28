@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -15,14 +15,13 @@ import SideCardItem from './shared-components/SideCardItem';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg';
 import { searchFiltersProps } from './DashboardPage';
 import PaginationControls from '../ui-components/PaginationControls';
-import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
-import { EventType } from '../../constants/EventType';
-import { Announcement } from '../../models/Announcement';
 import { breakpoints, size } from '../../helpers/breakpoints';
-import notificationService from '../../services/api-services/notification.service';
 import sideService, { getSidesMetadata } from '../../services/api-services/side.service';
 import { Role } from '../../models/Profile';
 import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
+import { useNotificationsContext } from '../../providers/NotificationsProvider';
+import useWalletAddress from '../../hooks/useWalletAddress';
+import { NotificationType } from '../../models/Notification';
 
 interface MySidesStyledProps {}
 
@@ -155,16 +154,15 @@ const MySides = ({ collections }: MySidesProps) => {
 	const [sidesLoading, setSidesLoading] = useState<boolean>(false);
 	const [sidesList, setSidesList] = useState<Side[]>([]);
 	const [filteredSides, setFilteredSides] = useState<Side[]>([]);
-	// const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
 	const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
 	const [searchFilters, setSearchFilters] = useState<searchFiltersProps>(searchFiltersInitialState);
 	const [numberOfPages, setNumberOfPages] = useState<number>(0);
-	const [isSideAdmin, setIsSideAdmin] = useState<boolean>(false);
-	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
-	const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 	const dispatch = useDispatch();
 
 	const { sides, user, userCollectionsData } = useSelector((state: RootState) => state.user);
+
+	const { lastAnnouncement, lastMessage, staticNotifications } = useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
 
 	useEffect(() => {
 		setSearchFilters(searchFiltersInitialState);
@@ -207,53 +205,25 @@ const MySides = ({ collections }: MySidesProps) => {
 		setSidesList(array);
 	}, [filteredSides, pagination, searchFilters]);
 
-	const getAndSetRoomNotifications = useCallback(async (account: string) => {
-		try {
-			const notifications = await notificationService.getNotification(account);
-			for (let notification of notifications) {
-				setMessagesBySide((prevState: any) => [...prevState, notification]);
-			}
-		} catch (error) {
-			console.error(error);
-		}
+	const setRoomNotifications = useCallback(async (notifications: any[]) => {
+		setMessagesBySide(notifications.filter(notification => notification.type === NotificationType.Private));
+		setAlertsBySide(notifications.filter(notification => notification.type === NotificationType.Channel));
 	}, []);
 
 	useEffect(() => {
-		const account = localStorage.getItem('userAccount');
-		if (account) getAndSetRoomNotifications(account);
-	}, []);
-
-	const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-		if (detail) setAlertsBySide((prevState: any) => [...prevState, detail]);
-	};
-
-	const handleReceiveMessage = useCallback(async ({ detail }: { detail: any }) => {
-		if (detail) setMessagesBySide((prevState: any) => [...prevState, detail]);
-	}, []);
+		if (walletAddress && staticNotifications?.length) setRoomNotifications(staticNotifications);
+	}, [staticNotifications, walletAddress]);
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		};
-	}, [handleReceiveAnnouncement]);
+		if (lastAnnouncement && walletAddress) setAlertsBySide((prevState: any) => [...prevState, lastAnnouncement]);
+	}, [lastAnnouncement, walletAddress]);
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		};
-	}, [handleReceiveMessage]);
+		if (lastMessage && walletAddress) setMessagesBySide((prevState: any) => [...prevState, lastMessage]);
+	}, [lastMessage, walletAddress]);
 
 	const handleEligibilityCheck = (side: Side) => {
-		setSelectedSide(side);
-		if (user && side) {
-			const sideProfile = user?.profiles.find(profile => profile.side?.id === side?.id);
-			const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
-			setIsSideAdmin(isSideAdminResponse);
-		}
 		dispatch(setEligibilityOpen({ open: true, side: side }));
-
 	};
 
 	return (

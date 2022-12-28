@@ -248,7 +248,7 @@ const FeaturedSides = ({ featuredSides, sidesLoading }: FeatureSidesProps) => {
 								{featuredSides.map(side => (
 									<React.Fragment key={side.id}>
 										{side.joined ? (
-											<Link to={`/side/${side.name}`}>
+											<Link to={`/side/${side.name.replace(/\s/g, '-').toLowerCase()}`}>
 												<FeatureSideCard side={side} />
 											</Link>
 										) : (
