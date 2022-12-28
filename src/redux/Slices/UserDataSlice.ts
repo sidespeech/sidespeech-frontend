@@ -194,7 +194,9 @@ export const userDataSlice = createSlice({
 		},
 		removeSide: (state: UserData, action: PayloadAction<any>) => {
 			state.sides = state.sides.filter(side => side.id !== action.payload);
-			state.profiles = state.profiles.filter(profile => profile.side.id !== action.payload);
+			if (state.user) {
+				state.user.profiles = state.user.profiles.filter(profile => profile.side.id !== action.payload);
+			}
 		},
 		setCurrentProfile: (state: UserData, action: PayloadAction<Side | null>) => {
 			if (action.payload) {

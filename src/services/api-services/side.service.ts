@@ -113,6 +113,10 @@ class SideService extends BaseApiService {
 		});
 		return dtoToSideList(res['body']);
 	}
+	async removeSide(sideId: string): Promise<any> {
+		const response = await this.delete(`${BASE_URL}/side/${sideId}`);
+		return response;
+	}
 }
 export default SideService.getInstance();
 

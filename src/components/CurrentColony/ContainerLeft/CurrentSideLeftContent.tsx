@@ -1,5 +1,5 @@
+import { useEffect, useState } from 'react';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Channel } from '../../../models/Channel';
@@ -10,9 +10,6 @@ import { RootState } from '../../../redux/store/app.store';
 import websocketService from '../../../services/websocket-services/websocket.service';
 import ChannelsList from './ChannelsList/ChannelsList';
 import SideUserList from './SideUserList/SideUserList';
-import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
-import { EventType } from '../../../constants/EventType';
-import { Announcement } from '../../../models/Announcement';
 import { addRoomToProfile } from '../../../redux/Slices/UserDataSlice';
 import { toast } from 'react-toastify';
 import { getRandomId } from '../../../helpers/utilities';
@@ -22,6 +19,8 @@ import roomService from '../../../services/api-services/room.service';
 import notificationService from '../../../services/api-services/notification.service';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import Skeleton from '../../ui-components/Skeleton';
+import { useNotificationsContext } from '../../../providers/NotificationsProvider';
+import useWalletAddress from '../../../hooks/useWalletAddress';
 
 const SidebarStyled = styled.div`
 	height: calc(100vh - 182px);
@@ -47,11 +46,12 @@ const SidebarStyled = styled.div`
 
 export default function CurrentSideLeftContent() {
 	const { account, currentProfile } = useSelector((state: RootState) => state.user);
-	// const [displayColonySettings, setDisplayColonySettings] = useState<boolean>(false);
-	// const [displayNewChannelModal, setDisplayNewChannelModal] = useState<boolean>(false);
+
+	const { getStaticNotifications, lastAnnouncement, lastMessage, onlineUsers, staticNotifications } =
+		useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
+
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	// const [isMod, setIsMod] = useState<boolean>(false);
-	// const [displayUserProfile, setDisplayUserProfile] = useState<boolean>(false);
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 	const dispatch = useDispatch();
 
@@ -64,7 +64,6 @@ export default function CurrentSideLeftContent() {
 	const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
 	const { user } = useSelector((state: RootState) => state.user);
 	const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
-	const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
 	const filteredRooms = currentSide?.profiles.map((p: Profile, index: number) => {
 		const isMe = p.id === currentProfile?.id;
@@ -111,40 +110,29 @@ export default function CurrentSideLeftContent() {
 		}
 	};
 
-	const handleUsersStatus = async (m: any) => {
-		const { detail } = m;
-		let onlineUsersObj: any = [];
-		if (detail !== 'transport close') {
-			for (let socket of detail) onlineUsersObj.push(socket['user']['username']);
-			setOnlineUsers(onlineUsersObj);
-		}
-	};
-
-	const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-		const account = localStorage.getItem('userAccount');
-		if (account) setChannelsNotifications(detail);
-	};
-
-	const handleReceiveMessage = async (m: any) => {
-		const { detail } = m;
-		const account = localStorage.getItem('userAccount');
-		if (account) setRoomsNotifications(detail);
-	};
-
 	const setChannelsNotifications = (data: any) => {
-		const number = dotsChannel[data.channelId] || 0;
 		if ((selectedChannel && selectedChannel.id !== data.channelId) || selectedRoom)
-			setDotsChannel({ ...dotsChannel, [data.channelId]: number + 1 });
+			setDotsChannel((prevState: any) => {
+				const number = prevState[data.channelId] || 0;
+				return { ...prevState, [data.channelId]: number + 1 };
+			});
 	};
-	const setRoomsNotifications = (data: any) => {
-		const number = dotsPrivateMessage[data.room.id] || 0;
+	const setRoomsNotifications = async (data: any) => {
+		const roomExists = currentSide?.profiles?.some(
+			(p: Profile) => currentProfile?.getRoom(p.id)?.id === data?.room?.id
+		);
+		if (!roomExists) {
+			const room = await roomService.getRoomByName(data.room.name);
+			if (room) dispatch(addRoomToProfile(room));
+		}
 		if ((selectedRoom && selectedRoom.id !== data.room.id) || selectedChannel)
-			setDotsPrivateMessage({ ...dotsPrivateMessage, [data.room.id]: number + 1 });
+			setDotsPrivateMessage((prevState: any) => {
+				const number = prevState[data.room.id] || 0;
+				return { ...prevState, [data.room.id]: number + 1 };
+			});
 	};
 
-	const setNotifications = async () => {
-		const account = localStorage.getItem('userAccount');
-		const notifications = await notificationService.getNotification(account!);
+	const setNotifications = async (notifications: any[]) => {
 		let dotsPrivateMessageCopy: any = {};
 		let dotsChannelCopy: any = {};
 		for (let notification of notifications) {
@@ -163,52 +151,44 @@ export default function CurrentSideLeftContent() {
 		}
 	};
 	// Function to get notification from db and assign them to the state variable
-	async function getAndSetRoomNotifications(account: string, from_ws = false) {
-		const notifications = await notificationService.getNotification(account!);
-		let dotsPrivateMessageCopy: any = { ...dotsPrivateMessage };
-		let dotsChannelCopy: any = { ...dotsChannel };
-		for (let notification of notifications) {
-			if (notification['type'] === NotificationType.Channel) {
-				if (selectedChannel && notification['name'] === selectedChannel!.id) {
-					dotsChannelCopy[notification['name']] = 0;
-					await notificationService.deleteNotification(selectedChannel!.id, account!);
-				}
-			} else {
-				if (selectedRoom && notification['name'] === selectedRoom!.id) {
-					dotsPrivateMessageCopy[notification['name']] = 0;
-					await notificationService.deleteNotification(selectedRoom!.id, account!);
+	async function setRoomNotifications(notifications: any[], account: string) {
+		try {
+			let dotsPrivateMessageCopy: any = { ...dotsPrivateMessage };
+			let dotsChannelCopy: any = { ...dotsChannel };
+			for (let notification of notifications) {
+				if (notification['type'] === NotificationType.Channel) {
+					if (selectedChannel && notification['name'] === selectedChannel!.id) {
+						dotsChannelCopy[notification['name']] = 0;
+						await notificationService.deleteNotification(selectedChannel!.id, account!);
+						getStaticNotifications();
+					}
+				} else {
+					if (selectedRoom && notification['name'] === selectedRoom!.id) {
+						dotsPrivateMessageCopy[notification['name']] = 0;
+						await notificationService.deleteNotification(selectedRoom!.id, account!);
+						getStaticNotifications();
+					}
 				}
 			}
-		}
-		if (JSON.stringify(dotsPrivateMessageCopy) !== JSON.stringify(dotsPrivateMessage))
-			setDotsPrivateMessage(dotsPrivateMessageCopy);
-		if (JSON.stringify(dotsChannelCopy) !== JSON.stringify(dotsChannel)) {
-			setDotsChannel(dotsChannelCopy);
+			if (JSON.stringify(dotsPrivateMessageCopy) !== JSON.stringify(dotsPrivateMessage))
+				setDotsPrivateMessage(dotsPrivateMessageCopy);
+			if (JSON.stringify(dotsChannelCopy) !== JSON.stringify(dotsChannel)) {
+				setDotsChannel(dotsChannelCopy);
+			}
+		} catch (error) {
+			console.error(error);
 		}
 	}
 
 	// LISTENING WS =====================================================================
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		};
-	}, [dotsChannel, selectedChannel, selectedRoom]);
+		if (walletAddress && lastAnnouncement) setChannelsNotifications(lastAnnouncement);
+	}, [lastAnnouncement, walletAddress]);
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		};
-	}, [dotsPrivateMessage, selectedRoom, selectedChannel]);
-
-	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
-		};
-	}, [onlineUsers, handleUsersStatus]);
+		if (walletAddress && lastMessage) setRoomsNotifications(lastMessage);
+	}, [lastMessage, walletAddress]);
 
 	useEffect(() => {
 		if (currentProfile) websocketService.getUsersStatus(currentProfile);
@@ -220,15 +200,13 @@ export default function CurrentSideLeftContent() {
 	}, [currentSide, account]);
 
 	useEffect(() => {
-		setNotifications();
-	}, []);
+		if (staticNotifications) setNotifications(staticNotifications);
+	}, [staticNotifications]);
 
 	useEffect(() => {
-		if (selectedRoom || selectedChannel) {
-			const account = localStorage.getItem('userAccount');
-			if (account) getAndSetRoomNotifications(account);
-		}
-	}, [selectedRoom, selectedChannel]);
+		if ((selectedRoom || selectedChannel) && staticNotifications && walletAddress)
+			setRoomNotifications(staticNotifications, walletAddress);
+	}, [selectedRoom, selectedChannel, staticNotifications, walletAddress]);
 
 	if (!currentSide)
 		return (

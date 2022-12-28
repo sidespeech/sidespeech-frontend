@@ -85,7 +85,7 @@ interface MessageInputProps {
 const MessageInputStyled = styled.div`
 	position: relative;
 	min-height: 3rem;
-	background-color: var(--black-transparency-20);
+	background-color: #020f20;
 	color: var(--text);
 	scrollbar-width: none;
 	border-radius: 10px;

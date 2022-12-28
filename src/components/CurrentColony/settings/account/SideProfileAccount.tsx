@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCurrentProfile, UserData } from '../../../../redux/Slices/UserDataSlice';
+import { removeSide, updateCurrentProfile, UserData } from '../../../../redux/Slices/UserDataSlice';
 import { RootState } from '../../../../redux/store/app.store';
 import styled from 'styled-components';
 import { NFT } from '../../../../models/interfaces/nft';
@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
 import Button from '../../../ui-components/Button';
 import profileService from '../../../../services/api-services/profile.service';
+import { useNavigate } from 'react-router-dom';
 
 const SideProfileAccountStyled = styled.div`
 	// position: relative;
@@ -102,6 +103,7 @@ const initialStateUser = {
 
 export default function SideProfileAccount({ currentSide, userData }: { currentSide: Side; userData: UserData }) {
 	const { currentProfile } = useSelector((state: RootState) => state.user);
+	const navigate = useNavigate();
 
 	const [formData, setFormData] = useState<InitialStateUser>(initialStateUser);
 
@@ -152,7 +154,8 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 				const res = await profileService.leaveSide(userData['currentProfile']);
 				if (res['error']) toast.error(res['message']);
 				else {
-					window.location.reload();
+					navigate('/');
+					dispatch(removeSide(userData['currentProfile'].side.id));
 					toast.success(res['message']);
 				}
 			}

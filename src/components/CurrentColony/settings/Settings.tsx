@@ -222,7 +222,9 @@ export default function Settings() {
 			navigate(`/`);
 		} else {
 			!settingsOpen && dispatch(setSettingsOpen(true));
-			userData && userData['currentProfile'] && userData['currentProfile']['role'] === Role.Admin
+			userData &&
+			userData['currentProfile'] &&
+			(userData['currentProfile']['role'] === Role.Admin || userData['currentProfile']['role'] === Role.subadmin)
 				? handleTabs('Informations')
 				: handleTabs('Account');
 		}
@@ -283,7 +285,8 @@ export default function Settings() {
 									submenu['admin'] === true ? (
 										userData &&
 										userData['currentProfile'] &&
-										userData['currentProfile']['role'] === 0 ? (
+										(userData['currentProfile']['role'] === Role.Admin ||
+											userData['currentProfile']['role'] === Role.subadmin) ? (
 											<div key={index} className="mt-2">
 												<label className="pl-4 sidebar-title">{submenu['title']}</label>
 
