@@ -82,7 +82,7 @@ export default function UserSides() {
 			setSide(side);
 			setDisplayModal(true);
 		} else {
-			navigate('side/' + side.name);
+			navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
 		}
 	};
 
@@ -145,9 +145,11 @@ export default function UserSides() {
 						});
 					});
 				}
-				if (sideFounded?.['id'] !== currentSide?.['id']) {
-					const number = dots_object[sideFounded?.['id']] || 0;
-					dots_object[sideFounded?.['id']] = number + 1;
+				if(typeof sideFounded !== 'undefined' && sideFounded !== null){
+					if (currentSide && sideFounded!['id'] !== currentSide['id']) {
+						const number = dots_object[sideFounded!['id']] || 0;
+						dots_object[sideFounded!['id']] = number + 1;
+					}
 				}
 			}
 		}

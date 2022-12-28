@@ -179,7 +179,7 @@ export default function CurrentSide() {
 				dispatch(setSelectedRoom(null));
 				if (id && user) {
 					// Get Side data
-					const res = await sideService.getSideByName(id);
+					const res = await sideService.getSideBySlug(id);
 
 					const isInTheSide = user['profiles'].find(item => item['side']['id'] === res['id']);
 

@@ -25,6 +25,12 @@ class SideService extends BaseApiService {
 		return dtoToSide(res.body);
 	}
 
+	// get side by slug
+	async getSideBySlug(name: string): Promise<Side> {
+		const res = await this.get(`${BASE_URL}/side/byslug/${name}`);
+		return dtoToSide(res.body);
+	}
+
 	// get all sides without channels
 	async getAllSides(userCollectionsData?: any, userSides?: Side[]): Promise<Side[]> {
 		const res = await this.get(`${BASE_URL}/side`);
