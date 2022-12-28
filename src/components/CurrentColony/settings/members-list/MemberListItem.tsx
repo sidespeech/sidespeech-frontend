@@ -10,7 +10,7 @@ import LeaveSideConfirmationModal from '../../../Modals/LeaveSideConfirmationMod
 import Button from '../../../ui-components/Button';
 import CustomSelect from '../../../ui-components/CustomSelect';
 
-export default function MemberListItem({ side, user }: { side: Side; user: Profile }) {
+export default function MemberListItem({ side, user, isAdmin }: { side: Side; user: Profile; isAdmin: boolean }) {
 	const [isCreator, setIsCreator] = useState<boolean>(false);
 	const [connectedUserIsCreator, setConnectedUserIsCreator] = useState<boolean>(false);
 	const [newRole, setNewRole] = useState('');
@@ -35,13 +35,18 @@ export default function MemberListItem({ side, user }: { side: Side; user: Profi
 	};
 
 	const handleConfirm = async (value: boolean) => {
-		if (value) {
-			await profileService.removeProfile(user['id']);
+		if (value && userToEject) {
+			await profileService.blacklistProfile(side.id, userToEject?.id, true);
 			window.location.reload();
 		} else {
 			setUserToEject(undefined);
 			setConfirmationModalOpen(false);
 		}
+	};
+
+	const removeFromBlacklist = async (user: any) => {
+		await profileService.blacklistProfile(side.id, user.id, false);
+		window.location.reload();
 	};
 
 	const handleSaveRole = async () => {};
@@ -71,33 +76,37 @@ export default function MemberListItem({ side, user }: { side: Side; user: Profi
 				</span>
 			</div>
 			<div>
-				{connectedUserIsCreator ? (
-					!isCreator && (
-						<>
-							<CustomSelect
-								options={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
-								values={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
-								// valueToSet={user.get("role").get("name")}
-								valueToSet={getRole(user['role'])}
-								onChange={handleRoleChange}
-							/>
-							<i
-								className="fa-solid fa-check ml-4 pointer"
-								onClick={handleSaveRole}
-								title="Save new role"
-							></i>
-							<i className="fa-solid fa-trash ml-4" title="Delete user"></i>
-						</>
-					)
+				{false ? (
+					<>
+						<CustomSelect
+							options={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
+							values={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
+							// valueToSet={user.get("role").get("name")}
+							valueToSet={getRole(user['role'])}
+							onChange={handleRoleChange}
+						/>
+						{/* <i
+							className="fa-solid fa-check ml-4 pointer"
+							onClick={handleSaveRole}
+							title="Save new role"
+						></i>
+						<i className="fa-solid fa-trash ml-4" title="Delete user"></i> */}
+					</>
 				) : (
 					<span className={getRoleColor(getRole(user['role']))}>{getRole(user['role'])}</span>
 				)}
 			</div>
 			<div className="flex-1 align-center text-center">
 				{getRole(user['role']) !== 'Administrator' ? (
-					<Button classes="eject-btn" width="100%" onClick={() => onClickEject(user)}>
-						<i className="fa-solid fa-right-from-bracket mr-1"></i> Eject
-					</Button>
+					!user['isBlacklisted'] ? (
+						<Button classes="eject-btn" width="100%" onClick={() => onClickEject(user)}>
+							<i className="fa-solid fa-right-from-bracket mr-1"></i> Eject
+						</Button>
+					) : (
+						<Button classes="remove-btn" width="100%" onClick={() => removeFromBlacklist(user)}>
+							<i className="fa-solid fa-right-from-bracket mr-1"></i> Invite
+						</Button>
+					)
 				) : null}
 			</div>
 			{confirmationModalOpen && (
