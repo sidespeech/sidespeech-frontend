@@ -8,6 +8,7 @@ import { markdownToDraft } from 'markdown-draft-js';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { breakpoints, size } from '../../helpers/breakpoints';
+import LinkPreviewComponent from './styled-components/LinkPreview';
 
 interface MessageContentPropTypes {
 	bgColor?: string;
@@ -178,6 +179,28 @@ const CustomGif = (props: CustomGifPropTypes) => {
 	return <Gif gif={gif} hideAttribution noLink width={300} />;
 };
 
+const linkRegex =
+	/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
+
+const linkStrategy = (
+	contentBlock: ContentBlock,
+	callback: (start: number, end: number) => void,
+	contentState: ContentState
+) => {
+	findWithRegex(linkRegex, contentBlock, callback);
+};
+
+const youtubeRegex =
+	/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gi;
+
+const youtubeStrategy = (
+	contentBlock: ContentBlock,
+	callback: (start: number, end: number) => void,
+	contentState: ContentState
+) => {
+	findWithRegex(youtubeRegex, contentBlock, callback);
+};
+
 const emojiRegex = /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu;
 
 const emojiStrategy = (
@@ -201,6 +224,14 @@ const compositeDecorators = [
 	{
 		strategy: emojiStrategy,
 		component: (props?: any | undefined) => <span className="emoji-item">{props.children}</span>
+	},
+	{
+		strategy: youtubeStrategy,
+		component: (props?: any | undefined) => <LinkPreviewComponent url={props?.decoratedText} youtube />
+	},
+	{
+		strategy: linkStrategy,
+		component: (props?: any | undefined) => <LinkPreviewComponent url={props?.decoratedText} />
 	}
 ];
 
