@@ -155,7 +155,7 @@ export default function UserSides() {
 						});
 					});
 				}
-				if (currentSide && sideFounded!['id'] !== currentSide['id']) {
+				if (currentSide && sideFounded && sideFounded!['id'] !== currentSide['id']) {
 					const number = dots_object[sideFounded!['id']] || 0;
 					dots_object[sideFounded!['id']] = number + 1;
 				}

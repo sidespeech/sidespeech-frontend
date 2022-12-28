@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
 // Redux
-import { connect, fetchUserDatas } from './redux/Slices/UserDataSlice';
+import { addProfileToSide, connect, fetchUserDatas, updateProfiles } from './redux/Slices/UserDataSlice';
 
 // API's
 import userService from './services/api-services/user.service';
@@ -24,9 +24,12 @@ import { RootState } from './redux/store/app.store';
 import Spinner from './components/ui-components/Spinner';
 import useWalletAddress from './hooks/useWalletAddress';
 import SideEligibilityModal from './components/Modals/SideEligibilityModal';
-import { setEligibilityOpen, setLeaveSideOpen } from './redux/Slices/AppDatasSlice';
+import { setEligibilityOpen, setLeaveSideOpen, updateCurrentSideProfile } from './redux/Slices/AppDatasSlice';
 import useIsSideAdmin from './hooks/useIsSideAdmin';
 import LeaveSideConfirmationModal from './components/Modals/LeaveSideConfirmationModal';
+import { subscribeToEvent, unSubscribeToEvent } from './helpers/CustomEvent';
+import { EventType } from './constants/EventType';
+import { Profile } from './models/Profile';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -67,6 +70,20 @@ function App() {
 			if (newSideDraft) sessionStorage.removeItem('create-side-data');
 		}
 	}, [location]);
+
+	const handleNewProfile = ({ detail }: { detail: Profile }) => {
+		if (detail.user.id !== userData.user?.id) {
+			dispatch(addProfileToSide(detail));
+			dispatch(updateCurrentSideProfile(detail));
+		}
+	};
+
+	useEffect(() => {
+		subscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
+		return () => {
+			unSubscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
+		};
+	}, [userData.sides]);
 
 	useEffect(() => {
 		if (!onboarding && !fetchingUser) {

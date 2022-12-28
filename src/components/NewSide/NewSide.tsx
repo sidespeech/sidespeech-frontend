@@ -32,6 +32,7 @@ import Spinner from '../ui-components/Spinner';
 import useGetCollections from '../../hooks/useGetCollections';
 import { v4 } from 'uuid';
 import update from 'immutability-helper';
+import websocketService from '../../services/websocket-services/websocket.service';
 
 const NewSideStyled = styled.div`
 	width: 100%;
@@ -737,6 +738,7 @@ export default function NewSide() {
 					data['creatorAddress'] = user.accounts;
 					data['required'] = !onlyOneRequired;
 					const newSide = await sideService.createFullSide(data, channels, userInvited);
+					websocketService.addRoomToUsers(newSide.id, [newSide.profiles[0].id]);
 					// Save side entity ** end
 
 					dispatch(updateSidesByUserCollections(null));

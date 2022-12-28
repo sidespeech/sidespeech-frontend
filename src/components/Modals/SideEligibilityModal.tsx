@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { checkUserEligibility, isColor } from '../../helpers/utilities';
-import { Role } from '../../models/Profile';
+import { Profile, Role } from '../../models/Profile';
 import { Side, SideStatus } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
 import Button from '../ui-components/Button';
@@ -20,6 +20,9 @@ import profileService from '../../services/api-services/profile.service';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import { setLeaveSideOpen } from '../../redux/Slices/AppDatasSlice';
 import useSideEligibility from '../../hooks/useSideEligibility';
+import websocketService from '../../services/websocket-services/websocket.service';
+import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
+import { EventType } from '../../constants/EventType';
 
 const eligibilityTexts = {
 	success: {
@@ -131,13 +134,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 				await invitationService.sendRequestPrivateSide(object);
 				setIsLoading(false);
 			} else {
-				const profile = await profileService.joinSide(user.id, props.selectedSide.id, Role.User);
-				props.setDisplayEligibility?.(false);
-				dispatch(updateProfiles(profile));
-				dispatch(addUserParsedSide(props.selectedSide));
-				toast.success('Great! You join the side', { toastId: 26 });
-				navigate('/side/' + props.selectedSide.name);
-				setIsLoading(false);
+				websocketService.joinSide(user.id, props.selectedSide.id, Role.User);
 			}
 		} catch (error: any) {
 			if (error.statusCode === '403') {
@@ -153,6 +150,24 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 			setIsLoading(false);
 		}
 	};
+
+	const handleNewProfile = ({ detail }: { detail: Profile }) => {
+		if (detail.user.id === user?.id) {
+			props.setDisplayEligibility?.(false);
+			dispatch(updateProfiles(new Profile(detail)));
+			dispatch(addUserParsedSide(props.selectedSide));
+			toast.success('Great! You join the side', { toastId: 26 });
+			navigate('/side/' + props.selectedSide.name);
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		subscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
+		return () => {
+			unSubscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
+		};
+	}, [user]);
 
 	useEffect(() => {
 		async function updateSide() {

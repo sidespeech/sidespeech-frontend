@@ -17,6 +17,7 @@ import sideService, { getSidesMetadata } from '../../services/api-services/side.
 import _ from 'lodash';
 import openseaService from '../../services/web3-services/opensea.service';
 import { saveOpenseaData } from '../../hooks/useOpenseaData';
+import update from 'immutability-helper';
 
 export interface UserData {
 	user: User | null;
@@ -163,7 +164,7 @@ export const userDataSlice = createSlice({
 				: [];
 			state.redirectTo = action.payload.redirectTo;
 
-			rooms = rooms?.concat(flattenChannels(state.sides, 'channels'));
+			rooms = rooms?.concat([...flattenChannels(state.sides, 'channels'), ...state.sides.map(s => s.id)]);
 
 			websocketService.login(state.user, rooms);
 		},
@@ -227,6 +228,12 @@ export const userDataSlice = createSlice({
 				const rooms = state.currentProfile.rooms;
 				state.currentProfile.rooms = [...rooms, action.payload];
 			}
+		},
+		addProfileToSide: (state: UserData, action: PayloadAction<Profile>) => {
+			const index = state.sides.findIndex(s => s.id === action.payload.id);
+			if (index !== -1) {
+				state.sides = update(state.sides, { [index]: { profiles: { $push: [action.payload] } } });
+			}
 		}
 	},
 	extraReducers: builder => {
@@ -264,7 +271,8 @@ export const {
 	setCurrentProfile,
 	updateCurrentProfile,
 	addRoomToProfile,
-	updateProfiles
+	updateProfiles,
+	addProfileToSide
 } = userDataSlice.actions;
 
 export default userDataSlice.reducer;

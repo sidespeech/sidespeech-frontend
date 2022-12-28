@@ -14,7 +14,9 @@ class WebSocketService {
 	}
 	connectToWebSocket() {
 		if (this.socket !== null || !WEBSOCKET_URL) return;
-		this.socket = io(WEBSOCKET_URL + '/');
+		const token = localStorage.getItem('jwtToken');
+		if (!token) return;
+		this.socket = io(WEBSOCKET_URL + '/', { auth: { authorization: 'Bearer ' + token } });
 		this.socket.on('connect', () => {
 			console.log('connected');
 		});
@@ -37,6 +39,9 @@ class WebSocketService {
 		});
 		this.socket.on('newComment', async data => {
 			trigger(EventType.RECEIVE_COMMENT, data);
+		});
+		this.socket.on('newProfile', async data => {
+			trigger(EventType.NEW_PROFILE, data);
 		});
 	}
 
@@ -76,6 +81,13 @@ class WebSocketService {
 		this.socket?.emit('addRoomToUsers', {
 			roomId,
 			profiles
+		});
+	}
+	joinSide(userId: string, sideId: string, role: number) {
+		this.socket?.emit('joinSide', {
+			userId,
+			sideId,
+			role
 		});
 	}
 

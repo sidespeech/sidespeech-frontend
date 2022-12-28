@@ -6,5 +6,6 @@ export enum EventType {
   RECEIVE_DISCONNECT = "disconnect",
   ADDED_ROOM = "added_room",
   UPDATE_USER_SIDES = "update_user_sides",
-  ADDED_POLL = 'added_poll'
+  ADDED_POLL = 'added_poll',
+  NEW_PROFILE = 'new_profile',
 }
