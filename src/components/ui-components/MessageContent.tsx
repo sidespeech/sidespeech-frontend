@@ -59,6 +59,9 @@ const MessageContentStyled = styled.div`
 		max-width: calc(100vw - 26rem);
 	}`
 	)}
+	& .link-preview {
+		margin: 1rem 0;
+	}
 	& .input-content-wrapper {
 		width: 100%;
 		padding: 0 1rem;
@@ -227,11 +230,15 @@ const compositeDecorators = [
 	},
 	{
 		strategy: youtubeStrategy,
-		component: (props?: any | undefined) => <LinkPreviewComponent url={props?.decoratedText} youtube />
+		component: (props?: any | undefined) => (
+			<LinkPreviewComponent className="link-preview" url={props?.decoratedText} youtube />
+		)
 	},
 	{
 		strategy: linkStrategy,
-		component: (props?: any | undefined) => <LinkPreviewComponent url={props?.decoratedText} />
+		component: (props?: any | undefined) => (
+			<LinkPreviewComponent className="link-preview" url={props?.decoratedText} />
+		)
 	}
 ];
 
