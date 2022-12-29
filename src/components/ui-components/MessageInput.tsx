@@ -2,7 +2,7 @@ import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { Editor } from 'react-draft-wysiwyg';
-import Draft, { convertToRaw, EditorState, Modifier } from 'draft-js';
+import Draft, { ContentBlock, ContentState, convertToRaw, EditorState, Modifier } from 'draft-js';
 import { draftToMarkdown } from 'markdown-draft-js';
 
 import boldIcon from '../../assets/bold.svg';
@@ -304,6 +304,37 @@ interface ImageToUpload {
 	url?: string;
 }
 
+const linkRegex =
+	/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
+
+const linkStrategy = (
+	contentBlock: ContentBlock,
+	callback: (start: number, end: number) => void,
+	contentState: ContentState
+) => {
+	findWithRegex(linkRegex, contentBlock, callback);
+};
+
+function findWithRegex(regex: RegExp, contentBlock: ContentBlock, callback: (start: number, end: number) => void) {
+	const text = contentBlock.getText();
+	let matchArr, start;
+	while ((matchArr = regex.exec(text)) !== null) {
+		start = matchArr.index;
+		callback(start, start + matchArr[0].length);
+	}
+}
+
+const compositeDecorators = [
+	{
+		strategy: linkStrategy,
+		component: (props?: any | undefined) => (
+			<a href={props?.children} target="_blank" rel="noreferrer">
+				{props?.children}
+			</a>
+		)
+	}
+];
+
 const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Editor> | null) => {
 	const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
 	const [isEmojiMenuOpen, setIsEmojiMenuOpen] = useState<boolean>(false);
@@ -428,6 +459,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 					bgColor={props.bgColor}
 					border={props.border}
 					color={props.color}
+					customDecorators={compositeDecorators}
 					disabled={props.disabled}
 					editorClassName="message-input-editor"
 					editorState={editorState}
