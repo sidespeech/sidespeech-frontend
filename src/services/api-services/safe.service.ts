@@ -24,8 +24,8 @@ class SafeService extends BaseApiService {
   }
 
 
-  
-  async createSafe(signer: ethers.providers.JsonRpcSigner, ownerAddress:string, sideId:string, profileId:string) {
+
+  async createSafe(signer: ethers.providers.JsonRpcSigner, ownerAddress: string, sideId: string, profileId: string) {
     const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer });
 
     // const chainId = await ethAdapter.getChainId();    
@@ -56,40 +56,40 @@ class SafeService extends BaseApiService {
     const owners = [ownerAddress]
     const threshold = 1
     const safeAccountConfig: SafeAccountConfig = {
-        owners,
-        threshold,
+      owners,
+      threshold,
     }
     const safeSdk: Safe = await safeFactory.deploySafe({ safeAccountConfig, callback })
     const newSafeAddress = safeSdk.getAddress();
     const safe = await this.savednewSafe({
-        contractAddress : newSafeAddress,
-        threshold: threshold,
-        sideId : sideId,
-        profileId : profileId
+      contractAddress: newSafeAddress,
+      threshold: threshold,
+      sideId: sideId,
+      profileId: profileId
     });
     console.log('safe created :', safe);
   }
 
-  async connectToExistingSafe(signer: ethers.providers.JsonRpcSigner, safeAddress:string) {
+  async connectToExistingSafe(signer: ethers.providers.JsonRpcSigner, safeAddress: string) {
     const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer });
-    const safeSdk = await Safe.create({ ethAdapter, safeAddress});
+    const safeSdk = await Safe.create({ ethAdapter, safeAddress });
     console.log('safeSdk :', safeSdk);
     console.log('safeSdk.getAddress() :', safeSdk.getAddress());
     return safeSdk
   }
 
-  async createSafeTransaction(safeSdk:Safe, signer: ethers.providers.JsonRpcSigner, to_address:string, value:string) {
+  async createSafeTransaction(safeSdk: Safe, signer: ethers.providers.JsonRpcSigner, to_address: string, value: string) {
 
     const contractInterface = new ethers.utils.Interface(ABI);
 
     const data = contractInterface.encodeFunctionData('transfer', [
-        to_address,
-        ethers.utils.parseUnits(value,"ether").toString()
+      to_address,
+      ethers.utils.parseUnits(value, "ether").toString()
     ]);
 
     const safeTransactionData: SafeTransactionDataPartial = {
       to: to_address,
-      value: ethers.utils.parseUnits(value,"ether").toString(),
+      value: ethers.utils.parseUnits(value, "ether").toString(),
       data: data,
       gasPrice: 28000,
       baseGas: 28000,
@@ -104,24 +104,73 @@ class SafeService extends BaseApiService {
     console.log('executeTxResponse :', executeTxResponse);
   }
 
-  async buySafeNft(safeSdk:Safe, signer: ethers.providers.JsonRpcSigner, nft_address:string, value:string) {
+  async buySafeNft(safeSdk: Safe, signer: ethers.providers.JsonRpcSigner, nft_address: string, value: string) {
 
-    // const contract = new ethers.Contract(nft_address, ABI, signer);
-    // console.log('contract :', contract)
+    const contractInterface = new ethers.utils.Interface(OPENSEA_ABI);
 
-    
+    // const data = contractInterface.encodeFunctionData('fulfillBasicOrder', [
+    //     to_address,
+    //     ethers.utils.parseUnits(value,"ether").toString()
+    // ]);
+
+    // safeSdk.executeTransaction(
+    //   OPENSEA_ADDRESS,
+    //   0,
+
+    // )
+
+    // const safeTransactionData: SafeTransactionDataPartial = {
+    //   to: OPENSEA_ADDRESS,
+    //   value: ethers.utils.parseUnits(value,"ether").toString(),
+    //   data: data,
+    //   gasPrice: 28000,
+    //   baseGas: 28000,
+    //   safeTxGas: 28000,
+    // }
+
+
   }
-  
-  async createRegularTransaction(signer: ethers.providers.JsonRpcSigner, to_address:string, value:string) {
+
+  async createRegularTransaction(signer: ethers.providers.JsonRpcSigner, to_address: string, value: string) {
 
     const transaction = {
       to: to_address,
       value: ethers.utils.parseEther(value),
-  };
+    };
+
+    // Now we can sign and send the transaction using the Signer
+    const executeTxResponse = await signer.sendTransaction(transaction);
+    console.log('executeTxResponse :', executeTxResponse);
+
+  }
+
+  async getAllTransactions(address: string, provider: ethers.providers.Web3Provider) {
+    // Get all logs from the contract
+    const logs = await provider.getLogs({
+      address: address,
+      fromBlock: 0,
+      toBlock: 'latest',
+    });
+
+    // Start with an empty array of transactions
+    const transactions: ethers.Transaction[] = [];
+
+    // Iterate over the logs
+    for (const log of logs) {
+      // Get the transaction details
+      const transaction = await provider.getTransaction(log.transactionHash);
+      // Add the transaction to the array
+      transactions.push(transaction);
+    }
+
+    return transactions
+  }
   
-  // Now we can sign and send the transaction using the Signer
-  const executeTxResponse = await signer.sendTransaction(transaction);
-  console.log('executeTxResponse :', executeTxResponse);
+  async payOutMembers(safeSdk: Safe, provider: ethers.providers.Web3Provider) {
+    let transactions = await this.getAllTransactions(safeSdk.getAddress(), provider);
+
+    console.log('transactions :', transactions)
+
 
   }
 

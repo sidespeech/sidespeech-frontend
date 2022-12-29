@@ -34,7 +34,7 @@ export default function GnosisSafe() {
 
     const { userCollectionsData, user } = useSelector((state: RootState) => state.user);
 
-    async function getSigner() {
+    async function ethersProvider() {
         // This is the all of the providers that are needed...
         // See the thing is that 
         // prolble is the nft doens't gets transferred to your address
@@ -61,6 +61,10 @@ export default function GnosisSafe() {
 
         // Set the provider.
         const library = new ethers.providers.Web3Provider(provider);
+        return library
+    }
+
+    async function getSigner(library: ethers.providers.Web3Provider) {
 
         // Grab the accounts.
         const accounts = await library.listAccounts();
@@ -96,23 +100,24 @@ export default function GnosisSafe() {
                 return false;
             }
             console.log('signature :', signature)
-            return signer            
+            return signer
         }
     }
 
     async function createSafe() {
-        const signer = await getSigner();
+        const provider = await ethersProvider();
+        const signer = await getSigner(provider);
         if (signer)
             await safeService.createSafe(signer, '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A', "55a57b3c-a207-4e76-befa-513274d3e2b8", "ec0d6ee8-482a-4fd7-8793-033684a3d76b")
 
     }
 
 
-    async function linkSafeToProfile(user:any) {
+    async function linkSafeToProfile(user: any) {
         const profile = await profileService.linkSafeProfile({
-            safeId : "945abc4d-0016-45eb-b560-103f4e15b87f",
+            safeId: "945abc4d-0016-45eb-b560-103f4e15b87f",
             profileId: 'ec0d6ee8-482a-4fd7-8793-033684a3d76b',
-            sideId : user!['profiles'][0]['side']['id'],
+            sideId: user!['profiles'][0]['side']['id'],
             safeRole: safeRole.unsigned
         });
         console.log("profile :", profile);
@@ -121,13 +126,13 @@ export default function GnosisSafe() {
 
     async function getAllCategoriesAndCreateProposal() {
         const categories = await categoryProposalService.getAllCategories();
-        let example = categories.find((item:any) => item['name'] === "Open funding round");
+        let example = categories.find((item: any) => item['name'] === "Open funding round");
         const proposal = await createProposal({
-            categoryId : example['id'],
-            safeId : "2ea3f5d9-81c2-48d0-9d50-36aedd84e4a6",
+            categoryId: example['id'],
+            safeId: "2ea3f5d9-81c2-48d0-9d50-36aedd84e4a6",
             status: Status.Open,
             details: {
-                currency : 'ETH',
+                currency: 'ETH',
                 start_date: moment(Date.now()).format('DD-MM-YYYY HH:mm:ss'),
                 end_date: moment(Date.now()).add(1, 'days').format('DD-MM-YYYY HH:mm:ss'),
             }
@@ -135,7 +140,7 @@ export default function GnosisSafe() {
     }
 
 
-    async function createProposal(data:Proposal) {
+    async function createProposal(data: Proposal) {
         const proposal = await proposalService.saveProposal(data);
         return proposal
     }
@@ -143,20 +148,26 @@ export default function GnosisSafe() {
 
     async function connectToSafe() {
         const safeAddress = "0x4924F203F0B9a4A9a24F2fb4F741c0EEbDd44b80"
-        const signer = await getSigner();
-
+        const provider = await ethersProvider();
+        const signer = await getSigner(provider);
 
         const nftAddress = "0x9e339352232149ce1957af39596445ce9d4f59a6"
 
         const to_address = '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A';
         const value_to_transfers = '0.05'
-        if (signer){
-            // const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
-            // await safeService.createSafeTransaction(safeSdk, signer, to_address, value_to_transfers)
-            await safeService.createRegularTransaction(signer, safeAddress, value_to_transfers);
+        // if (signer) {
+        //     // const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
+        //     // await safeService.createSafeTransaction(safeSdk, signer, to_address, value_to_transfers)
+        //     // await safeService.createRegularTransaction(signer, safeAddress, value_to_transfers);
+        // }
+
+        if (provider && signer) {
+            const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
+            await safeService.payOutMembers(safeSdk, provider)
         }
+
     }
-    
+
     useEffect(() => {
         if (user) {
 
