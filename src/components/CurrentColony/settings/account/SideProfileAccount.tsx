@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCurrentProfile, UserData } from '../../../../redux/Slices/UserDataSlice';
+import { removeSide, updateCurrentProfile, UserData } from '../../../../redux/Slices/UserDataSlice';
 import { RootState } from '../../../../redux/store/app.store';
 import styled from 'styled-components';
 import { NFT } from '../../../../models/interfaces/nft';
@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
 import Button from '../../../ui-components/Button';
 import profileService from '../../../../services/api-services/profile.service';
+import { useNavigate } from 'react-router-dom';
 
 const SideProfileAccountStyled = styled.div`
 	// position: relative;
@@ -102,14 +103,19 @@ const initialStateUser = {
 
 export default function SideProfileAccount({ currentSide, userData }: { currentSide: Side; userData: UserData }) {
 	const { currentProfile } = useSelector((state: RootState) => state.user);
+	const navigate = useNavigate();
 
 	const [formData, setFormData] = useState<InitialStateUser>(initialStateUser);
+
+	const [initialData, setInitialData] = useState<InitialStateUser>(initialStateUser);
 
 	const [filteredUserCollections, setFilteredUserCollections] = useState<Collection[]>([]);
 
 	const [displayNftsCollection, setDisplayNftsCollection] = useState<boolean>(false);
 
 	const dispatch = useDispatch();
+
+	const areThereChanges = JSON.stringify(initialData) !== JSON.stringify(formData);
 
 	useEffect(() => {
 		if (userData.userCollectionsData && userData.user) {
@@ -122,6 +128,11 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 	useEffect(() => {
 		if (currentProfile?.profilePicture) {
 			setFormData({
+				...formData,
+				avatar: currentProfile.profilePicture,
+				showNfts: currentProfile.showNfts
+			});
+			setInitialData({
 				...formData,
 				avatar: currentProfile.profilePicture,
 				showNfts: currentProfile.showNfts
@@ -152,7 +163,8 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 				const res = await profileService.leaveSide(userData['currentProfile']);
 				if (res['error']) toast.error(res['message']);
 				else {
-					window.location.reload();
+					navigate('/');
+					dispatch(removeSide(userData['currentProfile'].side.id));
 					toast.success(res['message']);
 				}
 			}
@@ -183,6 +195,7 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 					sideSettingsPage
 					userCollectionsData={userData.userCollectionsData}
 					leaveSide={leaveSide}
+					areThereChanges={areThereChanges}
 				/>
 			</div>
 			{displayNftsCollection &&

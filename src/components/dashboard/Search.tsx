@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -8,7 +8,6 @@ import useDebounceValue from '../../hooks/useDebounceValue';
 import { Collection, OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { Side } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
-import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import Button from '../ui-components/Button';
 import CustomCheckbox from '../ui-components/CustomCheckbox';
 import CustomSelect from '../ui-components/CustomSelect';
@@ -19,8 +18,17 @@ import SideCardItem from './shared-components/SideCardItem';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg';
 import sideService from '../../services/api-services/side.service';
+import { Role } from '../../models/Profile';
+import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
+import Dropdown from '../ui-components/Dropdown';
+import check from '../../assets/check_circle.svg';
+import CollectionsDropdown from '../ui-components/CollectionsDropdown';
 
 interface SearchStyledProps {}
+
+const Thumbnail = styled.img`
+	border-radius: 15px;
+`;
 
 const SearchStyled = styled.main<SearchStyledProps>`
 	.title_wrapper {
@@ -52,6 +60,7 @@ const SearchStyled = styled.main<SearchStyledProps>`
 		gap: 1rem;
 		transform: scaleY(0);
 		position: absolute;
+		z-index: 10;
 		${breakpoints(
 			size.md,
 			`{
@@ -178,17 +187,33 @@ const paginationInitialState = {
 	pageSize: 9
 };
 
+function collectionFilterByName(c: Collection, filter: string) {
+	const lowerCaseName = c.name?.toLowerCase() || '';
+	const lowerCaseFilter = filter.toLowerCase();
+	return (
+		lowerCaseName.includes(lowerCaseFilter) ||
+		lowerCaseName.replaceAll(' ', '').includes(lowerCaseFilter.replaceAll(' ', ''))
+	);
+}
+
+function collectionFilterByVerified(c: Collection, filter: boolean) {
+	if (!filter) return true;
+	return c.safelistRequestStatus === OpenSeaRequestStatus.verified;
+}
+
 const Search = ({ collections, searchFilters, searchText, setSearchFilters }: SearchProps) => {
-	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
 	const [filteredSides, setFilteredSides] = useState<Side[]>([]);
 	const [isFiltersShowing, setIsFiltersShowing] = useState<boolean>(false);
 	const [pagination, setPagination] = useState<paginationProps>(paginationInitialState);
-	const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 	const [sidesList, setSidesList] = useState<Side[]>([]);
 	const [sidesLoading, setSidesLoading] = useState<boolean>(false);
+	const [numberOfPages, setNumberOfPages] = useState<number>(0);
 	const [totalResults, setTotalResults] = useState<number>(0);
 
+	const [selectedCollection, setSelectedCollection] = useState<Collection | undefined>(undefined);
+
 	const { sides, user, userCollectionsData } = useSelector((state: RootState) => state.user);
+	const dispatch = useDispatch();
 
 	const _searchText = useDebounceValue(searchText);
 
@@ -209,7 +234,7 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 		} catch (error) {
 			console.error(error);
 			toast.error('Ooops! Something went wrong fetching your Sides', {
-				toastId: getRandomId()
+				toastId: 36
 			});
 		} finally {
 			setSidesLoading(false);
@@ -233,24 +258,35 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 			);
 		}
 		setTotalResults(parsedArray.length);
-		const { array } = paginateArray({
+		const { array, pages } = paginateArray({
 			array: parsedArray,
 			currentPage: pagination.currentPage,
 			pageSize: pagination.pageSize
 		});
 		setSidesList(array);
+		setNumberOfPages(pages);
+		const selectedCollection = collections.find(c => c.address === searchFilters.collections);
+		setSelectedCollection(selectedCollection);
 	}, [filteredSides, pagination, searchFilters]);
 
 	const handleEligibilityCheck = (side: Side) => {
-		setSelectedSide(side);
-		setDisplayEligibility(true);
+		dispatch(setEligibilityOpen({ open: true, side: side }));
 	};
 
+	const handleOnChange = (address: string) => {
+		setSearchFilters(prevState => ({
+			...prevState,
+			collections: address,
+			selectedCollection: ''
+		}));
+		const selectedCollection = collections.find(c => c.address === address);
+		setSelectedCollection(selectedCollection);
+	};
 	return (
 		<SearchStyled className="fade-in">
 			<div className="title_wrapper">
 				<h2 className="title">
-					{totalResults} Sides found for "{searchText || searchFilters.selectedCollection || ''}"
+					{totalResults} Sides found for "{searchText || selectedCollection?.getName() || 'All'}"
 				</h2>
 
 				<button onClick={() => setIsFiltersShowing(prevState => !prevState)} className="filters-btn">
@@ -266,20 +302,14 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 			<div className={`search-toolbar ${isFiltersShowing ? 'filters-showing' : ''}`}>
 				<div className="collection-select">
 					<label>Collection</label>
-					<CustomSelect
-						arrowPosition={{ right: '-8px' }}
-						onChange={(ev: any) =>
-							setSearchFilters(prevState => ({
-								...prevState,
-								collections: ev.target.value,
-								selectedCollection: ''
-							}))
-						}
-						options={['All', ...collections.map(collection => collection.name)]}
-						placeholder="Select a collection"
-						valueToSet={searchFilters.collections?.split(',')[0] || ''}
-						values={['all', ...collections.map(collection => collection.address)]}
-						width="70%"
+					<CollectionsDropdown
+						style={{ zIndex: 10 }}
+						selectedCollection={selectedCollection}
+						collections={collections}
+						userCollectionsData={userCollectionsData}
+						onChange={handleOnChange}
+						defaultValue={'All'}
+						allValue={'All'}
 					/>
 				</div>
 
@@ -371,22 +401,8 @@ const Search = ({ collections, searchFilters, searchText, setSearchFilters }: Se
 						currentPage: page
 					}));
 				}}
-				totalPages={
-					paginateArray({
-						array: sidesList,
-						currentPage: pagination.currentPage,
-						pageSize: pagination.pageSize
-					}).pages
-				}
+				totalPages={numberOfPages}
 			/>
-
-			{displayEligibility && selectedSide && (
-				<SideEligibilityModal
-					setDisplayLeaveSide={() => {}}
-					setDisplayEligibility={setDisplayEligibility}
-					selectedSide={selectedSide}
-				/>
-			)}
 		</SearchStyled>
 	);
 };

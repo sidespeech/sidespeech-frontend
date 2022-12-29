@@ -37,7 +37,7 @@ export class Side {
 	required: boolean;
 
 	constructor(_data: any) {
-		this.channels = _data.channels;
+		this.channels = _data.channels ? _data.channels : [];
 		this.collections = _data.collections;
 		this.collectionsCount = 0;
 		// this.conditions = _data.conditions ? (_data.conditions instanceof String ? JSON.parse(_data.conditions) : _data.conditions) : {};
@@ -67,5 +67,9 @@ export class Side {
 			? _data.collectionSides.map((cs: any) => new CollectionSides(cs))
 			: [];
 		this.required = _data.required;
+	}
+
+	getActiveProfiles(): Profile[] {
+		return this.profiles.filter(p => !p.isBlacklisted);
 	}
 }

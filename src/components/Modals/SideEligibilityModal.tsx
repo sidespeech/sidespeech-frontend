@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { checkUserEligibility, isColor } from '../../helpers/utilities';
-import { Role } from '../../models/Profile';
+import { Profile, Role } from '../../models/Profile';
 import { Side, SideStatus } from '../../models/Side';
 import { RootState } from '../../redux/store/app.store';
 import Button from '../ui-components/Button';
@@ -18,6 +18,11 @@ import invitationService from '../../services/api-services/invitation.service';
 import sideService from '../../services/api-services/side.service';
 import profileService from '../../services/api-services/profile.service';
 import { breakpoints, size } from '../../helpers/breakpoints';
+import { setLeaveSideOpen } from '../../redux/Slices/AppDatasSlice';
+import useSideEligibility from '../../hooks/useSideEligibility';
+import websocketService from '../../services/websocket-services/websocket.service';
+import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
+import { EventType } from '../../constants/EventType';
 
 const eligibilityTexts = {
 	success: {
@@ -97,8 +102,7 @@ const FooterStyled = styled.div`
 
 interface ISideEligibilityModalProps {
 	selectedSide: Side;
-	setDisplayEligibility: React.Dispatch<React.SetStateAction<boolean>>;
-	setDisplayLeaveSide: React.Dispatch<React.SetStateAction<boolean>>;
+	setDisplayEligibility: (value: boolean) => void;
 	isSideAdmin?: boolean;
 	setSelectedSide?: React.Dispatch<React.SetStateAction<Side | null>>;
 }
@@ -109,9 +113,9 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 
 	const { userCollectionsData, user } = useSelector((state: RootState) => state.user);
 
-	const [isEligible, setIsEligible] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [details, setDetails] = useState<any>({});
+
+	const [isEligible, details] = useSideEligibility(props.selectedSide);
 
 	const handleJoinSide = async () => {
 		if (!user) return;
@@ -130,13 +134,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 				await invitationService.sendRequestPrivateSide(object);
 				setIsLoading(false);
 			} else {
-				const profile = await profileService.joinSide(user.id, props.selectedSide.id, Role.User);
-				props.setDisplayEligibility?.(false);
-				dispatch(updateProfiles(profile));
-				dispatch(addUserParsedSide(props.selectedSide));
-				toast.success('Great! You join the side', { toastId: 26 });
-				navigate('/side/' + props.selectedSide.name);
-				setIsLoading(false);
+				websocketService.joinSide(user.id, props.selectedSide.id, Role.User);
 			}
 		} catch (error: any) {
 			if (error.statusCode === '403') {
@@ -153,19 +151,29 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 		}
 	};
 
-	useEffect(() => {
-		if (userCollectionsData) {
-			const [res, isEligible] = checkUserEligibility(userCollectionsData, props.selectedSide);
-			setIsEligible(isEligible);
-			setDetails(res);
+	const handleNewProfile = ({ detail }: { detail: Profile }) => {
+		if (detail.user.id === user?.id) {
+			props.setDisplayEligibility?.(false);
+			dispatch(updateProfiles(new Profile(detail)));
+			dispatch(addUserParsedSide(props.selectedSide));
+			toast.success('Great! You join the side', { toastId: 26 });
+			navigate('/side/' + props.selectedSide.name);
+			setIsLoading(false);
 		}
-	}, [userCollectionsData]);
+	};
+
+	useEffect(() => {
+		subscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
+		return () => {
+			unSubscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
+		};
+	}, [user]);
 
 	useEffect(() => {
 		async function updateSide() {
 			const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
 			props.setDisplayEligibility(false);
-			navigate('side/' + side.name);
+			navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
 		}
 		if (isEligible && props.selectedSide.status === SideStatus.inactive && props.isSideAdmin) {
 			updateSide();
@@ -234,7 +242,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 							)}
 						</EligibilityResult>
 						<div className="conditions-wrapper">
-							<Eligibility side={props.selectedSide} />
+							<Eligibility side={props.selectedSide} details={details} />
 						</div>
 					</SideEligibilityModalStyled>
 				) : (
@@ -271,7 +279,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 									background={'var(--disable)'}
 									children={'Choose a sub-admin'}
 									onClick={() => {
-										props.setDisplayLeaveSide(true);
+										dispatch(setLeaveSideOpen({ open: true, side: props.selectedSide }));
 										props.setDisplayEligibility(false);
 									}}
 								/>

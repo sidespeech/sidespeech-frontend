@@ -9,6 +9,7 @@ import { hasTraitInCollection, hasTraitValueInCollection } from '../../../helper
 import CustomInputNumber from '../../ui-components/InputNumber';
 import { breakpoints, size } from '../../../helpers/breakpoints';
 import { UserCollectionsData } from '../../../models/interfaces/UserCollectionsData';
+import CollectionsDropdown from '../../ui-components/CollectionsDropdown';
 
 interface IAdmissionProps {
 	divCollections: any[];
@@ -25,7 +26,9 @@ interface IAdmissionProps {
 	setNumberOfNftNeededToDivCollection: any;
 	userCollectionsData: UserCollectionsData;
 }
-interface IRequirementsRadioButtonContainerProps {}
+interface IRequirementsRadioButtonContainerProps {
+	disable?: boolean;
+}
 
 const Chip = styled.span`
 	width: fit-content;
@@ -33,12 +36,10 @@ const Chip = styled.span`
 	background-color: var(--disable);
 	padding: 1px 8px;
 `;
-const Thumbnail = styled.img`
-	border-radius: 15px;
-`;
 const RequirementsRadioButtonContainer = styled.div<IRequirementsRadioButtonContainerProps>`
 	border-radius: 7px;
 	padding: 0.5rem 1rem;
+	${props => props.disable && 'pointer-events: none; opacity: 0.2;'}
 	${breakpoints(
 		size.lg,
 		`{
@@ -182,15 +183,6 @@ const AdmissionStyled = styled.div`
 	}
 `;
 
-function collectionFilterByName(c: Collection, filter: string) {
-	const lowerCaseName = c.name?.toLowerCase() || '';
-	const lowerCaseFilter = filter.toLowerCase();
-	return (
-		lowerCaseName.includes(lowerCaseFilter) ||
-		lowerCaseName.replaceAll(' ', '').includes(lowerCaseFilter.replaceAll(' ', ''))
-	);
-}
-
 function sortByValue(a: any, b: any) {
 	if (a['value'] < b['value']) return -1;
 	if (a['value'] > b['value']) return 1;
@@ -222,43 +214,22 @@ export default function Admission({
 	setNumberOfNftNeededToDivCollection,
 	userCollectionsData
 }: IAdmissionProps) {
-	const dispatch = useDispatch();
-	const [value, setValue] = useState(false);
 	const [filteredCollections, setFilteredCollections] = useState<Collection[]>([]);
-	const [filter, setFilter] = useState<string>('');
 
 	useEffect(() => {
 		const selectedCollections: string[] = divCollections.map((d: any) => d.collection);
-		let filtered = collections.filter(
-			c => !selectedCollections.includes(c.address) && collectionFilterByName(c, filter)
-		);
+		let filtered = collections.filter(c => !selectedCollections.includes(c.address));
 		if (!onlyOneRequired) {
 			filtered = filtered.filter(c => userCollectionsData[c.address]);
 		}
 		setFilteredCollections(filtered);
-	}, [divCollections, filter, onlyOneRequired, collections]);
+	}, [divCollections, onlyOneRequired, collections]);
 
-	const filterDropdownList = (e: any) => {
-		const value = e.target.value;
-		setFilter(value);
-	};
-
-	const CollectionRow = ({ c, fi, userData }: { c: Collection; fi: number; userData: any }) => {
-		return (
-			<span className="flex align-center pl-3" key={fi}>
-				{c.imageUrl ? <Thumbnail width={27} height={27} src={c.imageUrl} alt="thumbnail" /> : null}
-				<span
-					className="ml-2 mr-3"
-					style={{
-						color: userData[c.address] ? 'var(--green)' : 'var(--red)'
-					}}
-				>
-					{c.name}
-				</span>
-				{c.safelistRequestStatus === OpenSeaRequestStatus.verified && <img alt="check" src={check} />}
-			</span>
-		);
-	};
+	useEffect(() => {
+		if (divCollections.length <= 1 && !onlyOneRequired) {
+			setOnlyOneRequired(true);
+		}
+	}, [divCollections, onlyOneRequired]);
 
 	const TraitValueRow = ({ ownedByUser, value }: { ownedByUser: boolean; value: string }) => {
 		return <span className={`${ownedByUser ? 'text-green' : 'text-red'}`}>{value}</span>;
@@ -267,6 +238,10 @@ export default function Admission({
 		let hasValue = hasTraitValueInCollection(collection, trait.toLowerCase(), value.toLowerCase());
 		return <TraitValueRow ownedByUser={hasValue} value={value} key={value} />;
 	}
+
+	const handleOnChange = (address: string, i: number) => {
+		setSideTokenAddress(address, i, filteredCollections);
+	};
 	return (
 		<AdmissionStyled>
 			<div className="left-side">
@@ -285,6 +260,7 @@ export default function Admission({
 					<RequirementsRadioButtonContainer
 						className={onlyOneRequired ? '' : 'active'}
 						onClick={() => setOnlyOneRequired(false)}
+						disable={divCollections.length <= 1}
 					>
 						<div>{!onlyOneRequired && <div></div>}</div>
 						<div>All collections are required</div>
@@ -302,7 +278,7 @@ export default function Admission({
 
 											<button
 												className="reset-btn size-14 text-red"
-												onClick={() => removeDivCollection(current.collection)}
+												onClick={() => removeDivCollection(current.collection, i)}
 											>
 												<i className="fa-regular fa-trash-can mr-2"></i>Remove
 											</button>
@@ -311,47 +287,18 @@ export default function Admission({
 										<div className="f-row collection-name">
 											<div className="f-column mt-3 mb-3">
 												<div className="flex">
-													<Dropdown
+													<CollectionsDropdown
+														collections={filteredCollections}
+														userCollectionsData={userCollectionsData}
+														onChange={(address: string) => handleOnChange(address, i)}
+														defaultValue={'Choose collection'}
 														style={{
 															zIndex: 6 * (divCollections.length - i)
 														}}
-														resultsNumbers={filteredCollections.length}
-														values={
-															filteredCollections.length
-																? [...filteredCollections.map(c => c.address)]
-																: ['']
+														selectedCollection={
+															Object.keys(current['metadata']).length !== 0 &&
+															current['metadata']
 														}
-														defaultValue={
-															Object.keys(current['metadata']).length !== 0 ? (
-																<CollectionRow
-																	userData={userCollectionsData}
-																	c={current['metadata']}
-																	fi={0}
-																/>
-															) : (
-																'Choose collection'
-															)
-														}
-														options={
-															filteredCollections.length
-																? [
-																		...filteredCollections.map((c, fi) => {
-																			return (
-																				<CollectionRow
-																					userData={userCollectionsData}
-																					c={c}
-																					fi={fi}
-																				/>
-																			);
-																		})
-																  ]
-																: ['Choose collection']
-														}
-														onChange={(address: string) => {
-															setFilter('');
-															setSideTokenAddress(address, i, filteredCollections);
-														}}
-														filterDropdownList={filterDropdownList}
 													/>
 													<div className="ml-4">
 														<CustomInputNumber
@@ -589,7 +536,7 @@ export default function Admission({
 					background={'var(--white-transparency-10)'}
 					color={'var(--text)'}
 					onClick={() => {
-						setFilter('');
+						// setFilter('');
 						addDivCollection();
 					}}
 				>
@@ -606,7 +553,7 @@ export default function Admission({
 						return (
 							<>
 								<Chip>{d['numberNeeded'] || 1} NFT</Chip> From the{' '}
-								<Chip>{collections.find(c => c.address === d['collection'])?.name || ''}</Chip>
+								<Chip>{collections.find(c => c.address === d['collection'])?.getName() || ''}</Chip>
 								collection{' '}
 								{d['features'].map((f: any, index: number) => {
 									return (

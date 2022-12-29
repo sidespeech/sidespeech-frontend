@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { cloneDeep } from 'lodash';
 import { InitialStateUpdateSide } from '../../components/CurrentColony/settings/informations/Information';
 import { InitialStateSide } from '../../components/NewSide/NewSide';
 import { BASE_URL } from '../../constants/constants';
@@ -22,6 +22,12 @@ class SideService extends BaseApiService {
 	// get side by name
 	async getSideByName(name: string): Promise<Side> {
 		const res = await this.get(`${BASE_URL}/side/byname/${name}`);
+		return dtoToSide(res.body);
+	}
+
+	// get side by slug
+	async getSideBySlug(name: string): Promise<Side> {
+		const res = await this.get(`${BASE_URL}/side/byslug/${name}`);
 		return dtoToSide(res.body);
 	}
 
@@ -107,6 +113,10 @@ class SideService extends BaseApiService {
 		});
 		return dtoToSideList(res['body']);
 	}
+	async removeSide(sideId: string): Promise<any> {
+		const response = await this.delete(`${BASE_URL}/side/${sideId}`);
+		return response;
+	}
 }
 export default SideService.getInstance();
 
@@ -119,25 +129,16 @@ export async function getSidesMetadata(sides: any[], userCollectionsData?: any, 
 				const conditions = Object.keys(side.conditions);
 				conditions.pop();
 				const count = side.collectionSides.length;
-				let parsedSide = {
-					...side,
-					firstCollection,
-					collectionsCount: count
-				};
+				let parsedSide = side;
+				parsedSide.firstCollection = firstCollection;
+				parsedSide.collectionsCount = count;
 				if (!_.isEmpty(userCollectionsData)) {
 					// eslint-disable-next-line
 					const [_, eligible] = checkUserEligibility(userCollectionsData, parsedSide);
-					console.log(side.name, eligible, _);
-					parsedSide = {
-						...parsedSide,
-						eligible
-					};
+					parsedSide.eligible = eligible;
 				}
 				if (userSides) {
-					parsedSide = {
-						...parsedSide,
-						joined: !!userSides?.filter(side => side.id === parsedSide.id)?.[0]
-					};
+					parsedSide.joined = !!userSides?.filter(side => side.id === parsedSide.id)?.[0];
 				}
 				return parsedSide;
 			}

@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import defaultPP from '../../../../assets/default-pp.png';
 import { fixURL, getRoleColor, reduceWalletAddress } from '../../../../helpers/utilities';
 import { Profile } from '../../../../models/Profile';
 import { Side } from '../../../../models/Side';
+import { User } from '../../../../models/User';
+import { updateProfileInSide } from '../../../../redux/Slices/AppDatasSlice';
 import profileService from '../../../../services/api-services/profile.service';
+import ConfirmationModal from '../../../Modals/ConfirmationModal';
+import LeaveSideConfirmationModal from '../../../Modals/LeaveSideConfirmationModal';
 import Button from '../../../ui-components/Button';
 import CustomSelect from '../../../ui-components/CustomSelect';
 
-export default function MemberListItem({ side, user }: { side: Side; user: Profile }) {
-	const [isCreator, setIsCreator] = useState<boolean>(false);
-	const [connectedUserIsCreator, setConnectedUserIsCreator] = useState<boolean>(false);
+export default function MemberListItem({ side, user, isAdmin }: { side: Side; user: Profile; isAdmin: boolean }) {
 	const [newRole, setNewRole] = useState('');
+	const [userToEject, setUserToEject] = useState<Profile | undefined>(undefined);
+	const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false);
+
+	const dispatch = useDispatch();
 
 	const handleRoleChange = (event: any) => {
 		setNewRole(event.target.value);
@@ -25,11 +33,38 @@ export default function MemberListItem({ side, user }: { side: Side; user: Profi
 	useEffect(() => {}, []);
 
 	const onClickEject = async (user: any) => {
-		await profileService.removeProfile(user['id']);
-		window.location.reload();
+		setUserToEject(user);
+		setConfirmationModalOpen(true);
 	};
 
-	const handleSaveRole = async () => {};
+	const handleConfirm = async (value: boolean) => {
+		if (value && userToEject) {
+			try {
+				await profileService.blacklistProfile(side.id, userToEject.id, true);
+				dispatch(updateProfileInSide({ key: 'isBlacklisted', value, id: userToEject.id }));
+			} catch (error) {
+				console.log(error);
+				toast.error('Error when banning this user.', { toastId: 111 });
+			} finally {
+				setConfirmationModalOpen(false);
+			}
+		} else {
+			setUserToEject(undefined);
+			setConfirmationModalOpen(false);
+		}
+	};
+
+	const removeFromBlacklist = async (user: any) => {
+		try {
+			await profileService.blacklistProfile(side.id, user.id, false);
+			dispatch(updateProfileInSide({ key: 'isBlacklisted', value: false, id: user.id }));
+		} catch (error) {
+			console.log(error);
+			toast.error('Error when un-banning this user.', { toastId: 112 });
+		} finally {
+			setConfirmationModalOpen(false);
+		}
+	};
 
 	const userImg =
 		typeof user?.user?.userAvatar === 'string' ? JSON.parse(user.user.userAvatar)?.metadata?.thumbnail : null;
@@ -56,35 +91,48 @@ export default function MemberListItem({ side, user }: { side: Side; user: Profi
 				</span>
 			</div>
 			<div>
-				{connectedUserIsCreator ? (
-					!isCreator && (
-						<>
-							<CustomSelect
-								options={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
-								values={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
-								// valueToSet={user.get("role").get("name")}
-								valueToSet={getRole(user['role'])}
-								onChange={handleRoleChange}
-							/>
-							<i
-								className="fa-solid fa-check ml-4 pointer"
-								onClick={handleSaveRole}
-								title="Save new role"
-							></i>
-							<i className="fa-solid fa-trash ml-4" title="Delete user"></i>
-						</>
-					)
+				{false ? (
+					<>
+						<CustomSelect
+							options={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
+							values={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
+							// valueToSet={user.get("role").get("name")}
+							valueToSet={getRole(user['role'])}
+							onChange={handleRoleChange}
+						/>
+						{/* <i
+							className="fa-solid fa-check ml-4 pointer"
+							onClick={handleSaveRole}
+							title="Save new role"
+						></i>
+						<i className="fa-solid fa-trash ml-4" title="Delete user"></i> */}
+					</>
 				) : (
 					<span className={getRoleColor(getRole(user['role']))}>{getRole(user['role'])}</span>
 				)}
 			</div>
 			<div className="flex-1 align-center text-center">
 				{getRole(user['role']) !== 'Administrator' ? (
-					<Button classes="eject-btn" width="100%" onClick={() => onClickEject(user)}>
-						<i className="fa-solid fa-right-from-bracket mr-1"></i> Eject
-					</Button>
+					!user['isBlacklisted'] ? (
+						<Button classes="eject-btn" width="100%" onClick={() => onClickEject(user)}>
+							<i className="fa-solid fa-right-from-bracket mr-1"></i> Block
+						</Button>
+					) : (
+						<Button classes="remove-btn" width="100%" onClick={() => removeFromBlacklist(user)}>
+							<i className="fa-solid fa-right-from-bracket mr-1"></i> Unblock
+						</Button>
+					)
 				) : null}
 			</div>
+			{confirmationModalOpen && (
+				<ConfirmationModal
+					message={
+						<span className="size-20">Are you sure you want to blacklist {userToEject?.user.username}?</span>
+					}
+					handleConfirm={handleConfirm}
+					setIsConfirmationModalOpen={setConfirmationModalOpen}
+				/>
+			)}
 		</div>
 		// <div className="flex align-center my-2">
 		//   <div className="flex flex-1 align-end">

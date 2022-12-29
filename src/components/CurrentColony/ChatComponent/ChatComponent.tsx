@@ -3,23 +3,62 @@ import { formatDistance } from 'date-fns';
 import { Editor } from 'react-draft-wysiwyg';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { EventType } from '../../../constants/EventType';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
-// import { timestampToLocalString } from "../../../helpers/utilities";
 import { Message, Room } from '../../../models/Room';
-// import {
-//   addMessageToRoom,
-//   updateSelectedRoomMessages,
-// } from "../../../redux/Slices/ChatSlice";
 import { RootState } from '../../../redux/store/app.store';
 import websocketService from '../../../services/websocket-services/websocket.service';
 import MessageInput from '../../ui-components/MessageInput';
 import UserBadge from '../../ui-components/UserBadge';
 import MessageContent from '../../ui-components/MessageContent';
-import { fixURL} from '../../../helpers/utilities';
+import { fixURL } from '../../../helpers/utilities';
 import roomService from '../../../services/api-services/room.service';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import Skeleton from '../../ui-components/Skeleton';
+import { User } from '../../../models/User';
+import emptyScreenImg from '../../../assets/channel_empty_screen_shape.svg';
+import { useNotificationsContext } from '../../../providers/NotificationsProvider';
+import useWalletAddress from '../../../hooks/useWalletAddress';
+
+const EmptyListStyled = styled.div`
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	.empty-list_wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background-image: url(${emptyScreenImg});
+		background-repeat: no-repeat;
+		background-size: contain;
+		background-position: center bottom;
+		width: 580px;
+		margin-top: 15vh;
+		padding-bottom: 10rem;
+		& .empty-list_icon {
+			display: block;
+			background-color: var(--disable);
+			padding: 1.2rem;
+			border-radius: 10rem;
+			& svg {
+				transform: scale(1.4);
+				& path {
+					fill: var(--text);
+				}
+			}
+		}
+		& .empty-list_title {
+			margin-bottom: 0.5rem;
+			text-align: center;
+		}
+		& .empty-list_description {
+			color: var(--inactive);
+		}
+	}
+`;
 
 const ChatComponentStyled = styled.div`
 	display: flex;
@@ -36,6 +75,12 @@ const ChatComponentStyled = styled.div`
         }`
 	)}
 	padding: 1rem 0;
+	& .skeleton {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+	}
 	& .chat-list {
 		position: relative;
 		width: 100%;
@@ -84,7 +129,7 @@ interface IChatComponentProps {
 }
 
 export default function ChatComponent(props: IChatComponentProps) {
-	const dispatch = useDispatch();
+	const [loading, setLoading] = useState<boolean>(true);
 
 	const ref = useRef<Editor>(null);
 
@@ -93,6 +138,9 @@ export default function ChatComponent(props: IChatComponentProps) {
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 
 	const [messages, setMessages] = useState<Message[]>([]);
+
+	const { lastMessage } = useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
 
 	const handleSendMessage = (value: string) => {
 		websocketService.sendMessage(value, props.room.id, userData.account || 'error');
@@ -106,71 +154,96 @@ export default function ChatComponent(props: IChatComponentProps) {
 		]);
 	};
 
-	const handleReceiveMessage = ({ detail }: { detail: Message }) => {
-		setMessages([...messages, detail]);
-	};
-
 	useEffect(() => {
 		async function getRoomMessages() {
-			const messages = await roomService.getRoomMessages(selectedRoom?.id || '');
-			setMessages(messages);
+			try {
+				setLoading(true);
+				const messages = await roomService.getRoomMessages(selectedRoom?.id || '');
+				setMessages(messages);
+			} catch (error) {
+				console.error(error);
+			} finally {
+				setLoading(false);
+			}
 		}
 		if (selectedRoom) getRoomMessages();
+		else setLoading(false);
 	}, [selectedRoom]);
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		};
-	}, [messages]);
+		if (walletAddress && lastMessage) setMessages(prevState => [...prevState, lastMessage]);
+	}, [lastMessage, walletAddress]);
+
+	const getUserBySenderId = (senderId: string): User | undefined => {
+		const profile = currentSide?.profiles.find(p => p.user.accounts?.toLowerCase() === senderId?.toLowerCase());
+		return profile?.user;
+	};
 
 	return (
 		<ChatComponentStyled>
-			<div className="chat-list">
-				<div>
-					{_.orderBy(messages, ['timestamp'], ['desc']).map((m: Message, i) => {
-						const profile = currentSide?.profiles.find(p => p.user.accounts === m.sender);
-						const url = profile?.profilePicture?.metadata?.image
-							? fixURL(profile.profilePicture?.metadata?.image)
-							: '';
-						return (
-							<div className={`chat-item ${i !== 0 ? 'border-bottom' : ''}`} key={i}>
-								<div className="flex w-100 gap-20">
-									<UserBadge
-										check
-										// color={reduceWalletAddressForColor(m)}
-										weight={700}
-										fontSize={14}
-										avatar={url}
-										username={profile?.user.username || ''}
-									/>
-									<div className="size-11 fw-500 open-sans" style={{ color: 'var(--inactive)' }}>
-										{m.timestamp
-											? formatDistance(new Date(m.timestamp), new Date(), {
-													addSuffix: true
-											  })
-											: ''}
-									</div>
-								</div>
-								<MessageContent message={m.content} />
-							</div>
-						);
-					})}
+			{loading ? (
+				<div className="skeleton">
+					<Skeleton />
 				</div>
-			</div>
-			<div className="messages-input">
-				<MessageInput
-					height={55}
-					imageUpload
-					onSubmit={handleSendMessage}
-					placeholder={''}
-					radius="10px"
-					ref={ref}
-					size={14}
-					weight={600}
-				/>
-			</div>
+			) : (
+				<>
+					{messages.length ? (
+						<div className="chat-list">
+							<div>
+								{_.orderBy(messages, ['timestamp'], ['desc']).map((m: Message, i) => {
+									const user = getUserBySenderId(m.sender);
+									const url = user?.userAvatar?.metadata?.image || '';
+									const username = user?.username || '';
+									return (
+										<div className={`chat-item ${i !== 0 ? 'border-bottom' : ''}`} key={i}>
+											<div className="flex w-100 gap-20">
+												<UserBadge
+													check
+													// color={reduceWalletAddressForColor(m)}
+													weight={700}
+													fontSize={14}
+													avatar={url}
+													username={username}
+												/>
+												<div
+													className="size-11 fw-500 open-sans"
+													style={{ color: 'var(--inactive)' }}
+												>
+													{m.timestamp
+														? formatDistance(new Date(m.timestamp), new Date(), {
+																addSuffix: true
+														  })
+														: ''}
+												</div>
+											</div>
+											<MessageContent message={m.content} />
+										</div>
+									);
+								})}
+							</div>
+						</div>
+					) : (
+						<EmptyListStyled>
+							<div className="empty-list_wrapper">
+								<h2 className="empty-list_title">Welcome</h2>
+								<p className="empty-list_description">This is the beginning of the chat!</p>
+							</div>
+						</EmptyListStyled>
+					)}
+					<div className="messages-input">
+						<MessageInput
+							height={55}
+							imageUpload
+							onSubmit={handleSendMessage}
+							placeholder={''}
+							radius="10px"
+							ref={ref}
+							size={14}
+							weight={600}
+						/>
+					</div>
+				</>
+			)}
 		</ChatComponentStyled>
 	);
 }

@@ -66,6 +66,7 @@ const SidesListMobileMenuStyled = styled.div`
 						height: 36px;
 						border-radius: 36px;
 						background-color: var(--black-transparency-20);
+						flex-shrink: 0;
 						& > img {
 							width: 100%;
 							object-fit: cover;
@@ -75,6 +76,10 @@ const SidesListMobileMenuStyled = styled.div`
 						text-transform: uppercase;
 						text-align: center;
 						line-height: 38px;
+					}
+					& .side-name {
+						max-width: calc(100%);
+						word-break: break-word;
 					}
 				}
 			}
@@ -119,7 +124,7 @@ const SidesListMobileMenu = ({ currentSide, onClose, open }: SidesListMobileMenu
 					<div className="sides-list">
 						{userData.sides?.map(side => (
 							<Link
-								to={`/side/${side.name}`}
+								to={`/side/${side.name.replace(/\s/g, '-').toLowerCase()}`}
 								key={side.id}
 								className={`side-item ${currentSide?.id === side.id ? 'active' : ''}`}
 							>
@@ -133,7 +138,7 @@ const SidesListMobileMenu = ({ currentSide, onClose, open }: SidesListMobileMenu
 										<div>{side.name[0]}</div>
 									)}
 								</div>
-								{side.name}
+								<span className="side-name">{side.name}</span>
 							</Link>
 						))}
 					</div>

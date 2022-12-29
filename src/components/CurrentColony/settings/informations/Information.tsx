@@ -193,7 +193,6 @@ export default function Informations({
 	const [isNewSide, setIsNewSide] = useState<boolean>(true);
 	const [internalFormError, setInternalFormError] = useState<any>(internalFormErrorInitialState);
 	const [originalInfo, setOriginalInfo] = useState<InitialStateUpdateSide>(initialStateUpdateSide);
-	const [subAdmin, setSubAdmin] = useState<string>('');
 
 	const areThereChanges = JSON.stringify(originalInfo) !== JSON.stringify(formData);
 
@@ -275,12 +274,16 @@ export default function Informations({
 	};
 
 	const onSubmitLeaveSide = async () => {
-		let result = await profileService.leaveSide(userData['currentProfile']);
-		if (result['error']) toast.error(result['message'], { toastId: 3 });
-		else {
-			toast.success(result['message'], { toastId: 4 });
-			dispatch(removeSide(userData['currentProfile'].side.id));
-			navigate('/');
+		try {
+			let result = await profileService.leaveSide(userData['currentProfile']);
+			if (result['error']) toast.error(result['message'], { toastId: 3 });
+			else {
+				toast.success(result['message'], { toastId: 4 });
+				dispatch(removeSide(userData['currentProfile'].side.id));
+				navigate('/');
+			}
+		} catch (error: any) {
+			toast.error('Please provide a Sub Admin to replace you as Administrator', { toastId: 5 });
 		}
 	};
 
@@ -437,8 +440,9 @@ export default function Informations({
 						<div className="text-primary-light mb-1 text fw-600 mr-3">Private Side</div>
 						<Switch onClick={onChangePrivate} value={currentSide.priv} />
 					</div>
-					<div className="size-12">
-						Only invited users will be able to join this Side. All invitations will be received as requests.
+					<div className="size-12 mt-2" style={{ minHeight: '1.2rem' }}>
+						{formData.priv &&
+							'Only invited users will be able to join this Side. All invitations will be received as requests.'}
 					</div>
 				</div>
 			) : null}

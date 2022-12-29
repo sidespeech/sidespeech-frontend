@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
 // Redux
-import { connect, fetchUserDatas } from './redux/Slices/UserDataSlice';
+import { addProfileToSide, connect, fetchUserDatas, updateProfiles } from './redux/Slices/UserDataSlice';
 
 // API's
 import userService from './services/api-services/user.service';
@@ -23,6 +23,13 @@ import './App.css';
 import { RootState } from './redux/store/app.store';
 import Spinner from './components/ui-components/Spinner';
 import useWalletAddress from './hooks/useWalletAddress';
+import SideEligibilityModal from './components/Modals/SideEligibilityModal';
+import { setEligibilityOpen, setLeaveSideOpen, addProfileToCurrentSide } from './redux/Slices/AppDatasSlice';
+import useIsSideAdmin from './hooks/useIsSideAdmin';
+import LeaveSideConfirmationModal from './components/Modals/LeaveSideConfirmationModal';
+import { subscribeToEvent, unSubscribeToEvent } from './helpers/CustomEvent';
+import { EventType } from './constants/EventType';
+import { Profile } from './models/Profile';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -38,9 +45,12 @@ function App() {
 	const { loadingWallet, walletAddress } = useWalletAddress();
 
 	const userData = useSelector((state: RootState) => state.user);
+	const { openEligibilityModal, openLeaveSideModal, currentSide } = useSelector((state: RootState) => state.appDatas);
 
 	const [onboarding, setCheckingOnboarding] = useState<boolean>(true);
 	const [fetchingUser, setFetchingUser] = useState<boolean>(false);
+
+	const isSideAdmin = useIsSideAdmin(openEligibilityModal.side);
 
 	const isUserOnboarded = useCallback(async (walletAddress: string) => {
 		try {
@@ -60,6 +70,20 @@ function App() {
 			if (newSideDraft) sessionStorage.removeItem('create-side-data');
 		}
 	}, [location]);
+
+	const handleNewProfile = ({ detail }: { detail: Profile }) => {
+		if (detail.user.id !== userData.user?.id) {
+			dispatch(addProfileToSide(detail));
+			if (detail.side.id === currentSide?.id) dispatch(addProfileToCurrentSide(detail));
+		}
+	};
+
+	useEffect(() => {
+		subscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
+		return () => {
+			unSubscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
+		};
+	}, [userData.sides, currentSide]);
 
 	useEffect(() => {
 		if (!onboarding && !fetchingUser) {
@@ -81,8 +105,6 @@ function App() {
 	}, [isUserOnboarded, loadingWallet, walletAddress]);
 
 	useEffect(() => {
-		websocketService.connectToWebSocket();
-
 		async function getUser(account: string) {
 			try {
 				setFetchingUser(true);
@@ -97,12 +119,22 @@ function App() {
 			}
 		}
 
-		if (!loadingWallet && localStorage.getItem('jwtToken') && walletAddress) getUser(walletAddress);
+		if (!loadingWallet && localStorage.getItem('jwtToken') && walletAddress) {
+			websocketService.connectToWebSocket();
+			getUser(walletAddress);
+		}
 
 		return () => {
-			websocketService.deconnectWebsocket();
+			// websocketService.deconnectWebsocket();
 		};
 	}, [loadingWallet, walletAddress]);
+
+	const setDisplayEligibility = (value: boolean) => {
+		dispatch(setEligibilityOpen({ open: value, side: null }));
+	};
+	const setDisplayLeaveSide = (value: boolean) => {
+		dispatch(setLeaveSideOpen({ open: value, side: null }));
+	};
 
 	return (
 		<Layout
@@ -123,6 +155,20 @@ function App() {
 						isSettingsMobileMenuOpen,
 						setIsSettingsMobileMenuOpen
 					}}
+				/>
+			)}
+			{openEligibilityModal.open && openEligibilityModal.side && (
+				<SideEligibilityModal
+					setDisplayEligibility={setDisplayEligibility}
+					selectedSide={openEligibilityModal.side}
+					isSideAdmin={isSideAdmin}
+				/>
+			)}
+			{openLeaveSideModal.open && openLeaveSideModal.side && (
+				<LeaveSideConfirmationModal
+					side={openLeaveSideModal.side}
+					setIsLeaveConfirmationModalOpen={setDisplayLeaveSide}
+					isSideAdmin={isSideAdmin}
 				/>
 			)}
 		</Layout>

@@ -231,7 +231,7 @@ export default function Invitation({
 			setUsersInvite(users);
 		}
 	};
-	const sideLink = `https://side.xyz/side/${currentSide['name']}`;
+	const sideLink = `https://side.xyz/side/${currentSide['name'].replace(/\s/g, '-').toLowerCase()}`;
 
 	const handleCopyWalletAddress = () => {
 		navigator.clipboard.writeText(sideLink);

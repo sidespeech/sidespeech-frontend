@@ -1,8 +1,8 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { Editor } from 'react-draft-wysiwyg';
-import Draft, { convertToRaw, EditorState, Modifier } from 'draft-js';
+import Draft, { ContentBlock, ContentState, convertToRaw, EditorState, Modifier } from 'draft-js';
 import { draftToMarkdown } from 'markdown-draft-js';
 
 import boldIcon from '../../assets/bold.svg';
@@ -85,7 +85,7 @@ interface MessageInputProps {
 const MessageInputStyled = styled.div`
 	position: relative;
 	min-height: 3rem;
-	background-color: var(--black-transparency-20);
+	background-color: #020f20;
 	color: var(--text);
 	scrollbar-width: none;
 	border-radius: 10px;
@@ -178,7 +178,7 @@ const MessageInputStyled = styled.div`
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		background-color: var(--disable);
+		background-color: transparent;
 		border-bottom-left-radius: 10px;
 		border-bottom-right-radius: 10px;
 		padding: 0.5rem 1rem;
@@ -208,7 +208,9 @@ const MessageInputStyled = styled.div`
 			}
 
 			& .image-actions button {
-				background-color: var(--disable);
+				display: grid;
+				place-items: center;
+				background-color: var(--inactive);
 				border: none;
 				border-radius: 20px;
 				width: 20px;
@@ -218,7 +220,7 @@ const MessageInputStyled = styled.div`
 			}
 
 			& .image-actions button > i {
-				color: var(--inactive);
+				color: var(--text);
 				font-size: 0.8rem;
 			}
 		}
@@ -302,6 +304,37 @@ interface ImageToUpload {
 	url?: string;
 }
 
+const linkRegex =
+	/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
+
+const linkStrategy = (
+	contentBlock: ContentBlock,
+	callback: (start: number, end: number) => void,
+	contentState: ContentState
+) => {
+	findWithRegex(linkRegex, contentBlock, callback);
+};
+
+function findWithRegex(regex: RegExp, contentBlock: ContentBlock, callback: (start: number, end: number) => void) {
+	const text = contentBlock.getText();
+	let matchArr, start;
+	while ((matchArr = regex.exec(text)) !== null) {
+		start = matchArr.index;
+		callback(start, start + matchArr[0].length);
+	}
+}
+
+const compositeDecorators = [
+	{
+		strategy: linkStrategy,
+		component: (props?: any | undefined) => (
+			<a href={props?.children} target="_blank" rel="noreferrer">
+				{props?.children}
+			</a>
+		)
+	}
+];
+
 const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Editor> | null) => {
 	const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
 	const [isEmojiMenuOpen, setIsEmojiMenuOpen] = useState<boolean>(false);
@@ -334,7 +367,9 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 
 	// Iterate through files array and upload each file
 
-	const handleUploadFiles = (ev: any): void => {
+	const handleUploadFiles = (ev: any, ref: any): void => {
+		console.log(ref);
+		ref.current.focusEditor();
 		const images: FileList | null = ev.target.files;
 		if (!images) return;
 		for (let i = 0; i < images.length; i++) {
@@ -414,6 +449,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 			props.onSubmit(message);
 			setImagesToUpload([]);
 		}
+		console.log(imagesToUpload);
 	};
 
 	return (
@@ -423,11 +459,11 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 					bgColor={props.bgColor}
 					border={props.border}
 					color={props.color}
+					customDecorators={compositeDecorators}
 					disabled={props.disabled}
 					editorClassName="message-input-editor"
 					editorState={editorState}
 					height={props.height}
-					id={props.id}
 					maxLength={props.maxLength}
 					keyBindingFn={keyBindingFn}
 					onEditorStateChange={(state: EditorState) => {
@@ -567,7 +603,7 @@ const MessageInput = forwardRef((props: MessageInputPropsType, ref: React.Ref<Ed
 							name={imageInputId}
 							accept="image/*"
 							multiple
-							onChange={ev => handleUploadFiles(ev)}
+							onChange={ev => handleUploadFiles(ev, ref)}
 							style={{
 								position: 'absolute',
 								pointerEvents: 'none',

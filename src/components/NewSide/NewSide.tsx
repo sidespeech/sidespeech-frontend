@@ -32,6 +32,7 @@ import Spinner from '../ui-components/Spinner';
 import useGetCollections from '../../hooks/useGetCollections';
 import { v4 } from 'uuid';
 import update from 'immutability-helper';
+import websocketService from '../../services/websocket-services/websocket.service';
 
 const NewSideStyled = styled.div`
 	width: 100%;
@@ -305,6 +306,15 @@ export default function NewSide() {
 	const [userInvited, setUserInvited] = useState<any>([]);
 
 	const collections = useGetCollections();
+
+	// Remove "New" status to all channels after creation to avoid multiple animations
+
+	useEffect(() => {
+		if (channels.some(channel => channel.newChannel))
+			setTimeout(() => {
+				setChannels(prevState => prevState.map(channel => ({ ...channel, newChannel: false })));
+			}, 500);
+	}, [channels]);
 
 	const saveDataBeforeUnload = () => {
 		const dataToSave = {
@@ -635,8 +645,10 @@ export default function NewSide() {
 	};
 
 	// Remove collection div in condition
-	const removeDivCollection = (collectionId: string) => {
-		setDivCollection(prevState => prevState.filter(divColl => divColl.collection !== collectionId));
+	const removeDivCollection = (collectionId: string, index: number) => {
+		if (collectionId)
+			setDivCollection(prevState => prevState.filter(divColl => divColl.collection !== collectionId));
+		else setDivCollection(prevState => prevState.filter((divColl, i) => i !== index));
 	};
 
 	// ----- Functions for Admission component **end
@@ -662,6 +674,7 @@ export default function NewSide() {
 		const newChannel: Partial<IChannelExtension> = {
 			id: v4(),
 			name: '',
+			newChannel: true,
 			isVisible: true,
 			type: ChannelType.Announcement,
 			sideId: currentSide.id,
@@ -725,6 +738,7 @@ export default function NewSide() {
 					data['creatorAddress'] = user.accounts;
 					data['required'] = !onlyOneRequired;
 					const newSide = await sideService.createFullSide(data, channels, userInvited);
+					websocketService.addRoomToUsers(newSide.id, [newSide.profiles[0].id]);
 					// Save side entity ** end
 
 					dispatch(updateSidesByUserCollections(null));
@@ -737,7 +751,7 @@ export default function NewSide() {
 
 					setIsLoading(false);
 					sessionStorage.removeItem('create-side-data');
-					navigate('/side/' + newSide.name);
+					navigate('/side/' + newSide.name.replace(/\s/g, '-').toLowerCase());
 				} else {
 					toast.error('You do not meet the conditions to create this side.');
 				}

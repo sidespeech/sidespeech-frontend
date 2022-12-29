@@ -21,6 +21,7 @@ import { InitialStateUser } from '../GeneralSettings/Account/GeneralSettingsAcco
 import Avatar from '../GeneralSettings/Account/Avatar';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import useWalletAddress from '../../hooks/useWalletAddress';
+import useSideEligibility from '../../hooks/useSideEligibility';
 
 const UserGeneralInformationsStyled = styled.div`
 	display: flex;
@@ -120,6 +121,7 @@ interface IUserGeneralInformationsProps {
 	sideSettingsPage?: boolean;
 	user?: User;
 	userCollectionsData?: any;
+	areThereChanges?: boolean;
 }
 
 export default function UserGeneralInformations({
@@ -132,11 +134,14 @@ export default function UserGeneralInformations({
 	setFormData,
 	sideSettingsPage,
 	user,
-	userCollectionsData
+	userCollectionsData,
+	areThereChanges
 }: IUserGeneralInformationsProps) {
 	const [errorData, setErrorData] = useState<InitialErrorState>(initialStateError);
 
 	const [collectionName, setCollectionName] = useState<string | undefined>(undefined);
+
+	const [isEligible, details] = useSideEligibility(currentSide);
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -210,7 +215,7 @@ export default function UserGeneralInformations({
 					glass={false}
 					placeholderColor="var(--text)"
 					placeholder={'Your username'}
-					defaultValue={user?.username || ''}
+					defaultValue={formData?.username || ''}
 					onChange={onChangeUsername}
 					radius="10px"
 					maxLength={64}
@@ -232,7 +237,7 @@ export default function UserGeneralInformations({
 					border="1px solid var(--disable)"
 					glass={false}
 					placeholder={'Describe yourself'}
-					defaultValue={user?.bio || ''}
+					defaultValue={formData?.bio || ''}
 					placeholderColor="var(--text)"
 					onChange={onChangeBio}
 					radius="10px"
@@ -314,6 +319,8 @@ export default function UserGeneralInformations({
 		<UserGeneralInformationsStyled>
 			{!currentSide ? (
 				<>
+					{renderAvatar()}
+
 					{/* Username Section */}
 					{renderUsername()}
 					{/* Description Section */}
@@ -324,7 +331,7 @@ export default function UserGeneralInformations({
 			)}
 
 			{/* Eligibility Section */}
-			{currentSide && <Eligibility side={currentSide} />}
+			{currentSide && <Eligibility side={currentSide} details={details} />}
 
 			{!currentSide && renderConnectedWallet()}
 
@@ -334,7 +341,7 @@ export default function UserGeneralInformations({
 				<Button
 					classes={sideSettingsPage ? 'side-settings-submit-btn' : ''}
 					color={'var(--text)'}
-					disabled={sideSettingsPage && !Object.keys(formData.avatar || {}).length}
+					disabled={!areThereChanges}
 					height={44}
 					onClick={onSubmit}
 					radius={10}

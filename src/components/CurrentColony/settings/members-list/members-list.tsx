@@ -5,6 +5,10 @@ import { Side } from '../../../../models/Side';
 import MemberListItem from './MemberListItem';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
 import CustomSelect from '../../../ui-components/CustomSelect';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../redux/store/app.store';
+import { Profile, Role } from '../../../../models/Profile';
+import { useEffect, useState } from 'react';
 
 const MembersListStyled = styled.div`
 	width: 100%;
@@ -74,7 +78,7 @@ const MembersListStyled = styled.div`
 			${breakpoints(
 				size.lg,
 				`{
-				grid-template-columns: 50% 37.5% 12.5%;
+				grid-template-columns: 50% 35% 15%;
 				background-color: transparent;
 				padding: 0;
 			}`
@@ -97,10 +101,46 @@ const MembersListStyled = styled.div`
 			height: 30px;
 			border-radius: 3px;
 		}
+		& .remove-btn {
+			background-color: var(--warning-opacity);
+			color: var(--warning);
+			padding: 0 0.5rem;
+			height: 30px;
+			border-radius: 3px;
+		}
 	}
 `;
 
 export default function MembersList({ currentSide }: { currentSide: Side }) {
+	const { currentProfile } = useSelector((state: RootState) => state.user);
+
+	const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>([]);
+
+	useEffect(() => {
+		setFilteredProfiles(_.orderBy(currentSide.profiles, m => m['role']));
+	}, [currentSide]);
+
+	const isAdmin = currentProfile?.role === Role.Admin;
+
+	const handleFilterProfile = (event: any) => {
+		const value = event.target.value;
+		console.log(value);
+		switch (value) {
+			case 'all':
+				setFilteredProfiles(currentSide.profiles);
+				break;
+			case 'true':
+				setFilteredProfiles(currentSide.profiles.filter(p => !p.isBlacklisted));
+				break;
+			case 'false':
+				setFilteredProfiles(currentSide.profiles.filter(p => p.isBlacklisted));
+				break;
+			default:
+				setFilteredProfiles(currentSide.profiles);
+				break;
+		}
+	};
+
 	return (
 		<MembersListStyled className="fade-in">
 			<div className="header-wrapper">
@@ -109,11 +149,11 @@ export default function MembersList({ currentSide }: { currentSide: Side }) {
 					<CustomSelect
 						arrowPosition={{ right: '-8px' }}
 						bgColor="transparent"
-						onChange={() => {}}
-						options={['All', 'Administrator', 'Sub-administrator', 'User']}
+						onChange={handleFilterProfile}
+						options={['All', 'Active', 'Banned']}
 						placeholder=""
 						valueToSet={''}
-						values={['all', 'admin', 'sub-admin', 'user']}
+						values={['all', true, false]}
 						width="70%"
 					/>
 				</div>
@@ -124,8 +164,8 @@ export default function MembersList({ currentSide }: { currentSide: Side }) {
 				</header>
 			</div>
 			<div className="members-table-body">
-				{_.orderBy(currentSide.profiles, m => m['role']).map(m => {
-					return <MemberListItem key={m.id} user={m} side={currentSide} />;
+				{_.orderBy(filteredProfiles, 'role').map(m => {
+					return <MemberListItem key={m.id} user={m} side={currentSide} isAdmin={isAdmin} />;
 				})}
 			</div>
 		</MembersListStyled>

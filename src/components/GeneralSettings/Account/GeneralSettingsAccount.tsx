@@ -128,6 +128,7 @@ export default function GeneralSettingsAccount() {
 	const { user, userCollectionsData } = useSelector((state: RootState) => state.user);
 	const [collections, setCollections] = useState<Collection[]>([]);
 	const [formData, setFormData] = useState<InitialStateUser>(initialStateUser);
+	const [initialInformations, setInitialInformations] = useState<InitialStateUser>(initialStateUser);
 
 	const { setIsSettingsMobileMenuOpen } = useGeneralSettingsContext();
 
@@ -137,19 +138,25 @@ export default function GeneralSettingsAccount() {
 	const { currentProfile } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
 
+	const areThereChanges = JSON.stringify(initialInformations) !== JSON.stringify(formData);
+
 	useEffect(() => {
 		if (userCollectionsData && user) {
 			const collections = Object.values(userCollectionsData);
-			if (user.publicNfts) {
-				setFormData({
-					...formData,
-					publicNfts: user.publicNfts,
-					bio: user.bio,
-					avatar: user.userAvatar,
-					username: user.username
-				});
-			}
-
+			setFormData({
+				...formData,
+				publicNfts: user.publicNfts,
+				bio: user.bio,
+				avatar: user.userAvatar,
+				username: user.username
+			});
+			setInitialInformations({
+				...formData,
+				publicNfts: user.publicNfts,
+				bio: user.bio,
+				avatar: user.userAvatar,
+				username: user.username
+			});
 			setCollections(Object.values(userCollectionsData).sort(sortCollectionByVerifiedCollectionsAndVolume));
 			setSelectedAvatar(user.userAvatar);
 		}
@@ -230,6 +237,7 @@ export default function GeneralSettingsAccount() {
 							setDisplayNftsCollection={setDisplayNftsCollection}
 							setFormData={setFormData}
 							onSubmit={onSubmit}
+							areThereChanges={areThereChanges}
 						/>
 					</div>
 

@@ -23,7 +23,11 @@ const CoverImg = styled.div<CoverImgProps>`
 	background-repeat: no-repeat;
 `;
 
-const ContainerLeftStyled = styled.div`
+interface ContainerLeftStyledProps {
+	nameLength: number;
+}
+
+const ContainerLeftStyled = styled.div<ContainerLeftStyledProps>`
 	width: 100%;
 	.sidebar-desktop {
 		display: none;
@@ -37,6 +41,11 @@ const ContainerLeftStyled = styled.div`
 		background-color: var(--panels);
     }`
 		)}
+		& .desktop-side-name {
+			max-width: 100%;
+			word-break: break-word;
+			font-size: ${props => (props.nameLength > 30 ? '12' : '14')}px;
+		}
 	}
 	.toolbar-mobile {
 		background-color: var(--panels);
@@ -100,7 +109,7 @@ export default function CurrentSideLeft({}: CurrentSideLeftProps) {
 	const Icon = Icons[selectedChannel?.type || 0];
 
 	return (
-		<ContainerLeftStyled>
+		<ContainerLeftStyled nameLength={currentSide?.name?.length || 0}>
 			<div className="sidebar-desktop">
 				<ContainerLeft backgroundColor="var(--panels)" width="100%" height={100} paddingTop={0}>
 					<CoverImg
@@ -108,7 +117,7 @@ export default function CurrentSideLeft({}: CurrentSideLeftProps) {
 						className="w-100 flex align-end justify-between px-2 py-2"
 					>
 						<div className="w-100 flex align-center justify-between">
-							<span className="fw-700 size-14 open-sans flex align-center text-secondary">
+							<span className="desktop-side-name fw-700 open-sans flex align-center text-secondary">
 								{currentSide?.name}
 								{currentSide?.firstCollection?.safelistRequestStatus === 'verified' && (
 									<svg
@@ -174,7 +183,7 @@ export default function CurrentSideLeft({}: CurrentSideLeftProps) {
 					onClick={() => setIsToolbarOpen(false)}
 					className={`toolbar-content ${isToolbarOpen ? 'open' : ''}`}
 				>
-					<CurrentSideLeftContent />
+					{/* <CurrentSideLeftContent /> */}
 				</div>
 			</div>
 		</ContainerLeftStyled>

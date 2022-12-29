@@ -170,9 +170,9 @@ const NftsCollectionsStyled = styled.div`
                         }
                     }
                     &.selected-2 .inner {
-                        border: 2px solid var(--primary);
+                        border: 2px solid var(--warning);
                         & .status {
-                            background: var(--primary);
+                            background: var(--warning);
                             color: var(--white);
                         }
                     }
@@ -476,7 +476,7 @@ export default function NftsCollections({
                                             )}
                                         </div>
                                         <div className="title" title={collection.name || collection.address}>
-                                            {collection.name || collection.address}
+                                            {collection.getName()}
                                         </div>
                                     </div>
                                     {renderNumberSelection(collection)}

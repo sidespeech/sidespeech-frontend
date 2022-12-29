@@ -9,6 +9,7 @@ export class Notification {
     public id: string;
     public timestamp: string;
     public type: NotificationType;
+    public sideId: string;
 
     constructor(_data: any) {
         this.id = _data.id;
@@ -16,5 +17,6 @@ export class Notification {
         this.timestamp = _data.timestamp;
         this.creatorAddress = _data.creatorAddress;
         this.name = _data.name;
+        this.sideId = _data.sideId;
     }
 }

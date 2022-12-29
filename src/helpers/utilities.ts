@@ -111,11 +111,11 @@ export function timestampToLocalString(timestamp: string) {
 
 export async function connectedWallet() {
 	const account = await window.ethereum.request({ method: 'eth_accounts' });
-	return account.length > 0 ? account[0].toLowerCase() : null;
+	return account.length > 0 ? account[0] : null;
 }
 
 export interface ElligibilityResponse {
-	[key: string]: any[];
+	[key: string]: { numberNeeded: any; propertyResults: any[] };
 }
 export function hasTraitInCollection(collection: Collection, trait: string): boolean {
 	if (!collection || !collection.nfts) return false;
@@ -130,105 +130,84 @@ export function hasTraitValueInCollection(collection: Collection, trait: string,
 	);
 }
 export function checkEligibilityByCondition(conditions: any, nfts: NFT[]): boolean {
-	const res: any[] = [];
+	const res: { [key: string]: boolean[] } = {};
 	const groupedNfts = groupBy(nfts, 'token_address');
 	const keys = Object.keys(conditions);
 	// pop to remove the required object in the conditions
 	keys.pop();
 	keys.forEach((address: string) => {
 		const condition = conditions[address];
-		if (!groupedNfts[address]) res.push(false);
-		else if (condition['features'] && condition['features'].length) {
-			for (let feature of condition['features']) {
-				const type = feature['property'].toLowerCase();
-				const value = feature['value'].toLowerCase();
-				const anafNft = groupedNfts[address].length >= condition['numberNeeded'];
-				const meetCondition = groupedNfts[address].some(nft =>
-					nft.metadata.attributes.some(
-						a => a['trait_type'].toLowerCase() === type && a['value'].toLowerCase() === value
-					)
-				);
-				if (!anafNft || !meetCondition) res.push(false);
-				else res.push(true);
-			}
-		} else {
+		res[address] = [];
+		if (!groupedNfts[address]) res[address].push(false);
+		else {
 			const anafNft = groupedNfts[address].length >= condition['numberNeeded'];
-			if (!anafNft) res.push(false);
-			else res.push(true);
+			if (!anafNft) res[address].push(false);
+			else res[address].push(true);
+			if (condition['features'] && condition['features'].length) {
+				for (let feature of condition['features']) {
+					const type = feature['property'].toLowerCase();
+					const value = feature['value'].toLowerCase();
+					const meetCondition = groupedNfts[address].some(nft =>
+						nft.metadata.attributes.some(
+							a => a['trait_type'].toLowerCase() === type && a['value'].toLowerCase() === value
+						)
+					);
+					if (!meetCondition) res[address].push(false);
+					else res[address].push(true);
+				}
+			}
 		}
 	});
-	if (conditions['required']) return res.some(r => r);
-	else return res.every(r => r);
+	if (conditions['required']) return Object.values(res).some(r => r[0] === true && r.some(a => a));
+	else return Object.values(res).every(r => r[0] === true && r.some(a => a));
 }
 
 export function checkUserEligibility(nfts: any, selectedSide: Side): [ElligibilityResponse, boolean] {
 	const res: ElligibilityResponse = {};
-
 	if (selectedSide) {
-		let checkingWithAttribute = [];
-		let checkingWithoutAttribute: any[] = [];
-
-		// Filter conditons with and without attributes
-		for (let collection of selectedSide.collectionSides) {
-			const withAttributes = selectedSide['metadataSides'].filter(
-				elem => elem['metadata']['address'] === collection['collectionId']
-			);
-			if (withAttributes.length) checkingWithAttribute.push(collection);
-			else checkingWithoutAttribute.push(collection);
-		}
-
-		// Checking eligibilty with attributes
-		selectedSide.metadataSides?.forEach(item => {
-			const tab = [];
-			const token_address = item['metadata']['address'];
-
-			const collectionSide = selectedSide.collectionSides.find(elem => elem['collectionId'] === token_address);
+		selectedSide.collectionSides?.forEach(item => {
+			const token_address = item['collectionId'];
+			res[token_address] = { numberNeeded: 1, propertyResults: [] };
 			const collection = nfts[token_address];
-
+			const metadataSides = selectedSide.metadataSides.filter(data => data.metadata.address === token_address);
 			const condition = {
-				numberNeeded: collectionSide!['numberNeeded'],
-				trait_type: item['metadata']['traitProperty'],
-				trait_value: item['metadata']['traitValue']
+				numberNeeded: item!['numberNeeded']
 			};
-
 			if (!collection) {
-				tab.push(
-					validateNftsWithAttributes([], condition, {
-						address: token_address
-					})
+				res[token_address]['numberNeeded'] = createResponseObject(
+					false,
+					[],
+					`You need ${condition['numberNeeded']} nfts more to meet the condition.`,
+					token_address,
+					condition,
+					'number'
 				);
 			} else {
-				// get nfts from collection with needed attributes
-				const filteredNfts = getNftsWithAttributes(collection.nfts, condition);
-
-				// validate number
-				tab.push(validateNumberOfNfts(condition, collection));
-
-				// if no nfts corresponding to the condition returning error response
-				tab.push(validateNftsWithAttributes(filteredNfts, condition, collection));
+				res[token_address]['numberNeeded'] = validateNumberOfNfts(condition, collection);
 			}
-			res[token_address] = tab;
-		});
-
-		// Checking eligibilty without attributes
-		selectedSide.collectionSides?.forEach(item => {
-			const tab = [];
-			const token_address = item['collectionId'];
-			const collection = nfts[token_address];
-
-			if (checkingWithoutAttribute.includes(item)) {
+			metadataSides?.forEach((item, index) => {
+				const tab = [];
 				const condition = {
-					numberNeeded: item['numberNeeded']
+					trait_type: item['metadata']['traitProperty'],
+					trait_value: item['metadata']['traitValue']
 				};
 
-				if (collection) {
-					tab.push(validateNumberOfNfts(condition, collection));
+				if (!collection) {
+					tab.push(
+						validateNftsWithAttributes([], condition, {
+							address: token_address
+						})
+					);
 				} else {
-					tab.push(validateNumberOfNfts(condition, { nfts: [], address: item['collectionId'] }));
+					// get nfts from collection with needed attributes
+					const filteredNfts = getNftsWithAttributes(collection.nfts, condition);
+					// if no nfts corresponding to the condition returning error response
+					tab.push(validateNftsWithAttributes(filteredNfts, condition, collection));
 				}
-
-				res[token_address] = tab;
-			}
+				res[token_address]['propertyResults'] = res[token_address]['propertyResults']
+					? [...res[token_address]['propertyResults'], ...tab]
+					: tab;
+			});
 		});
 	}
 
@@ -269,10 +248,20 @@ function validateNumberOfNfts(condition: any, collection: Collection | { nfts: a
 function isEligible(result: ElligibilityResponse, required: boolean): boolean {
 	if (required) {
 		// verifying if all collection are fully success
-		return Object.values(result).every(res => res.every(value => value.type.includes('success')));
+		return Object.values(result).every(
+			res =>
+				(!res['propertyResults'].length ||
+					res['propertyResults'].some(value => value.type.includes('success'))) &&
+				res['numberNeeded'].type.includes('success')
+		);
 	} else {
 		// verifying if one of the collection are fully success
-		return Object.values(result).some(res => res.every(value => value.type.includes('success')));
+		return Object.values(result).some(
+			res =>
+				(!res['propertyResults'].length ||
+					res['propertyResults'].some(value => value.type.includes('success'))) &&
+				res['numberNeeded'].type.includes('success')
+		);
 	}
 }
 
@@ -297,7 +286,8 @@ function createResponseObject(valid: boolean, nfts: any, message: string, id: st
 			type: `success-${type}`,
 			property: condition['trait_type'],
 			value: condition['trait_value'],
-			usefulNfts: nfts
+			usefulNfts: nfts,
+			numberNeeded: condition['numberNeeded']
 		};
 	} else {
 		return {
@@ -305,13 +295,16 @@ function createResponseObject(valid: boolean, nfts: any, message: string, id: st
 			type: `error-${type}`,
 			message: message,
 			property: condition['trait_type'],
-			value: condition['trait_value']
+			value: condition['trait_value'],
+			numberNeeded: condition['numberNeeded']
 		};
 	}
 }
 
 export function fixURL(url: string) {
-	if (url.startsWith('ipfs')) {
+	if (url.startsWith('ipfs://ipfs')) {
+		return 'https://ipfs.io/' + url.split('ipfs://').slice(-1)[0];
+	} else if (url.startsWith('ipfs')) {
 		return 'https://ipfs.io/ipfs/' + url.split('ipfs://').slice(-1)[0];
 	} else if (url.startsWith('https://')) {
 		return url;

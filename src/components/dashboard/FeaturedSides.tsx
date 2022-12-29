@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../constants/constants';
 import { Side } from '../../models/Side';
-import SideEligibilityModal from '../Modals/SideEligibilityModal';
 import Spinner from '../ui-components/Spinner';
 import noResultsImg from '../../assets/my_sides_empty_screen_shape.svg';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import { OpenSeaRequestStatus } from '../../models/interfaces/collection';
+import { useDispatch } from 'react-redux';
+import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
 
 const CARD_HEIGHT = 191;
 const CARD_WIDTH = 265;
@@ -218,13 +219,11 @@ interface FeatureSidesProps {
 }
 
 const FeaturedSides = ({ featuredSides, sidesLoading }: FeatureSidesProps) => {
-	const [displayEligibility, setDisplayEligibility] = useState<boolean>(false);
 	const [firstSideShowing, setFirstSideShowing] = useState<number>(0);
-	const [selectedSide, setSelectedSide] = useState<Side | null>(null);
+	const dispatch = useDispatch();
 
 	const handleEligibilityCheck = (side: Side) => {
-		setSelectedSide(side);
-		setDisplayEligibility(true);
+		dispatch(setEligibilityOpen({ open: true, side: side }));
 	};
 
 	return (
@@ -249,7 +248,7 @@ const FeaturedSides = ({ featuredSides, sidesLoading }: FeatureSidesProps) => {
 								{featuredSides.map(side => (
 									<React.Fragment key={side.id}>
 										{side.joined ? (
-											<Link to={`/side/${side.name}`}>
+											<Link to={`/side/${side.name.replace(/\s/g, '-').toLowerCase()}`}>
 												<FeatureSideCard side={side} />
 											</Link>
 										) : (
@@ -277,14 +276,6 @@ const FeaturedSides = ({ featuredSides, sidesLoading }: FeatureSidesProps) => {
 					</div>
 				)}
 			</div>
-
-			{displayEligibility && selectedSide && (
-				<SideEligibilityModal
-					setDisplayLeaveSide={() => {}}
-					setDisplayEligibility={setDisplayEligibility}
-					selectedSide={selectedSide}
-				/>
-			)}
 		</FeatureSidesStyled>
 	);
 };

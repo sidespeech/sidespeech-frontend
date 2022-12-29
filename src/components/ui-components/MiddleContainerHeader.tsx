@@ -18,6 +18,7 @@ import defaultPP from '../../assets/default-pp.png';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import SidesListMobileMenu from '../CurrentColony/SidesListMobileMenu';
 import { OpenSeaRequestStatus } from '../../models/interfaces/collection';
+import { User } from '../../models/User';
 
 const MiddleContainerHeaderStyled = styled.header`
 	width: 100%;
@@ -254,6 +255,7 @@ const MiddleContainerHeaderStyled = styled.header`
 				display: flex;
 				align-items: center;
 				gap: 1rem;
+				flex-grow: 1;
 				& .image {
 					width: 36px;
 					height: 36px;
@@ -268,6 +270,12 @@ const MiddleContainerHeaderStyled = styled.header`
 						width: 100%;
 						object-fit: cover;
 					}
+				}
+				& .mobile-side-name {
+					display: inline-block;
+					text-align: left;
+					max-width: calc(100% - 36px - 2rem);
+					word-break: break-word;
 				}
 			}
 		}
@@ -375,12 +383,19 @@ export default function MiddleContainerHeader({
 
 	useEffect(() => {
 		if (roomProfile) {
-			const url = roomProfile.profilePicture?.metadata?.image
-				? fixURL(roomProfile.profilePicture?.metadata?.image)
+			const url = roomProfile.user?.userAvatar?.metadata?.image
+				? roomProfile.user?.userAvatar?.metadata?.image
 				: defaultPP;
 			setUrl(url);
 		}
 	}, [roomProfile]);
+
+	const getUserBySenderId = (senderId: string): User | undefined => {
+		const profile = currentSide?.profiles.find(p => p.user.accounts?.toLowerCase() === senderId?.toLowerCase());
+		return profile?.user;
+	};
+
+	const threadCreator = thread ? getUserBySenderId(thread.creator || thread.creatorAddress) : null;
 
 	return (
 		<MiddleContainerHeaderStyled className={`middle-container-top ${className}`}>
@@ -413,10 +428,10 @@ export default function MiddleContainerHeader({
 									)
 								}}
 								alt=""
-								src={thread?.creator || thread?.creatorAddress || ''}
+								src={threadCreator?.userAvatar?.metadata?.image || ''}
 							/>
 							<div className="user-name-address">
-								<p className="user-name size-14">{thread?.creator || thread?.creatorAddress}</p>
+								<p className="user-name size-14">{threadCreator?.username}</p>
 								<p className="user-address size-14">13 hours ago</p>
 							</div>
 						</div>
@@ -604,7 +619,7 @@ export default function MiddleContainerHeader({
 									<div>{currentSide?.name[0]}</div>
 								)}
 							</div>
-							<span>{currentSide?.name}</span>
+							<span className="mobile-side-name">{currentSide?.name}</span>
 							{currentSide?.firstCollection?.safelistRequestStatus === OpenSeaRequestStatus.verified && (
 								<svg
 									width="13"

@@ -2,14 +2,14 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Channel, ChannelType } from '../../../../models/Channel';
 import CustomCheckbox from '../../../ui-components/CustomCheckbox';
-import CustomSelect from '../../../ui-components/CustomSelect';
 import Dropdown from '../../../ui-components/Dropdown';
 import InputText from '../../../ui-components/InputText';
 import { breakpoints, size } from '../../../../helpers/breakpoints';
 import _ from 'lodash';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 import { ItemTypes } from './ChannelsTab';
-import type { Identifier, XYCoord } from 'dnd-core';
+import { Identifier, XYCoord } from 'dnd-core';
+import { getRandomId } from '../../../../helpers/utilities';
 
 const options = ['Announcement', 'DAO', 'Group chat'];
 
@@ -110,6 +110,7 @@ export default function ChannelRow({
 	index,
 	onChangeName,
 	handleRemove,
+	newChannel,
 	placeholder,
 	onChangeType,
 	onChangeAuthorizeComments,
@@ -121,6 +122,7 @@ export default function ChannelRow({
 	index: number;
 	onChangeName: any;
 	handleRemove: any;
+	newChannel?: boolean;
 	onChangeType: any;
 	placeholder?: string;
 	onChangeAuthorizeComments: any;
@@ -211,7 +213,7 @@ export default function ChannelRow({
 
 	return (
 		<ChannelRowStyled
-			className="bounce-from-right"
+			className={newChannel ? 'bounce-from-right' : ''}
 			ref={ref}
 			draggable
 			style={{ opacity, position: 'relative', zIndex: 9999 - index }}
@@ -294,7 +296,7 @@ export default function ChannelRow({
 				{channel['type'] !== ChannelType.Textual && (
 					<div className="flex">
 						<CustomCheckbox
-							name="authorize-comments"
+							name={`authorize-comments-${channel['id'] || getRandomId()}`}
 							isChecked={channel['authorizeComments']}
 							onClick={(e: any) => {
 								onChangeAuthorizeComments(e, channel.id, placeholder ? true : false);

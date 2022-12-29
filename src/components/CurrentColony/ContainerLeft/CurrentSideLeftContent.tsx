@@ -1,5 +1,5 @@
+import { useEffect, useState } from 'react';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Channel } from '../../../models/Channel';
@@ -10,9 +10,6 @@ import { RootState } from '../../../redux/store/app.store';
 import websocketService from '../../../services/websocket-services/websocket.service';
 import ChannelsList from './ChannelsList/ChannelsList';
 import SideUserList from './SideUserList/SideUserList';
-import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
-import { EventType } from '../../../constants/EventType';
-import { Announcement } from '../../../models/Announcement';
 import { addRoomToProfile } from '../../../redux/Slices/UserDataSlice';
 import { toast } from 'react-toastify';
 import { getRandomId } from '../../../helpers/utilities';
@@ -21,6 +18,9 @@ import { NotificationType } from '../../../models/Notification';
 import roomService from '../../../services/api-services/room.service';
 import notificationService from '../../../services/api-services/notification.service';
 import { breakpoints, size } from '../../../helpers/breakpoints';
+import Skeleton from '../../ui-components/Skeleton';
+import { useNotificationsContext } from '../../../providers/NotificationsProvider';
+import useWalletAddress from '../../../hooks/useWalletAddress';
 
 const SidebarStyled = styled.div`
 	height: calc(100vh - 182px);
@@ -46,11 +46,12 @@ const SidebarStyled = styled.div`
 
 export default function CurrentSideLeftContent() {
 	const { account, currentProfile } = useSelector((state: RootState) => state.user);
-	// const [displayColonySettings, setDisplayColonySettings] = useState<boolean>(false);
-	// const [displayNewChannelModal, setDisplayNewChannelModal] = useState<boolean>(false);
+
+	const { getStaticNotifications, lastAnnouncement, lastMessage, onlineUsers, staticNotifications } =
+		useNotificationsContext();
+	const { walletAddress } = useWalletAddress();
+
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	// const [isMod, setIsMod] = useState<boolean>(false);
-	// const [displayUserProfile, setDisplayUserProfile] = useState<boolean>(false);
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 	const dispatch = useDispatch();
 
@@ -63,7 +64,15 @@ export default function CurrentSideLeftContent() {
 	const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
 	const { user } = useSelector((state: RootState) => state.user);
 	const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
-	const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+
+	const filteredRooms = currentSide?.profiles.map((p: Profile, index: number) => {
+		const isMe = p.id === currentProfile?.id;
+		const room = currentProfile?.getRoom(p.id);
+		if (isMe || !room) return 'member';
+		return 'conversation';
+	});
+	const numberOfMembers = filteredRooms?.filter(type => type === 'member').length;
+	const numberOfConversations = filteredRooms?.filter(type => type === 'conversation').length;
 
 	const onChannelSelected = (c: Channel) => {
 		dispatch(setSelectedChannel(c));
@@ -101,47 +110,38 @@ export default function CurrentSideLeftContent() {
 		}
 	};
 
-	const handleUsersStatus = async (m: any) => {
-		const { detail } = m;
-		let onlineUsersObj: any = [];
-		if (detail !== 'transport close') {
-			for (let socket of detail) onlineUsersObj.push(socket['user']['username']);
-			setOnlineUsers(onlineUsersObj);
+	const setChannelsNotifications = (data: any) => {
+		if ((selectedChannel && selectedChannel.id !== data.channelId) || selectedRoom)
+			setDotsChannel((prevState: any) => {
+				const number = prevState[data.channelId] || 0;
+				return { ...prevState, [data.channelId]: number + 1 };
+			});
+	};
+	const setRoomsNotifications = async (data: any) => {
+		const roomExists = currentSide?.profiles?.some(
+			(p: Profile) => currentProfile?.getRoom(p.id)?.id === data?.room?.id
+		);
+		if (!roomExists) {
+			const room = await roomService.getRoomByName(data.room.name);
+			if (room) dispatch(addRoomToProfile(room));
 		}
+		if ((selectedRoom && selectedRoom.id !== data.room.id) || selectedChannel)
+			setDotsPrivateMessage((prevState: any) => {
+				const number = prevState[data.room.id] || 0;
+				return { ...prevState, [data.room.id]: number + 1 };
+			});
 	};
 
-	const handleReceiveAnnouncement = ({ detail }: { detail: Announcement }) => {
-		const account = localStorage.getItem('userAccount');
-		if (account) getAndSetRoomNotifications(account, true);
-	};
-
-	const handleReceiveMessage = async (m: any) => {
-		const { detail } = m;
-		const account = localStorage.getItem('userAccount');
-		if (account) getAndSetRoomNotifications(account, true);
-	};
-
-	// Function to get notification from db and assign them to the state variable
-	async function getAndSetRoomNotifications(account: string, from_ws = false) {
-		const notifications = await notificationService.getNotification(account!);
-
+	const setNotifications = async (notifications: any[]) => {
 		let dotsPrivateMessageCopy: any = {};
-		let dotsChannelCopy: any = { ...dotsChannel };
+		let dotsChannelCopy: any = {};
 		for (let notification of notifications) {
 			if (notification['type'] === NotificationType.Channel) {
-				if (!selectedChannel && notification['name'] in dotsChannelCopy)
-					dotsChannelCopy[notification.name] += 1;
-				else if (selectedChannel && notification['name'] === selectedChannel!.id) {
-					dotsChannelCopy[notification['name']] = 0;
-					await notificationService.deleteNotification(selectedChannel!.id, account!);
-				} else dotsChannelCopy[notification['name']] = 1;
+				const num = dotsChannelCopy[notification['name']] || 0;
+				dotsChannelCopy[notification['name']] = num + 1;
 			} else {
-				if (!selectedRoom && notification['name'] in dotsPrivateMessageCopy) {
-					dotsPrivateMessageCopy[notification.name] += 1;
-				} else if (selectedRoom && notification['name'] === selectedRoom!.id) {
-					dotsPrivateMessageCopy[notification['name']] = 0;
-					await notificationService.deleteNotification(selectedRoom!.id, account!);
-				} else dotsPrivateMessageCopy[notification['name']] = 1;
+				const num = dotsPrivateMessageCopy[notification['name']] || 0;
+				dotsPrivateMessageCopy[notification['name']] = num + 1;
 			}
 		}
 		if (JSON.stringify(dotsPrivateMessageCopy) !== JSON.stringify(dotsPrivateMessage))
@@ -149,30 +149,46 @@ export default function CurrentSideLeftContent() {
 		if (JSON.stringify(dotsChannelCopy) !== JSON.stringify(dotsChannel)) {
 			setDotsChannel(dotsChannelCopy);
 		}
+	};
+	// Function to get notification from db and assign them to the state variable
+	async function setRoomNotifications(notifications: any[], account: string) {
+		try {
+			let dotsPrivateMessageCopy: any = { ...dotsPrivateMessage };
+			let dotsChannelCopy: any = { ...dotsChannel };
+			for (let notification of notifications) {
+				if (notification['type'] === NotificationType.Channel) {
+					if (selectedChannel && notification['name'] === selectedChannel!.id) {
+						dotsChannelCopy[notification['name']] = 0;
+						await notificationService.deleteNotification(selectedChannel!.id, account!);
+						getStaticNotifications();
+					}
+				} else {
+					if (selectedRoom && notification['name'] === selectedRoom!.id) {
+						dotsPrivateMessageCopy[notification['name']] = 0;
+						await notificationService.deleteNotification(selectedRoom!.id, account!);
+						getStaticNotifications();
+					}
+				}
+			}
+			if (JSON.stringify(dotsPrivateMessageCopy) !== JSON.stringify(dotsPrivateMessage))
+				setDotsPrivateMessage(dotsPrivateMessageCopy);
+			if (JSON.stringify(dotsChannelCopy) !== JSON.stringify(dotsChannel)) {
+				setDotsChannel(dotsChannelCopy);
+			}
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	// LISTENING WS =====================================================================
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);
-		};
-	});
+		if (walletAddress && lastAnnouncement) setChannelsNotifications(lastAnnouncement);
+	}, [lastAnnouncement, walletAddress]);
 
 	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_MESSAGE, handleReceiveMessage);
-		};
-	});
-
-	useEffect(() => {
-		subscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
-		return () => {
-			unSubscribeToEvent(EventType.RECEIVE_USERS_STATUS, handleUsersStatus);
-		};
-	}, [onlineUsers, handleUsersStatus]);
+		if (walletAddress && lastMessage) setRoomsNotifications(lastMessage);
+	}, [lastMessage, walletAddress]);
 
 	useEffect(() => {
 		if (currentProfile) websocketService.getUsersStatus(currentProfile);
@@ -184,11 +200,20 @@ export default function CurrentSideLeftContent() {
 	}, [currentSide, account]);
 
 	useEffect(() => {
-		const account = localStorage.getItem('userAccount');
-		if (account) getAndSetRoomNotifications(account);
-	}, [selectedRoom, selectedChannel]);
+		if (staticNotifications) setNotifications(staticNotifications);
+	}, [staticNotifications]);
 
-	if (!currentSide) return <>No side selected</>;
+	useEffect(() => {
+		if ((selectedRoom || selectedChannel) && staticNotifications && walletAddress)
+			setRoomNotifications(staticNotifications, walletAddress);
+	}, [selectedRoom, selectedChannel, staticNotifications, walletAddress]);
+
+	if (!currentSide)
+		return (
+			<div className="my-4 mx-2">
+				<Skeleton />
+			</div>
+		);
 
 	return (
 		<>
@@ -238,7 +263,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Members ({currentSide.profiles.length || 0})</p>
+							<p className="size-14">Members ({numberOfMembers || 0})</p>
 						</span>
 					)}
 				>
@@ -268,7 +293,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Conversations ({currentSide.profiles.length || 0})</p>
+							<p className="size-14">Conversations ({numberOfConversations || 0})</p>
 						</span>
 					)}
 				>

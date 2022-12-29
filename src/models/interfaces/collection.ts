@@ -16,7 +16,7 @@ export class Collection {
 	totalBalance: number;
 	numDistinctTokensOwned: number;
 	ownedCount: number;
-	sideCount: number | undefined;
+	sideCount: number;
 	floorPrice: number;
 	totalVolume: number;
 	traits: Trait[];
