@@ -28,11 +28,22 @@ export const appDatasSlice = createSlice({
 	initialState,
 	reducers: {
 		setCurrentSide: (state: AppDatas, action: PayloadAction<Side | null>) => {
-			if (action.payload) state.currentSide = { ...action.payload };
+			if (action.payload) state.currentSide = action.payload;
 			else state.currentSide = null;
 		},
-		updateCurrentSideProfile: (state: AppDatas, action: PayloadAction<Profile>) => {
+		addProfileToCurrentSide: (state: AppDatas, action: PayloadAction<Profile>) => {
 			state.currentSide = update(state.currentSide, { profiles: { $push: [action.payload] } });
+		},
+		updateProfileInSide: (state: AppDatas, action: PayloadAction<{ key: string; value: any; id: string }>) => {
+			if (state.currentSide) {
+				const index = state.currentSide.profiles.findIndex(p => p.id === action.payload.id);
+				if (index !== -1) {
+					const profiles = update(state.currentSide.profiles, {
+						[index]: { [action.payload.key]: { $set: action.payload.value } }
+					});
+					state.currentSide = update(state.currentSide, { profiles: { $set: profiles } });
+				}
+			}
 		},
 		setSelectedChannel: (state: AppDatas, action: PayloadAction<Channel | null>) => {
 			state.selectedChannel = action.payload;
@@ -75,7 +86,8 @@ export const {
 	setSettingsOpen,
 	setEligibilityOpen,
 	setLeaveSideOpen,
-	updateCurrentSideProfile
+	addProfileToCurrentSide,
+	updateProfileInSide
 } = appDatasSlice.actions;
 
 export default appDatasSlice.reducer;

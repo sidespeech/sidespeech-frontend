@@ -187,9 +187,14 @@ export default function CurrentSide() {
 
 					// If side is active and the user is already in the Side
 					else if (isInTheSide) {
-						dispatch(setCurrentSide(res));
-						dispatch(setCurrentProfile(res));
-						dispatch(setSelectedChannel(res.channels.find(c => c.index === 0) || res.channels[0]));
+						if (isInTheSide.isBlacklisted) {
+							toast.error('You have been banned from this side');
+							navigate('/');
+						} else {
+							dispatch(setCurrentSide(res));
+							dispatch(setCurrentProfile(res));
+							dispatch(setSelectedChannel(res.channels.find(c => c.index === 0) || res.channels[0]));
+						}
 					}
 
 					// If side is active but the user is not in the Side

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import defaultPP from '../../../../assets/default-pp.png';
 import { fixURL, getRoleColor, reduceWalletAddress } from '../../../../helpers/utilities';
 import { Profile } from '../../../../models/Profile';
 import { Side } from '../../../../models/Side';
 import { User } from '../../../../models/User';
+import { updateProfileInSide } from '../../../../redux/Slices/AppDatasSlice';
 import profileService from '../../../../services/api-services/profile.service';
 import ConfirmationModal from '../../../Modals/ConfirmationModal';
 import LeaveSideConfirmationModal from '../../../Modals/LeaveSideConfirmationModal';
@@ -11,11 +14,11 @@ import Button from '../../../ui-components/Button';
 import CustomSelect from '../../../ui-components/CustomSelect';
 
 export default function MemberListItem({ side, user, isAdmin }: { side: Side; user: Profile; isAdmin: boolean }) {
-	const [isCreator, setIsCreator] = useState<boolean>(false);
-	const [connectedUserIsCreator, setConnectedUserIsCreator] = useState<boolean>(false);
 	const [newRole, setNewRole] = useState('');
 	const [userToEject, setUserToEject] = useState<Profile | undefined>(undefined);
 	const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false);
+
+	const dispatch = useDispatch();
 
 	const handleRoleChange = (event: any) => {
 		setNewRole(event.target.value);
@@ -36,8 +39,15 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 
 	const handleConfirm = async (value: boolean) => {
 		if (value && userToEject) {
-			await profileService.blacklistProfile(side.id, userToEject?.id, true);
-			window.location.reload();
+			try {
+				await profileService.blacklistProfile(side.id, userToEject.id, true);
+				dispatch(updateProfileInSide({ key: 'isBlacklisted', value, id: userToEject.id }));
+			} catch (error) {
+				console.log(error);
+				toast.error('Error when banning this user.', { toastId: 111 });
+			} finally {
+				setConfirmationModalOpen(false);
+			}
 		} else {
 			setUserToEject(undefined);
 			setConfirmationModalOpen(false);
@@ -45,11 +55,16 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 	};
 
 	const removeFromBlacklist = async (user: any) => {
-		await profileService.blacklistProfile(side.id, user.id, false);
-		window.location.reload();
+		try {
+			await profileService.blacklistProfile(side.id, user.id, false);
+			dispatch(updateProfileInSide({ key: 'isBlacklisted', value: false, id: user.id }));
+		} catch (error) {
+			console.log(error);
+			toast.error('Error when un-banning this user.', { toastId: 112 });
+		} finally {
+			setConfirmationModalOpen(false);
+		}
 	};
-
-	const handleSaveRole = async () => {};
 
 	const userImg =
 		typeof user?.user?.userAvatar === 'string' ? JSON.parse(user.user.userAvatar)?.metadata?.thumbnail : null;
@@ -100,11 +115,11 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 				{getRole(user['role']) !== 'Administrator' ? (
 					!user['isBlacklisted'] ? (
 						<Button classes="eject-btn" width="100%" onClick={() => onClickEject(user)}>
-							<i className="fa-solid fa-right-from-bracket mr-1"></i> Eject
+							<i className="fa-solid fa-right-from-bracket mr-1"></i> Block
 						</Button>
 					) : (
 						<Button classes="remove-btn" width="100%" onClick={() => removeFromBlacklist(user)}>
-							<i className="fa-solid fa-right-from-bracket mr-1"></i> Invite
+							<i className="fa-solid fa-right-from-bracket mr-1"></i> Unblock
 						</Button>
 					)
 				) : null}
@@ -112,7 +127,7 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 			{confirmationModalOpen && (
 				<ConfirmationModal
 					message={
-						<span className="size-20">Are you sure you want to eject {userToEject?.user.username}?</span>
+						<span className="size-20">Are you sure you want to blacklist {userToEject?.user.username}?</span>
 					}
 					handleConfirm={handleConfirm}
 					setIsConfirmationModalOpen={setConfirmationModalOpen}

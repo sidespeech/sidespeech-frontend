@@ -72,7 +72,7 @@ export default function SideUserList({
 
 	return currentProfile ? (
 		<SideUserListStyled className="f-column align-start w-100">
-			{currentSide?.profiles.map((p: Profile, index: number) => {
+			{currentSide?.getActiveProfiles().map((p: Profile, index: number) => {
 				const id = getRandomId();
 				const isMe = p.id === currentProfile?.id;
 				const room = currentProfile?.getRoom(p.id);

@@ -78,7 +78,7 @@ const MembersListStyled = styled.div`
 			${breakpoints(
 				size.lg,
 				`{
-				grid-template-columns: 50% 37.5% 12.5%;
+				grid-template-columns: 50% 35% 15%;
 				background-color: transparent;
 				padding: 0;
 			}`
@@ -102,8 +102,8 @@ const MembersListStyled = styled.div`
 			border-radius: 3px;
 		}
 		& .remove-btn {
-			background-color: var(--green-opacity);
-			color: var(--green);
+			background-color: var(--warning-opacity);
+			color: var(--warning);
 			padding: 0 0.5rem;
 			height: 30px;
 			border-radius: 3px;
@@ -118,7 +118,7 @@ export default function MembersList({ currentSide }: { currentSide: Side }) {
 
 	useEffect(() => {
 		setFilteredProfiles(_.orderBy(currentSide.profiles, m => m['role']));
-	}, []);
+	}, [currentSide]);
 
 	const isAdmin = currentProfile?.role === Role.Admin;
 
