@@ -92,7 +92,7 @@ export default function UserBadge({
 					<img src={connectionDot} />
 				</span>
 			)}
-			<WalletAddress onClick={handleClickName} color={color} weight={weight} fontSize={fontSize}>
+			<WalletAddress color={color} weight={weight} fontSize={fontSize}>
 				{address ? reduceWalletAddress(address) : username}
 			</WalletAddress>
 		</div>

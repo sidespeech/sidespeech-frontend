@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { cloneDeep } from 'lodash';
 import { InitialStateUpdateSide } from '../../components/CurrentColony/settings/informations/Information';
 import { InitialStateSide } from '../../components/NewSide/NewSide';
 import { BASE_URL } from '../../constants/constants';
@@ -129,24 +129,16 @@ export async function getSidesMetadata(sides: any[], userCollectionsData?: any, 
 				const conditions = Object.keys(side.conditions);
 				conditions.pop();
 				const count = side.collectionSides.length;
-				let parsedSide = {
-					...side,
-					firstCollection,
-					collectionsCount: count
-				};
+				let parsedSide = side;
+				parsedSide.firstCollection = firstCollection;
+				parsedSide.collectionsCount = count;
 				if (!_.isEmpty(userCollectionsData)) {
 					// eslint-disable-next-line
 					const [_, eligible] = checkUserEligibility(userCollectionsData, parsedSide);
-					parsedSide = {
-						...parsedSide,
-						eligible
-					};
+					parsedSide.eligible = eligible;
 				}
 				if (userSides) {
-					parsedSide = {
-						...parsedSide,
-						joined: !!userSides?.filter(side => side.id === parsedSide.id)?.[0]
-					};
+					parsedSide.joined = !!userSides?.filter(side => side.id === parsedSide.id)?.[0];
 				}
 				return parsedSide;
 			}

@@ -168,39 +168,40 @@ export default function UserSides() {
 	return (
 		<>
 			<UserSidesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
-				{userData.sides?.map((c, i) => {
-					return (
-						<>
-							<div
-								data-tip
-								data-for={c.id}
-								onClick={() => {
-									displaySide(c);
-								}}
-								className={`colony-badge pointer ${id === c.name ? 'active' : ''}`}
-								style={{ backgroundColor: isColor(c.sideImage) ? c.sideImage : '' }}
-								key={c.id}
-							>
-								{!isColor(c.sideImage) ? (
-									<img alt="colony-icon" src={c.sideImage} />
-								) : (
-									<div>{c.name[0]}</div>
-								)}
-								{c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
-							</div>
-							<ReactTooltip backgroundColor="var(--panels)" id={c.id} effect="solid">
-								{c.name}
-							</ReactTooltip>
-						</>
-					);
-				})}
+				{userData.sides
+					?.filter(s => !s.profiles[0].isBlacklisted)
+					.map((c, i) => {
+						return (
+							<>
+								<div
+									data-tip
+									data-for={c.id}
+									onClick={() => {
+										displaySide(c);
+									}}
+									className={`colony-badge pointer ${id === c.name ? 'active' : ''}`}
+									style={{ backgroundColor: isColor(c.sideImage) ? c.sideImage : '' }}
+									key={c.id}
+								>
+									{!isColor(c.sideImage) ? (
+										<img alt="colony-icon" src={c.sideImage} />
+									) : (
+										<div>{c.name[0]}</div>
+									)}
+									{c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
+								</div>
+								<ReactTooltip backgroundColor="var(--panels)" id={c.id} effect="solid">
+									{c.name}
+								</ReactTooltip>
+							</>
+						);
+					})}
 				{/* <Link to={"/new-side"}>
           <i
             className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark"
             // onClick={() => changeStateModal(true)}
           ></i>
         </Link> */}
-
 			</UserSidesStyled>
 		</>
 	);

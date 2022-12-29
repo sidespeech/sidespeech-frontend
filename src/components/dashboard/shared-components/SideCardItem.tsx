@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
 import useWalletAddress from '../../../hooks/useWalletAddress';
 import { OpenSeaRequestStatus } from '../../../models/interfaces/collection';
+import { Profile, Role } from '../../../models/Profile';
 import { Side } from '../../../models/Side';
 import ClampLines from '../../ui-components/ClampLines';
 import SideCardJoinActions from './SideCardJoinActions';
@@ -24,6 +25,20 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
 	background-color: var(--black-transparency-20);
 	border-radius: 10px;
 	overflow: hidden;
+	position: relative;
+	.oops-container {
+		background-color: var(--red);
+		color: var(--white);
+		position: absolute;
+		height: 50px;
+		top: 0px;
+		left: 0px;
+		z-index: 50;
+		width: 100%;
+		padding: 10px 13px;
+		font-weight: 700;
+		font-size: 14px;
+	}
 	.cover-image {
 		position: relative;
 		display: flex;
@@ -143,7 +158,8 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 	const { walletAddress } = useWalletAddress();
 
 	const handleNavigate = () => {
-		if (!side.joined || !side.eligible) return;
+		const sideProfile: Profile = userProfiles.find(profile => profile.side.id === side.id);
+		if (!side.joined || !side.eligible || sideProfile.isBlacklisted) return;
 		navigate(`/side/${side.name.replace(/\s/g, '-').toLowerCase()}`);
 	};
 
@@ -168,8 +184,13 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 				});
 	});
 
+	const sideProfile: Profile = userProfiles.find(profile => profile.side.id === side.id);
+
 	return (
 		<SideCardItemStyled coverImage={side.coverImage || side.firstCollection?.imageUrl}>
+			{sideProfile && sideProfile.isBlacklisted && (
+				<div className="oops-container">Oops... You have been banned from this side.</div>
+			)}
 			<div className={`cover-image ${side.joined ? 'pointer' : ''}`} onClick={handleNavigate}>
 				<div className="flex align-center title-wrapper">
 					<div className="avatar">

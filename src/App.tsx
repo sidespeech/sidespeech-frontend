@@ -24,7 +24,7 @@ import { RootState } from './redux/store/app.store';
 import Spinner from './components/ui-components/Spinner';
 import useWalletAddress from './hooks/useWalletAddress';
 import SideEligibilityModal from './components/Modals/SideEligibilityModal';
-import { setEligibilityOpen, setLeaveSideOpen, updateCurrentSideProfile } from './redux/Slices/AppDatasSlice';
+import { setEligibilityOpen, setLeaveSideOpen, addProfileToCurrentSide } from './redux/Slices/AppDatasSlice';
 import useIsSideAdmin from './hooks/useIsSideAdmin';
 import LeaveSideConfirmationModal from './components/Modals/LeaveSideConfirmationModal';
 import { subscribeToEvent, unSubscribeToEvent } from './helpers/CustomEvent';
@@ -45,7 +45,7 @@ function App() {
 	const { loadingWallet, walletAddress } = useWalletAddress();
 
 	const userData = useSelector((state: RootState) => state.user);
-	const { openEligibilityModal, openLeaveSideModal } = useSelector((state: RootState) => state.appDatas);
+	const { openEligibilityModal, openLeaveSideModal, currentSide } = useSelector((state: RootState) => state.appDatas);
 
 	const [onboarding, setCheckingOnboarding] = useState<boolean>(true);
 	const [fetchingUser, setFetchingUser] = useState<boolean>(false);
@@ -74,7 +74,7 @@ function App() {
 	const handleNewProfile = ({ detail }: { detail: Profile }) => {
 		if (detail.user.id !== userData.user?.id) {
 			dispatch(addProfileToSide(detail));
-			dispatch(updateCurrentSideProfile(detail));
+			if (detail.side.id === currentSide?.id) dispatch(addProfileToCurrentSide(detail));
 		}
 	};
 
@@ -83,7 +83,7 @@ function App() {
 		return () => {
 			unSubscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
 		};
-	}, [userData.sides]);
+	}, [userData.sides, currentSide]);
 
 	useEffect(() => {
 		if (!onboarding && !fetchingUser) {
