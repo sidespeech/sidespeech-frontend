@@ -171,7 +171,8 @@ export default function ChatComponent(props: IChatComponentProps) {
 	}, [selectedRoom]);
 
 	useEffect(() => {
-		if (walletAddress && lastMessage) setMessages(prevState => [...prevState, lastMessage]);
+		if (walletAddress && lastMessage && lastMessage.room?.id === selectedRoom?.id)
+			setMessages(prevState => [...prevState, lastMessage]);
 	}, [lastMessage, walletAddress]);
 
 	const getUserBySenderId = (senderId: string): User | undefined => {

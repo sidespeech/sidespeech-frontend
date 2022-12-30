@@ -40,7 +40,6 @@ const UserSidesStyled = styled.div`
 		font-size: 27px;
 		font-weight: 700;
 		text-transform: uppercase;
-		overflow: hidden;
 
 		&.active {
 			border: 2px solid var(--primary);
@@ -73,7 +72,7 @@ export default function UserSides() {
 	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
 	const [side, setSide] = useState<Side | null>(null);
 
-	const { lastAnnouncement, lastMessage, staticNotifications } = useNotificationsContext();
+	const { getStaticNotifications, lastAnnouncement, lastMessage, staticNotifications } = useNotificationsContext();
 	const { walletAddress } = useWalletAddress();
 
 	const [dots, setDots] = useState<any>({});
@@ -99,7 +98,7 @@ export default function UserSides() {
 				});
 			}
 		}
-	}, [userData, currentSide, lastAnnouncement]);
+	}, [userData, currentSide, lastAnnouncement, walletAddress]);
 
 	useEffect(() => {
 		if (walletAddress) {
@@ -115,16 +114,15 @@ export default function UserSides() {
 				});
 			}
 		}
-	}, [userData, currentSide, lastMessage]);
+	}, [userData, currentSide, lastMessage, walletAddress]);
 	// LISTENING WS =====================================================================
 
 	// Function to get notification from db and assign them to the state variable
 	async function setRoomNotifications(notifications: any[]) {
 		let dots_object: any = {};
-		const notifs = await notificationService.getNotification(walletAddress!);
 
 		const currentChannelsIds = currentSide?.channels?.map((c: any) => c.id);
-		for (let notification of notifs) {
+		for (let notification of notifications) {
 			// If the message is for current Side
 			if (
 				currentChannelsIds?.includes(notification['name']) ||
@@ -146,14 +144,24 @@ export default function UserSides() {
 						});
 					});
 				}
-				if (currentSide && sideFounded && sideFounded!['id'] !== currentSide['id']) {
+				if (sideFounded && sideFounded?.id !== currentSide?.id) {
 					const number = dots_object[sideFounded!['id']] || 0;
 					dots_object[sideFounded!['id']] = number + 1;
 				}
 			}
 		}
-		notifs.length ? setDots(dots_object) : setDots({});
+		notifications.length ? setDots(dots_object) : setDots({});
 	}
+
+	useEffect(() => {
+		if (currentSide?.id) {
+			setDots((prevState: any) => ({
+				...prevState,
+				[currentSide.id]: 0
+			}));
+			getStaticNotifications();
+		}
+	}, [currentSide]);
 
 	useEffect(() => {
 		if (staticNotifications.length && walletAddress) setRoomNotifications(staticNotifications);

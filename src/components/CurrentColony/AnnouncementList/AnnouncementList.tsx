@@ -94,7 +94,8 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
 	}, [announcements, announcementId]);
 
 	useEffect(() => {
-		if (walletAddress && lastAnnouncement) setAnnouncements(prevState => [...prevState, lastAnnouncement]);
+		if (walletAddress && lastAnnouncement?.channelId === selectedChannel?.id)
+			setAnnouncements((prevState: any) => [...prevState, lastAnnouncement]);
 	}, [lastAnnouncement, walletAddress]);
 
 	useEffect(() => {
