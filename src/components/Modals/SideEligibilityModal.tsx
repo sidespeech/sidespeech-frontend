@@ -154,8 +154,11 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 	const handleNewProfile = ({ detail }: { detail: Profile }) => {
 		if (detail.user.id === user?.id) {
 			props.setDisplayEligibility?.(false);
-			dispatch(updateProfiles(new Profile(detail)));
-			dispatch(addUserParsedSide(props.selectedSide));
+			const profile = new Profile(detail);
+			dispatch(updateProfiles(profile));
+			const side = props.selectedSide;
+			side.profiles.push(profile);
+			dispatch(addUserParsedSide(side));
 			toast.success('Great! You join the side', { toastId: 26 });
 			navigate('/side/' + props.selectedSide.name);
 			setIsLoading(false);

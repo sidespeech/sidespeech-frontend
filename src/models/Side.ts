@@ -35,6 +35,7 @@ export class Side {
 	metadataSides: MetadataSides[];
 	collectionSides: CollectionSides[];
 	required: boolean;
+	slug: string;
 
 	constructor(_data: any) {
 		this.channels = _data.channels ? _data.channels : [];
@@ -67,6 +68,7 @@ export class Side {
 			? _data.collectionSides.map((cs: any) => new CollectionSides(cs))
 			: [];
 		this.required = _data.required;
+		this.slug = _data.slug;
 	}
 
 	getActiveProfiles(): Profile[] {
