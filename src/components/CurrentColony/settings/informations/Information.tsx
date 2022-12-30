@@ -175,6 +175,7 @@ const initialStateUpdateSide = {
 };
 
 export default function Informations({
+	className,
 	currentSide,
 	userData,
 	onChangeNewSideName,
@@ -182,6 +183,7 @@ export default function Informations({
 	onChangeNewSideDescription,
 	formError
 }: {
+	className?: string;
 	userData?: any;
 	currentSide: any;
 	onChangeNewSideName?: any;
@@ -224,7 +226,7 @@ export default function Informations({
 		});
 		reader.readAsDataURL(file);
 		if (file.size > 5000000) {
-			toast.error('The image size has to be smaller than 5mb',{toastId: 1030});
+			toast.error('The image size has to be smaller than 5mb', { toastId: 1030 });
 			return;
 		}
 		setFormData({ ...formData, sideImage: image });
@@ -288,7 +290,7 @@ export default function Informations({
 	};
 
 	return (
-		<InformationsStyled className="fade-in">
+		<InformationsStyled className={className}>
 			{/* Profile Picture Section */}
 			<div className="f-column">
 				<div className="text-primary-light mb-2 text fw-600 size-13">Side Icon</div>

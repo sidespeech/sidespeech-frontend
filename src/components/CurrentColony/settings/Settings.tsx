@@ -191,6 +191,7 @@ export default function Settings() {
 	const { currentSide, settingsOpen } = useSelector((state: RootState) => state.appDatas);
 	const userData = useSelector((state: RootState) => state.user);
 
+	const [animate, setAnimate] = useState<boolean>(true);
 	const [tabs, setTabs] = useState<any>(initialStateTabs);
 	const { isMobileMenuOpen, setIsMobileMenuOpen } = useMiddleSide();
 
@@ -205,9 +206,10 @@ export default function Settings() {
 			}
 		}
 		setTabs(currentTabState);
+		setTimeout(() => {
+			setAnimate(false);
+		}, 500);
 	};
-
-
 
 	useEffect(() => {
 		if (!currentSide) {
@@ -387,7 +389,11 @@ export default function Settings() {
 								<div key={index}>
 									{submenu['items'].map((subtitle: any, index: number) => {
 										return subtitle['label'] == 'Informations' && subtitle['active'] ? (
-											<Informations currentSide={currentSide} userData={userData} />
+											<Informations
+												className={animate ? 'fade-in' : ''}
+												currentSide={currentSide}
+												userData={userData}
+											/>
 										) : subtitle['label'] == 'Members' && subtitle['active'] ? (
 											<MembersList currentSide={currentSide} />
 										) : subtitle['label'] == 'Requests' && subtitle['active'] ? (
@@ -401,7 +407,11 @@ export default function Settings() {
 										) : subtitle['label'] == 'Invitation' && subtitle['active'] ? (
 											<Invitation currentSide={currentSide} userData={userData} />
 										) : subtitle['label'] == 'Account' && subtitle['active'] ? (
-											<SideProfileAccount currentSide={currentSide} userData={userData} />
+											<SideProfileAccount
+												className={animate ? 'fade-in' : ''}
+												currentSide={currentSide}
+												userData={userData}
+											/>
 										) : null;
 										// (subtitle['label'] == 'Eligibility' && subtitle['active']) ? <Eligibility currentSide={currentSide} /> : null
 									})}

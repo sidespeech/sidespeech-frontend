@@ -90,7 +90,7 @@ export default function Requests({
 	return (
 		<RequestsStyled>
 			{/* Search Section */}
-			<div className="f-column mt-5 fade-in">
+			<div className="f-column mt-5">
 				<div className="text-primary-light mb-3 text fw-600">They want to join your side</div>
 				<div className="flex align-center justify-between mr-5">
 					<InputText
@@ -139,7 +139,7 @@ export default function Requests({
 			{requests.length ? (
 				requests.map((request, index) => {
 					return (
-						<div className="f-column mt-3 requests-list fade-in-delay" key={index}>
+						<div className="f-column mt-3 requests-list" key={index}>
 							<div className="flex align-center justify-between">
 								<div>
 									<small className="date-label">
