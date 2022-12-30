@@ -182,6 +182,7 @@ export default function CurrentSide() {
 					// If side is inactive
 					if (res.status === SideStatus.inactive) {
 						toast.info('This side is currently inactive', { toastId: 36 });
+						dispatch(setEligibilityOpen({ open: true, side: res }));
 						dispatch(setCurrentSide(res));
 					}
 
