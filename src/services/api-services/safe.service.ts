@@ -8,6 +8,7 @@ import { ethers } from 'ethers';
 import EthersAdapter, { EthersTransactionOptions } from '@safe-global/safe-ethers-lib'
 import openseaService from '../../services/web3-services/opensea.service';
 import { ABI, OPENSEA_ABI } from "../../constants/ABI";
+import { Transaction } from "../../models/Transaction";
 
 // Create an API Service class
 let instance: SafeService;
@@ -27,26 +28,6 @@ class SafeService extends BaseApiService {
 
   async createSafe(signer: ethers.providers.JsonRpcSigner, ownerAddress: string, sideId: string, profileId: string) {
     const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer });
-
-    // const chainId = await ethAdapter.getChainId();    
-    // const contractNetworks: ContractNetworksConfig = {
-    //   [chainId]: {
-    //     multiSendAddress:
-    //       getMultiSendDeployment()!.networkAddresses[chainId.toString()],
-    //     multiSendCallOnlyAddress:
-    //       getMultiSendCallOnlyDeployment()!.networkAddresses[chainId.toString()],
-    //     safeMasterCopyAddress:
-    //       getSafeL2SingletonDeployment()!.networkAddresses[chainId.toString()],
-    //     safeProxyFactoryAddress:
-    //       getProxyFactoryDeployment()!.networkAddresses[chainId.toString()],
-    //     fallbackHandlerAddress:
-    //       getFallbackHandlerDeployment()!.networkAddresses[chainId.toString()],
-    //     signMessageLibAddress:
-    //       getSignMessageLibDeployment()!.networkAddresses[chainId.toString()],
-    //     createCallAddress:
-    //       getCreateCallDeployment()!.networkAddresses[chainId.toString()]
-    //   }
-    // };
 
     const callback = (txHash: string): void => {
       console.log({ txHash })
@@ -108,25 +89,19 @@ class SafeService extends BaseApiService {
 
     const contractInterface = new ethers.utils.Interface(OPENSEA_ABI);
 
-    // const data = contractInterface.encodeFunctionData('fulfillBasicOrder', [
-    //     to_address,
-    //     ethers.utils.parseUnits(value,"ether").toString()
-    // ]);
+    const data = contractInterface.encodeFunctionData('fulfillBasicOrder', [
+        nft_address,
+        ethers.utils.parseUnits(value,"ether").toString()
+    ]);
 
-    // safeSdk.executeTransaction(
-    //   OPENSEA_ADDRESS,
-    //   0,
-
-    // )
-
-    // const safeTransactionData: SafeTransactionDataPartial = {
-    //   to: OPENSEA_ADDRESS,
-    //   value: ethers.utils.parseUnits(value,"ether").toString(),
-    //   data: data,
-    //   gasPrice: 28000,
-    //   baseGas: 28000,
-    //   safeTxGas: 28000,
-    // }
+    const safeTransactionData: SafeTransactionDataPartial = {
+      to: OPENSEA_ADDRESS,
+      value: ethers.utils.parseUnits(value,"ether").toString(),
+      data: data,
+      gasPrice: 28000,
+      baseGas: 28000,
+      safeTxGas: 28000,
+    }
 
 
   }
@@ -153,25 +128,34 @@ class SafeService extends BaseApiService {
     });
 
     // Start with an empty array of transactions
-    const transactions: ethers.Transaction[] = [];
-
+    let transactions:any = [];
     // Iterate over the logs
     for (const log of logs) {
       // Get the transaction details
-      const transaction = await provider.getTransaction(log.transactionHash);
-      // Add the transaction to the array
-      transactions.push(transaction);
+      const etherTransaction = await provider.getTransactionReceipt(log.transactionHash);
+      console.log('etherTransaction :', etherTransaction);
+      // const formattedTransaction = {
+      //   txHash : etherTransaction['hash'],
+      //   blockNumber : etherTransaction['blockNumber'] || 0,
+      //   chainId : etherTransaction['chainId'],
+      //   from : etherTransaction['from'],
+      //   to : etherTransaction['to'] || '0x',
+      //   gasPrice : ethers.utils.formatEther(etherTransaction['gasPrice']!.toString()),
+      //   value : ethers.utils.formatEther(etherTransaction['value']!.toString()),
+      //   data : etherTransaction['data'],
+      //   nonce : etherTransaction['nonce'] || 0,
+      //   r : etherTransaction['r'] || '0x',
+      //   s : etherTransaction['s'] || '0x',
+      //   transactionIndex : ('transactionIndex' in etherTransaction) ? etherTransaction['transactionIndex'] : 1,
+      // }
+      // transactions.push(formattedTransaction);
     }
-
     return transactions
   }
   
   async payOutMembers(safeSdk: Safe, provider: ethers.providers.Web3Provider) {
     let transactions = await this.getAllTransactions(safeSdk.getAddress(), provider);
-
     console.log('transactions :', transactions)
-
-
   }
 
 
