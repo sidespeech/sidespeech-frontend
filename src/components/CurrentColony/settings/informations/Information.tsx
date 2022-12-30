@@ -224,7 +224,7 @@ export default function Informations({
 		});
 		reader.readAsDataURL(file);
 		if (file.size > 5000000) {
-			toast.error('The image size has to be smaller than 5mb');
+			toast.error('The image size has to be smaller than 5mb',{toastId: 1030});
 			return;
 		}
 		setFormData({ ...formData, sideImage: image });

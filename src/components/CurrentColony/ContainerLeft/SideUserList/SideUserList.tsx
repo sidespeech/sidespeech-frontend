@@ -57,7 +57,7 @@ export default function SideUserList({
 			// selecting the room
 			dispatch(setSelectedRoom(room));
 			dispatch(setSelectedChannel(null));
-			navigate(`/side/${currentSide?.name}`);
+			navigate(`/side/${currentSide?.slug}`);
 		} catch (error) {
 			console.error(error);
 			toast.error('There has been an error opening the room', {
@@ -196,7 +196,7 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 			// selecting the room
 			dispatch(setSelectedRoom(room));
 			dispatch(setSelectedChannel(null));
-			navigate(`/side/${currentSide?.name}`);
+			navigate(`/side/${currentSide?.slug}`);
 		} catch (error) {
 			console.error(error);
 			toast.error('There has been an error opening the room', {

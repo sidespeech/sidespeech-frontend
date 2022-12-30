@@ -174,7 +174,7 @@ const Invitations = ({}: InvitationsProps) => {
 			setFilteredInvitations(invitations);
 		} catch (error) {
 			console.error(error);
-			toast.error('Ooops! Something went wrong fetching invitations', { toastId: getRandomId() });
+			toast.error('Ooops! Something went wrong fetching invitations', { toastId: 1042 });
 		}
 	};
 

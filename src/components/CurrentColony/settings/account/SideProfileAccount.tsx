@@ -148,10 +148,10 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 					profilePicture: formData.avatar
 				});
 				dispatch(updateCurrentProfile(profile));
-				toast.success('Profile updated');
+				toast.success('Profile updated',{toastId: 1024});
 				setDisplayNftsCollection(false);
 			} catch (error) {
-				toast.error('error saving your profile avatar');
+				toast.error('error saving your profile avatar',{toastId: 1025});
 				setDisplayNftsCollection(false);
 			}
 		}
@@ -161,15 +161,15 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 		try {
 			if (userData['currentProfile']) {
 				const res = await profileService.leaveSide(userData['currentProfile']);
-				if (res['error']) toast.error(res['message']);
+				if (res['error']) toast.error(res['message'],{toastId: 1026});
 				else {
 					navigate('/');
 					dispatch(removeSide(userData['currentProfile'].side.id));
-					toast.success(res['message']);
+					toast.success(res['message'],{toastId: 1027});
 				}
 			}
 		} catch (error) {
-			toast.error('Error when leaving the side');
+			toast.error('Error when leaving the side',{toastId: 1028});
 		}
 	};
 

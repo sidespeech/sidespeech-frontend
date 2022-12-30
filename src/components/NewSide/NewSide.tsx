@@ -520,7 +520,7 @@ export default function NewSide() {
 			});
 			reader.readAsDataURL(file);
 			if (file.size > 5000000) {
-				toast.error('The image size has to be smaller than 5mb.');
+				toast.error('The image size has to be smaller than 5mb.',{toastId: 999});
 				return;
 			}
 		}
@@ -668,7 +668,7 @@ export default function NewSide() {
 
 	const handleAddNewChannel = () => {
 		if (channels.length >= 50) {
-			toast.error('You can not create more than 50 channels.');
+			toast.error('You can not create more than 50 channels.',{toastId: 2002});
 			return;
 		}
 		const newChannel: Partial<IChannelExtension> = {
@@ -753,7 +753,7 @@ export default function NewSide() {
 					sessionStorage.removeItem('create-side-data');
 					navigate('/side/' + newSide.name.replace(/\s/g, '-').toLowerCase());
 				} else {
-					toast.error('You do not meet the conditions to create this side.');
+					toast.error('You do not meet the conditions to create this side.',{toastId: 2004});
 				}
 			}
 		} catch (error) {

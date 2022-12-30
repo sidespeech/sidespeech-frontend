@@ -11,7 +11,8 @@ import { isColor } from '../../helpers/utilities';
 import ReactTooltip from 'react-tooltip';
 import { useNotificationsContext } from '../../providers/NotificationsProvider';
 import useWalletAddress from '../../hooks/useWalletAddress';
-import { setEligibilityOpen } from '../../redux/Slices/AppDatasSlice';
+import { setEligibilityOpen, setSelectedChannel } from '../../redux/Slices/AppDatasSlice';
+import notificationService from '../../services/api-services/notification.service';
 
 const UserSidesStyled = styled.div`
 	max-height: calc(100vh - 4rem - 48px);
@@ -39,6 +40,7 @@ const UserSidesStyled = styled.div`
 		font-size: 27px;
 		font-weight: 700;
 		text-transform: uppercase;
+		overflow: hidden;
 
 		&.active {
 			border: 2px solid var(--primary);
@@ -119,9 +121,10 @@ export default function UserSides() {
 	// Function to get notification from db and assign them to the state variable
 	async function setRoomNotifications(notifications: any[]) {
 		let dots_object: any = {};
+		const notifs = await notificationService.getNotification(walletAddress!);
 
 		const currentChannelsIds = currentSide?.channels?.map((c: any) => c.id);
-		for (let notification of notifications) {
+		for (let notification of notifs) {
 			// If the message is for current Side
 			if (
 				currentChannelsIds?.includes(notification['name']) ||
@@ -149,12 +152,12 @@ export default function UserSides() {
 				}
 			}
 		}
-		notifications.length ? setDots(dots_object) : setDots({});
+		notifs.length ? setDots(dots_object) : setDots({});
 	}
 
 	useEffect(() => {
-		if (staticNotifications.length) setRoomNotifications(staticNotifications);
-	}, [staticNotifications]);
+		if (staticNotifications.length && walletAddress) setRoomNotifications(staticNotifications);
+	}, [staticNotifications, walletAddress]);
 
 	useEffect(() => {
 		if (userData.user && side) {
@@ -179,7 +182,7 @@ export default function UserSides() {
 									onClick={() => {
 										displaySide(c);
 									}}
-									className={`colony-badge pointer ${id === c.name ? 'active' : ''}`}
+									className={`colony-badge pointer ${id === c.slug ? 'active' : ''}`}
 									style={{ backgroundColor: isColor(c.sideImage) ? c.sideImage : '' }}
 									key={c.id}
 								>

@@ -85,7 +85,7 @@ export default function AnnouncementItem({
 		} catch (error) {
 			console.error(error);
 			toast.error('There has been an error when commenting this announcement', {
-				toastId: getRandomId()
+				toastId: 145
 			});
 		}
 	};
