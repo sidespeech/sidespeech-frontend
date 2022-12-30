@@ -157,7 +157,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 			dispatch(updateProfiles(new Profile(detail)));
 			dispatch(addUserParsedSide(props.selectedSide));
 			toast.success('Great! You join the side', { toastId: 26 });
-			navigate('/side/' + props.selectedSide.name);
+			navigate('/side/' + props.selectedSide.name.replace(/\s/g, '-').toLowerCase());
 			setIsLoading(false);
 		}
 	};
