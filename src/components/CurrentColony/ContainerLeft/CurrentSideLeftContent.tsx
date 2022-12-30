@@ -105,7 +105,7 @@ export default function CurrentSideLeftContent() {
 		} catch (error) {
 			console.error(error);
 			toast.error('There has been an error opening the room', {
-				toastId: getRandomId()
+				toastId: 146
 			});
 		}
 	};
@@ -152,21 +152,20 @@ export default function CurrentSideLeftContent() {
 	};
 	// Function to get notification from db and assign them to the state variable
 	async function setRoomNotifications(notifications: any[], account: string) {
+		const notifs = await notificationService.getNotification(account!);
 		try {
 			let dotsPrivateMessageCopy: any = { ...dotsPrivateMessage };
 			let dotsChannelCopy: any = { ...dotsChannel };
-			for (let notification of notifications) {
+			for (let notification of notifs) {
 				if (notification['type'] === NotificationType.Channel) {
 					if (selectedChannel && notification['name'] === selectedChannel!.id) {
 						dotsChannelCopy[notification['name']] = 0;
 						await notificationService.deleteNotification(selectedChannel!.id, account!);
-						getStaticNotifications();
 					}
 				} else {
 					if (selectedRoom && notification['name'] === selectedRoom!.id) {
 						dotsPrivateMessageCopy[notification['name']] = 0;
 						await notificationService.deleteNotification(selectedRoom!.id, account!);
-						getStaticNotifications();
 					}
 				}
 			}
@@ -200,11 +199,11 @@ export default function CurrentSideLeftContent() {
 	}, [currentSide, account]);
 
 	useEffect(() => {
-		if (staticNotifications) setNotifications(staticNotifications);
+		if (staticNotifications.length) setNotifications(staticNotifications);
 	}, [staticNotifications]);
 
 	useEffect(() => {
-		if ((selectedRoom || selectedChannel) && staticNotifications && walletAddress)
+		if ((selectedRoom || selectedChannel) && staticNotifications.length && walletAddress)
 			setRoomNotifications(staticNotifications, walletAddress);
 	}, [selectedRoom, selectedChannel, staticNotifications, walletAddress]);
 
