@@ -47,8 +47,7 @@ const SidebarStyled = styled.div`
 export default function CurrentSideLeftContent() {
 	const { account, currentProfile } = useSelector((state: RootState) => state.user);
 
-	const { getStaticNotifications, lastAnnouncement, lastMessage, onlineUsers, staticNotifications } =
-		useNotificationsContext();
+	const { lastAnnouncement, lastMessage, onlineUsers, staticNotifications } = useNotificationsContext();
 	const { walletAddress } = useWalletAddress();
 
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);

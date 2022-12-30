@@ -1,10 +1,12 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { EventType } from '../constants/EventType';
 import { subscribeToEvent, unSubscribeToEvent } from '../helpers/CustomEvent';
 import useWalletAddress from '../hooks/useWalletAddress';
 import { Announcement } from '../models/Announcement';
 import { Comment } from '../models/Comment';
 import { MessageWithRoom } from '../models/Room';
+import { RootState } from '../redux/store/app.store';
 import notificationService from '../services/api-services/notification.service';
 
 interface NotificationsContextProps {
@@ -46,21 +48,23 @@ const NotificationsProvider = (props: any) => {
 	const [staticNotifications, setStaticNotifications] = useState<any[]>([]);
 
 	const { walletAddress } = useWalletAddress();
+	const { currentSide } = useSelector((state: RootState) => state.appDatas);
 
-	const clearNotificationsState = useCallback(() => {
+	const clearNotificationsState = useCallback((onlineUsers = true) => {
 		setLastAnnouncement(NotificationsContextInitialState.lastAnnouncement);
 		setLastComment(NotificationsContextInitialState.lastComment);
 		setLastMessage(NotificationsContextInitialState.lastMessage);
 		setNewAnnouncements(NotificationsContextInitialState.newAnnouncements);
 		setNewComments(NotificationsContextInitialState.newComments);
 		setNewMessages(NotificationsContextInitialState.newMessages);
-		setOnlineUsers(NotificationsContextInitialState.onlineUsers);
+		if (onlineUsers) setOnlineUsers(NotificationsContextInitialState.onlineUsers);
 		setStaticNotifications(NotificationsContextInitialState.staticNotifications);
 	}, []);
 
 	const getStaticNotifications = useCallback(async () => {
 		try {
 			if (!walletAddress) return;
+			clearNotificationsState(false);
 			const notifications = await notificationService.getNotification(walletAddress);
 			setStaticNotifications(notifications);
 		} catch (error) {
@@ -111,7 +115,7 @@ const NotificationsProvider = (props: any) => {
 
 	useEffect(() => {
 		if (walletAddress) getStaticNotifications();
-	}, [walletAddress]);
+	}, [currentSide, walletAddress]);
 
 	useEffect(() => {
 		subscribeToEvent(EventType.RECEIVE_ANNOUNCEMENT, handleReceiveAnnouncement);

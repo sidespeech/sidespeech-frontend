@@ -154,16 +154,6 @@ export default function UserSides() {
 	}
 
 	useEffect(() => {
-		if (currentSide?.id) {
-			setDots((prevState: any) => ({
-				...prevState,
-				[currentSide.id]: 0
-			}));
-			getStaticNotifications();
-		}
-	}, [currentSide]);
-
-	useEffect(() => {
 		if (staticNotifications.length && walletAddress) setRoomNotifications(staticNotifications);
 	}, [staticNotifications, walletAddress]);
 
