@@ -177,7 +177,7 @@ const MySides = ({ collections }: MySidesProps) => {
 				setFilteredSides(response);
 			} catch (error) {
 				console.error(error);
-				toast.error('Ooops! Something went wrong fetching your Sides', { toastId: getRandomId() });
+				toast.error('Ooops! Something went wrong fetching your Sides', { toastId: 1043 });
 			} finally {
 				setSidesLoading(false);
 			}

@@ -40,14 +40,14 @@ export default function LeaveSideConfirmationModal(
       await profileService.leaveSide(sideProfile);
       dispatch(removeSide(props.side.id));
       toast.success(`We are sorry to see you leave Side ${props.side.name}`, {
-        toastId: getRandomId(),
+        toastId: 2000,
       });
       props.setIsLeaveConfirmationModalOpen(false);
     } catch (error) {
       console.error(error);
       toast.error(
         `There has been an error trying to leave Side ${props.side.name}`,
-        { toastId: getRandomId() }
+        { toastId: 2001 }
       );
     } finally {
       setIsLoading(false);

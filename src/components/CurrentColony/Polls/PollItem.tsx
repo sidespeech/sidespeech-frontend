@@ -96,7 +96,7 @@ const PollItem = ({ authorizeComments, className, handleVote, isFirstItem, isThr
 		} catch (error) {
 			console.error(error);
 			toast.error('There has been an error when commenting this poll', {
-				toastId: getRandomId()
+				toastId: 36
 			});
 		}
 	};
