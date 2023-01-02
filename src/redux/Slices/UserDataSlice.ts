@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { UserTokensData } from '../../models/UserTokensData';
@@ -236,6 +236,14 @@ export const userDataSlice = createSlice({
 			if (index !== -1) {
 				state.sides = update(state.sides, { [index]: { profiles: { $push: [action.payload] } } });
 			}
+		},
+		updateSideActivity: (state: UserData, action: PayloadAction<Side>) => {
+			const index = state.sides.findIndex(s => s.id === action.payload.id);
+			if (index !== -1 && state.sides[index].status !== action.payload.status) {
+				const sides = update(state.sides, { [index]: { status: { $set: action.payload.status } } });
+				state.sides = sides;
+				console.log(current(state));
+			}
 		}
 	},
 	extraReducers: builder => {
@@ -274,7 +282,8 @@ export const {
 	updateCurrentProfile,
 	addRoomToProfile,
 	updateProfiles,
-	addProfileToSide
+	addProfileToSide,
+	updateSideActivity
 } = userDataSlice.actions;
 
 export default userDataSlice.reducer;
