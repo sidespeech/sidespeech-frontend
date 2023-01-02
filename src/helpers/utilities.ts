@@ -119,13 +119,15 @@ export interface ElligibilityResponse {
 }
 export function hasTraitInCollection(collection: Collection, trait: string): boolean {
 	if (!collection || !collection.nfts) return false;
-	return collection.nfts.some(nft => nft.metadata.attributes.find(a => a.trait_type.toLowerCase() === trait));
+	return (
+		collection.nfts.some(nft => nft.metadata.attributes?.find(a => a.trait_type.toLowerCase() === trait))
+	);
 }
 export function hasTraitValueInCollection(collection: Collection, trait: string, value: string): boolean {
 	if (!collection || !collection.nfts) return false;
 	return (
 		collection?.nfts.find(nft =>
-			nft.metadata.attributes.find(a => a.trait_type.toLowerCase() === trait && a.value.toLowerCase() === value)
+			nft.metadata.attributes?.find(a => a.trait_type.toLowerCase() === trait && a.value.toLowerCase() === value)
 		) !== undefined
 	);
 }
