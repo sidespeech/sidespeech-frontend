@@ -134,20 +134,19 @@ class SafeService extends BaseApiService {
       // Get the transaction details
       const etherTransaction = await provider.getTransactionReceipt(log.transactionHash);
       console.log('etherTransaction :', etherTransaction);
-      // const formattedTransaction = {
-      //   txHash : etherTransaction['hash'],
-      //   blockNumber : etherTransaction['blockNumber'] || 0,
-      //   chainId : etherTransaction['chainId'],
-      //   from : etherTransaction['from'],
-      //   to : etherTransaction['to'] || '0x',
-      //   gasPrice : ethers.utils.formatEther(etherTransaction['gasPrice']!.toString()),
-      //   value : ethers.utils.formatEther(etherTransaction['value']!.toString()),
-      //   data : etherTransaction['data'],
-      //   nonce : etherTransaction['nonce'] || 0,
-      //   r : etherTransaction['r'] || '0x',
-      //   s : etherTransaction['s'] || '0x',
-      //   transactionIndex : ('transactionIndex' in etherTransaction) ? etherTransaction['transactionIndex'] : 1,
-      // }
+      const formattedTransaction = {
+        txHash : etherTransaction['transactionHash'],
+        blockNumber : etherTransaction['blockNumber'],
+        from : etherTransaction['from'],
+        to : etherTransaction['to'],
+        gasUsed : ethers.utils.formatEther(etherTransaction['gasUsed']!.toString()),
+        value : ethers.utils.formatEther(etherTransaction['value']!.toString()),
+        data : etherTransaction['data'],
+        nonce : etherTransaction['nonce'] || 0,
+        r : etherTransaction['r'] || '0x',
+        s : etherTransaction['s'] || '0x',
+        transactionIndex : ('transactionIndex' in etherTransaction) ? etherTransaction['transactionIndex'] : 1,
+      }
       // transactions.push(formattedTransaction);
     }
     return transactions
