@@ -1288,50 +1288,20 @@ export const OPENSEA_ABI = [
         "stateMutability": "nonpayable",
         "type": "constructor"
     },
-    {
-        "inputs": [],
-        "name": "BadContractSignature",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "BadFraction",
-        "type": "error"
-    },
+    { "inputs": [], "name": "BadContractSignature", "type": "error" },
+    { "inputs": [], "name": "BadFraction", "type": "error" },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
+            { "internalType": "address", "name": "token", "type": "address" },
+            { "internalType": "address", "name": "from", "type": "address" },
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
         "name": "BadReturnValueFromERC20OnTransfer",
         "type": "error"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint8",
-                "name": "v",
-                "type": "uint8"
-            }
-        ],
+        "inputs": [{ "internalType": "uint8", "name": "v", "type": "uint8" }],
         "name": "BadSignatureV",
         "type": "error"
     },
@@ -1342,11 +1312,7 @@ export const OPENSEA_ABI = [
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "orderIndex",
-                "type": "uint256"
-            },
+            { "internalType": "uint256", "name": "orderIndex", "type": "uint256" },
             {
                 "internalType": "uint256",
                 "name": "considerationIndex",
@@ -1361,73 +1327,33 @@ export const OPENSEA_ABI = [
         "name": "ConsiderationNotMet",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "CriteriaNotEnabledForItem",
-        "type": "error"
-    },
+    { "inputs": [], "name": "CriteriaNotEnabledForItem", "type": "error" },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
+            { "internalType": "address", "name": "token", "type": "address" },
+            { "internalType": "address", "name": "from", "type": "address" },
+            { "internalType": "address", "name": "to", "type": "address" },
             {
                 "internalType": "uint256[]",
                 "name": "identifiers",
                 "type": "uint256[]"
             },
-            {
-                "internalType": "uint256[]",
-                "name": "amounts",
-                "type": "uint256[]"
-            }
+            { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }
         ],
         "name": "ERC1155BatchTransferGenericFailure",
         "type": "error"
     },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
+            { "internalType": "address", "name": "account", "type": "address" },
+            { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
         "name": "EtherTransferGenericFailure",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "InexactFraction",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "InsufficientEtherSupplied",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "Invalid1155BatchTransferEncoding",
-        "type": "error"
-    },
+    { "inputs": [], "name": "InexactFraction", "type": "error" },
+    { "inputs": [], "name": "InsufficientEtherSupplied", "type": "error" },
+    { "inputs": [], "name": "Invalid1155BatchTransferEncoding", "type": "error" },
     {
         "inputs": [],
         "name": "InvalidBasicOrderParameterEncoding",
@@ -1435,93 +1361,41 @@ export const OPENSEA_ABI = [
     },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "conduit",
-                "type": "address"
-            }
+            { "internalType": "address", "name": "conduit", "type": "address" }
         ],
         "name": "InvalidCallToConduit",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "InvalidCanceller",
-        "type": "error"
-    },
+    { "inputs": [], "name": "InvalidCanceller", "type": "error" },
     {
         "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "conduitKey",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "address",
-                "name": "conduit",
-                "type": "address"
-            }
+            { "internalType": "bytes32", "name": "conduitKey", "type": "bytes32" },
+            { "internalType": "address", "name": "conduit", "type": "address" }
         ],
         "name": "InvalidConduit",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "InvalidERC721TransferAmount",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "InvalidFulfillmentComponentData",
-        "type": "error"
-    },
+    { "inputs": [], "name": "InvalidERC721TransferAmount", "type": "error" },
+    { "inputs": [], "name": "InvalidFulfillmentComponentData", "type": "error" },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "value",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "value", "type": "uint256" }
         ],
         "name": "InvalidMsgValue",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "InvalidNativeOfferItem",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "InvalidProof",
-        "type": "error"
-    },
+    { "inputs": [], "name": "InvalidNativeOfferItem", "type": "error" },
+    { "inputs": [], "name": "InvalidProof", "type": "error" },
     {
         "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "orderHash",
-                "type": "bytes32"
-            }
+            { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" }
         ],
         "name": "InvalidRestrictedOrder",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "InvalidSignature",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "InvalidSigner",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "InvalidTime",
-        "type": "error"
-    },
+    { "inputs": [], "name": "InvalidSignature", "type": "error" },
+    { "inputs": [], "name": "InvalidSigner", "type": "error" },
+    { "inputs": [], "name": "InvalidTime", "type": "error" },
     {
         "inputs": [],
         "name": "MismatchedFulfillmentOfferAndConsiderationComponents",
@@ -1529,20 +1403,12 @@ export const OPENSEA_ABI = [
     },
     {
         "inputs": [
-            {
-                "internalType": "enum Side",
-                "name": "side",
-                "type": "uint8"
-            }
+            { "internalType": "enum Side", "name": "side", "type": "uint8" }
         ],
         "name": "MissingFulfillmentComponentOnAggregation",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "MissingItemAmount",
-        "type": "error"
-    },
+    { "inputs": [], "name": "MissingItemAmount", "type": "error" },
     {
         "inputs": [],
         "name": "MissingOriginalConsiderationItems",
@@ -1550,124 +1416,56 @@ export const OPENSEA_ABI = [
     },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
+            { "internalType": "address", "name": "account", "type": "address" }
         ],
         "name": "NoContract",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "NoReentrantCalls",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "NoSpecifiedOrdersAvailable",
-        "type": "error"
-    },
+    { "inputs": [], "name": "NoReentrantCalls", "type": "error" },
+    { "inputs": [], "name": "NoSpecifiedOrdersAvailable", "type": "error" },
     {
         "inputs": [],
         "name": "OfferAndConsiderationRequiredOnFulfillment",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "OfferCriteriaResolverOutOfRange",
-        "type": "error"
-    },
+    { "inputs": [], "name": "OfferCriteriaResolverOutOfRange", "type": "error" },
     {
         "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "orderHash",
-                "type": "bytes32"
-            }
+            { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" }
         ],
         "name": "OrderAlreadyFilled",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "OrderCriteriaResolverOutOfRange",
-        "type": "error"
-    },
+    { "inputs": [], "name": "OrderCriteriaResolverOutOfRange", "type": "error" },
     {
         "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "orderHash",
-                "type": "bytes32"
-            }
+            { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" }
         ],
         "name": "OrderIsCancelled",
         "type": "error"
     },
     {
         "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "orderHash",
-                "type": "bytes32"
-            }
+            { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" }
         ],
         "name": "OrderPartiallyFilled",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "PartialFillsNotEnabledForOrder",
-        "type": "error"
-    },
+    { "inputs": [], "name": "PartialFillsNotEnabledForOrder", "type": "error" },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "identifier",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
+            { "internalType": "address", "name": "token", "type": "address" },
+            { "internalType": "address", "name": "from", "type": "address" },
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "identifier", "type": "uint256" },
+            { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
         "name": "TokenTransferGenericFailure",
         "type": "error"
     },
-    {
-        "inputs": [],
-        "name": "UnresolvedConsiderationCriteria",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "UnresolvedOfferCriteria",
-        "type": "error"
-    },
-    {
-        "inputs": [],
-        "name": "UnusedItemParameters",
-        "type": "error"
-    },
+    { "inputs": [], "name": "UnresolvedConsiderationCriteria", "type": "error" },
+    { "inputs": [], "name": "UnresolvedOfferCriteria", "type": "error" },
+    { "inputs": [], "name": "UnusedItemParameters", "type": "error" },
     {
         "anonymous": false,
         "inputs": [
@@ -1746,21 +1544,13 @@ export const OPENSEA_ABI = [
                         "name": "itemType",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "address",
-                        "name": "token",
-                        "type": "address"
-                    },
+                    { "internalType": "address", "name": "token", "type": "address" },
                     {
                         "internalType": "uint256",
                         "name": "identifier",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "amount", "type": "uint256" }
                 ],
                 "indexed": false,
                 "internalType": "struct SpentItem[]",
@@ -1774,21 +1564,13 @@ export const OPENSEA_ABI = [
                         "name": "itemType",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "address",
-                        "name": "token",
-                        "type": "address"
-                    },
+                    { "internalType": "address", "name": "token", "type": "address" },
                     {
                         "internalType": "uint256",
                         "name": "identifier",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
+                    { "internalType": "uint256", "name": "amount", "type": "uint256" },
                     {
                         "internalType": "address payable",
                         "name": "recipient",
@@ -1833,16 +1615,8 @@ export const OPENSEA_ABI = [
         "inputs": [
             {
                 "components": [
-                    {
-                        "internalType": "address",
-                        "name": "offerer",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "zone",
-                        "type": "address"
-                    },
+                    { "internalType": "address", "name": "offerer", "type": "address" },
+                    { "internalType": "address", "name": "zone", "type": "address" },
                     {
                         "components": [
                             {
@@ -1850,11 +1624,7 @@ export const OPENSEA_ABI = [
                                 "name": "itemType",
                                 "type": "uint8"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "token",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "token", "type": "address" },
                             {
                                 "internalType": "uint256",
                                 "name": "identifierOrCriteria",
@@ -1882,11 +1652,7 @@ export const OPENSEA_ABI = [
                                 "name": "itemType",
                                 "type": "uint8"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "token",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "token", "type": "address" },
                             {
                                 "internalType": "uint256",
                                 "name": "identifierOrCriteria",
@@ -1917,36 +1683,16 @@ export const OPENSEA_ABI = [
                         "name": "orderType",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "startTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "endTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "zoneHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "salt",
-                        "type": "uint256"
-                    },
+                    { "internalType": "uint256", "name": "startTime", "type": "uint256" },
+                    { "internalType": "uint256", "name": "endTime", "type": "uint256" },
+                    { "internalType": "bytes32", "name": "zoneHash", "type": "bytes32" },
+                    { "internalType": "uint256", "name": "salt", "type": "uint256" },
                     {
                         "internalType": "bytes32",
                         "name": "conduitKey",
                         "type": "bytes32"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "counter",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "counter", "type": "uint256" }
                 ],
                 "internalType": "struct OrderComponents[]",
                 "name": "orders",
@@ -1955,11 +1701,7 @@ export const OPENSEA_ABI = [
         ],
         "name": "cancel",
         "outputs": [
-            {
-                "internalType": "bool",
-                "name": "cancelled",
-                "type": "bool"
-            }
+            { "internalType": "bool", "name": "cancelled", "type": "bool" }
         ],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1975,11 +1717,7 @@ export const OPENSEA_ABI = [
                                 "name": "offerer",
                                 "type": "address"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "zone",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "zone", "type": "address" },
                             {
                                 "components": [
                                     {
@@ -2069,11 +1807,7 @@ export const OPENSEA_ABI = [
                                 "name": "zoneHash",
                                 "type": "bytes32"
                             },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
                             {
                                 "internalType": "bytes32",
                                 "name": "conduitKey",
@@ -2089,26 +1823,14 @@ export const OPENSEA_ABI = [
                         "name": "parameters",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "uint120",
-                        "name": "numerator",
-                        "type": "uint120"
-                    },
+                    { "internalType": "uint120", "name": "numerator", "type": "uint120" },
                     {
                         "internalType": "uint120",
                         "name": "denominator",
                         "type": "uint120"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "extraData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" },
+                    { "internalType": "bytes", "name": "extraData", "type": "bytes" }
                 ],
                 "internalType": "struct AdvancedOrder",
                 "name": "advancedOrder",
@@ -2121,16 +1843,8 @@ export const OPENSEA_ABI = [
                         "name": "orderIndex",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "enum Side",
-                        "name": "side",
-                        "type": "uint8"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "index",
-                        "type": "uint256"
-                    },
+                    { "internalType": "enum Side", "name": "side", "type": "uint8" },
+                    { "internalType": "uint256", "name": "index", "type": "uint256" },
                     {
                         "internalType": "uint256",
                         "name": "identifier",
@@ -2151,19 +1865,11 @@ export const OPENSEA_ABI = [
                 "name": "fulfillerConduitKey",
                 "type": "bytes32"
             },
-            {
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            }
+            { "internalType": "address", "name": "recipient", "type": "address" }
         ],
         "name": "fulfillAdvancedOrder",
         "outputs": [
-            {
-                "internalType": "bool",
-                "name": "fulfilled",
-                "type": "bool"
-            }
+            { "internalType": "bool", "name": "fulfilled", "type": "bool" }
         ],
         "stateMutability": "payable",
         "type": "function"
@@ -2179,11 +1885,7 @@ export const OPENSEA_ABI = [
                                 "name": "offerer",
                                 "type": "address"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "zone",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "zone", "type": "address" },
                             {
                                 "components": [
                                     {
@@ -2273,11 +1975,7 @@ export const OPENSEA_ABI = [
                                 "name": "zoneHash",
                                 "type": "bytes32"
                             },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
                             {
                                 "internalType": "bytes32",
                                 "name": "conduitKey",
@@ -2293,26 +1991,14 @@ export const OPENSEA_ABI = [
                         "name": "parameters",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "uint120",
-                        "name": "numerator",
-                        "type": "uint120"
-                    },
+                    { "internalType": "uint120", "name": "numerator", "type": "uint120" },
                     {
                         "internalType": "uint120",
                         "name": "denominator",
                         "type": "uint120"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "extraData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" },
+                    { "internalType": "bytes", "name": "extraData", "type": "bytes" }
                 ],
                 "internalType": "struct AdvancedOrder[]",
                 "name": "advancedOrders",
@@ -2325,16 +2011,8 @@ export const OPENSEA_ABI = [
                         "name": "orderIndex",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "enum Side",
-                        "name": "side",
-                        "type": "uint8"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "index",
-                        "type": "uint256"
-                    },
+                    { "internalType": "enum Side", "name": "side", "type": "uint8" },
+                    { "internalType": "uint256", "name": "index", "type": "uint256" },
                     {
                         "internalType": "uint256",
                         "name": "identifier",
@@ -2357,11 +2035,7 @@ export const OPENSEA_ABI = [
                         "name": "orderIndex",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "itemIndex",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "itemIndex", "type": "uint256" }
                 ],
                 "internalType": "struct FulfillmentComponent[][]",
                 "name": "offerFulfillments",
@@ -2374,11 +2048,7 @@ export const OPENSEA_ABI = [
                         "name": "orderIndex",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "itemIndex",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "itemIndex", "type": "uint256" }
                 ],
                 "internalType": "struct FulfillmentComponent[][]",
                 "name": "considerationFulfillments",
@@ -2389,11 +2059,7 @@ export const OPENSEA_ABI = [
                 "name": "fulfillerConduitKey",
                 "type": "bytes32"
             },
-            {
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            },
+            { "internalType": "address", "name": "recipient", "type": "address" },
             {
                 "internalType": "uint256",
                 "name": "maximumFulfilled",
@@ -2402,11 +2068,7 @@ export const OPENSEA_ABI = [
         ],
         "name": "fulfillAvailableAdvancedOrders",
         "outputs": [
-            {
-                "internalType": "bool[]",
-                "name": "availableOrders",
-                "type": "bool[]"
-            },
+            { "internalType": "bool[]", "name": "availableOrders", "type": "bool[]" },
             {
                 "components": [
                     {
@@ -2416,11 +2078,7 @@ export const OPENSEA_ABI = [
                                 "name": "itemType",
                                 "type": "uint8"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "token",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "token", "type": "address" },
                             {
                                 "internalType": "uint256",
                                 "name": "identifier",
@@ -2441,16 +2099,8 @@ export const OPENSEA_ABI = [
                         "name": "item",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "address",
-                        "name": "offerer",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "conduitKey",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "address", "name": "offerer", "type": "address" },
+                    { "internalType": "bytes32", "name": "conduitKey", "type": "bytes32" }
                 ],
                 "internalType": "struct Execution[]",
                 "name": "executions",
@@ -2471,11 +2121,7 @@ export const OPENSEA_ABI = [
                                 "name": "offerer",
                                 "type": "address"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "zone",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "zone", "type": "address" },
                             {
                                 "components": [
                                     {
@@ -2565,11 +2211,7 @@ export const OPENSEA_ABI = [
                                 "name": "zoneHash",
                                 "type": "bytes32"
                             },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
                             {
                                 "internalType": "bytes32",
                                 "name": "conduitKey",
@@ -2585,11 +2227,7 @@ export const OPENSEA_ABI = [
                         "name": "parameters",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "internalType": "struct Order[]",
                 "name": "orders",
@@ -2602,11 +2240,7 @@ export const OPENSEA_ABI = [
                         "name": "orderIndex",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "itemIndex",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "itemIndex", "type": "uint256" }
                 ],
                 "internalType": "struct FulfillmentComponent[][]",
                 "name": "offerFulfillments",
@@ -2619,11 +2253,7 @@ export const OPENSEA_ABI = [
                         "name": "orderIndex",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "itemIndex",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "itemIndex", "type": "uint256" }
                 ],
                 "internalType": "struct FulfillmentComponent[][]",
                 "name": "considerationFulfillments",
@@ -2642,11 +2272,7 @@ export const OPENSEA_ABI = [
         ],
         "name": "fulfillAvailableOrders",
         "outputs": [
-            {
-                "internalType": "bool[]",
-                "name": "availableOrders",
-                "type": "bool[]"
-            },
+            { "internalType": "bool[]", "name": "availableOrders", "type": "bool[]" },
             {
                 "components": [
                     {
@@ -2656,11 +2282,7 @@ export const OPENSEA_ABI = [
                                 "name": "itemType",
                                 "type": "uint8"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "token",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "token", "type": "address" },
                             {
                                 "internalType": "uint256",
                                 "name": "identifier",
@@ -2681,16 +2303,8 @@ export const OPENSEA_ABI = [
                         "name": "item",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "address",
-                        "name": "offerer",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "conduitKey",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "address", "name": "offerer", "type": "address" },
+                    { "internalType": "bytes32", "name": "conduitKey", "type": "bytes32" }
                 ],
                 "internalType": "struct Execution[]",
                 "name": "executions",
@@ -2724,11 +2338,7 @@ export const OPENSEA_ABI = [
                         "name": "offerer",
                         "type": "address"
                     },
-                    {
-                        "internalType": "address",
-                        "name": "zone",
-                        "type": "address"
-                    },
+                    { "internalType": "address", "name": "zone", "type": "address" },
                     {
                         "internalType": "address",
                         "name": "offerToken",
@@ -2749,26 +2359,10 @@ export const OPENSEA_ABI = [
                         "name": "basicOrderType",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "startTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "endTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "zoneHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "salt",
-                        "type": "uint256"
-                    },
+                    { "internalType": "uint256", "name": "startTime", "type": "uint256" },
+                    { "internalType": "uint256", "name": "endTime", "type": "uint256" },
+                    { "internalType": "bytes32", "name": "zoneHash", "type": "bytes32" },
+                    { "internalType": "uint256", "name": "salt", "type": "uint256" },
                     {
                         "internalType": "bytes32",
                         "name": "offererConduitKey",
@@ -2801,11 +2395,7 @@ export const OPENSEA_ABI = [
                         "name": "additionalRecipients",
                         "type": "tuple[]"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "internalType": "struct BasicOrderParameters",
                 "name": "parameters",
@@ -2814,11 +2404,7 @@ export const OPENSEA_ABI = [
         ],
         "name": "fulfillBasicOrder",
         "outputs": [
-            {
-                "internalType": "bool",
-                "name": "fulfilled",
-                "type": "bool"
-            }
+            { "internalType": "bool", "name": "fulfilled", "type": "bool" }
         ],
         "stateMutability": "payable",
         "type": "function"
@@ -2834,11 +2420,7 @@ export const OPENSEA_ABI = [
                                 "name": "offerer",
                                 "type": "address"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "zone",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "zone", "type": "address" },
                             {
                                 "components": [
                                     {
@@ -2928,11 +2510,7 @@ export const OPENSEA_ABI = [
                                 "name": "zoneHash",
                                 "type": "bytes32"
                             },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
                             {
                                 "internalType": "bytes32",
                                 "name": "conduitKey",
@@ -2948,11 +2526,7 @@ export const OPENSEA_ABI = [
                         "name": "parameters",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "internalType": "struct Order",
                 "name": "order",
@@ -2966,30 +2540,18 @@ export const OPENSEA_ABI = [
         ],
         "name": "fulfillOrder",
         "outputs": [
-            {
-                "internalType": "bool",
-                "name": "fulfilled",
-                "type": "bool"
-            }
+            { "internalType": "bool", "name": "fulfilled", "type": "bool" }
         ],
         "stateMutability": "payable",
         "type": "function"
     },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "offerer",
-                "type": "address"
-            }
+            { "internalType": "address", "name": "offerer", "type": "address" }
         ],
         "name": "getCounter",
         "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "counter",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "counter", "type": "uint256" }
         ],
         "stateMutability": "view",
         "type": "function"
@@ -2998,16 +2560,8 @@ export const OPENSEA_ABI = [
         "inputs": [
             {
                 "components": [
-                    {
-                        "internalType": "address",
-                        "name": "offerer",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "zone",
-                        "type": "address"
-                    },
+                    { "internalType": "address", "name": "offerer", "type": "address" },
+                    { "internalType": "address", "name": "zone", "type": "address" },
                     {
                         "components": [
                             {
@@ -3015,11 +2569,7 @@ export const OPENSEA_ABI = [
                                 "name": "itemType",
                                 "type": "uint8"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "token",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "token", "type": "address" },
                             {
                                 "internalType": "uint256",
                                 "name": "identifierOrCriteria",
@@ -3047,11 +2597,7 @@ export const OPENSEA_ABI = [
                                 "name": "itemType",
                                 "type": "uint8"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "token",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "token", "type": "address" },
                             {
                                 "internalType": "uint256",
                                 "name": "identifierOrCriteria",
@@ -3082,36 +2628,16 @@ export const OPENSEA_ABI = [
                         "name": "orderType",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "startTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "endTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "zoneHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "salt",
-                        "type": "uint256"
-                    },
+                    { "internalType": "uint256", "name": "startTime", "type": "uint256" },
+                    { "internalType": "uint256", "name": "endTime", "type": "uint256" },
+                    { "internalType": "bytes32", "name": "zoneHash", "type": "bytes32" },
+                    { "internalType": "uint256", "name": "salt", "type": "uint256" },
                     {
                         "internalType": "bytes32",
                         "name": "conduitKey",
                         "type": "bytes32"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "counter",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "counter", "type": "uint256" }
                 ],
                 "internalType": "struct OrderComponents",
                 "name": "order",
@@ -3120,45 +2646,21 @@ export const OPENSEA_ABI = [
         ],
         "name": "getOrderHash",
         "outputs": [
-            {
-                "internalType": "bytes32",
-                "name": "orderHash",
-                "type": "bytes32"
-            }
+            { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" }
         ],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "orderHash",
-                "type": "bytes32"
-            }
+            { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" }
         ],
         "name": "getOrderStatus",
         "outputs": [
-            {
-                "internalType": "bool",
-                "name": "isValidated",
-                "type": "bool"
-            },
-            {
-                "internalType": "bool",
-                "name": "isCancelled",
-                "type": "bool"
-            },
-            {
-                "internalType": "uint256",
-                "name": "totalFilled",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "totalSize",
-                "type": "uint256"
-            }
+            { "internalType": "bool", "name": "isValidated", "type": "bool" },
+            { "internalType": "bool", "name": "isCancelled", "type": "bool" },
+            { "internalType": "uint256", "name": "totalFilled", "type": "uint256" },
+            { "internalType": "uint256", "name": "totalSize", "type": "uint256" }
         ],
         "stateMutability": "view",
         "type": "function"
@@ -3167,11 +2669,7 @@ export const OPENSEA_ABI = [
         "inputs": [],
         "name": "incrementCounter",
         "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "newCounter",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "newCounter", "type": "uint256" }
         ],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3180,11 +2678,7 @@ export const OPENSEA_ABI = [
         "inputs": [],
         "name": "information",
         "outputs": [
-            {
-                "internalType": "string",
-                "name": "version",
-                "type": "string"
-            },
+            { "internalType": "string", "name": "version", "type": "string" },
             {
                 "internalType": "bytes32",
                 "name": "domainSeparator",
@@ -3210,11 +2704,7 @@ export const OPENSEA_ABI = [
                                 "name": "offerer",
                                 "type": "address"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "zone",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "zone", "type": "address" },
                             {
                                 "components": [
                                     {
@@ -3304,11 +2794,7 @@ export const OPENSEA_ABI = [
                                 "name": "zoneHash",
                                 "type": "bytes32"
                             },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
                             {
                                 "internalType": "bytes32",
                                 "name": "conduitKey",
@@ -3324,26 +2810,14 @@ export const OPENSEA_ABI = [
                         "name": "parameters",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "uint120",
-                        "name": "numerator",
-                        "type": "uint120"
-                    },
+                    { "internalType": "uint120", "name": "numerator", "type": "uint120" },
                     {
                         "internalType": "uint120",
                         "name": "denominator",
                         "type": "uint120"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "extraData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" },
+                    { "internalType": "bytes", "name": "extraData", "type": "bytes" }
                 ],
                 "internalType": "struct AdvancedOrder[]",
                 "name": "advancedOrders",
@@ -3356,16 +2830,8 @@ export const OPENSEA_ABI = [
                         "name": "orderIndex",
                         "type": "uint256"
                     },
-                    {
-                        "internalType": "enum Side",
-                        "name": "side",
-                        "type": "uint8"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "index",
-                        "type": "uint256"
-                    },
+                    { "internalType": "enum Side", "name": "side", "type": "uint8" },
+                    { "internalType": "uint256", "name": "index", "type": "uint256" },
                     {
                         "internalType": "uint256",
                         "name": "identifier",
@@ -3434,11 +2900,7 @@ export const OPENSEA_ABI = [
                                 "name": "itemType",
                                 "type": "uint8"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "token",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "token", "type": "address" },
                             {
                                 "internalType": "uint256",
                                 "name": "identifier",
@@ -3459,16 +2921,8 @@ export const OPENSEA_ABI = [
                         "name": "item",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "address",
-                        "name": "offerer",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "conduitKey",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "address", "name": "offerer", "type": "address" },
+                    { "internalType": "bytes32", "name": "conduitKey", "type": "bytes32" }
                 ],
                 "internalType": "struct Execution[]",
                 "name": "executions",
@@ -3489,11 +2943,7 @@ export const OPENSEA_ABI = [
                                 "name": "offerer",
                                 "type": "address"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "zone",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "zone", "type": "address" },
                             {
                                 "components": [
                                     {
@@ -3583,11 +3033,7 @@ export const OPENSEA_ABI = [
                                 "name": "zoneHash",
                                 "type": "bytes32"
                             },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
                             {
                                 "internalType": "bytes32",
                                 "name": "conduitKey",
@@ -3603,11 +3049,7 @@ export const OPENSEA_ABI = [
                         "name": "parameters",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "internalType": "struct Order[]",
                 "name": "orders",
@@ -3666,11 +3108,7 @@ export const OPENSEA_ABI = [
                                 "name": "itemType",
                                 "type": "uint8"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "token",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "token", "type": "address" },
                             {
                                 "internalType": "uint256",
                                 "name": "identifier",
@@ -3691,16 +3129,8 @@ export const OPENSEA_ABI = [
                         "name": "item",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "address",
-                        "name": "offerer",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "conduitKey",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "address", "name": "offerer", "type": "address" },
+                    { "internalType": "bytes32", "name": "conduitKey", "type": "bytes32" }
                 ],
                 "internalType": "struct Execution[]",
                 "name": "executions",
@@ -3714,11 +3144,7 @@ export const OPENSEA_ABI = [
         "inputs": [],
         "name": "name",
         "outputs": [
-            {
-                "internalType": "string",
-                "name": "contractName",
-                "type": "string"
-            }
+            { "internalType": "string", "name": "contractName", "type": "string" }
         ],
         "stateMutability": "pure",
         "type": "function"
@@ -3734,11 +3160,7 @@ export const OPENSEA_ABI = [
                                 "name": "offerer",
                                 "type": "address"
                             },
-                            {
-                                "internalType": "address",
-                                "name": "zone",
-                                "type": "address"
-                            },
+                            { "internalType": "address", "name": "zone", "type": "address" },
                             {
                                 "components": [
                                     {
@@ -3828,11 +3250,7 @@ export const OPENSEA_ABI = [
                                 "name": "zoneHash",
                                 "type": "bytes32"
                             },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
                             {
                                 "internalType": "bytes32",
                                 "name": "conduitKey",
@@ -3848,11 +3266,7 @@ export const OPENSEA_ABI = [
                         "name": "parameters",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "internalType": "struct Order[]",
                 "name": "orders",
@@ -3861,11 +3275,7 @@ export const OPENSEA_ABI = [
         ],
         "name": "validate",
         "outputs": [
-            {
-                "internalType": "bool",
-                "name": "validated",
-                "type": "bool"
-            }
+            { "internalType": "bool", "name": "validated", "type": "bool" }
         ],
         "stateMutability": "nonpayable",
         "type": "function"

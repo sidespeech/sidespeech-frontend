@@ -1,13 +1,19 @@
 import { Proposal } from "./Proposal";
 
 
+export enum TxStatus {
+	Failed,
+	Success,
+}
+
 export class Transaction {
   public id?: string;
   public txHash: string;
+  public status: TxStatus;
   public blockNumber: number;
   public from: string;
   public to: string;
-  public gasUsed: string;
+  public gasFee: string;
   public value: string;
   public data: string;
   public nonce: number;
@@ -21,10 +27,11 @@ export class Transaction {
   constructor(_data: any) {
     this.id = _data.id;
     this.txHash = _data.txHash;
+    this.status = _data.status;
     this.blockNumber = _data.blockNumber;
     this.from = _data.from;
     this.to = _data.to;
-    this.gasUsed = _data.gasUsed;
+    this.gasFee = _data.gasFee;
     this.value = _data.value;
     this.data = _data.data;
     this.nonce = _data.nonce;

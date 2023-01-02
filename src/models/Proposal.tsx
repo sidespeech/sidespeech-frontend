@@ -3,6 +3,7 @@ import { GnosisSafe } from "./GnosisSafe";
 
 
 export enum Status {
+  Pending,
   Open, 
   Successful,
   Failed,

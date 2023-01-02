@@ -135,8 +135,10 @@ export default function GnosisSafe() {
                 currency: 'ETH',
                 start_date: moment(Date.now()).format('DD-MM-YYYY HH:mm:ss'),
                 end_date: moment(Date.now()).add(1, 'days').format('DD-MM-YYYY HH:mm:ss'),
+                description: 'This founding round is to create nft event',
             }
         })
+        console.log('proposal :', proposal);
     }
 
 
@@ -154,17 +156,18 @@ export default function GnosisSafe() {
         const nftAddress = "0x9e339352232149ce1957af39596445ce9d4f59a6"
 
         const to_address = '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A';
-        const value_to_transfers = '0.05'
-        // if (signer) {
-        //     // const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
-        //     // await safeService.createSafeTransaction(safeSdk, signer, to_address, value_to_transfers)
-        //     // await safeService.createRegularTransaction(signer, safeAddress, value_to_transfers);
-        // }
-
-        if (provider && signer) {
+        const value_to_transfers = '0.01'
+        if (signer) {
             const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
-            await safeService.payOutMembers(safeSdk, provider)
+            // await safeService.createSafeTransaction(safeSdk, signer, to_address, value_to_transfers, provider)
+            // await safeService.createRegularTransaction(signer, safeAddress, value_to_transfers, provider);
+            // await safeService.buySafeNft(safeSdk, signer, nftAddress)
         }
+
+        // if (provider && signer) {
+        //     const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
+        //     await safeService.payOutMembers(safeSdk, provider)
+        // }
 
     }
 
@@ -174,8 +177,8 @@ export default function GnosisSafe() {
             console.log('user :', user)
 
             // createSafe()
-            // getAllCategoriesAndCreateProposal();
-            connectToSafe()
+            getAllCategoriesAndCreateProposal();
+            // connectToSafe()
         }
     }, [user]);
 
