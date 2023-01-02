@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
 // Redux
-import { addProfileToSide, connect, fetchUserDatas, updateProfiles } from './redux/Slices/UserDataSlice';
+import { addProfileToSide, connect, disconnect, fetchUserDatas, updateProfiles } from './redux/Slices/UserDataSlice';
 
 // API's
 import userService from './services/api-services/user.service';
@@ -125,7 +125,7 @@ function App() {
 		if (!loadingWallet && localStorage.getItem('jwtToken') && walletAddress) {
 			websocketService.connectToWebSocket();
 			getUser(walletAddress);
-		}
+		} else if (!loadingWallet) dispatch(disconnect());
 
 		return () => {
 			// websocketService.deconnectWebsocket();
