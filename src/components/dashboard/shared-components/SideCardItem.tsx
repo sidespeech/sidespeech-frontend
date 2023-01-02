@@ -187,7 +187,9 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 	const sideProfile: Profile = userProfiles.find(profile => profile.side.id === side.id);
 
 	return (
-		<SideCardItemStyled coverImage={side.coverImage || side.firstCollection?.imageUrl}>
+		<SideCardItemStyled
+			coverImage={side.firstCollection?.bannerUrl || side.firstCollection?.imageUrl || FALLBACK_BG_IMG}
+		>
 			{sideProfile && sideProfile.isBlacklisted && (
 				<div className="oops-container">Oops... You have been banned from this side.</div>
 			)}

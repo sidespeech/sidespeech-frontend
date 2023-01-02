@@ -66,12 +66,12 @@ export default function CurrentSideLeftContent() {
 
 	const filteredRooms = currentSide?.profiles.map((p: Profile, index: number) => {
 		const isMe = p.id === currentProfile?.id;
-		const room = currentProfile?.getRoom(p.id);
-		if (isMe || !room) return 'member';
+		const room = isMe ? currentProfile?.getSelfRoom(p.id) : currentProfile?.getRoom(p.id);
+		if (!room) return 'member';
 		return 'conversation';
 	});
-	const numberOfMembers = filteredRooms?.filter(type => type === 'member').length;
-	const numberOfConversations = filteredRooms?.filter(type => type === 'conversation').length;
+	// const numberOfMembers = filteredRooms?.length;
+	// const numberOfConversations = filteredRooms?.filter(type => type === 'conversation').length;
 
 	const onChannelSelected = (c: Channel) => {
 		dispatch(setSelectedChannel(c));
@@ -225,7 +225,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Channels ({currentSide.channels.length || 0})</p>
+							<p className="size-14">Channels</p>
 						</span>
 					)}
 				>
@@ -253,7 +253,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Members ({numberOfMembers || 0})</p>
+							<p className="size-14">Members</p>
 						</span>
 					)}
 				>
@@ -283,7 +283,7 @@ export default function CurrentSideLeftContent() {
 									fill="#B4C1D2"
 								/>
 							</svg>
-							<p className="size-14">Conversations ({numberOfConversations || 0})</p>
+							<p className="size-14">Conversations</p>
 						</span>
 					)}
 				>

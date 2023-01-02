@@ -41,6 +41,9 @@ class WebSocketService {
 		this.socket.on('newProfile', async data => {
 			trigger(EventType.NEW_PROFILE, data);
 		});
+		this.socket.on('nft-transfert', async data => {
+			trigger(EventType.NFT_TRANSFERT, data);
+		});
 	}
 
 	login(user: any, rooms: any) {

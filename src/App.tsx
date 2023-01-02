@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
 // Redux
-import { addProfileToSide, connect, fetchUserDatas, updateProfiles } from './redux/Slices/UserDataSlice';
+import { addProfileToSide, connect, disconnect, fetchUserDatas, updateProfiles } from './redux/Slices/UserDataSlice';
 
 // API's
 import userService from './services/api-services/user.service';
@@ -30,6 +30,7 @@ import LeaveSideConfirmationModal from './components/Modals/LeaveSideConfirmatio
 import { subscribeToEvent, unSubscribeToEvent } from './helpers/CustomEvent';
 import { EventType } from './constants/EventType';
 import { Profile } from './models/Profile';
+import useNftTransfert from './hooks/useNftTransfertWs';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -51,6 +52,8 @@ function App() {
 	const [fetchingUser, setFetchingUser] = useState<boolean>(false);
 
 	const isSideAdmin = useIsSideAdmin(openEligibilityModal.side);
+
+	useNftTransfert();
 
 	const isUserOnboarded = useCallback(async (walletAddress: string) => {
 		try {
@@ -122,7 +125,7 @@ function App() {
 		if (!loadingWallet && localStorage.getItem('jwtToken') && walletAddress) {
 			websocketService.connectToWebSocket();
 			getUser(walletAddress);
-		}
+		} else if (!loadingWallet) dispatch(disconnect());
 
 		return () => {
 			// websocketService.deconnectWebsocket();

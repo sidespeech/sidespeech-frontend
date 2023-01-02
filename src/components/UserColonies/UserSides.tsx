@@ -67,10 +67,7 @@ export default function UserSides() {
 	const dispatch = useDispatch();
 
 	const { currentSide } = useSelector((state: RootState) => state.appDatas);
-	const userData = useSelector((state: RootState) => state.user);
-	const [isSideAdmin, SetIsSideAdmin] = useState<any>(null);
-	const [displayLeaveSide, setDisplayLeaveSide] = useState<boolean>(false);
-	const [side, setSide] = useState<Side | null>(null);
+	const { sides } = useSelector((state: RootState) => state.user);
 
 	const { getStaticNotifications, lastAnnouncement, lastMessage, staticNotifications } = useNotificationsContext();
 	const { walletAddress } = useWalletAddress();
@@ -88,7 +85,7 @@ export default function UserSides() {
 	// LISTENING WS =====================================================================
 	useEffect(() => {
 		if (walletAddress) {
-			const sideFounded = userData.sides.find((s: Side) => {
+			const sideFounded = sides.find((s: Side) => {
 				return s.channels.find((c: any) => c.id === lastAnnouncement?.channelId);
 			});
 			if (sideFounded && sideFounded!['id'] !== currentSide?.['id']) {
@@ -98,11 +95,12 @@ export default function UserSides() {
 				});
 			}
 		}
-	}, [userData, currentSide, lastAnnouncement, walletAddress]);
+	}, [sides, currentSide, lastAnnouncement, walletAddress]);
+
 
 	useEffect(() => {
 		if (walletAddress) {
-			const sideFounded = userData.sides.find((s: Side) => {
+			const sideFounded = sides.find((s: Side) => {
 				return s.profiles.find((p: Profile) => {
 					return p.rooms.find(el => el.id === lastMessage?.room['id']);
 				});
@@ -114,7 +112,7 @@ export default function UserSides() {
 				});
 			}
 		}
-	}, [userData, currentSide, lastMessage, walletAddress]);
+	}, [sides, currentSide, lastMessage, walletAddress]);
 	// LISTENING WS =====================================================================
 
 	// Function to get notification from db and assign them to the state variable
@@ -134,11 +132,11 @@ export default function UserSides() {
 				let sideFounded: any;
 
 				if (notification['type'] == NotificationType.Channel) {
-					sideFounded = userData.sides?.find((s: Side) => {
+					sideFounded = sides?.find((s: Side) => {
 						return s.channels?.find((c: any) => c.id === notification['name']);
 					});
 				} else {
-					sideFounded = userData.sides.find((s: Side) => {
+					sideFounded = sides.find((s: Side) => {
 						return s.profiles.find((p: Profile) => {
 							return p.rooms.find(el => el.id === notification['name']);
 						});
@@ -157,19 +155,10 @@ export default function UserSides() {
 		if (staticNotifications.length && walletAddress) setRoomNotifications(staticNotifications);
 	}, [staticNotifications, walletAddress]);
 
-	useEffect(() => {
-		if (userData.user && side) {
-			const sideProfile = userData.user?.profiles.find(profile => profile.side?.id === side?.id);
-
-			const isSideAdminResponse = sideProfile?.role === Role.Admin || sideProfile?.role === Role.subadmin;
-			SetIsSideAdmin(isSideAdminResponse);
-		}
-	}, [currentSide, userData, side]);
-
 	return (
 		<>
 			<UserSidesStyled className="f-column align-center mt-3" style={{ gap: 15 }}>
-				{userData.sides
+				{sides
 					?.filter(s => !s.profiles[0].isBlacklisted)
 					.map((c, i) => {
 						return (
@@ -191,7 +180,7 @@ export default function UserSides() {
 									)}
 									{c && dots[c.id] > 0 && <Dot className="badge-notification">{dots[c.id]}</Dot>}
 								</div>
-								<ReactTooltip backgroundColor="var(--panels)" id={c.id} effect="solid">
+								<ReactTooltip key={c.id + i} backgroundColor="var(--panels)" id={c.id} effect="solid">
 									{c.name}
 								</ReactTooltip>
 							</>
