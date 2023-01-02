@@ -184,16 +184,16 @@ export const userDataSlice = createSlice({
 				});
 			}
 		},
-		updateProfiles: (state: UserData, action: PayloadAction<any>) => {
+		updateProfiles: (state: UserData, action: PayloadAction<Profile>) => {
 			if (state.user) {
 				const profiles = [...state.user?.profiles, action.payload];
 				state.user = { ...state.user, profiles: profiles };
 			}
 		},
-		addColony: (state: UserData, action: PayloadAction<any>) => {
+		addColony: (state: UserData, action: PayloadAction<Side>) => {
 			state.sides = [...state.sides, action.payload];
 		},
-		removeSide: (state: UserData, action: PayloadAction<any>) => {
+		removeSide: (state: UserData, action: PayloadAction<string>) => {
 			state.sides = state.sides.filter(side => side.id !== action.payload);
 			if (state.user) {
 				state.user.profiles = state.user.profiles.filter(profile => profile.side.id !== action.payload);

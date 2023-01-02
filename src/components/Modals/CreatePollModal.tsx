@@ -89,7 +89,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
 
 	const addChild = () => {
 		if (Object.keys(answers).length >= 7)
-			return toast.error('You can not have more than 7 answers.', { toastId: getRandomId() });
+			return toast.error('You can not have more than 7 answers.', { toastId: 1050 });
 		setAnswers(prevState => ({
 			...prevState,
 			...getNewEmptyAnswer()
@@ -104,7 +104,7 @@ export default function CreatePollModal({ showModal }: { showModal: any }) {
 
 	const removeAnswer = (key: string) => {
 		if (Object.keys(answers).length <= 2)
-			return toast.error('There has to be at least two options', { toastId: getRandomId() });
+			return toast.error('There has to be at least two options', { toastId: 1051 });
 		const answersCopy = { ...answers };
 		delete answersCopy[key];
 		setAnswers(answersCopy);

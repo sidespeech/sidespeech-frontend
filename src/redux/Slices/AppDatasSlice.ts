@@ -87,7 +87,7 @@ export const {
 	setEligibilityOpen,
 	setLeaveSideOpen,
 	addProfileToCurrentSide,
-	updateProfileInSide
+	updateProfileInSide,
 } = appDatasSlice.actions;
 
 export default appDatasSlice.reducer;

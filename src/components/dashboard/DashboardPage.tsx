@@ -108,7 +108,7 @@ export default function DashboardPage() {
 				setFeaturedSides(response);
 			} catch (error) {
 				console.error(error);
-				toast.error('Ooops! Something went wrong fetching the featured Sides', { toastId: getRandomId() });
+				toast.error('Ooops! Something went wrong fetching the featured Sides', { toastId: 1041});
 			} finally {
 				setFeatureSidesLoading(false);
 			}

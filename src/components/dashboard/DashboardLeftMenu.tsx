@@ -105,7 +105,7 @@ const DashboardLeftMenu = ({
 			setInvitations(invitations);
 		} catch (error) {
 			console.error(error);
-			toast.error('Ooops! Something went wrong fetching Invitations', { toastId: getRandomId() });
+			toast.error('Ooops! Something went wrong fetching Invitations', { toastId: 1040 });
 		}
 	};
 

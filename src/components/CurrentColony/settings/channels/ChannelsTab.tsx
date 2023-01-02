@@ -150,7 +150,7 @@ export default function Channels({
 			handleAddNewChannel();
 		} else {
 			if (allChannels.length >= 50) {
-				toast.error('You can not create more than 50 channels.');
+				toast.error('You can not create more than 50 channels.',{toastId: 37});
 				return;
 			}
 

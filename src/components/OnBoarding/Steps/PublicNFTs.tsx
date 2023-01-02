@@ -117,7 +117,7 @@ export default function PublicNFTs({ updateCurrentStep }: ChildProps) {
             dispatch(updateUser(updatedUser));
 
             toast.success('Congratulations you are now onboarded', {
-                toastId: 3
+                toastId: 4
             });
 
             navigate('/');

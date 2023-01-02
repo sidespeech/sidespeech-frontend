@@ -113,7 +113,7 @@ export default function Welcome({ updateCurrentStep, updateChosenUsername }: Chi
     const onSubmit = async () => {
         if (!validateForm()) {
             toast.error('Please ensure all requirements met.', {
-                toastId: 3
+                toastId: 5
             });
             return false;
         }
