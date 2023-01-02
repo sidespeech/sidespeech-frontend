@@ -30,6 +30,7 @@ import LeaveSideConfirmationModal from './components/Modals/LeaveSideConfirmatio
 import { subscribeToEvent, unSubscribeToEvent } from './helpers/CustomEvent';
 import { EventType } from './constants/EventType';
 import { Profile } from './models/Profile';
+import useNftTransfert from './hooks/useNftTransfertWs';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -51,6 +52,8 @@ function App() {
 	const [fetchingUser, setFetchingUser] = useState<boolean>(false);
 
 	const isSideAdmin = useIsSideAdmin(openEligibilityModal.side);
+
+	useNftTransfert();
 
 	const isUserOnboarded = useCallback(async (walletAddress: string) => {
 		try {
