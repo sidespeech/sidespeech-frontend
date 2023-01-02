@@ -150,7 +150,7 @@ export default function Channels({
 			handleAddNewChannel();
 		} else {
 			if (allChannels.length >= 50) {
-				toast.error('You can not create more than 50 channels.',{toastId: 37});
+				toast.error('You can not create more than 50 channels.', { toastId: 37 });
 				return;
 			}
 
@@ -317,7 +317,7 @@ export default function Channels({
 				{/* Add new channel Section*/}
 				<div style={{ paddingLeft: 25 }}>
 					<Button
-						classes="fade-in add-channel-btn mt-4 fw-700"
+						classes="add-channel-btn mt-4 fw-700"
 						width={'100%'}
 						height={40}
 						onClick={handleAddChannel}
@@ -345,7 +345,7 @@ export default function Channels({
 					{!channelsNewSide ? (
 						<Button
 							width={'100%'}
-							classes="fade-in save-btn"
+							classes="save-btn"
 							height={46}
 							onClick={onSubmit}
 							radius={10}

@@ -47,8 +47,7 @@ const SidebarStyled = styled.div`
 export default function CurrentSideLeftContent() {
 	const { account, currentProfile } = useSelector((state: RootState) => state.user);
 
-	const { getStaticNotifications, lastAnnouncement, lastMessage, onlineUsers, staticNotifications } =
-		useNotificationsContext();
+	const { lastAnnouncement, lastMessage, onlineUsers, staticNotifications } = useNotificationsContext();
 	const { walletAddress } = useWalletAddress();
 
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -111,7 +110,7 @@ export default function CurrentSideLeftContent() {
 	};
 
 	const setChannelsNotifications = (data: any) => {
-		if ((selectedChannel && selectedChannel.id !== data.channelId) || selectedRoom)
+		if (selectedChannel?.id !== data.channelId)
 			setDotsChannel((prevState: any) => {
 				const number = prevState[data.channelId] || 0;
 				return { ...prevState, [data.channelId]: number + 1 };
@@ -125,7 +124,7 @@ export default function CurrentSideLeftContent() {
 			const room = await roomService.getRoomByName(data.room.name);
 			if (room) dispatch(addRoomToProfile(room));
 		}
-		if ((selectedRoom && selectedRoom.id !== data.room.id) || selectedChannel)
+		if (selectedRoom?.id !== data.room.id)
 			setDotsPrivateMessage((prevState: any) => {
 				const number = prevState[data.room.id] || 0;
 				return { ...prevState, [data.room.id]: number + 1 };
@@ -151,28 +150,21 @@ export default function CurrentSideLeftContent() {
 		}
 	};
 	// Function to get notification from db and assign them to the state variable
-	async function setRoomNotifications(notifications: any[], account: string) {
-		const notifs = await notificationService.getNotification(account!);
+	async function clearSelectedChannelNotifications(account: string) {
 		try {
-			let dotsPrivateMessageCopy: any = { ...dotsPrivateMessage };
-			let dotsChannelCopy: any = { ...dotsChannel };
-			for (let notification of notifs) {
-				if (notification['type'] === NotificationType.Channel) {
-					if (selectedChannel && notification['name'] === selectedChannel!.id) {
-						dotsChannelCopy[notification['name']] = 0;
-						await notificationService.deleteNotification(selectedChannel!.id, account!);
-					}
-				} else {
-					if (selectedRoom && notification['name'] === selectedRoom!.id) {
-						dotsPrivateMessageCopy[notification['name']] = 0;
-						await notificationService.deleteNotification(selectedRoom!.id, account!);
-					}
-				}
+			if (selectedChannel?.id) {
+				await notificationService.deleteNotification(selectedChannel!.id, account!);
+				setDotsChannel((prevState: any) => ({
+					...prevState,
+					[selectedChannel!.id]: 0
+				}));
 			}
-			if (JSON.stringify(dotsPrivateMessageCopy) !== JSON.stringify(dotsPrivateMessage))
-				setDotsPrivateMessage(dotsPrivateMessageCopy);
-			if (JSON.stringify(dotsChannelCopy) !== JSON.stringify(dotsChannel)) {
-				setDotsChannel(dotsChannelCopy);
+			if (selectedRoom?.id) {
+				await notificationService.deleteNotification(selectedRoom!.id, account!);
+				setDotsPrivateMessage((prevState: any) => ({
+					...prevState,
+					[selectedRoom!.id]: 0
+				}));
 			}
 		} catch (error) {
 			console.error(error);
@@ -203,9 +195,8 @@ export default function CurrentSideLeftContent() {
 	}, [staticNotifications]);
 
 	useEffect(() => {
-		if ((selectedRoom || selectedChannel) && staticNotifications.length && walletAddress)
-			setRoomNotifications(staticNotifications, walletAddress);
-	}, [selectedRoom, selectedChannel, staticNotifications, walletAddress]);
+		if ((selectedRoom || selectedChannel) && walletAddress) clearSelectedChannelNotifications(walletAddress);
+	}, [selectedRoom, selectedChannel, walletAddress]);
 
 	if (!currentSide)
 		return (

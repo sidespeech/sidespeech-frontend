@@ -101,7 +101,15 @@ const initialStateUser = {
 	publicNfts: null
 };
 
-export default function SideProfileAccount({ currentSide, userData }: { currentSide: Side; userData: UserData }) {
+export default function SideProfileAccount({
+	className,
+	currentSide,
+	userData
+}: {
+	className?: string;
+	currentSide: Side;
+	userData: UserData;
+}) {
 	const { currentProfile } = useSelector((state: RootState) => state.user);
 	const navigate = useNavigate();
 
@@ -148,10 +156,10 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 					profilePicture: formData.avatar
 				});
 				dispatch(updateCurrentProfile(profile));
-				toast.success('Profile updated',{toastId: 1024});
+				toast.success('Profile updated', { toastId: 1024 });
 				setDisplayNftsCollection(false);
 			} catch (error) {
-				toast.error('error saving your profile avatar',{toastId: 1025});
+				toast.error('error saving your profile avatar', { toastId: 1025 });
 				setDisplayNftsCollection(false);
 			}
 		}
@@ -161,15 +169,15 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 		try {
 			if (userData['currentProfile']) {
 				const res = await profileService.leaveSide(userData['currentProfile']);
-				if (res['error']) toast.error(res['message'],{toastId: 1026});
+				if (res['error']) toast.error(res['message'], { toastId: 1026 });
 				else {
 					navigate('/');
 					dispatch(removeSide(userData['currentProfile'].side.id));
-					toast.success(res['message'],{toastId: 1027});
+					toast.success(res['message'], { toastId: 1027 });
 				}
 			}
 		} catch (error) {
-			toast.error('Error when leaving the side',{toastId: 1028});
+			toast.error('Error when leaving the side', { toastId: 1028 });
 		}
 	};
 
@@ -183,7 +191,7 @@ export default function SideProfileAccount({ currentSide, userData }: { currentS
 	};
 
 	return (
-		<SideProfileAccountStyled className="fade-in">
+		<SideProfileAccountStyled className={className}>
 			<div className="user-info-wrapper">
 				<UserGeneralInformations
 					formData={formData}

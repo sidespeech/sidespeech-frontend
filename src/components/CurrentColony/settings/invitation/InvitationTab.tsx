@@ -137,12 +137,14 @@ const InvitationsStyled = styled.div`
 `;
 
 export default function Invitation({
+	className,
 	currentSide,
 	userData,
 	invitationUsers,
 	setUserInvited,
 	userInvited
 }: {
+	className?: string;
 	currentSide: any;
 	userData?: any;
 	invitationUsers?: any[];
@@ -257,7 +259,7 @@ export default function Invitation({
 	};
 
 	return (
-		<InvitationsStyled className="fade-in">
+		<InvitationsStyled className={className}>
 			{/* Search and Invite Section */}
 			<div className="text-primary-light mb-3 text fw-600">Search and invite</div>
 			<div className="search-and-invite mb-3">
