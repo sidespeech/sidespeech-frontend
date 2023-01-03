@@ -11,6 +11,7 @@ export class Transaction {
   public txHash: string;
   public status: TxStatus;
   public blockNumber: number;
+  public chainId: number
   public from: string;
   public to: string;
   public gasFee: string;
@@ -27,6 +28,7 @@ export class Transaction {
   constructor(_data: any) {
     this.id = _data.id;
     this.txHash = _data.txHash;
+    this.chainId = _data.chainId;
     this.status = _data.status;
     this.blockNumber = _data.blockNumber;
     this.from = _data.from;

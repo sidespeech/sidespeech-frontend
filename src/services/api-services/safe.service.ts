@@ -84,7 +84,7 @@ class SafeService extends BaseApiService {
     const safeTransaction = await safeSdk.createTransaction({ safeTransactionData })
     console.log('safeTransaction :', safeTransaction);
 
-    const formatedSafeTransaction = await this.getFormatedSafeTransaction(safeTransaction, safeSdk);
+    const formatedSafeTransaction = await this.getFormatedSafeTransaction(safeTransaction, safeSdk, signer);
     console.log('formatedSafeTransaction :', formatedSafeTransaction);
 
     // signature of owned 1 is offchain
@@ -149,7 +149,7 @@ class SafeService extends BaseApiService {
     const formatedTransaction = await this.getFormatedTransaction(executeTxResponse['hash'], provider);
     console.log('formatedTransaction :', formatedTransaction)
 
-    // TODO Add saving tx in db
+    return formatedTransaction
 
   }
 
@@ -177,8 +177,12 @@ class SafeService extends BaseApiService {
     const etherTransactionReceipt = await provider.waitForTransaction(hash);
     const etherTransaction = await provider.getTransaction(hash);
 
+    console.log('etherTransactionReceipt :', etherTransactionReceipt);
+    console.log('etherTransaction :', etherTransaction);
+
     const formattedTransaction:Transaction = {
       txHash : etherTransactionReceipt['transactionHash'],
+      chainId: etherTransaction['chainId'],
       status : etherTransactionReceipt['status'] || 0,
       blockNumber : etherTransaction['blockNumber'] || 0,
       from : etherTransaction['from'],
@@ -195,13 +199,17 @@ class SafeService extends BaseApiService {
     return formattedTransaction
   }
 
-  async getFormatedSafeTransaction(transaction: any, safeSdk: Safe) {
+  async getFormatedSafeTransaction(transaction: any, safeSdk: Safe, signer: ethers.providers.JsonRpcSigner) {
 
     // Get the transaction details
     const safeTransactionHash = await safeSdk.getTransactionHash(transaction);
 
+    const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer });
+    const chainId = await ethAdapter.getChainId()
+
     const formattedTransaction:Transaction = {
       txHash : safeTransactionHash,
+      chainId : chainId,
       status : TxStatus.Success,
       blockNumber : 0,
       from : safeSdk.getAddress(),

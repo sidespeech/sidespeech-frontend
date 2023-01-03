@@ -17,99 +17,66 @@ import proposalService from '../../services/api-services/proposal.service';
 import { Proposal, Status } from '../../models/Proposal';
 
 import moment from 'moment'
+import { proposalStatus } from '../../helpers/utilities';
+import Button from '../ui-components/Button';
+import styled from 'styled-components';
+import { breakpoints, size } from '../../helpers/breakpoints';
+import transactionService from '../../services/api-services/transaction.service';
 
 
-const randomNonce = function (length: number) {
-    var text = '';
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < length; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
+const SafeStyled = styled.div`
+display: flex;
+flex-direction: column;
+overflow-y: scroll;
+width: 100%;
+flex-grow: 1;
+min-height: 100vh;
+padding: 0 0 77px 0;
+${breakpoints(
+    size.lg,
+    `
+{
+  padding: 5rem;
+}
+`
+)}
+& > div {
+    flex-shrink: 1;
+    width: 100%;
+    flex-direction: column;
+    ${breakpoints(
+        size.lg,
+        `{
+  flex-direction: row;
+}`
+    )};
+    & .current-tab-wrapper {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        padding: 1rem;
+        ${breakpoints(
+            size.lg,
+            `{
+    padding: 0 1rem;
+  }`
+        )}
     }
-    return text;
-};
+}
+`;
+
 
 export default function GnosisSafe() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { userCollectionsData, user } = useSelector((state: RootState) => state.user);
+    const { userCollectionsData, user, signer, provider } = useSelector((state: RootState) => state.user);
+    const [currentSafe, setCurrentSafe] = useState<Safe>();
 
-    async function ethersProvider() {
-        // This is the all of the providers that are needed...
-        // See the thing is that 
-        // prolble is the nft doens't gets transferred to your address
-        // assumpation is that maybe due to the worng network 
-        // txn -> georli network 
-        const providerOptions = {
-            walletconnect: {
-                package: WalletConnectProvider,
-                options: {
-                    infuraId: 'c0db0b85222f4f5c82dd2bed1fc843f9' // b49e48dbbec944eea653e7a44ca67500
-                }
-            }
-        };
-
-        // Setup the web3 modal...
-        const web3Modal = new Web3Modal({
-            network: 'goerli', // optional
-            cacheProvider: false, // optional
-            providerOptions // required
-        });
-
-        // Open the connector
-        const provider = await web3Modal.connect();
-
-        // Set the provider.
-        const library = new ethers.providers.Web3Provider(provider);
-        return library
-    }
-
-    async function getSigner(library: ethers.providers.Web3Provider) {
-
-        // Grab the accounts.
-        const accounts = await library.listAccounts();
-
-        let signerAddr = '';
-        let signature = '';
-
-        // If there are any accounts connected then send them to the API.
-        if (accounts) {
-            // Get Signer
-            const signer = library.getSigner();
-
-            const randomNonceString = randomNonce(12);
-
-            // Grab the wallet address
-            const address = await signer.getAddress();
-
-            // Create the signer message
-            const signerMessage =
-                'Welcome to SideSpeech! \n \n Click to sign in and accept the SideSpeech Terms of Service: {URL Here} This request will not trigger a blockchain transaction or cost any gas fees.  \n \n Your authentication status will reset after 24 hours.  \n \n  Wallet address: ' +
-                address +
-                '  \n \n  Nonce: ' +
-                randomNonceString;
-
-            // Create the signature signing message.
-            signature = await signer.signMessage(signerMessage);
-
-            // Get the signer address.
-            signerAddr = ethers.utils.verifyMessage(signerMessage, signature);
-
-            // Check if the signer address is the same as the connected address.
-            if (signerAddr !== address) {
-                return false;
-            }
-            console.log('signature :', signature)
-            return signer
-        }
-    }
 
     async function createSafe() {
-        const provider = await ethersProvider();
-        const signer = await getSigner(provider);
         if (signer)
             await safeService.createSafe(signer, '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A', "55a57b3c-a207-4e76-befa-513274d3e2b8", "ec0d6ee8-482a-4fd7-8793-033684a3d76b")
-
     }
 
 
@@ -125,12 +92,15 @@ export default function GnosisSafe() {
 
 
     async function getAllCategoriesAndCreateProposal() {
+        const safeId = "2ea3f5d9-81c2-48d0-9d50-36aedd84e4a6"
         const categories = await categoryProposalService.getAllCategories();
-        let example = categories.find((item: any) => item['name'] === "Open funding round");
+        const currentsProposals = await proposalService.getProposalsBySafeId(safeId);
+        let categ = categories.find((item: any) => item['name'] === "Open funding round");
+
         const proposal = await createProposal({
-            categoryId: example['id'],
-            safeId: "2ea3f5d9-81c2-48d0-9d50-36aedd84e4a6",
-            status: Status.Open,
+            categoryId: categ['id'],
+            safeId: safeId,
+            status: (currentsProposals.length) ? Status.Queue : proposalStatus(categ),
             details: {
                 currency: 'ETH',
                 start_date: moment(Date.now()).format('DD-MM-YYYY HH:mm:ss'),
@@ -148,17 +118,33 @@ export default function GnosisSafe() {
     }
 
 
-    async function connectToSafe() {
+    async function getActiveProposalBySafeId(safeId: string) {
+        return await proposalService.getActiveProposalsBySafeId(safeId);
+    }
+
+    async function sendTokenToFundingRound(safeSdk: Safe) {
+        const safeId = "2ea3f5d9-81c2-48d0-9d50-36aedd84e4a6"
+        const activeProposal = await getActiveProposalBySafeId(safeId);
+        console.log('activeProposal :', activeProposal);
+        const value_to_transfers = '0.01'
+
+        let transactionFormated = await safeService.createRegularTransaction(signer!, safeSdk.getAddress(), value_to_transfers, provider!);
+        transactionFormated['proposalId'] = activeProposal['id'];
+        const transaction = await transactionService.saveTransaction(transactionFormated);
+        console.log('transaction :', transaction);
+    }
+
+
+    async function connectToSafe(signer: ethers.providers.JsonRpcSigner) {
         const safeAddress = "0x4924F203F0B9a4A9a24F2fb4F741c0EEbDd44b80"
-        const provider = await ethersProvider();
-        const signer = await getSigner(provider);
 
         const nftAddress = "0x9e339352232149ce1957af39596445ce9d4f59a6"
 
         const to_address = '0xafEE34F5064539b53E5B7102f8B3BB2951b3591A';
         const value_to_transfers = '0.01'
+        let safeSdk: Safe | null = null;
         if (signer) {
-            const safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
+            safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
             // await safeService.createSafeTransaction(safeSdk, signer, to_address, value_to_transfers, provider)
             // await safeService.createRegularTransaction(signer, safeAddress, value_to_transfers, provider);
             // await safeService.buySafeNft(safeSdk, signer, nftAddress)
@@ -169,22 +155,44 @@ export default function GnosisSafe() {
         //     await safeService.payOutMembers(safeSdk, provider)
         // }
 
+        return safeSdk
+
+    }
+
+    async function process(signer: ethers.providers.JsonRpcSigner, provider: ethers.providers.Web3Provider) {
+        const safeSdk = await connectToSafe(signer);
+        if (safeSdk) setCurrentSafe(safeSdk);
     }
 
     useEffect(() => {
-        if (user) {
 
-            console.log('user :', user)
+        console.log('user :', user)
+        console.log('signer :', signer)
+        console.log('provider :', provider)
+
+        if (user && signer && provider) {
 
             // createSafe()
-            getAllCategoriesAndCreateProposal();
-            // connectToSafe()
+            // getAllCategoriesAndCreateProposal();
+            process(signer, provider);
         }
-    }, [user]);
+    }, [user, signer, provider]);
 
     return (
-        <div>
+        <SafeStyled> {
 
-        </div>
+            (currentSafe) ?
+                <div className="flex align-start w-100">
+                    <Button
+                        classes="size-12"
+                        width={'150px'}
+                        height={50}
+                        radius={5}
+                        onClick={() => sendTokenToFundingRound(currentSafe)}
+                        background={'var(--white-transparency-10)'}
+                    >Send Token To Funding Round</Button>
+                </div> : null
+        }
+        </SafeStyled>
     );
 }

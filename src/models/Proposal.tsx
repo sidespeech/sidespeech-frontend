@@ -17,7 +17,7 @@ export class Proposal {
   public status: Status;
   public categoryId?: string;
   public safeId?: string;
-  public categoryProposal?: CategoryProposal;
+  public category?: CategoryProposal;
   public safe?: GnosisSafe;
   public details: Object;
 
@@ -26,7 +26,7 @@ export class Proposal {
     this.status = _data.status;
     this.categoryId = _data.categoryId;
     this.safeId = _data.safeId;
-    this.categoryProposal = _data.categoryProposal;
+    this.category = _data.category;
     this.safe = _data.safe;
     this.details = _data.details;
   }

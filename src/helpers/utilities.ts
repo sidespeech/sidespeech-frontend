@@ -4,6 +4,8 @@ import { Side } from '../models/Side';
 import { NFT } from '../models/interfaces/nft';
 import { Collection, OpenSeaRequestStatus } from '../models/interfaces/collection';
 import { groupBy } from 'lodash';
+import { CategoryProposal, Type } from '../models/CategoryProposal';
+import { Status } from '../models/Proposal';
 
 export function weiToDecimals(value: number, exposant: number = NUMBER_OF_DECIMALS) {
 	return value / 10 ** exposant;
@@ -424,10 +426,15 @@ export function generateDarkColorHex(): string {
 export function isColor(string: string): boolean {
 	return string?.startsWith('#');
 }
+
 export async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
 	const type = dataUrl.match(/^data:(.+);base64/)?.[1];
 
 	const res: Response = await fetch(dataUrl);
 	const blob: Blob = await res.blob();
 	return new File([blob], fileName, { type });
+}
+
+export function proposalStatus(category: CategoryProposal) : Status {
+	return (category.type === Type.offChain) ? Status.Open : Status.Pending
 }

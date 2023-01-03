@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 // Redux Slices
-import { fetchUserDatas, connect } from '../../redux/Slices/UserDataSlice';
+import { fetchUserDatas, connect, setSigner, setProvider } from '../../redux/Slices/UserDataSlice';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +25,7 @@ import userService from '../../services/api-services/user.service';
 import { RootState } from '../../redux/store/app.store';
 import { useEffect } from 'react';
 import { disconnect } from 'process';
+import { setupWeb3Modal } from '../../helpers/utilities.web3';
 
 export const SeparatorVertical = styled.div`
 	min-height: 415px;
@@ -84,22 +85,9 @@ export default function Login() {
 	}, [userData]);
 
 	function ConnectWalletArea() {
-		// This is the all of the providers that are needed...
-		const providerOptions = {
-			walletconnect: {
-				package: WalletConnectProvider,
-				options: {
-					infuraId: 'b49e48dbbec944eea653e7a44ca67500'
-				}
-			}
-		};
 
 		// Setup the web3 modal...
-		const web3Modal = new Web3Modal({
-			network: 'mainnet', // optional
-			cacheProvider: false, // optional
-			providerOptions // required
-		});
+		const web3Modal = setupWeb3Modal()
 
 		const randomNonce = function (length: number) {
 			var text = '';
@@ -115,7 +103,6 @@ export default function Login() {
 			try {
 				// Open the connector
 				const provider = await web3Modal.connect();
-
 				// Set the provider.
 				const library = new ethers.providers.Web3Provider(provider);
 
@@ -179,6 +166,8 @@ export default function Login() {
 					// Dispatch the account that is connected to the redux slice.
 					dispatch(connect({ account: accounts[0], user: user }));
 					dispatch(fetchUserDatas(accounts[0]));
+					dispatch(setSigner(signer))
+					dispatch(setProvider(library))
 
 					// Set a local storage of the account
 					localStorage.setItem('userAccount', accounts[0]);

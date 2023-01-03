@@ -18,6 +18,7 @@ import _ from 'lodash';
 import openseaService from '../../services/web3-services/opensea.service';
 import { saveOpenseaData } from '../../hooks/useOpenseaData';
 import update from 'immutability-helper';
+import { ethers } from 'ethers';
 
 export interface UserData {
 	user: User | null;
@@ -31,6 +32,8 @@ export interface UserData {
 	userCollectionsData: UserCollectionsData;
 	userCollectionsLoading: boolean;
 	userCollectionsLoadingSides: boolean;
+	signer: ethers.providers.JsonRpcSigner | null;
+	provider : ethers.providers.Web3Provider | null;
 }
 
 const initialState: UserData = {
@@ -44,7 +47,9 @@ const initialState: UserData = {
 	currentProfile: undefined,
 	userCollectionsData: {},
 	userCollectionsLoading: false,
-	userCollectionsLoadingSides: false
+	userCollectionsLoadingSides: false,
+	signer: null,
+	provider: null
 };
 
 export const flattenChannels = (array: any, key: string) => {
@@ -236,6 +241,12 @@ export const userDataSlice = createSlice({
 			if (index !== -1) {
 				state.sides = update(state.sides, { [index]: { profiles: { $push: [action.payload] } } });
 			}
+		},
+		setSigner: (state: UserData, action: PayloadAction<ethers.providers.JsonRpcSigner>) => {
+			state.signer = action.payload;
+		},
+		setProvider: (state: UserData, action: PayloadAction<ethers.providers.Web3Provider>) => {
+			state.provider = action.payload;
 		}
 	},
 	extraReducers: builder => {
@@ -274,7 +285,9 @@ export const {
 	updateCurrentProfile,
 	addRoomToProfile,
 	updateProfiles,
-	addProfileToSide
+	addProfileToSide,
+	setSigner,
+	setProvider
 } = userDataSlice.actions;
 
 export default userDataSlice.reducer;

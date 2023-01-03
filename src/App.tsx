@@ -5,8 +5,13 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
+
+
+import { ethers, providers } from 'ethers';
+
+
 // Redux
-import { addProfileToSide, connect, fetchUserDatas, updateProfiles } from './redux/Slices/UserDataSlice';
+import { addProfileToSide, connect, fetchUserDatas, setProvider, setSigner, updateProfiles } from './redux/Slices/UserDataSlice';
 
 // API's
 import userService from './services/api-services/user.service';
@@ -30,6 +35,7 @@ import LeaveSideConfirmationModal from './components/Modals/LeaveSideConfirmatio
 import { subscribeToEvent, unSubscribeToEvent } from './helpers/CustomEvent';
 import { EventType } from './constants/EventType';
 import { Profile } from './models/Profile';
+import { getLastProviderIfExist } from './helpers/utilities.web3';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -107,8 +113,19 @@ function App() {
 	useEffect(() => {
 		async function getUser(account: string) {
 			try {
+
+
+
 				setFetchingUser(true);
 				const user = await userService.getUserByAddress(account);
+
+				let lastProvider = await getLastProviderIfExist()
+				if (lastProvider) {
+					const { provider , signer } = lastProvider
+					dispatch(setProvider(provider))
+					dispatch(setSigner(signer))
+				}
+
 				dispatch(connect({ account: account, user: user }));
 				dispatch(fetchUserDatas(account));
 			} catch (error) {
