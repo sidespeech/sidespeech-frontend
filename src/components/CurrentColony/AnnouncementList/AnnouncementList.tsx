@@ -22,6 +22,8 @@ import announcementService from '../../../services/api-services/announcement.ser
 import Skeleton from '../../ui-components/Skeleton';
 import useWalletAddress from '../../../hooks/useWalletAddress';
 import { useNotificationsContext } from '../../../providers/NotificationsProvider';
+import { toast } from 'react-toastify';
+import { ChannelType } from '../../../models/Channel';
 
 const AnnouncementListStyled = styled.div`
 	display: flex;
@@ -112,16 +114,25 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
 	}, [announcementId, selectedChannel]);
 
 	const handleAnnouncement = async (value: string) => {
-		// This will need to be made dynamic.
-		const creatorAddress = account;
-		if (!selectedChannel) return;
-		const newAnnouncement = await announcementService.createAnnouncement(
-			value,
-			creatorAddress,
-			selectedChannel.id || ''
-		);
-		setAnnouncements([...announcements, newAnnouncement]);
-		websocketService.sendAnnouncement(newAnnouncement);
+		try {
+			// This will need to be made dynamic.
+			const creatorAddress = account;
+			if (!selectedChannel) return;
+			const newAnnouncement =
+				selectedChannel.type === ChannelType.Announcement && currentProfile?.role === Role.Admin
+					? await announcementService.createAnnouncementAsAdmin(
+							value,
+							creatorAddress,
+							selectedChannel.id || '',
+							currentProfile?.side?.id
+					  )
+					: await announcementService.createAnnouncement(value, creatorAddress, selectedChannel.id || '');
+			setAnnouncements([...announcements, newAnnouncement]);
+			websocketService.sendAnnouncement(newAnnouncement);
+		} catch (error) {
+			console.error(error);
+			toast.error('There has been some error sending the announcement', { toastId: 87 });
+		}
 	};
 
 	return (
