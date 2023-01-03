@@ -50,6 +50,7 @@ export default function SideUserList({
 	useEffect(() => {}, [onlineUsers, currentProfile, currentSide]);
 
 	const handleOnClickName = (profile: Profile) => {
+		if (isMembersList) return;
 		try {
 			// getting room for given profile id
 			let room = currentProfile?.getRoom(profile.id);
@@ -66,6 +67,7 @@ export default function SideUserList({
 		}
 	};
 	const handleOnClickPicture = (profile: Profile) => {
+		if (isMembersList) return;
 		dispatch(setSelectedProfile(profile));
 		navigate(`/user/${profile.user.username}`);
 	};
@@ -101,20 +103,20 @@ export default function SideUserList({
 							data-for={id}
 							key={index}
 							onMouseEnter={() => ReactTooltip.hide()}
-							onClick={() => !isMembersList && handleOnClickName(p)}
+							onClick={() => handleOnClickName(p)}
 							className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${
 								selectedRoom && selectedRoom.id === room?.id ? 'selected-channel' : ''
 							} pointer channel-item`}
 						>
 							<div className="flex align-center">
-								{currentProfile['username'] !== p['username'] ? (
+								{!isMe ? (
 									<UserBadge
 										avatar={url}
 										weight={400}
 										fontSize={11}
 										username={p.user.username}
 										connect={onlineUsers.includes(p['username'])}
-										onClickPicture={() => !isMembersList && handleOnClickPicture(p)}
+										onClickPicture={() => handleOnClickPicture(p)}
 									/>
 								) : (
 									<UserBadge
