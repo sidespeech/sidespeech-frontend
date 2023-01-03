@@ -111,7 +111,7 @@ const MembersListStyled = styled.div`
 	}
 `;
 
-export default function MembersList({ currentSide }: { currentSide: Side }) {
+export default function MembersList({ className, currentSide }: { className?: string; currentSide: Side }) {
 	const { currentProfile } = useSelector((state: RootState) => state.user);
 
 	const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>([]);
@@ -142,7 +142,7 @@ export default function MembersList({ currentSide }: { currentSide: Side }) {
 	};
 
 	return (
-		<MembersListStyled className="fade-in">
+		<MembersListStyled className={className}>
 			<div className="header-wrapper">
 				<div className="permissions-select">
 					<label>Permission</label>

@@ -374,10 +374,13 @@ export default function MiddleContainerHeader({
 	useEffect(() => {
 		if (currentSide && room && currentProfile) {
 			const ids = room.profileIds;
-			const profile = currentSide.profiles.find(p => ids.includes(p.id) && p.id !== currentProfile.id);
+			const isSelfRoom = ids.length === 1 && ids[0] === currentProfile?.id;
+			const profile = isSelfRoom
+				? null
+				: currentSide.profiles.find(p => ids.includes(p.id) && p.id !== currentProfile.id);
 			if (profile) {
 				setRoomProfile(profile);
-			}
+			} else setRoomProfile(null);
 		}
 	}, [currentSide, room, currentProfile]);
 
@@ -436,15 +439,19 @@ export default function MiddleContainerHeader({
 							</div>
 						</div>
 					)}
-					{!thread && room && !channel && roomProfile && (
+					{!thread && room && !channel && !settingsOpen && (
 						<h2 className="room-title">
-							<UserBadge
-								width={25}
-								avatar={url}
-								weight={700}
-								fontSize={14}
-								username={roomProfile.user.username}
-							/>
+							{roomProfile ? (
+								<UserBadge
+									width={25}
+									avatar={url}
+									weight={700}
+									fontSize={14}
+									username={roomProfile.user.username}
+								/>
+							) : (
+								<span>You</span>
+							)}
 						</h2>
 					)}
 					{!thread && channel && !settingsOpen && (

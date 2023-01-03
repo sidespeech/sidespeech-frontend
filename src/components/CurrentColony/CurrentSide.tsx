@@ -182,13 +182,14 @@ export default function CurrentSide() {
 					// If side is inactive
 					if (res.status === SideStatus.inactive) {
 						toast.info('This side is currently inactive', { toastId: 36 });
+						dispatch(setEligibilityOpen({ open: true, side: res }));
 						dispatch(setCurrentSide(res));
 					}
 
 					// If side is active and the user is already in the Side
 					else if (isInTheSide) {
 						if (isInTheSide.isBlacklisted) {
-							toast.error('You have been banned from this side',{toastId: 115});
+							toast.error('You have been banned from this side', { toastId: 115 });
 							navigate('/');
 						} else {
 							dispatch(setCurrentSide(res));

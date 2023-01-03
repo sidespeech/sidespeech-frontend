@@ -54,4 +54,8 @@ export class Profile {
 	getRoom(id: string): Room | undefined {
 		return this.rooms.find(r => r.profileIds.includes(id));
 	}
+
+	getSelfRoom(id: string): Room | undefined {
+		return this.rooms.find(r => r.profileIds.length === 1 && r.profileIds[0] === id);
+	}
 }

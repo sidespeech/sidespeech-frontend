@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 // Redux Slices
-import { fetchUserDatas, connect, setSigner, setProvider } from '../../redux/Slices/UserDataSlice';
+import { fetchUserDatas, connect, disconnect, setSigner, setProvider } from '../../redux/Slices/UserDataSlice';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,7 +24,6 @@ import Button from '../ui-components/Button';
 import userService from '../../services/api-services/user.service';
 import { RootState } from '../../redux/store/app.store';
 import { useEffect } from 'react';
-import { disconnect } from 'process';
 import { setupWeb3Modal } from '../../helpers/utilities.web3';
 
 export const SeparatorVertical = styled.div`

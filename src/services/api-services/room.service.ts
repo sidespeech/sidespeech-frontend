@@ -21,8 +21,9 @@ class RoomService extends BaseApiService {
 	}
 
 	async createRoom(id: string, id2: string): Promise<Room> {
+		const profileIds = Array.from(new Set([id, id2]));
 		const res = await this.post(`${BASE_URL}/room`).send({
-			profileIds: [id, id2]
+			profileIds
 		});
 		return new Room(res.body);
 	}

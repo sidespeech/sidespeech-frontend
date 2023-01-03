@@ -75,9 +75,9 @@ export default function SideUserList({
 			{currentSide?.getActiveProfiles().map((p: Profile, index: number) => {
 				const id = getRandomId();
 				const isMe = p.id === currentProfile?.id;
-				const room = currentProfile?.getRoom(p.id);
-				if (isMembersList && room && !isMe) return;
-				if (!isMembersList && (isMe || !room)) return;
+				const room = isMe ? currentProfile.getSelfRoom(p.id) : currentProfile?.getRoom(p.id);
+				if (isMembersList && room) return;
+				if (!isMembersList && !room) return;
 				const url = p.user?.userAvatar?.metadata?.image ? p.user?.userAvatar?.metadata?.image : undefined;
 
 				return (
@@ -103,8 +103,8 @@ export default function SideUserList({
 							onMouseEnter={() => ReactTooltip.hide()}
 							onClick={() => !isMembersList && handleOnClickName(p)}
 							className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${
-								selectedRoom && selectedRoom.id === room?.id && !isMe ? 'selected-channel' : ''
-							} ${isMe ? '' : 'pointer channel-item'}`}
+								selectedRoom && selectedRoom.id === room?.id ? 'selected-channel' : ''
+							} pointer channel-item`}
 						>
 							<div className="flex align-center">
 								{currentProfile['username'] !== p['username'] ? (
@@ -182,7 +182,11 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 	const handleSelectedUser = async (profile: Profile, currentProfile: Profile) => {
 		try {
 			// getting room for given profile id
-			let room = currentProfile?.getRoom(profile.id);
+			let room =
+				profile.id === currentProfile.id
+					? currentProfile?.getSelfRoom(profile.id)
+					: currentProfile?.getRoom(profile.id);
+			console.log(room);
 			if (!currentProfile || !walletAddress || !user) return;
 			// if room not exist in profile
 			if (!room) {
@@ -248,16 +252,15 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 						height={44}
 						background={'rgba(125, 166, 220, 0.1)'}
 					/>
-					{profile.user.accounts.toLowerCase() !== walletAddress && (
-						<Button
-							children={'Messages'}
-							width={'117px'}
-							onClick={() => {
-								currentProfile && handleSelectedUser(profile, currentProfile);
-							}}
-							height={44}
-						/>
-					)}
+
+					<Button
+						children={'Messages'}
+						width={'117px'}
+						onClick={() => {
+							currentProfile && handleSelectedUser(profile, currentProfile);
+						}}
+						height={44}
+					/>
 				</div>
 			</TooltipContent>
 		</TooltipContainer>
