@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { Type } from '../../../models/Invitation';
+import { RootState } from '../../../redux/store/app.store';
 import Button from '../../ui-components/Button';
 
 interface SideCardJoinActionsStyledProps {}
@@ -33,9 +36,15 @@ interface SideCardJoinActionsProps {
 	priv?: boolean;
 	onJoin?: () => void;
 	onNavigate?: () => void;
+	sideId?: string;
 }
 
-const SideCardJoinActions = ({ eligible, joined, onJoin, onNavigate, priv }: SideCardJoinActionsProps) => {
+const SideCardJoinActions = ({ eligible, joined, onJoin, onNavigate, priv, sideId }: SideCardJoinActionsProps) => {
+	const invitations = useSelector((state: RootState) => state.user?.user?.invitations) || [];
+
+	const isRequestAlreadySent =
+		invitations.find(inv => inv.sideId === sideId && inv.type === Type.Request)?.id && priv;
+
 	return (
 		<SideCardJoinActionsStyled className={`${joined ? 'pointer' : ''}`} onClick={onNavigate}>
 			<div className="side-actions_eligibility">
@@ -72,8 +81,8 @@ const SideCardJoinActions = ({ eligible, joined, onJoin, onNavigate, priv }: Sid
 					Joined
 				</div>
 			) : eligible ? (
-				<Button onClick={onJoin} width={'125px'}>
-					{priv ? 'Request' : 'Join'}
+				<Button disabled={isRequestAlreadySent} onClick={onJoin} width={'125px'}>
+					{priv ? (isRequestAlreadySent ? 'Requested' : 'Request') : 'Join'}
 				</Button>
 			) : (
 				<Button onClick={onJoin} width={'125px'} background="var(--disable)">
