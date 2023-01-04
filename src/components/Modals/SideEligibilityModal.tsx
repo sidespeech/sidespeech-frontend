@@ -112,6 +112,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 	const navigate = useNavigate();
 
 	const { userCollectionsData, user } = useSelector((state: RootState) => state.user);
+	const invitations = useSelector((state: RootState) => state.user?.user?.invitations) || [];
 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -189,6 +190,10 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 			updateSide();
 		}
 	}, [isEligible, props.selectedSide, props.isSideAdmin]);
+
+	const isRequestAlreadySent =
+		invitations.find(inv => inv.sideId === props.selectedSide?.id && inv.type === Type.Request)?.id &&
+		props.selectedSide?.priv;
 
 	if (!userCollectionsData) return null;
 
@@ -275,8 +280,14 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 						<Button
 							classes="footer-btn"
 							width="100%"
-							disabled={!isEligible || isLoading}
-							children={props.selectedSide['private'] === true ? 'Send Request' : 'Join now'}
+							disabled={!isEligible || isLoading || isRequestAlreadySent}
+							children={
+								props.selectedSide['private'] === true
+									? isRequestAlreadySent
+										? 'Request sent'
+										: 'Send Request'
+									: 'Join now'
+							}
 							onClick={handleJoinSide}
 						/>
 					) : (
