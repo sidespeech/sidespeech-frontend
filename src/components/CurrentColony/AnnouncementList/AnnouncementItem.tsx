@@ -43,8 +43,6 @@ const AnnouncementItemStyled = styled.div`
 	}
 	&.no-border {
 		border-top: none;
-	}
-	&.no-border {
 		padding-top: 0;
 	}
 `;

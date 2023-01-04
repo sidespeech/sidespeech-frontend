@@ -24,11 +24,13 @@ export class Message {
 	content: string;
 	sender: string;
 	timestamp: number;
+	lastMessageSameCreator: string;
 	constructor(_data: any) {
 		this.id = _data.id;
 		this.content = _data.content;
 		this.sender = _data.sender;
 		this.timestamp = Number.parseInt(_data.timestamp);
+		this.lastMessageSameCreator =  _data.lastMessageSameCreator;
 	}
 }
 
