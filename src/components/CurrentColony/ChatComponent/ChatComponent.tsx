@@ -122,6 +122,13 @@ const ChatComponentStyled = styled.div`
 		width: 100%;
 		padding: 0 1rem;
 	}
+	.border-top {
+		border-top: 1px solid var(--disable);
+	}
+	.no-border {
+		border: none!important;
+		padding-top: 0;
+	}
 `;
 
 interface IChatComponentProps {
@@ -144,12 +151,17 @@ export default function ChatComponent(props: IChatComponentProps) {
 
 	const handleSendMessage = (value: string) => {
 		websocketService.sendMessage(value, props.room.id, userData.account || 'error');
+
+		let lastMessage = messages.slice(-1).pop();
+		let lastMessageSameCreator = lastMessage?.sender === userData.account;
+
 		setMessages([
 			...messages,
 			new Message({
 				content: value,
 				timestamp: Date.now().toString(),
-				sender: userData.account
+				sender: userData.account,
+				lastMessageSameCreator: lastMessageSameCreator,
 			})
 		]);
 	};
@@ -196,7 +208,8 @@ export default function ChatComponent(props: IChatComponentProps) {
 									const url = user?.userAvatar?.metadata?.image || '';
 									const username = user?.username || '';
 									return (
-										<div className={`chat-item ${i !== 0 ? 'border-bottom' : ''}`} key={i}>
+										<div className={`chat-item ${i !== 0 ? 'border-top' : ''} ${!m.lastMessageSameCreator ? 'border' : 'no-border'}`} key={i}>
+											{!m.lastMessageSameCreator ? (
 											<div className="flex w-100 gap-20">
 												<UserBadge
 													check
@@ -206,6 +219,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 													avatar={url}
 													username={username}
 												/>
+												
 												<div
 													className="size-11 fw-500 open-sans"
 													style={{ color: 'var(--inactive)' }}
@@ -217,6 +231,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 														: ''}
 												</div>
 											</div>
+											) : null}
 											<MessageContent message={m.content} />
 										</div>
 									);
