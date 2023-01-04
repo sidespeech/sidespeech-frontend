@@ -10,7 +10,7 @@ import Modal from '../ui-components/Modal';
 import { RoundedImageContainer } from '../ui-components/styled-components/shared-styled-components';
 import Eligibility from '../CurrentColony/settings/eligibility/eligibility';
 import { toast } from 'react-toastify';
-import { addUserParsedSide, updateProfiles } from '../../redux/Slices/UserDataSlice';
+import { addInvitationToUser, addUserParsedSide, updateProfiles } from '../../redux/Slices/UserDataSlice';
 import { State, Type } from '../../models/Invitation';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '../ui-components/Spinner';
@@ -18,7 +18,7 @@ import invitationService from '../../services/api-services/invitation.service';
 import sideService from '../../services/api-services/side.service';
 import profileService from '../../services/api-services/profile.service';
 import { breakpoints, size } from '../../helpers/breakpoints';
-import { setLeaveSideOpen } from '../../redux/Slices/AppDatasSlice';
+import { setLeaveSideOpen, updateCurrentSideStatue } from '../../redux/Slices/AppDatasSlice';
 import useSideEligibility from '../../hooks/useSideEligibility';
 import websocketService from '../../services/websocket-services/websocket.service';
 import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
@@ -112,6 +112,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 	const navigate = useNavigate();
 
 	const { userCollectionsData, user } = useSelector((state: RootState) => state.user);
+	const invitations = useSelector((state: RootState) => state.user?.user?.invitations) || [];
 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -131,7 +132,9 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 					recipient: props.selectedSide['creatorAddress'],
 					side: props.selectedSide
 				};
-				await invitationService.sendRequestPrivateSide(object);
+				const newInvitation = await invitationService.sendRequestPrivateSide(object);
+				dispatch(addInvitationToUser(newInvitation));
+				props.setDisplayEligibility?.(false);
 				setIsLoading(false);
 			} else {
 				websocketService.joinSide(user.id, props.selectedSide.id, Role.User);
@@ -174,14 +177,23 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 
 	useEffect(() => {
 		async function updateSide() {
-			const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
-			props.setDisplayEligibility(false);
-			navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
+			try {
+				const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
+				dispatch(updateCurrentSideStatue(SideStatus.active));
+				props.setDisplayEligibility(false);
+				navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
+			} catch (error) {
+				console.error(error);
+			}
 		}
 		if (isEligible && props.selectedSide.status === SideStatus.inactive && props.isSideAdmin) {
 			updateSide();
 		}
 	}, [isEligible, props.selectedSide, props.isSideAdmin]);
+
+	const isRequestAlreadySent =
+		invitations.find(inv => inv.sideId === props.selectedSide?.id && inv.type === Type.Request)?.id &&
+		props.selectedSide?.priv;
 
 	if (!userCollectionsData) return null;
 
@@ -268,8 +280,14 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 						<Button
 							classes="footer-btn"
 							width="100%"
-							disabled={!isEligible || isLoading}
-							children={props.selectedSide['private'] === true ? 'Send Request' : 'Join now'}
+							disabled={!isEligible || isLoading || isRequestAlreadySent}
+							children={
+								props.selectedSide['private'] === true
+									? isRequestAlreadySent
+										? 'Request sent'
+										: 'Send Request'
+									: 'Join now'
+							}
 							onClick={handleJoinSide}
 						/>
 					) : (
