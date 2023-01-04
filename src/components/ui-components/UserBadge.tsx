@@ -61,7 +61,7 @@ export default function UserBadge({
 	username?: string;
 	avatar?: string | undefined;
 	width?: number;
-	onClickPicture?: any;
+	onClickPicture?: () => void;
 	onClickName?: any;
 }) {
 	const handleClickName = (e: any) => {
@@ -72,7 +72,9 @@ export default function UserBadge({
 	};
 	const handleClickPicture = (e: any) => {
 		e.stopPropagation();
-		if (onClickPicture) {
+		console.log(typeof onClickPicture);
+		if (typeof onClickPicture === 'function') {
+			console.log('picture');
 			onClickPicture();
 		}
 	};
