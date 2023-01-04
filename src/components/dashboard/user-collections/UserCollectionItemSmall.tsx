@@ -47,9 +47,6 @@ const UserCollectionItemSmallStyled = styled.div`
             }
         }
     }
-    & .number-of-sides {
-       
-    }
     ${breakpoints(
         size.md,
         `
