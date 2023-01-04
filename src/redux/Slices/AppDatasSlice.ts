@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { Side } from '../../models/Side';
+import { Side, SideStatus } from '../../models/Side';
 import { Channel } from '../../models/Channel';
 import { Profile } from '../../models/Profile';
 import update from 'immutability-helper';
@@ -30,6 +30,9 @@ export const appDatasSlice = createSlice({
 		setCurrentSide: (state: AppDatas, action: PayloadAction<Side | null>) => {
 			if (action.payload) state.currentSide = action.payload;
 			else state.currentSide = null;
+		},
+		updateCurrentSideStatue: (state: AppDatas, action: PayloadAction<SideStatus>) => {
+			if (action.payload !== null && state.currentSide) state.currentSide.status = action.payload;
 		},
 		addProfileToCurrentSide: (state: AppDatas, action: PayloadAction<Profile>) => {
 			state.currentSide = update(state.currentSide, { profiles: { $push: [action.payload] } });
@@ -87,7 +90,8 @@ export const {
 	setEligibilityOpen,
 	setLeaveSideOpen,
 	addProfileToCurrentSide,
-	updateProfileInSide,
+	updateCurrentSideStatue,
+	updateProfileInSide
 } = appDatasSlice.actions;
 
 export default appDatasSlice.reducer;

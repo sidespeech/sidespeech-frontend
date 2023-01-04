@@ -18,7 +18,7 @@ import invitationService from '../../services/api-services/invitation.service';
 import sideService from '../../services/api-services/side.service';
 import profileService from '../../services/api-services/profile.service';
 import { breakpoints, size } from '../../helpers/breakpoints';
-import { setLeaveSideOpen } from '../../redux/Slices/AppDatasSlice';
+import { setLeaveSideOpen, updateCurrentSideStatue } from '../../redux/Slices/AppDatasSlice';
 import useSideEligibility from '../../hooks/useSideEligibility';
 import websocketService from '../../services/websocket-services/websocket.service';
 import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
@@ -174,9 +174,14 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 
 	useEffect(() => {
 		async function updateSide() {
-			const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
-			props.setDisplayEligibility(false);
-			navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
+			try {
+				const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
+				dispatch(updateCurrentSideStatue(SideStatus.active));
+				props.setDisplayEligibility(false);
+				navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
+			} catch (error) {
+				console.error(error);
+			}
 		}
 		if (isEligible && props.selectedSide.status === SideStatus.inactive && props.isSideAdmin) {
 			updateSide();
