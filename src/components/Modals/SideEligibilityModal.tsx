@@ -10,7 +10,7 @@ import Modal from '../ui-components/Modal';
 import { RoundedImageContainer } from '../ui-components/styled-components/shared-styled-components';
 import Eligibility from '../CurrentColony/settings/eligibility/eligibility';
 import { toast } from 'react-toastify';
-import { addUserParsedSide, updateProfiles } from '../../redux/Slices/UserDataSlice';
+import { addInvitationToUser, addUserParsedSide, updateProfiles } from '../../redux/Slices/UserDataSlice';
 import { State, Type } from '../../models/Invitation';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '../ui-components/Spinner';
@@ -131,7 +131,9 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 					recipient: props.selectedSide['creatorAddress'],
 					side: props.selectedSide
 				};
-				await invitationService.sendRequestPrivateSide(object);
+				const newInvitation = await invitationService.sendRequestPrivateSide(object);
+				dispatch(addInvitationToUser(newInvitation));
+				props.setDisplayEligibility?.(false);
 				setIsLoading(false);
 			} else {
 				websocketService.joinSide(user.id, props.selectedSide.id, Role.User);

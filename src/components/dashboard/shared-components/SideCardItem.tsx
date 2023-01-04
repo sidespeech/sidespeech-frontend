@@ -243,6 +243,8 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 							onNavigate={handleNavigate}
 							joined={side.joined}
 							onJoin={() => onJoin?.(side)}
+							priv={side.priv}
+							sideId={side.id}
 						/>
 					)}
 				</div>

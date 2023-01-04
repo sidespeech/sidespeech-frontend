@@ -22,6 +22,7 @@ import Avatar from '../GeneralSettings/Account/Avatar';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import useWalletAddress from '../../hooks/useWalletAddress';
 import useSideEligibility from '../../hooks/useSideEligibility';
+import { Profile, Role } from '../../models/Profile';
 
 const UserGeneralInformationsStyled = styled.div`
 	display: flex;
@@ -111,6 +112,7 @@ const initialStateError = {
 };
 
 interface IUserGeneralInformationsProps {
+	currentProfile?: Profile;
 	currentSide?: Side;
 	displayNftsCollection?: boolean;
 	formData: InitialStateUser;
@@ -125,6 +127,7 @@ interface IUserGeneralInformationsProps {
 }
 
 export default function UserGeneralInformations({
+	currentProfile,
 	currentSide,
 	displayNftsCollection,
 	formData,
@@ -306,7 +309,7 @@ export default function UserGeneralInformations({
 	const renderLeave = () => {
 		return (
 			<>
-				{currentSide && (
+				{currentSide && currentProfile?.role !== Role.Admin && currentProfile?.role !== Role.subadmin && (
 					<div onClick={leaveSide} className="text-red cursor-pointer">
 						Leave the side
 					</div>
