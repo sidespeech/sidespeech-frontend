@@ -173,7 +173,16 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 			setCollection(collection);
 		}
 		if (profile?.user?.userAvatar?.metadata?.image) {
-			setUrl(profile.user.userAvatar.metadata.image);
+			setUrl('https://ipfs.io/ipfs/'+profile.user.userAvatar.metadata.image.replaceAll("ipfs://", ""));
+		}
+		if (profile?.user?.userAvatar?.metadata?.image) {
+			if(profile?.user?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
+				setUrl('https://ipfs.io/ipfs/' + profile?.user?.userAvatar?.metadata?.image.replaceAll('ipfs://', ''));
+			} else {
+				setUrl(profile?.user?.userAvatar?.metadata?.image);
+			}
+		} else {
+			setUrl(defaultPP);
 		}
 		if (profile.profilePicture.token_address && Object.keys(userCollectionsData).length && !collection) {
 			getCollection(profile.profilePicture.token_address);
