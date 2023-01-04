@@ -132,6 +132,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 					side: props.selectedSide
 				};
 				await invitationService.sendRequestPrivateSide(object);
+				props.setDisplayEligibility?.(false);
 				setIsLoading(false);
 			} else {
 				websocketService.joinSide(user.id, props.selectedSide.id, Role.User);
