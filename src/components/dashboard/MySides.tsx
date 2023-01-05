@@ -173,6 +173,7 @@ const MySides = ({ collections }: MySidesProps) => {
 			try {
 				setSidesLoading(true);
 				const sidesData = await sideService.getMany(sides.map(s => s.id));
+				console.log('sidesData Get Many :', sidesData);
 				const response = await getSidesMetadata(sidesData, userCollectionsData, sides);
 				setFilteredSides(response);
 			} catch (error) {
