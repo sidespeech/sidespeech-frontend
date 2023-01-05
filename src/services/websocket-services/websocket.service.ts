@@ -45,6 +45,7 @@ class WebSocketService {
 			trigger(EventType.NFT_TRANSFERT, data);
 		});
 		this.socket.on('banUser', async data => {
+			console.log('banUser this.socket.on event web.socket.service.ts FRONTEND.');
 			trigger(EventType.BAN_USER, data);
 		});
 	}
@@ -96,7 +97,8 @@ class WebSocketService {
 	}
 
 	banUser(user: any) {
-		console.log('banUser method frontend', user);
+		console.log('banUser method frontend service', user);
+		// This method below call the banUser method in the backend in chat.gateway.ts and pass the user as a parameter.
 		this.socket?.emit('banUser', {
 			user
 		});

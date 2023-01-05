@@ -8,6 +8,7 @@ import { Invitation } from '../../models/Invitation';
 
 export interface AppDatas {
 	currentSide: Side | null;
+	bannedUser: string | null;
 	selectedChannel: Channel | null;
 	selectedProfile: Profile | null;
 	settingsOpen: boolean;
@@ -17,6 +18,7 @@ export interface AppDatas {
 
 const initialState: AppDatas = {
 	currentSide: null,
+	bannedUser: null,
 	selectedChannel: null,
 	selectedProfile: null,
 	settingsOpen: false,
@@ -46,6 +48,8 @@ export const appDatasSlice = createSlice({
 						[index]: { [action.payload.key]: { $set: action.payload.value } }
 					});
 					state.currentSide = update(state.currentSide, { profiles: { $set: profiles } });
+					state.bannedUser = update(state.bannedUser, { $set: profiles[index]['id'] });
+					console.log('redux stuff: ', );
 				}
 			}
 		},

@@ -51,8 +51,9 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 		if (value && userToEject) {
 			try {
 				await profileService.blacklistProfile(side.id, userToEject.id, true);
-				dispatch(updateProfileInSide({ key: 'isBlacklisted', value, id: userToEject.id }));
+				// Socket IO call to ban user
 				websocketService.banUser(userToEject.id);
+				dispatch(updateProfileInSide({ key: 'isBlacklisted', value, id: userToEject.id }));
 			} catch (error) {
 				console.log(error);
 				toast.error('Error when banning this user.', { toastId: 111 });

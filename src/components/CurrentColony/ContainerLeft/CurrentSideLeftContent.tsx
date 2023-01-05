@@ -51,7 +51,7 @@ export default function CurrentSideLeftContent() {
 	const { walletAddress } = useWalletAddress();
 
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	const { currentSide } = useSelector((state: RootState) => state.appDatas);
+	const { currentSide, bannedUser } = useSelector((state: RootState) => state.appDatas);
 	const dispatch = useDispatch();
 
 	// Variables for notifications Channels
@@ -184,6 +184,10 @@ export default function CurrentSideLeftContent() {
 	useEffect(() => {
 		if (currentProfile) websocketService.getUsersStatus(currentProfile);
 	}, [currentProfile, currentSide]);
+
+	useEffect(() => {
+		console.log('currentProfile', currentProfile);
+	}, [currentProfile, currentSide]);
 	// LISTENING WS =====================================================================
 
 	useEffect(() => {
@@ -204,8 +208,6 @@ export default function CurrentSideLeftContent() {
 				<Skeleton />
 			</div>
 		);
-
-		console.log(currentProfile);
 
 	return (
 		<>
