@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { Side } from '../../models/Side';
+import { Side, SideStatus } from '../../models/Side';
 import { Channel } from '../../models/Channel';
 import { Profile } from '../../models/Profile';
 import update from 'immutability-helper';
+import { Invitation } from '../../models/Invitation';
 
 export interface AppDatas {
 	currentSide: Side | null;
@@ -30,6 +31,9 @@ export const appDatasSlice = createSlice({
 		setCurrentSide: (state: AppDatas, action: PayloadAction<Side | null>) => {
 			if (action.payload) state.currentSide = action.payload;
 			else state.currentSide = null;
+		},
+		updateCurrentSideStatue: (state: AppDatas, action: PayloadAction<SideStatus>) => {
+			if (action.payload !== null && state.currentSide) state.currentSide.status = action.payload;
 		},
 		addProfileToCurrentSide: (state: AppDatas, action: PayloadAction<Profile>) => {
 			state.currentSide = update(state.currentSide, { profiles: { $push: [action.payload] } });
@@ -72,6 +76,13 @@ export const appDatasSlice = createSlice({
 		},
 		setEligibilityOpen: (state: AppDatas, action: PayloadAction<{ open: boolean; side: Side | null }>) => {
 			state.openEligibilityModal = action.payload;
+		},
+		addSideInvitation: (state: AppDatas, action: PayloadAction<Invitation>) => {
+			if (state.currentSide) state.currentSide.invitations = [...state.currentSide.invitations, action.payload];
+		},
+		removeSideInvitation: (state: AppDatas, action: PayloadAction<string>) => {
+			if (state.currentSide)
+				state.currentSide.invitations = state.currentSide.invitations.filter(inv => inv.id !== action.payload);
 		}
 	}
 });
@@ -87,7 +98,10 @@ export const {
 	setEligibilityOpen,
 	setLeaveSideOpen,
 	addProfileToCurrentSide,
+	updateCurrentSideStatue,
 	updateProfileInSide,
+	addSideInvitation,
+	removeSideInvitation
 } = appDatasSlice.actions;
 
 export default appDatasSlice.reducer;

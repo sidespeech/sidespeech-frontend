@@ -47,12 +47,14 @@ export default function SideUserList({
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-	useEffect(() => {}, [onlineUsers, currentProfile, currentSide]);
-
 	const handleOnClickName = (profile: Profile) => {
+		if (isMembersList) return;
 		try {
 			// getting room for given profile id
-			let room = currentProfile?.getRoom(profile.id);
+			let room =
+				profile.id === currentProfile?.id
+					? currentProfile?.getSelfRoom(profile.id)
+					: currentProfile?.getRoom(profile.id);
 			if (!room) throw new Error('Room not found');
 			// selecting the room
 			dispatch(setSelectedRoom(room));
@@ -66,6 +68,7 @@ export default function SideUserList({
 		}
 	};
 	const handleOnClickPicture = (profile: Profile) => {
+		if (isMembersList) return;
 		dispatch(setSelectedProfile(profile));
 		navigate(`/user/${profile.user.username}`);
 	};
@@ -101,20 +104,20 @@ export default function SideUserList({
 							data-for={id}
 							key={index}
 							onMouseEnter={() => ReactTooltip.hide()}
-							onClick={() => !isMembersList && handleOnClickName(p)}
+							onClick={() => handleOnClickName(p)}
 							className={`w-100 flex justify-between align-center pl-3 pr-2 py-2 ${
 								selectedRoom && selectedRoom.id === room?.id ? 'selected-channel' : ''
 							} pointer channel-item`}
 						>
 							<div className="flex align-center">
-								{currentProfile['username'] !== p['username'] ? (
+								{!isMe ? (
 									<UserBadge
 										avatar={url}
 										weight={400}
 										fontSize={11}
 										username={p.user.username}
 										connect={onlineUsers.includes(p['username'])}
-										onClickPicture={() => !isMembersList && handleOnClickPicture(p)}
+										onClickPicture={() => handleOnClickPicture(p)}
 									/>
 								) : (
 									<UserBadge
@@ -171,7 +174,16 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 			setCollection(collection);
 		}
 		if (profile?.user?.userAvatar?.metadata?.image) {
-			setUrl(profile.user.userAvatar.metadata.image);
+			setUrl('https://ipfs.io/ipfs/'+profile.user.userAvatar.metadata.image.replaceAll("ipfs://", ""));
+		}
+		if (profile?.user?.userAvatar?.metadata?.image) {
+			if(profile?.user?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
+				setUrl('https://ipfs.io/ipfs/' + profile?.user?.userAvatar?.metadata?.image.replaceAll('ipfs://', ''));
+			} else {
+				setUrl(profile?.user?.userAvatar?.metadata?.image);
+			}
+		} else {
+			setUrl(defaultPP);
 		}
 		if (profile.profilePicture.token_address && Object.keys(userCollectionsData).length && !collection) {
 			getCollection(profile.profilePicture.token_address);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import MembersList from './members-list/members-list';
@@ -254,18 +254,19 @@ export default function Settings() {
 		setRequests(users);
 	};
 
-	useEffect(() => {
-		updateRequestNotifications();
-	}, [currentSide, userData]);
-
-	const updateRequestNotifications = async () => {
+	const updateRequestNotifications = useCallback(async () => {
+		console.log(currentSide?.invitations);
 		if (currentSide && userData && userData['user']) {
 			let requestsOrdered = currentSide['invitations'].filter(
 				(invitation: any) => invitation['type'] === Type.Request && invitation['state'] === State.Pending
 			);
 			getRequestsUsers(requestsOrdered);
 		}
-	};
+	}, [currentSide?.invitations, userData]);
+
+	useEffect(() => {
+		updateRequestNotifications();
+	}, [updateRequestNotifications]);
 
 	return (
 		<SettingsStyled>

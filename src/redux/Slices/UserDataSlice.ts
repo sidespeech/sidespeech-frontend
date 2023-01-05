@@ -19,6 +19,7 @@ import openseaService from '../../services/web3-services/opensea.service';
 import { saveOpenseaData } from '../../hooks/useOpenseaData';
 import update from 'immutability-helper';
 import { ethers } from 'ethers';
+import { Invitation } from '../../models/Invitation';
 
 export interface UserData {
 	user: User | null;
@@ -195,6 +196,9 @@ export const userDataSlice = createSlice({
 				state.user = { ...state.user, profiles: profiles };
 			}
 		},
+		addInvitationToUser: (state: UserData, action: PayloadAction<Invitation>) => {
+			if (state.user) state.user.invitations = [...state.user.invitations, action.payload];
+		},
 		addColony: (state: UserData, action: PayloadAction<Side>) => {
 			state.sides = [...state.sides, action.payload];
 		},
@@ -296,7 +300,8 @@ export const {
 	addProfileToSide,
 	setSigner,
 	setProvider,
-	updateSideActivity
+	updateSideActivity,
+	addInvitationToUser
 } = userDataSlice.actions;
 
 export default userDataSlice.reducer;

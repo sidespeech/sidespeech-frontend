@@ -51,13 +51,15 @@ const UserSidesStyled = styled.div`
 			object-fit: contain;
 			width: 100%;
 			height: 100%;
+			border: 1px solid black;
+			border-radius: 25px;
 		}
 	}
 
 	.badge-notification {
 		position: absolute;
-		top: 0;
-		right: -5px;
+		top: 3px;
+		right: -2px;
 	}
 `;
 
@@ -97,7 +99,6 @@ export default function UserSides() {
 		}
 	}, [sides, currentSide, lastAnnouncement, walletAddress]);
 
-
 	useEffect(() => {
 		if (walletAddress) {
 			const sideFounded = sides.find((s: Side) => {
@@ -124,7 +125,7 @@ export default function UserSides() {
 			// If the message is for current Side
 			if (
 				currentChannelsIds?.includes(notification['name']) ||
-				currentSide?.profiles.find((p: Profile) => p.rooms.some(el => el.id === notification['name']))
+				currentSide?.profiles.find((p: Profile) => p.rooms?.some(el => el.id === notification['name']))
 			) {
 				dots_object[currentSide!['id']] = 0;
 			} else {

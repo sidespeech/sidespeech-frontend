@@ -1,36 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import defaultPP from '../../../../assets/default-pp.png';
-import { fixURL, getRoleColor, reduceWalletAddress } from '../../../../helpers/utilities';
-import { Profile } from '../../../../models/Profile';
+import { getRoleColor, reduceWalletAddress } from '../../../../helpers/utilities';
+import { Profile, Role } from '../../../../models/Profile';
 import { Side } from '../../../../models/Side';
-import { User } from '../../../../models/User';
 import { updateProfileInSide } from '../../../../redux/Slices/AppDatasSlice';
 import profileService from '../../../../services/api-services/profile.service';
 import ConfirmationModal from '../../../Modals/ConfirmationModal';
-import LeaveSideConfirmationModal from '../../../Modals/LeaveSideConfirmationModal';
 import Button from '../../../ui-components/Button';
 import CustomSelect from '../../../ui-components/CustomSelect';
 
+const getRole = (role: number) => {
+	if (role === Role.Admin) return 'Administrator';
+	else if (role === Role.subadmin) return 'Sub-Admin';
+	else return 'User';
+};
+
 export default function MemberListItem({ side, user, isAdmin }: { side: Side; user: Profile; isAdmin: boolean }) {
-	const [newRole, setNewRole] = useState('');
 	const [userToEject, setUserToEject] = useState<Profile | undefined>(undefined);
 	const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false);
 
+	const rolesObject = {
+		// [Role.Admin]: getRole(Role.Admin),
+		[Role.subadmin]: getRole(Role.subadmin),
+		[Role.User]: getRole(Role.User)
+	};
+
 	const dispatch = useDispatch();
 
-	const handleRoleChange = (event: any) => {
-		setNewRole(event.target.value);
+	const handleRoleChange = async (event: any) => {
+		try {
+			const newRole = event.target.value;
+			const response = await profileService.updateProfile(user.id, { role: newRole });
+			console.log(response);
+			toast.success('The user role has been updated', { toastId: 46 });
+		} catch (error) {
+			console.error(error);
+			toast.error('There has been some problem updating the role of the user', { toastId: 46 });
+		}
 	};
-
-	const getRole = (role: number) => {
-		if (role === 0) return 'Administrator';
-		else if (role === 2) return 'Sub-Admin';
-		else return 'User';
-	};
-
-	useEffect(() => {}, []);
 
 	const onClickEject = async (user: any) => {
 		setUserToEject(user);
@@ -91,13 +100,12 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 				</span>
 			</div>
 			<div>
-				{false ? (
+				{!isAdmin ? (
 					<>
 						<CustomSelect
-							options={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
-							values={['User', 'Moderator1', 'Moderator2', 'Moderator3']}
-							// valueToSet={user.get("role").get("name")}
-							valueToSet={getRole(user['role'])}
+							options={Object.values(rolesObject)}
+							values={Object.keys(rolesObject)}
+							valueToSet={user['role']}
 							onChange={handleRoleChange}
 						/>
 						{/* <i
@@ -112,7 +120,7 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 				)}
 			</div>
 			<div className="flex-1 align-center text-center">
-				{getRole(user['role']) !== 'Administrator' ? (
+				{!isAdmin ? (
 					!user['isBlacklisted'] ? (
 						<Button classes="eject-btn" width="100%" onClick={() => onClickEject(user)}>
 							<i className="fa-solid fa-right-from-bracket mr-1"></i> Block
@@ -127,7 +135,9 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 			{confirmationModalOpen && (
 				<ConfirmationModal
 					message={
-						<span className="size-20">Are you sure you want to blacklist {userToEject?.user.username}?</span>
+						<span className="size-20">
+							Are you sure you want to blacklist {userToEject?.user.username}?
+						</span>
 					}
 					handleConfirm={handleConfirm}
 					setIsConfirmationModalOpen={setConfirmationModalOpen}

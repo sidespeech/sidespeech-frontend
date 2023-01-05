@@ -113,7 +113,7 @@ const UserCollectionCardStyled = styled.div<CollectionCardStyledProps>`
 		}
 		& > svg {
 			& path {
-				fill: #705ce9;
+				fill: #0CCF99;
 			}
 		}
 		&.title-wrapper-mobile {
