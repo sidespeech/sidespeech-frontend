@@ -154,7 +154,14 @@ const LinkPreviewComponent = ({
 			<a href={url} target="_blank" rel="noreferrer">
 				{url}
 			</a>
-			<LinkPreviewStyled className={className} href={url} target="_blank" rel="noreferrer" size={size} {...rest}>
+			<LinkPreviewStyled
+				className={className}
+				href={url}
+				target="_blank"
+				rel="noreferrer"
+				size={youtube || data.images?.length ? size : 'small'}
+				{...rest}
+			>
 				{size === 'default' && (
 					<>
 						{youtube ? (

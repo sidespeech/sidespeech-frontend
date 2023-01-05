@@ -125,7 +125,7 @@ export default function UserSides() {
 			// If the message is for current Side
 			if (
 				currentChannelsIds?.includes(notification['name']) ||
-				currentSide?.profiles.find((p: Profile) => p.rooms.some(el => el.id === notification['name']))
+				currentSide?.profiles.find((p: Profile) => p.rooms?.some(el => el.id === notification['name']))
 			) {
 				dots_object[currentSide!['id']] = 0;
 			} else {

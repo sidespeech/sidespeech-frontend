@@ -47,13 +47,14 @@ export default function SideUserList({
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-	useEffect(() => {}, [onlineUsers, currentProfile, currentSide]);
-
 	const handleOnClickName = (profile: Profile) => {
 		if (isMembersList) return;
 		try {
 			// getting room for given profile id
-			let room = currentProfile?.getRoom(profile.id);
+			let room =
+				profile.id === currentProfile?.id
+					? currentProfile?.getSelfRoom(profile.id)
+					: currentProfile?.getRoom(profile.id);
 			if (!room) throw new Error('Room not found');
 			// selecting the room
 			dispatch(setSelectedRoom(room));
@@ -173,7 +174,16 @@ const ProfileTooltip = ({ profile }: { profile: Profile }) => {
 			setCollection(collection);
 		}
 		if (profile?.user?.userAvatar?.metadata?.image) {
-			setUrl(profile.user.userAvatar.metadata.image);
+			setUrl('https://ipfs.io/ipfs/'+profile.user.userAvatar.metadata.image.replaceAll("ipfs://", ""));
+		}
+		if (profile?.user?.userAvatar?.metadata?.image) {
+			if(profile?.user?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
+				setUrl('https://ipfs.io/ipfs/' + profile?.user?.userAvatar?.metadata?.image.replaceAll('ipfs://', ''));
+			} else {
+				setUrl(profile?.user?.userAvatar?.metadata?.image);
+			}
+		} else {
+			setUrl(defaultPP);
 		}
 		if (profile.profilePicture.token_address && Object.keys(userCollectionsData).length && !collection) {
 			getCollection(profile.profilePicture.token_address);

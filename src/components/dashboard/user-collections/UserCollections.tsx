@@ -25,15 +25,42 @@ const UserCollectionsStyled = styled.div<CollectionsStyledProps>`
 		justify-items: center;
 		grid-gap: 1rem;
 		grid-template-columns: repeat(2, 1fr);
+		&.card-view {
+			.title-wrapper .title {
+				margin-top: 0px;
+			}
+			.title-wrapper svg {
+				margin-top: -30px;
+			}
+			${breakpoints(
+				size.md,
+				`
+				.title-wrapper .title {
+					margin-top: 15px;
+				}
+				.title-wrapper svg {
+					margin-top: 0px;
+				}
+			`)}
+		}
+		&.list-view {
+			.title-wrapper svg {
+				margin-top: -5px;
+				margin-left: 10px;
+				${breakpoints(
+					size.md,
+					`
+				{
+					margin-left: 0px;
+				}
+				`)}
+			}
+		}
 		.title-wrapper .title {
 			min-height: 20px;
-			margin-top: 0px;
 		}
 		.title-wrapper .avatar {
 			margin-top: 10px;
-		}
-		.title-wrapper svg {
-			margin-top: -30px;
 		}
 		${breakpoints(
 			size.md,

@@ -120,11 +120,10 @@ export default function MembersList({ className, currentSide }: { className?: st
 		setFilteredProfiles(_.orderBy(currentSide.profiles, m => m['role']));
 	}, [currentSide]);
 
-	const isAdmin = currentProfile?.role === Role.Admin;
+	const isAdmin = (p: Profile) => p?.role === Role.Admin;
 
 	const handleFilterProfile = (event: any) => {
 		const value = event.target.value;
-		console.log(value);
 		switch (value) {
 			case 'all':
 				setFilteredProfiles(currentSide.profiles);
@@ -165,7 +164,7 @@ export default function MembersList({ className, currentSide }: { className?: st
 			</div>
 			<div className="members-table-body">
 				{_.orderBy(filteredProfiles, 'role').map(m => {
-					return <MemberListItem key={m.id} user={m} side={currentSide} isAdmin={isAdmin} />;
+					return <MemberListItem key={m.id} user={m} side={currentSide} isAdmin={isAdmin(m)} />;
 				})}
 			</div>
 		</MembersListStyled>
