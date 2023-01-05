@@ -44,6 +44,9 @@ class WebSocketService {
 		this.socket.on('nft-transfert', async data => {
 			trigger(EventType.NFT_TRANSFERT, data);
 		});
+		this.socket.on('banUser', async data => {
+			trigger(EventType.BAN_USER, data);
+		});
 	}
 
 	login(user: any, rooms: any) {
@@ -89,6 +92,13 @@ class WebSocketService {
 			userId,
 			sideId,
 			role
+		});
+	}
+
+	banUser(user: any) {
+		console.log('banUser method frontend', user);
+		this.socket?.emit('banUser', {
+			user
 		});
 	}
 

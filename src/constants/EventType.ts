@@ -8,5 +8,6 @@ export enum EventType {
 	UPDATE_USER_SIDES = 'update_user_sides',
 	ADDED_POLL = 'added_poll',
 	NEW_PROFILE = 'new_profile',
-	NFT_TRANSFERT = 'nft_transfert'
+	NFT_TRANSFERT = 'nft_transfert',
+	BAN_USER = 'ban_user'
 }

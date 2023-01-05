@@ -7,6 +7,7 @@ import { Profile, Role } from '../../../../models/Profile';
 import { Side } from '../../../../models/Side';
 import { updateProfileInSide } from '../../../../redux/Slices/AppDatasSlice';
 import profileService from '../../../../services/api-services/profile.service';
+import websocketService from '../../../../services/websocket-services/websocket.service';
 import ConfirmationModal from '../../../Modals/ConfirmationModal';
 import Button from '../../../ui-components/Button';
 import CustomSelect from '../../../ui-components/CustomSelect';
@@ -51,6 +52,7 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 			try {
 				await profileService.blacklistProfile(side.id, userToEject.id, true);
 				dispatch(updateProfileInSide({ key: 'isBlacklisted', value, id: userToEject.id }));
+				websocketService.banUser(userToEject.id);
 			} catch (error) {
 				console.log(error);
 				toast.error('Error when banning this user.', { toastId: 111 });
