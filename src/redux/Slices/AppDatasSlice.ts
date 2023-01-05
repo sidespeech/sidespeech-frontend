@@ -4,6 +4,7 @@ import { Side, SideStatus } from '../../models/Side';
 import { Channel } from '../../models/Channel';
 import { Profile } from '../../models/Profile';
 import update from 'immutability-helper';
+import { Invitation } from '../../models/Invitation';
 
 export interface AppDatas {
 	currentSide: Side | null;
@@ -75,6 +76,13 @@ export const appDatasSlice = createSlice({
 		},
 		setEligibilityOpen: (state: AppDatas, action: PayloadAction<{ open: boolean; side: Side | null }>) => {
 			state.openEligibilityModal = action.payload;
+		},
+		addSideInvitation: (state: AppDatas, action: PayloadAction<Invitation>) => {
+			if (state.currentSide) state.currentSide.invitations = [...state.currentSide.invitations, action.payload];
+		},
+		removeSideInvitation: (state: AppDatas, action: PayloadAction<string>) => {
+			if (state.currentSide)
+				state.currentSide.invitations = state.currentSide.invitations.filter(inv => inv.id !== action.payload);
 		}
 	}
 });
@@ -91,7 +99,9 @@ export const {
 	setLeaveSideOpen,
 	addProfileToCurrentSide,
 	updateCurrentSideStatue,
-	updateProfileInSide
+	updateProfileInSide,
+	addSideInvitation,
+	removeSideInvitation
 } = appDatasSlice.actions;
 
 export default appDatasSlice.reducer;
