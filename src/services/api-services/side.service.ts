@@ -13,6 +13,7 @@ class SideService extends BaseApiService {
 		if (!instance) instance = new SideService();
 		return instance;
 	}
+
 	// get side by Id
 	async getSideById(id: string): Promise<Side> {
 		const res = await this.get(`${BASE_URL}/side/${id}`);

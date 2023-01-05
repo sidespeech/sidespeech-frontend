@@ -155,6 +155,8 @@ export const userDataSlice = createSlice({
 			state.user = action.payload.user;
 			state.account = action.payload.account;
 			let rooms = flattenChannels(state.user?.profiles, 'rooms');
+			
+			console.log('user Slice :', state.user)
 
 			state.sides = action.payload.user.profiles
 				? action.payload.user.profiles.map((p: Profile) => {

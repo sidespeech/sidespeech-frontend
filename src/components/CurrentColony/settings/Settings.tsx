@@ -212,6 +212,7 @@ export default function Settings() {
 	};
 
 	useEffect(() => {
+		console.log('userData :', userData);
 		if (!currentSide) {
 			navigate(`/`);
 		} else {

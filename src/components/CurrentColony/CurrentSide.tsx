@@ -176,7 +176,6 @@ export default function CurrentSide() {
 				if (id && user) {
 					// Get Side data
 					const res = await sideService.getSideBySlug(id);
-
 					const isInTheSide = user['profiles'].find(item => item['side']['id'] === res['id']);
 
 					// If side is inactive

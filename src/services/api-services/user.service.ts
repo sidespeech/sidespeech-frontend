@@ -49,6 +49,9 @@ class UserService extends BaseApiService {
 
 	async getUserByAddress(address: string): Promise<User> {
 		const res = await this.get(`${BASE_URL}/user/${address}`);
+
+		console.log("res['body'] :" ,res['body']);
+		
 		if (!res.body) throw new Error('Error');
 		return new User(res.body);
 	}
