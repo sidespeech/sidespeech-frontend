@@ -173,6 +173,8 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 	});
 
 	let messagesCount = 0;
+	console.log('messages :', messages);
+	console.log('side.id :', side.id);
 	messages?.forEach(message => {
 		if (message.sideId === side.id) messagesCount += 1;
 		else
@@ -182,6 +184,8 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 					if (profile.rooms?.some(room => room.id === message.name || room.id === message.room?.id))
 						messagesCount += 1;
 				});
+		console.log('messagesCount :', messagesCount);
+
 	});
 
 	const sideProfile: Profile = userProfiles.find(profile => profile.side.id === side.id);

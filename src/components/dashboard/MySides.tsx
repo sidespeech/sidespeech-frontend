@@ -216,10 +216,12 @@ const MySides = ({ collections }: MySidesProps) => {
 	}, [staticNotifications, walletAddress]);
 
 	useEffect(() => {
+		console.log('lastAnnouncement :', lastAnnouncement)
 		if (lastAnnouncement && walletAddress) setAlertsBySide((prevState: any) => [...prevState, lastAnnouncement]);
 	}, [lastAnnouncement, walletAddress]);
 
 	useEffect(() => {
+		console.log('lastMessage :', lastMessage)
 		if (lastMessage && walletAddress) setMessagesBySide((prevState: any) => [...prevState, lastMessage]);
 	}, [lastMessage, walletAddress]);
 
