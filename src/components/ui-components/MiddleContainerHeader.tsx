@@ -398,6 +398,30 @@ export default function MiddleContainerHeader({
 		return profile?.user;
 	};
 
+	const avatarUrl = () => {
+		if (user?.userAvatar?.metadata?.image) {
+			if(user?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
+				return 'https://ipfs.io/ipfs/' + user?.userAvatar?.metadata?.image.replaceAll('ipfs://', '');
+			} else {
+				return user?.userAvatar?.metadata?.image;
+			}
+		} else {
+			return defaultPP;
+		}
+	}
+
+	const thredCreatorAvatarUrl = () => {
+		if (threadCreator?.userAvatar?.metadata?.image) {
+			if(threadCreator?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
+				return 'https://ipfs.io/ipfs/' + threadCreator?.userAvatar?.metadata?.image.replaceAll('ipfs://', '');
+			} else {
+				return threadCreator?.userAvatar?.metadata?.image;
+			}
+		} else {
+			return '';
+		}
+	}
+
 	const threadCreator = thread ? getUserBySenderId(thread.creator || thread.creatorAddress) : null;
 
 	return (
@@ -431,7 +455,7 @@ export default function MiddleContainerHeader({
 									)
 								}}
 								alt=""
-								src={threadCreator?.userAvatar?.metadata?.image || ''}
+								src={thredCreatorAvatarUrl()}
 							/>
 							<div className="user-name-address">
 								<p className="user-name size-14">{threadCreator?.username}</p>
@@ -524,7 +548,7 @@ export default function MiddleContainerHeader({
 							}}
 							className="profile-round pointer"
 							alt=""
-							src={user?.userAvatar?.metadata?.image || defaultPP}
+							src={avatarUrl()}
 						/>
 						<div className="user-name-address">
 							<p className="user-name size-14">{user?.username}</p>

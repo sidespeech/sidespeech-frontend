@@ -16,6 +16,20 @@ interface SideCardItemStyledProps {
 	coverImage?: string;
 }
 
+const OopsContainer = styled.div<any>`
+	background-color: ${props => props.backgroundColor};
+	color: ${props => props.color};
+	position: absolute;
+	height: 50px;
+	top: 0px;
+	left: 0px;
+	z-index: 50;
+	width: 100%;
+	padding: 10px 13px;
+	font-weight: 700;
+	font-size: 14px;
+`;
+
 const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
 	display: flex;
 	flex-direction: column;
@@ -26,19 +40,6 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
 	border-radius: 10px;
 	overflow: hidden;
 	position: relative;
-	.oops-container {
-		background-color: var(--red);
-		color: var(--white);
-		position: absolute;
-		height: 50px;
-		top: 0px;
-		left: 0px;
-		z-index: 50;
-		width: 100%;
-		padding: 10px 13px;
-		font-weight: 700;
-		font-size: 14px;
-	}
 	.cover-image {
 		position: relative;
 		display: flex;
@@ -195,7 +196,14 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 			coverImage={side.firstCollection?.bannerUrl || side.firstCollection?.imageUrl || FALLBACK_BG_IMG}
 		>
 			{sideProfile && sideProfile.isBlacklisted && (
-				<div className="oops-container">Oops... You have been banned from this side.</div>
+				<OopsContainer backgroundColor={'var(--red)'} color={'var(--white)'}>
+					Oops! You have been banned from this Side
+				</OopsContainer>
+			)}
+			{userSides && side.joined && !side.eligible && (
+				<OopsContainer backgroundColor={'#FFDA56'} color={'black'}>
+					Oops! You are no longer eligible for this Side.
+				</OopsContainer>
 			)}
 			<div className={`cover-image ${side.joined ? 'pointer' : ''}`} onClick={handleNavigate}>
 				<div className="flex align-center title-wrapper">
@@ -247,6 +255,8 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 							onNavigate={handleNavigate}
 							joined={side.joined}
 							onJoin={() => onJoin?.(side)}
+							priv={side.priv}
+							sideId={side.id}
 						/>
 					)}
 				</div>

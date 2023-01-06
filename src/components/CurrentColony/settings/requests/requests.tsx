@@ -11,6 +11,8 @@ import { State, Type } from '../../../../models/Invitation';
 import userService from '../../../../services/api-services/user.service';
 import invitationService from '../../../../services/api-services/invitation.service';
 import emptyListImg from '../../../../assets/invitations_empty_screen_shape.svg';
+import { addProfileToCurrentSide, removeSideInvitation } from '../../../../redux/Slices/AppDatasSlice';
+import { toast } from 'react-toastify';
 
 const RequestsStyled = styled.div`
 	& .no-results {
@@ -70,21 +72,36 @@ export default function Requests({
 		getRequestsUsers(requestsOrdered);
 	}, [currentSide, userData]);
 
-	const onAccept = async (request: any, index: number) => {
-		let res = await invitationService.acceptRequest({ id: request['id'] });
-		// let res = await userService.updateInvitationState(request['id'], State.Accepted);
-		let newRequests = [...requests];
-		newRequests.splice(index, 1);
-		setRequests(newRequests);
-		window.location.reload();
+	const onAccept = async (request: any) => {
+		try {
+			let res = await invitationService.acceptRequest({ id: request['id'] });
+			setRequests((prevState: any) => prevState.filter((inv: any) => inv?.id !== request?.id));
+			dispatch(addProfileToCurrentSide(res));
+			dispatch(removeSideInvitation(request['id']));
+		} catch (error) {
+			console.error(error);
+			toast.error('There has been an error accepting the request', { toastId: 88 });
+		}
 	};
 
-	const onDecline = async (request: any, index: number) => {
-		let res = await invitationService.updateInvitationState(request['id'], State.Declined);
-		let newRequests = [...requests];
-		newRequests.splice(index, 1);
-		setRequests(newRequests);
-		updateRequestNotifications();
+	const onDecline = async (request: any) => {
+		try {
+			let res = await invitationService.updateInvitationState(request['id'], State.Declined);
+			setRequests((prevState: any) => prevState.filter((inv: any) => inv?.id !== request?.id));
+			updateRequestNotifications();
+			dispatch(removeSideInvitation(request['id']));
+		} catch (error) {
+			console.error(error);
+			toast.error('There has been an error declining the request', { toastId: 89 });
+		}
+	};
+
+	const handleAcceptAll = async () => {
+		await Promise.all(requests.map(request => onAccept(request)));
+	};
+
+	const handleDeclineAll = async () => {
+		await Promise.all(requests.map(request => onDecline(request)));
 	};
 
 	return (
@@ -116,7 +133,7 @@ export default function Requests({
 						<Button
 							width={'159px'}
 							height={46}
-							onClick={undefined}
+							onClick={handleDeclineAll}
 							radius={10}
 							background={'transparent'}
 							color={'var(--red)'}
@@ -125,7 +142,7 @@ export default function Requests({
 						</Button>
 						<Button
 							width={'159px'}
-							onClick={undefined}
+							onClick={handleAcceptAll}
 							radius={10}
 							background={'var(--panels)'}
 							color={'white'}
@@ -162,7 +179,7 @@ export default function Requests({
 									<Button
 										width={'159px'}
 										height={46}
-										onClick={() => onDecline(request, index)}
+										onClick={() => onDecline(request)}
 										radius={10}
 										background={'var(--red-opacity)'}
 										color={'var(--red)'}
@@ -173,7 +190,7 @@ export default function Requests({
 									<Button
 										width={'159px'}
 										height={46}
-										onClick={() => onAccept(request, index)}
+										onClick={() => onAccept(request)}
 										radius={10}
 										color={'var(--text)'}
 									>

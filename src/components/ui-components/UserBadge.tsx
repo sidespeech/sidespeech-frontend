@@ -1,4 +1,4 @@
-// import React, { useRef, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
 	reduceWalletAddress
 	// reduceWalletAddressForColor,
@@ -64,6 +64,7 @@ export default function UserBadge({
 	onClickPicture?: () => void;
 	onClickName?: any;
 }) {
+	const [url, setUrl] = useState<string>(defaultPP);
 	const handleClickName = (e: any) => {
 		e.stopPropagation();
 		if (onClickName) {
@@ -78,6 +79,17 @@ export default function UserBadge({
 			onClickPicture();
 		}
 	};
+	const avatarUrl = () => {
+		if (avatar) {
+			if(avatar.indexOf('ipfs://') > -1) {
+				return 'https://ipfs.io/ipfs/' + avatar.replaceAll('ipfs://', '');
+			} else {
+				return avatar;
+			}
+		} else {
+			return defaultPP;
+		}
+	}
 
 	return (
 		<div className="flex align-center">
@@ -86,7 +98,7 @@ export default function UserBadge({
 				width={width}
 				className="mr-1"
 				title={address}
-				src={avatar || defaultPP}
+				src={avatarUrl()}
 			/>
 			{/* {check && <img alt="verified" src={checkImg} />} */}
 			{connect && (

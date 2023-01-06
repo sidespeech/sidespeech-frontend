@@ -201,6 +201,7 @@ export default function SideProfileAccount({
 					displayNftsCollection={displayNftsCollection}
 					setDisplayNftsCollection={setDisplayNftsCollection}
 					sideSettingsPage
+					currentProfile={userData.currentProfile || undefined}
 					userCollectionsData={userData.userCollectionsData}
 					leaveSide={leaveSide}
 					areThereChanges={areThereChanges}
