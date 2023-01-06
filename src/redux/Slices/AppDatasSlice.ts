@@ -49,7 +49,7 @@ export const appDatasSlice = createSlice({
 					});
 					state.currentSide = update(state.currentSide, { profiles: { $set: profiles } });
 					state.bannedUser = update(state.bannedUser, { $set: profiles[index]['id'] });
-					console.log('redux stuff: ', );
+					console.log('redux stuff: ', profiles[index]['id']);
 				}
 			}
 		},
