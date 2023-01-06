@@ -21,6 +21,8 @@ import { breakpoints, size } from '../../../helpers/breakpoints';
 import Skeleton from '../../ui-components/Skeleton';
 import { useNotificationsContext } from '../../../providers/NotificationsProvider';
 import useWalletAddress from '../../../hooks/useWalletAddress';
+import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
+import { EventType } from '../../../constants/EventType';
 
 const SidebarStyled = styled.div`
 	height: calc(100vh - 182px);
@@ -171,6 +173,10 @@ export default function CurrentSideLeftContent() {
 		}
 	}
 
+	const handleBanUser = (data: any) => {
+		console.log('Hit when banned clicked');
+	};
+
 	// LISTENING WS =====================================================================
 
 	useEffect(() => {
@@ -185,9 +191,13 @@ export default function CurrentSideLeftContent() {
 		if (currentProfile) websocketService.getUsersStatus(currentProfile);
 	}, [currentProfile, currentSide]);
 
+
 	useEffect(() => {
-		console.log('currentProfile', currentProfile);
-	}, [currentProfile, currentSide]);
+		subscribeToEvent(EventType.BAN_USER, handleBanUser);
+		return () => {
+			unSubscribeToEvent(EventType.BAN_USER, handleBanUser);
+		};
+	}, [handleBanUser]);
 	// LISTENING WS =====================================================================
 
 	useEffect(() => {

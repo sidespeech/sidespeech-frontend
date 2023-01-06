@@ -11,6 +11,8 @@ import websocketService from '../../../../services/websocket-services/websocket.
 import ConfirmationModal from '../../../Modals/ConfirmationModal';
 import Button from '../../../ui-components/Button';
 import CustomSelect from '../../../ui-components/CustomSelect';
+import { trigger } from '../../../../helpers/CustomEvent';
+import { EventType } from '../../../../constants/EventType';
 
 const getRole = (role: number) => {
 	if (role === Role.Admin) return 'Administrator';
@@ -50,9 +52,10 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 	const handleConfirm = async (value: boolean) => {
 		if (value && userToEject) {
 			try {
-				await profileService.blacklistProfile(side.id, userToEject.id, true);
+				const banTheUser = await profileService.blacklistProfile(side.id, userToEject.id, true);
 				// Socket IO call to ban user
 				websocketService.banUser(userToEject.id);
+				trigger(EventType.BAN_USER, banTheUser);
 				dispatch(updateProfileInSide({ key: 'isBlacklisted', value, id: userToEject.id }));
 			} catch (error) {
 				console.log(error);
