@@ -96,10 +96,11 @@ class WebSocketService {
 		});
 	}
 
-	banUser(user: any) {
+	banUser(sideId: string, user: any) {
 		console.log('banUser method frontend function', user);
 		// This method below call the banUser method in the backend in chat.gateway.ts and pass the user as a parameter.
 		this.socket?.emit('banUser', {
+			sideId,
 			user
 		});
 	}

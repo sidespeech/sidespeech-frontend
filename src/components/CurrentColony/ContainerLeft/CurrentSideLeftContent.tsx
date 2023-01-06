@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Channel } from '../../../models/Channel';
 import { Profile } from '../../../models/Profile';
@@ -14,6 +15,7 @@ import { addRoomToProfile } from '../../../redux/Slices/UserDataSlice';
 import { toast } from 'react-toastify';
 import { getRandomId } from '../../../helpers/utilities';
 import Accordion from '../../ui-components/Accordion';
+import { updateProfileInSide } from '../../../redux/Slices/AppDatasSlice';
 import { NotificationType } from '../../../models/Notification';
 import roomService from '../../../services/api-services/room.service';
 import notificationService from '../../../services/api-services/notification.service';
@@ -48,6 +50,8 @@ const SidebarStyled = styled.div`
 
 export default function CurrentSideLeftContent() {
 	const { account, currentProfile } = useSelector((state: RootState) => state.user);
+
+	const navigate = useNavigate();
 
 	const { lastAnnouncement, lastMessage, onlineUsers, staticNotifications } = useNotificationsContext();
 	const { walletAddress } = useWalletAddress();
@@ -174,7 +178,7 @@ export default function CurrentSideLeftContent() {
 	}
 
 	const handleBanUser = (data: any) => {
-		console.log('Hit when banned clicked');
+		dispatch(updateProfileInSide({ key: 'isBlacklisted', value: true, id: data.detail }));
 	};
 
 	// LISTENING WS =====================================================================
@@ -194,6 +198,12 @@ export default function CurrentSideLeftContent() {
 
 	useEffect(() => {
 		subscribeToEvent(EventType.BAN_USER, handleBanUser);
+		console.log('the current side: ', currentSide);
+		console.log('is the user banned: ', bannedUser);
+		if(bannedUser.banned && bannedUser.side === currentSide?.id) {
+			toast.error('You have been banned from this side', { toastId: 115 });
+			navigate('/');
+		}
 		return () => {
 			unSubscribeToEvent(EventType.BAN_USER, handleBanUser);
 		};
@@ -280,36 +290,34 @@ export default function CurrentSideLeftContent() {
 					/>
 				</Accordion>
 				
-				{currentProfile && !currentProfile.isBlacklisted && (
-					<Accordion
-						initialAnimation={700}
-						AccordionButton={() => (
-							<span className="fw-400 size-11 flex align-center">
-								<svg
-									className="mr-2"
-									width="18"
-									height="14"
-									viewBox="0 0 18 14"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path
-										d="M2.33366 13.6668C1.87533 13.6668 1.4831 13.5038 1.15699 13.1777C0.830326 12.851 0.666992 12.4585 0.666992 12.0002V2.00016C0.666992 1.54183 0.830326 1.14961 1.15699 0.823496C1.4831 0.496829 1.87533 0.333496 2.33366 0.333496H15.667C16.1253 0.333496 16.5178 0.496829 16.8445 0.823496C17.1706 1.14961 17.3337 1.54183 17.3337 2.00016V12.0002C17.3337 12.4585 17.1706 12.851 16.8445 13.1777C16.5178 13.5038 16.1253 13.6668 15.667 13.6668H2.33366ZM9.00033 7.8335L2.33366 3.66683V12.0002H15.667V3.66683L9.00033 7.8335ZM9.00033 6.16683L15.667 2.00016H2.33366L9.00033 6.16683ZM2.33366 3.66683V2.00016V12.0002V3.66683Z"
-										fill="#B4C1D2"
-									/>
-								</svg>
-								<p className="size-14">Conversations</p>
-							</span>
-						)}
-					>
-						<SideUserList
-							dots={dotsPrivateMessage}
-							handleSelectedUser={handleSelectedUser}
-							selectedUser={selectedUser}
-							onlineUsers={onlineUsers}
-						/>
-					</Accordion>
-				)}
+				<Accordion
+					initialAnimation={700}
+					AccordionButton={() => (
+						<span className="fw-400 size-11 flex align-center">
+							<svg
+								className="mr-2"
+								width="18"
+								height="14"
+								viewBox="0 0 18 14"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M2.33366 13.6668C1.87533 13.6668 1.4831 13.5038 1.15699 13.1777C0.830326 12.851 0.666992 12.4585 0.666992 12.0002V2.00016C0.666992 1.54183 0.830326 1.14961 1.15699 0.823496C1.4831 0.496829 1.87533 0.333496 2.33366 0.333496H15.667C16.1253 0.333496 16.5178 0.496829 16.8445 0.823496C17.1706 1.14961 17.3337 1.54183 17.3337 2.00016V12.0002C17.3337 12.4585 17.1706 12.851 16.8445 13.1777C16.5178 13.5038 16.1253 13.6668 15.667 13.6668H2.33366ZM9.00033 7.8335L2.33366 3.66683V12.0002H15.667V3.66683L9.00033 7.8335ZM9.00033 6.16683L15.667 2.00016H2.33366L9.00033 6.16683ZM2.33366 3.66683V2.00016V12.0002V3.66683Z"
+									fill="#B4C1D2"
+								/>
+							</svg>
+							<p className="size-14">Conversations</p>
+						</span>
+					)}
+				>
+					<SideUserList
+						dots={dotsPrivateMessage}
+						handleSelectedUser={handleSelectedUser}
+						selectedUser={selectedUser}
+						onlineUsers={onlineUsers}
+					/>
+				</Accordion>
 				
 			</SidebarStyled>
 		</>
