@@ -177,7 +177,7 @@ export default function Dropdown({
 				</button>
 				<div role="list" className={`dd-list ${isOpen ? 'open' : ''}`}>
 					{filterDropdownList && (
-						<div className="filterSearch">
+						<div className="filterSearch relative">
 							<InputText
 								ref={ref}
 								bgColor="var(--panels)"

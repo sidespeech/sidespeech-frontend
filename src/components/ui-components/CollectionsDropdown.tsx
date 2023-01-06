@@ -27,10 +27,10 @@ interface ICollectionsDropdownProps {
 	collections: Collection[];
 	userCollectionsData: UserCollectionsData;
 	onChange: (value: string) => void;
-	defaultValue: string;
+	defaultValue: string | JSX.Element;
 	style: any;
 	selectedCollection: Collection | undefined;
-	allValue?: string;
+	allValue?: string| JSX.Element;
 }
 
 export default function CollectionsDropdown(props: ICollectionsDropdownProps) {
@@ -81,7 +81,7 @@ export default function CollectionsDropdown(props: ICollectionsDropdownProps) {
 		if (props.allValue) {
 			return filteredCollections.length
 				? [
-						[props.allValue],
+						props.allValue,
 						...filteredCollections.map((c, fi) => {
 							return <CollectionRow userData={props.userCollectionsData} c={c} fi={fi} />;
 						})
