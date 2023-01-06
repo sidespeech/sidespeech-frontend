@@ -1,20 +1,22 @@
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import userDataReducer from "../Slices/UserDataSlice";
-import redirectReducer from "../Slices/RedirectSlice";
-import appDatasReducer from "../Slices/AppDatasSlice";
-import chatDatasSlice from "../Slices/ChatSlice";
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import userDataReducer from '../Slices/UserDataSlice';
+import redirectReducer from '../Slices/RedirectSlice';
+import appDatasReducer from '../Slices/AppDatasSlice';
+import chatDatasSlice from '../Slices/ChatSlice';
+import daoSlice from '../Slices/DaoSlice';
 
 const customizedMiddleware = getDefaultMiddleware({
-  serializableCheck: false,
+	serializableCheck: false
 });
 export const store = configureStore({
-  reducer: {
-    user: userDataReducer,
-    redirect: redirectReducer,
-    appDatas: appDatasReducer,
-    chatDatas: chatDatasSlice,
-  },
-  middleware: customizedMiddleware,
+	reducer: {
+		user: userDataReducer,
+		redirect: redirectReducer,
+		appDatas: appDatasReducer,
+		chatDatas: chatDatasSlice,
+		daoState: daoSlice
+	},
+	middleware: customizedMiddleware
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
