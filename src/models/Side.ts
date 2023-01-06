@@ -36,6 +36,8 @@ export class Side {
 	collectionSides: CollectionSides[];
 	required: boolean;
 	slug: string;
+	isDaoActive: boolean;
+	safes: any[] = [];
 
 	constructor(_data: any) {
 		this.channels = _data.channels ? _data.channels : [];
@@ -69,6 +71,8 @@ export class Side {
 			: [];
 		this.required = _data.required;
 		this.slug = _data.slug;
+		this.isDaoActive = _data.isDaoActive;
+		this.safes = _data.safes ? _data.safes : [];
 	}
 
 	getActiveProfiles(): Profile[] {

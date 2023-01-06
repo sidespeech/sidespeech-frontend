@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Button from '../../../ui-components/Button';
 import InputText from '../../../ui-components/InputText';
 import TextArea from '../../../ui-components/TextArea';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Side } from '../../../../models/Side';
 import Switch from '../../../ui-components/Switch';
@@ -14,6 +14,11 @@ import { breakpoints, size } from '../../../../helpers/breakpoints';
 import profileService from '../../../../services/api-services/profile.service';
 import sideService from '../../../../services/api-services/side.service';
 import { isColor } from '../../../../helpers/utilities';
+import safeService from '../../../../services/api-services/safe.service';
+import { RootState } from '../../../../redux/store/app.store';
+import { JsonRpcSigner } from '@ethersproject/providers';
+import { useGnosisSafe } from '../../../../hooks/useGnosisSafe';
+import { updateCurrentSideDao } from '../../../../redux/Slices/AppDatasSlice';
 
 const InformationsStyled = styled.div`
 	width: 100%;
@@ -196,6 +201,10 @@ export default function Informations({
 	const [internalFormError, setInternalFormError] = useState<any>(internalFormErrorInitialState);
 	const [originalInfo, setOriginalInfo] = useState<InitialStateUpdateSide>(initialStateUpdateSide);
 
+	const { currentProfile, signer, user } = useSelector((state: RootState) => state.user);
+
+	const { createSafe } = useGnosisSafe();
+
 	const areThereChanges = JSON.stringify(originalInfo) !== JSON.stringify(formData);
 
 	const navigate = useNavigate();
@@ -286,6 +295,16 @@ export default function Informations({
 			}
 		} catch (error: any) {
 			toast.error('Please provide a Sub Admin to replace you as Administrator', { toastId: 5 });
+		}
+	};
+
+	const handleActivateDao = async () => {
+		if (signer && currentProfile && user) {
+			// await createSafe(signer, user.accounts, currentSide.id, currentProfile.id);
+			dispatch(updateCurrentSideDao(!currentSide.isDaoActive));
+			await sideService.updateSideDao(!currentSide.isDaoActive, currentSide.id);
+		} else {
+			toast.error('No signer, please reconnect to the app.');
 		}
 	};
 
@@ -466,6 +485,12 @@ export default function Informations({
 
 					<LeavSideAsAdmin side={currentSide} handleLeaveSide={onSubmitLeaveSide} />
 				</div>
+			) : null}
+			{!isNewSide ? (
+				<span className="flex align-center">
+					<Switch value={currentSide.isDaoActive} right={'NO'} left={'YES'} onClick={handleActivateDao} />
+					<span className="ml-2">Activate DAO</span>
+				</span>
 			) : null}
 		</InformationsStyled>
 	);

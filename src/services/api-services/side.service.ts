@@ -107,6 +107,13 @@ class SideService extends BaseApiService {
 		});
 		return new Side(res['body']);
 	}
+	async updateSideDao(activate: boolean, id: string): Promise<boolean> {
+		const res = await this.post(`${BASE_URL}/side/update-dao`).send({
+			id: id,
+			isDaoActive: activate
+		});
+		return true;
+	}
 	async getMany(ids: string[]): Promise<Side[]> {
 		const res = await this.get(`${BASE_URL}/side/getMany`).query({
 			ids: ids
