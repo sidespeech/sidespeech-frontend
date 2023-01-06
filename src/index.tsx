@@ -63,6 +63,7 @@ ReactDOM.render(
 								<Route path="profile/:username" element={<UserProfile />} />
 								<Route path="settings" element={<Settings />} />
 								<Route path="thread/:announcementId" element={<ChannelView />} />
+								<Route path="treasury" element={<GnosisSafe />} />
 								<Route index element={<CurrentSideMiddle />} />
 							</Route>
 							<Route path="/onboarding" element={<OnBoarding />} />

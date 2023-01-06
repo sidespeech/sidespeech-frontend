@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Channel } from '../../../models/Channel';
 import { Profile } from '../../../models/Profile';
-import { setSelectedChannel } from '../../../redux/Slices/AppDatasSlice';
+import { setSelectedChannel, setSelectedDao } from '../../../redux/Slices/AppDatasSlice';
 import { setSelectedRoom } from '../../../redux/Slices/ChatSlice';
 import { RootState } from '../../../redux/store/app.store';
 import websocketService from '../../../services/websocket-services/websocket.service';
@@ -21,8 +21,9 @@ import { breakpoints, size } from '../../../helpers/breakpoints';
 import Skeleton from '../../ui-components/Skeleton';
 import { useNotificationsContext } from '../../../providers/NotificationsProvider';
 import useWalletAddress from '../../../hooks/useWalletAddress';
+import { useNavigate } from 'react-router-dom';
 
-const SidebarStyled = styled.div`
+const SidebarStyled = styled.div<any>`
 	height: calc(100vh - 182px);
 	overflow-y: scroll;
 	${breakpoints(
@@ -42,6 +43,12 @@ const SidebarStyled = styled.div`
 		border-radius: 7px;
 		background-color: var(--background);
 	}
+	.dao-item {
+		${props => props.displayDao && 'background-color: rgba(125, 166, 220, 0.1);'}
+	}
+	.dao-item > svg {
+		${props => props.displayDao && 'color: var(--green); '}
+	}
 `;
 
 export default function CurrentSideLeftContent() {
@@ -51,8 +58,9 @@ export default function CurrentSideLeftContent() {
 	const { walletAddress } = useWalletAddress();
 
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	const { currentSide } = useSelector((state: RootState) => state.appDatas);
+	const { currentSide, displayDao } = useSelector((state: RootState) => state.appDatas);
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	// Variables for notifications Channels
 	const [dotsChannel, setDotsChannel] = useState<any>({});
@@ -77,6 +85,12 @@ export default function CurrentSideLeftContent() {
 		dispatch(setSelectedChannel(c));
 		dispatch(setSelectedRoom(null));
 		setSelectedUser(null);
+	};
+
+	const handleSelectDao = () => {
+		dispatch(setSelectedRoom(null));
+		dispatch(setSelectedDao(true));
+		navigate('treasury');
 	};
 
 	const handleSelectedUser = async (profile: Profile, currentProfile: Profile) => {
@@ -207,7 +221,18 @@ export default function CurrentSideLeftContent() {
 
 	return (
 		<>
-			<SidebarStyled className="px-1">
+			<SidebarStyled className="px-1 py-1 mb-5" displayDao={displayDao}>
+				{currentSide.isDaoActive && (
+					<div onClick={handleSelectDao} className="dao-item flex gap-10 px-2 py-2 mb-3">
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M2.75 12.75V7.5H4.25V12.75H2.75ZM7.25 12.75V7.5H8.75V12.75H7.25ZM0.5 15.75V14.25H15.5V15.75H0.5ZM11.75 12.75V7.5H13.25V12.75H11.75ZM0.5 6V4.5L8 0.75L15.5 4.5V6H0.5Z"
+								fill="#DCEDEF"
+							/>
+						</svg>
+						<span>DAO</span>
+					</div>
+				)}
 				<Accordion
 					initialAnimation={300}
 					AccordionButton={() => (

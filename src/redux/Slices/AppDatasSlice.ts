@@ -10,6 +10,7 @@ export interface AppDatas {
 	currentSide: Side | null;
 	selectedChannel: Channel | null;
 	selectedProfile: Profile | null;
+	displayDao: boolean;
 	settingsOpen: boolean;
 	openEligibilityModal: { open: boolean; side: Side | null };
 	openLeaveSideModal: { open: boolean; side: Side | null };
@@ -21,7 +22,8 @@ const initialState: AppDatas = {
 	selectedProfile: null,
 	settingsOpen: false,
 	openEligibilityModal: { open: false, side: null },
-	openLeaveSideModal: { open: false, side: null }
+	openLeaveSideModal: { open: false, side: null },
+	displayDao: false
 };
 
 export const appDatasSlice = createSlice({
@@ -52,6 +54,7 @@ export const appDatasSlice = createSlice({
 		setSelectedChannel: (state: AppDatas, action: PayloadAction<Channel | null>) => {
 			state.selectedChannel = action.payload;
 			state.selectedProfile = null;
+			state.displayDao = false;
 		},
 		setSelectedProfile: (state: AppDatas, action: PayloadAction<Profile | null>) => {
 			state.selectedProfile = action.payload;
@@ -83,6 +86,14 @@ export const appDatasSlice = createSlice({
 		removeSideInvitation: (state: AppDatas, action: PayloadAction<string>) => {
 			if (state.currentSide)
 				state.currentSide.invitations = state.currentSide.invitations.filter(inv => inv.id !== action.payload);
+		},
+		updateCurrentSideDao: (state: AppDatas, action: PayloadAction<boolean>) => {
+			if (state.currentSide) state.currentSide.isDaoActive = action.payload;
+		},
+		setSelectedDao: (state: AppDatas, action: PayloadAction<boolean>) => {
+			state.displayDao = action.payload;
+			state.selectedChannel = null;
+			state.selectedProfile = null;
 		}
 	}
 });
@@ -101,7 +112,9 @@ export const {
 	updateCurrentSideStatue,
 	updateProfileInSide,
 	addSideInvitation,
-	removeSideInvitation
+	removeSideInvitation,
+	updateCurrentSideDao,
+	setSelectedDao
 } = appDatasSlice.actions;
 
 export default appDatasSlice.reducer;

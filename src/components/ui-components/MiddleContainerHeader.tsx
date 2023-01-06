@@ -19,6 +19,7 @@ import { breakpoints, size } from '../../helpers/breakpoints';
 import SidesListMobileMenu from '../CurrentColony/SidesListMobileMenu';
 import { OpenSeaRequestStatus } from '../../models/interfaces/collection';
 import { User } from '../../models/User';
+import treasury from '../../assets/account_balance.svg';
 
 const MiddleContainerHeaderStyled = styled.header`
 	width: 100%;
@@ -366,7 +367,7 @@ export default function MiddleContainerHeader({
 	const [url, setUrl] = useState<string>('');
 	const navigate = useNavigate();
 
-	const { currentSide, settingsOpen } = useSelector((state: RootState) => state.appDatas);
+	const { currentSide, settingsOpen, displayDao } = useSelector((state: RootState) => state.appDatas);
 	const { user, currentProfile } = useSelector((state: RootState) => state.user);
 
 	const Icon = Icons[channel?.type || 0];
@@ -400,7 +401,7 @@ export default function MiddleContainerHeader({
 
 	const avatarUrl = () => {
 		if (user?.userAvatar?.metadata?.image) {
-			if(user?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
+			if (user?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
 				return 'https://ipfs.io/ipfs/' + user?.userAvatar?.metadata?.image.replaceAll('ipfs://', '');
 			} else {
 				return user?.userAvatar?.metadata?.image;
@@ -408,11 +409,11 @@ export default function MiddleContainerHeader({
 		} else {
 			return defaultPP;
 		}
-	}
+	};
 
 	const thredCreatorAvatarUrl = () => {
 		if (threadCreator?.userAvatar?.metadata?.image) {
-			if(threadCreator?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
+			if (threadCreator?.userAvatar?.metadata?.image.indexOf('ipfs://') > -1) {
 				return 'https://ipfs.io/ipfs/' + threadCreator?.userAvatar?.metadata?.image.replaceAll('ipfs://', '');
 			} else {
 				return threadCreator?.userAvatar?.metadata?.image;
@@ -420,7 +421,7 @@ export default function MiddleContainerHeader({
 		} else {
 			return '';
 		}
-	}
+	};
 
 	const threadCreator = thread ? getUserBySenderId(thread.creator || thread.creatorAddress) : null;
 
@@ -482,6 +483,12 @@ export default function MiddleContainerHeader({
 						<div className="channel-title">
 							<Icon className="mr-3" />
 							<h2>{channel.name}</h2>
+						</div>
+					)}
+					{currentSide && displayDao && (
+						<div className="flex align-end  size-22 fw-400">
+							<img src={treasury} width={28} height={28} />
+							<span className='ml-3'>DAO</span>
 						</div>
 					)}
 					{settingsOpen && currentSide && (
