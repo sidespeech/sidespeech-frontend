@@ -18,7 +18,7 @@ export default function Nfts() {
 		if (col) setSelectedCollection(col);
 	};
 	return (
-		<>
+		<div className='f-column w-100'>
 			<CollectionsDropdown
 				collections={collections}
 				userCollectionsData={userCollectionsData}
@@ -37,6 +37,6 @@ export default function Nfts() {
 				style={{ zIndex: 10, maxWidth: 412 }}
 			/>
 			<NftsList />
-		</>
+		</div>
 	);
 }

@@ -50,7 +50,7 @@ const Container = styled.div`
 		size.xl,
 		`
             {
-                grid-template-columns: repeat(auto, minmax(275px, 352px));
+                grid-template-columns: repeat(auto, minmax(330px, 352px));
             }
             `
 	)}
