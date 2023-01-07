@@ -48,17 +48,19 @@ export function useGnosisSafe() {
 		const currentsProposals = await proposalService.getProposalsBySafeId(safeId);
 		let categ = categories.find((item: any) => item['name'] === 'Open funding round');
 
-		const proposal = await createProposal({
-			categoryId: categ['id'],
-			safeId: safeId,
-			status: currentsProposals.length ? Status.Queue : proposalStatus(categ),
-			details: {
-				currency: 'ETH',
-				start_date: moment(Date.now()).format('DD-MM-YYYY HH:mm:ss'),
-				end_date: moment(Date.now()).add(1, 'days').format('DD-MM-YYYY HH:mm:ss'),
-				description: 'This founding round is to create nft event'
-			}
-		});
+		const proposal = await createProposal(
+			new Proposal({
+				categoryId: categ['id'],
+				safeId: safeId,
+				status: currentsProposals.length ? Status.Queue : proposalStatus(categ),
+				details: {
+					currency: 'ETH',
+					start_date: moment(Date.now()).format('DD-MM-YYYY HH:mm:ss'),
+					end_date: moment(Date.now()).add(1, 'days').format('DD-MM-YYYY HH:mm:ss'),
+					description: 'This founding round is to create nft event'
+				}
+			})
+		);
 		console.log('proposal :', proposal);
 	}
 

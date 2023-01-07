@@ -43,12 +43,25 @@ const MenuItem = styled.div<any>`
 	white-space: nowrap;
 `;
 
+const GnosisMain = styled.div`
+	max-height: calc(100vh - 10vh);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+`;
+const GnosisContent = styled.div`
+	display: flex;
+	width: 100%;
+	overflow: hidden;
+	padding-bottom: 15px;
+`;
+
 const menu = ['Dashboard', 'NFTs', 'Proposals', 'Funding rounds', 'Members', 'Transactions'];
 
 export default function GnosisSafe() {
 	const { currentSafe, sendTokenToFundingRound } = useGnosisSafe();
 	const { displayDao, currentSide } = useSelector(appDataState);
-	const [selectedItem, setSelectedItem] = useState<number>(1);
+	const [selectedItem, setSelectedItem] = useState<number>(2);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
@@ -90,7 +103,7 @@ export default function GnosisSafe() {
 	};
 
 	return (
-		<div className="px-4 ">
+		<GnosisMain className="px-4 ">
 			<div className="flex fw-700 gap-15 mb-4">
 				{menu.map((item, index) => (
 					<MenuItem selected={index === selectedItem} onClick={() => handleSelectedMenu(index)} key={item}>
@@ -98,7 +111,7 @@ export default function GnosisSafe() {
 					</MenuItem>
 				))}
 			</div>
-			<div>{renderGnosisContent()}</div>
-		</div>
+			<GnosisContent>{renderGnosisContent()}</GnosisContent>
+		</GnosisMain>
 	);
 }

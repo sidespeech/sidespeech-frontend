@@ -68,3 +68,22 @@ export const RoundedImageContainer = styled.div<IRoundedImageContainerProps>`
 		height: 100%;
 	}
 `;
+
+interface IChipProps {
+	borderRadius: string;
+	backgroundColor: string;
+	fontSize: string;
+	fontWeight: number;
+	padding: string;
+	height: number;
+}
+export const Chip = styled.span<IChipProps>`
+	width: fit-content;
+	border-radius: ${props => props.borderRadius};
+	background-color: ${props => props.backgroundColor};
+	padding: 1px 8px;
+	font-size: ${props => props.fontSize};
+	font-weight: ${props => props.fontWeight};
+	padding: ${props => props.padding};
+	height: ${props => props.height}px;
+`;

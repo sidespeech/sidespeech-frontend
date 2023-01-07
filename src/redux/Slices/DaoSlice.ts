@@ -1,19 +1,26 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Proposal } from '../../models/Proposal';
 
-export interface DaoState {}
+export interface DaoState {
+	selectedProposal: Proposal | null;
+}
 
 const initialState: DaoState = {
-	rooms: [],
-	selectedRoom: null
+	selectedProposal: null
 };
 
 export const daoSlice = createSlice({
 	name: 'daoSlice',
 	initialState,
-	reducers: {}
+	reducers: {
+		setSelectedProposal: (state: DaoState, action: PayloadAction<Proposal>) => {
+			const { payload } = action;
+			state.selectedProposal = payload;
+		}
+	}
 });
 
 // Action creators are generated for each case reducer function
-export const {} = daoSlice.actions;
+export const { setSelectedProposal } = daoSlice.actions;
 
 export default daoSlice.reducer;
