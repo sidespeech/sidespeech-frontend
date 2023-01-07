@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store/app.store';
 import { ToastContainer } from 'react-toastify';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import NotificationsProvider from './providers/NotificationsProvider';
 
 // Pages
 import App from './App';
@@ -28,7 +29,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './override.css';
 import './index.css';
 import './animations.css';
-import NotificationsProvider from './providers/NotificationsProvider';
+import './assets/fonts/custom-icon.css';
 
 ReactDOM.render(
 	<Provider store={store}>
