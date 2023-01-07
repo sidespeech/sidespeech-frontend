@@ -4,8 +4,7 @@ import useGetCollections from '../../../hooks/useGetCollections';
 import { Collection } from '../../../models/interfaces/collection';
 import { userState } from '../../../redux/Slices/InterfaceSelectors';
 import CollectionsDropdown from '../../ui-components/CollectionsDropdown';
-import NftCardItem from '../NftCardItem';
-import NftsList from './NftsList';
+import NftsList from './NFTS/NftsList';
 
 export default function Nfts() {
 	const { userCollectionsData } = useSelector(userState);

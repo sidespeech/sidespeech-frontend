@@ -1,7 +1,7 @@
 import { Collection } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
-import check from '../../assets/green-verified.svg';
+import check from '../../../../assets/green-verified.svg';
 
 interface INftCardItemProps {
 	url: string;

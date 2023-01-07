@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { breakpoints, size } from '../../../helpers/breakpoints';
-import NftCardItem from '../NftCardItem';
+import { breakpoints, size } from '../../../../helpers/breakpoints';
+import NftCardItem from './NftCardItem';
 
 const nfts = [
 	{

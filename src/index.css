@@ -13,8 +13,8 @@
 	--text: #b4c1d2; /* Text*/
 	--disable: #2d3346; /* Light 10% */
 	--background: #021328; /* Dark 1*/
-	--black-transparency-20: rgba(0, 0, 0, 0.2);
-	--white-transparency-10: rgba(125, 166, 220, 0.1);
+	--black-transparency-20: #00000033;
+	--white-transparency-10: #7da6dc1a;
 	--panels: #0e203a; /* Dark 2 */
 	--panels-gray: #1b1d30; /* Dark 3 */
 	--warning: #f09e22; /* Orange */
@@ -23,6 +23,10 @@
 	--dark-gray: #050e0d;
 	--super-dark: #09111f;
 	--light-30: #b6e5e54d;
+	--yellow: #ffda56;
+	--yellow-opacity: #ffda561a;
+	--light: #dcedef;
+	--light-30: #d7f9f94d;
 }
 
 .open-sans {
@@ -67,11 +71,26 @@
 .text-disable {
 	color: var(--disable);
 }
+.text-yellow {
+	color: var(--yellow);
+}
+.text-yellow-opacity {
+	color: var(--yellow-opacity);
+}
 .text-inactive {
 	color: var(--inactive);
 }
+.text-light {
+	color: var(--light);
+}
+.text-light-30 {
+	color: var(--light-30);
+}
 .text-left {
 	text-align: left;
+}
+.text-uppercase {
+	text-transform: uppercase;
 }
 .flex-1 {
 	flex: 1 0 0;
