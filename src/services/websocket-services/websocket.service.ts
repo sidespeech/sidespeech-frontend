@@ -59,14 +59,12 @@ class WebSocketService {
 		});
 	}
 
-	sendMessage(message: string, roomId: string, sender: string, sideId: string) {
+	sendMessage(message: string, roomId: string, sender: string, sideId?: string) {
 		this.socket?.emit('sendMessage', {
-			message : {
-				message: message,
-				roomId: roomId,
-				sender: sender
-			}, 
-			sideId : sideId
+			message: message,
+			roomId: roomId,
+			sender: sender,
+			sideId
 		});
 	}
 	sendAnnouncement(announcement: Announcement) {

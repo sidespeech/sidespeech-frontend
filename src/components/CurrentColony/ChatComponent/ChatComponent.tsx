@@ -126,7 +126,7 @@ const ChatComponentStyled = styled.div`
 		border-top: 1px solid var(--disable);
 	}
 	.no-border {
-		border: none!important;
+		border: none !important;
 		padding-top: 0;
 	}
 `;
@@ -150,7 +150,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 	const { walletAddress } = useWalletAddress();
 
 	const handleSendMessage = (value: string) => {
-		websocketService.sendMessage(value, props.room.id, userData.account || 'error', currentSide!['id']);
+		websocketService.sendMessage(value, props.room.id, userData.account || 'error', currentSide?.id);
 
 		let lastMessage = messages.slice(-1).pop();
 		let lastMessageSameCreator = lastMessage?.sender === userData.account;
@@ -161,7 +161,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 				content: value,
 				timestamp: Date.now().toString(),
 				sender: userData.account,
-				lastMessageSameCreator: lastMessageSameCreator,
+				lastMessageSameCreator: lastMessageSameCreator
 			})
 		]);
 	};
@@ -208,29 +208,34 @@ export default function ChatComponent(props: IChatComponentProps) {
 									const url = user?.userAvatar?.metadata?.image || '';
 									const username = user?.username || '';
 									return (
-										<div className={`chat-item ${i !== 0 ? 'border-top' : ''} ${!m.lastMessageSameCreator ? 'border' : 'no-border'}`} key={i}>
+										<div
+											className={`chat-item ${i !== 0 ? 'border-top' : ''} ${
+												!m.lastMessageSameCreator ? 'border' : 'no-border'
+											}`}
+											key={i}
+										>
 											{!m.lastMessageSameCreator ? (
-											<div className="flex w-100 gap-20">
-												<UserBadge
-													check
-													// color={reduceWalletAddressForColor(m)}
-													weight={700}
-													fontSize={14}
-													avatar={url}
-													username={username}
-												/>
-												
-												<div
-													className="size-11 fw-500 open-sans"
-													style={{ color: 'var(--inactive)' }}
-												>
-													{m.timestamp
-														? formatDistance(new Date(m.timestamp), new Date(), {
-																addSuffix: true
-														  })
-														: ''}
+												<div className="flex w-100 gap-20">
+													<UserBadge
+														check
+														// color={reduceWalletAddressForColor(m)}
+														weight={700}
+														fontSize={14}
+														avatar={url}
+														username={username}
+													/>
+
+													<div
+														className="size-11 fw-500 open-sans"
+														style={{ color: 'var(--inactive)' }}
+													>
+														{m.timestamp
+															? formatDistance(new Date(m.timestamp), new Date(), {
+																	addSuffix: true
+															  })
+															: ''}
+													</div>
 												</div>
-											</div>
 											) : null}
 											<MessageContent message={m.content} />
 										</div>
