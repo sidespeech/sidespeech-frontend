@@ -7,6 +7,7 @@ import useWalletAddress from '../../../hooks/useWalletAddress';
 import { OpenSeaRequestStatus } from '../../../models/interfaces/collection';
 import { Profile, Role } from '../../../models/Profile';
 import { Side } from '../../../models/Side';
+import { useNotificationsContext } from '../../../providers/NotificationsProvider';
 import ClampLines from '../../ui-components/ClampLines';
 import SideCardJoinActions from './SideCardJoinActions';
 import SideCardUserActions from './SideCardUserActions';
@@ -152,17 +153,16 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
 `;
 
 interface SideCardItemProps {
-	alerts?: any[];
-	messages?: any[];
 	onJoin?: (side: Side) => void;
 	side: Side;
 	userProfiles: any[];
 	userSides?: boolean;
 }
 
-const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides }: SideCardItemProps) => {
+const SideCardItem = ({ onJoin, side, userProfiles, userSides }: SideCardItemProps) => {
 	const navigate = useNavigate();
 	const { walletAddress } = useWalletAddress();
+	const { staticNotifications, useNotificationsCountBySide } = useNotificationsContext();
 
 	const handleNavigate = () => {
 		const sideProfile: Profile = userProfiles.find(profile => profile.side.id === side.id);
@@ -170,26 +170,7 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 		navigate(`/side/${side.name.replace(/\s/g, '-').toLowerCase()}`);
 	};
 
-	let alertsCount = 0;
-	alerts?.forEach(alert => {
-		if (alert.sideId === side.id) alertsCount += 1;
-		else
-			side.channels?.forEach(channel => {
-				if (alert.channelId === channel?.id) alertsCount += 1;
-			});
-	});
-
-	let messagesCount = 0;
-	messages?.forEach(message => {
-		if (message.sideId === side.id) messagesCount += 1;
-		else
-			side?.profiles
-				?.filter(profile => profile.user?.accounts?.toLowerCase() !== walletAddress?.toLowerCase())
-				?.forEach(profile => {
-					if (profile.rooms?.some(room => room.id === message.name || room.id === message.room?.id))
-						messagesCount += 1;
-				});
-	});
+	const { alerts: alertsCount, messages: messagesCount } = useNotificationsCountBySide(side.id);
 
 	const sideProfile: Profile = userProfiles.find(profile => profile.side.id === side.id);
 

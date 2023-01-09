@@ -149,8 +149,6 @@ const searchFiltersInitialState = {
 };
 
 const MySides = ({ collections }: MySidesProps) => {
-	const [alertsBySide, setAlertsBySide] = useState<any>([]);
-	const [messagesBySide, setMessagesBySide] = useState<any>([]);
 	const [sidesLoading, setSidesLoading] = useState<boolean>(false);
 	const [sidesList, setSidesList] = useState<Side[]>([]);
 	const [filteredSides, setFilteredSides] = useState<Side[]>([]);
@@ -161,7 +159,7 @@ const MySides = ({ collections }: MySidesProps) => {
 
 	const { sides, user, userCollectionsData } = useSelector((state: RootState) => state.user);
 
-	const { lastAnnouncement, lastMessage, staticNotifications } = useNotificationsContext();
+	const { getStaticNotifications, lastAnnouncement, lastMessage } = useNotificationsContext();
 	const { walletAddress } = useWalletAddress();
 
 	useEffect(() => {
@@ -205,21 +203,16 @@ const MySides = ({ collections }: MySidesProps) => {
 		setSidesList(array);
 	}, [filteredSides, pagination, searchFilters]);
 
-	const setRoomNotifications = useCallback(async (notifications: any[]) => {
-		setMessagesBySide(notifications.filter(notification => notification.type === NotificationType.Private));
-		setAlertsBySide(notifications.filter(notification => notification.type === NotificationType.Channel));
-	}, []);
+	useEffect(() => {
+		if (walletAddress) getStaticNotifications();
+	}, [walletAddress]);
 
 	useEffect(() => {
-		if (walletAddress && staticNotifications?.length) setRoomNotifications(staticNotifications);
-	}, [staticNotifications, walletAddress]);
-
-	useEffect(() => {
-		if (lastAnnouncement && walletAddress) setAlertsBySide((prevState: any) => [...prevState, lastAnnouncement]);
+		if (lastAnnouncement && walletAddress) getStaticNotifications();
 	}, [lastAnnouncement, walletAddress]);
 
 	useEffect(() => {
-		if (lastMessage && walletAddress) setMessagesBySide((prevState: any) => [...prevState, lastMessage]);
+		if (lastMessage && walletAddress) getStaticNotifications();
 	}, [lastMessage, walletAddress]);
 
 	const handleEligibilityCheck = (side: Side) => {
@@ -274,8 +267,6 @@ const MySides = ({ collections }: MySidesProps) => {
 						{sidesList.map(side => (
 							<SideCardItem
 								key={side.id}
-								alerts={alertsBySide}
-								messages={messagesBySide}
 								side={side}
 								userProfiles={user?.profiles || []}
 								userSides
