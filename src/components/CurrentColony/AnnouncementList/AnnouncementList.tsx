@@ -135,6 +135,9 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
 		}
 	};
 
+	const hasPermissionToSendMessage =
+		selectedChannel?.type !== ChannelType.Announcement || (currentProfile && currentProfile.role === Role.Admin);
+
 	return (
 		<AnnouncementListStyled>
 			{loading ? (
@@ -169,9 +172,10 @@ export default function AnnouncementList({ announcementId, setThread, thread }: 
 			) : (
 				<EmptyList selectedChannel={selectedChannel} />
 			)}
-			{(selectedChannel?.type !== 0 || (currentProfile && currentProfile.role === Role.Admin)) && !thread && (
+			{!thread && (
 				<div className="messages-input">
 					<MessageInput
+						disabled={!hasPermissionToSendMessage}
 						id="sendmessage"
 						imageUpload
 						onSubmit={handleAnnouncement}
