@@ -32,6 +32,12 @@ class SideService extends BaseApiService {
 		return dtoToSide(res.body);
 	}
 
+	// get side by user address
+	async getSideByUserAddress(address: string): Promise<Side[]> {
+		const res = await this.get(`${BASE_URL}/side/byuser?address=${address}`);
+		return dtoToSideList(res.body);
+	}
+
 	// get all sides without channels
 	async getAllSides(userCollectionsData?: any, userSides?: Side[]): Promise<Side[]> {
 		const res = await this.get(`${BASE_URL}/side`);
@@ -48,8 +54,7 @@ class SideService extends BaseApiService {
 		userSides?: Side[]
 	): Promise<Side[]> {
 		const res = await this.get(
-			`${BASE_URL}/side/search?searchValue=${searchValue}&collections=${
-				collections && collections !== 'all' ? collections : ''
+			`${BASE_URL}/side/search?searchValue=${searchValue}&collections=${collections && collections !== 'all' ? collections : ''
 			}`
 		);
 		const sides = dtoToSideList(res['body']);

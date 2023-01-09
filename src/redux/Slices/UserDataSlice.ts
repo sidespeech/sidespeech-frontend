@@ -156,15 +156,21 @@ export const userDataSlice = createSlice({
 			state.user = action.payload.user;
 			state.account = action.payload.account;
 			let rooms = flattenChannels(state.user?.profiles, 'rooms');
-			
-			console.log('user Slice :', state.user)
 
-			state.sides = action.payload.user.profiles
-				? action.payload.user.profiles.map((p: Profile) => {
-						p.side['profiles'] = [p];
-						return p.side;
-				  })
-				: [];
+			console.log('state.user Slice :', state.user)
+
+
+			// state.sides = action.payload.user.profiles
+			// 	? action.payload.user.profiles.map((p: Profile) => {
+			// 			p.side['profiles'] = [p];
+			// 			return p.side;
+			// 	  })
+			// 	: [];
+
+			state.sides = action.payload.sides;
+
+			console.log('state.sides Slice :', state.sides)
+
 			state.redirectTo = action.payload.redirectTo;
 
 			rooms = rooms?.concat([...flattenChannels(state.sides, 'channels'), ...state.sides.map(s => s.id)]);

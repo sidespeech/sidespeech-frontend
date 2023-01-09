@@ -150,7 +150,7 @@ export default function ChatComponent(props: IChatComponentProps) {
 	const { walletAddress } = useWalletAddress();
 
 	const handleSendMessage = (value: string) => {
-		websocketService.sendMessage(value, props.room.id, userData.account || 'error');
+		websocketService.sendMessage(value, props.room.id, userData.account || 'error', currentSide!['id']);
 
 		let lastMessage = messages.slice(-1).pop();
 		let lastMessageSameCreator = lastMessage?.sender === userData.account;

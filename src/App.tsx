@@ -31,6 +31,8 @@ import { subscribeToEvent, unSubscribeToEvent } from './helpers/CustomEvent';
 import { EventType } from './constants/EventType';
 import { Profile } from './models/Profile';
 import useNftTransfert from './hooks/useNftTransfertWs';
+import sideService from './services/api-services/side.service';
+import { Side } from './models/Side';
 
 export interface GeneralSettingsAccountContext {
 	isSettingsMobileMenuOpen?: boolean;
@@ -112,7 +114,12 @@ function App() {
 			try {
 				setFetchingUser(true);
 				const user = await userService.getUserByAddress(account);
-				dispatch(connect({ account: account, user: user }));
+				console.log('user STARTING :', user);
+				let sides = await sideService.getSideByUserAddress(user['accounts']);
+				console.log('sides STARTING :', sides);
+				// TODO : Add get user side to get all the side
+
+				dispatch(connect({ account: account, user: user, sides : sides }));
 				dispatch(fetchUserDatas(account));
 			} catch (error) {
 				console.error(error);
