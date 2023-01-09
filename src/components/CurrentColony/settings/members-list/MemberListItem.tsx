@@ -7,9 +7,12 @@ import { Profile, Role } from '../../../../models/Profile';
 import { Side } from '../../../../models/Side';
 import { updateProfileInSide } from '../../../../redux/Slices/AppDatasSlice';
 import profileService from '../../../../services/api-services/profile.service';
+import websocketService from '../../../../services/websocket-services/websocket.service';
 import ConfirmationModal from '../../../Modals/ConfirmationModal';
 import Button from '../../../ui-components/Button';
 import CustomSelect from '../../../ui-components/CustomSelect';
+import { trigger } from '../../../../helpers/CustomEvent';
+import { EventType } from '../../../../constants/EventType';
 
 const getRole = (role: number) => {
 	if (role === Role.Admin) return 'Administrator';
@@ -49,8 +52,10 @@ export default function MemberListItem({ side, user, isAdmin }: { side: Side; us
 	const handleConfirm = async (value: boolean) => {
 		if (value && userToEject) {
 			try {
-				await profileService.blacklistProfile(side.id, userToEject.id, true);
+				const banTheUser = await profileService.blacklistProfile(side.id, userToEject.id, true);
 				dispatch(updateProfileInSide({ key: 'isBlacklisted', value, id: userToEject.id }));
+				websocketService.banUser(side.id, userToEject.id);
+				trigger(EventType.BAN_USER, banTheUser);
 			} catch (error) {
 				console.log(error);
 				toast.error('Error when banning this user.', { toastId: 111 });

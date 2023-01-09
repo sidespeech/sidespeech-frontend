@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Channel } from '../../../models/Channel';
 import { Profile } from '../../../models/Profile';
@@ -14,6 +15,7 @@ import { addRoomToProfile } from '../../../redux/Slices/UserDataSlice';
 import { toast } from 'react-toastify';
 import { getRandomId } from '../../../helpers/utilities';
 import Accordion from '../../ui-components/Accordion';
+import { updateProfileInSide } from '../../../redux/Slices/AppDatasSlice';
 import { NotificationType } from '../../../models/Notification';
 import roomService from '../../../services/api-services/room.service';
 import notificationService from '../../../services/api-services/notification.service';
@@ -21,6 +23,10 @@ import { breakpoints, size } from '../../../helpers/breakpoints';
 import Skeleton from '../../ui-components/Skeleton';
 import { useNotificationsContext } from '../../../providers/NotificationsProvider';
 import useWalletAddress from '../../../hooks/useWalletAddress';
+import userService from '../../../services/api-services/user.service';
+import { updateUser } from '../../../redux/Slices/UserDataSlice';
+import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
+import { EventType } from '../../../constants/EventType';
 
 const SidebarStyled = styled.div`
 	height: calc(100vh - 182px);
@@ -47,11 +53,13 @@ const SidebarStyled = styled.div`
 export default function CurrentSideLeftContent() {
 	const { account, currentProfile } = useSelector((state: RootState) => state.user);
 
+	const navigate = useNavigate();
+
 	const { lastAnnouncement, lastMessage, onlineUsers, staticNotifications } = useNotificationsContext();
 	const { walletAddress } = useWalletAddress();
 
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	const { currentSide } = useSelector((state: RootState) => state.appDatas);
+	const { currentSide, bannedUser } = useSelector((state: RootState) => state.appDatas);
 	const dispatch = useDispatch();
 
 	// Variables for notifications Channels
@@ -171,6 +179,15 @@ export default function CurrentSideLeftContent() {
 		}
 	}
 
+	const handleBanUser = async(data: any) => {
+		dispatch(updateProfileInSide({ key: 'isBlacklisted', value: true, id: data.detail }));
+	};
+
+	async function updateSides(bannedUserId: string) {
+		const refreshedUser = await userService.getUserByAddress(bannedUserId);
+		dispatch(updateUser(refreshedUser));
+	}
+
 	// LISTENING WS =====================================================================
 
 	useEffect(() => {
@@ -184,6 +201,19 @@ export default function CurrentSideLeftContent() {
 	useEffect(() => {
 		if (currentProfile) websocketService.getUsersStatus(currentProfile);
 	}, [currentProfile, currentSide]);
+
+
+	useEffect(() => {
+		subscribeToEvent(EventType.BAN_USER, handleBanUser);
+		if(bannedUser.banned && currentProfile?.id == bannedUser.profile && bannedUser.side === currentSide?.id) {
+			updateSides(bannedUser.userId);
+			toast.error('You have been banned from this side', { toastId: 115 });
+			navigate('/');
+		}
+		return () => {
+			unSubscribeToEvent(EventType.BAN_USER, handleBanUser);
+		};
+	}, [handleBanUser]);
 	// LISTENING WS =====================================================================
 
 	useEffect(() => {
@@ -265,7 +295,7 @@ export default function CurrentSideLeftContent() {
 						onlineUsers={onlineUsers}
 					/>
 				</Accordion>
-
+				
 				<Accordion
 					initialAnimation={700}
 					AccordionButton={() => (
@@ -294,6 +324,7 @@ export default function CurrentSideLeftContent() {
 						onlineUsers={onlineUsers}
 					/>
 				</Accordion>
+				
 			</SidebarStyled>
 		</>
 	);
