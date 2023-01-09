@@ -5,6 +5,7 @@ import { subscribeToEvent, unSubscribeToEvent } from '../helpers/CustomEvent';
 import useWalletAddress from '../hooks/useWalletAddress';
 import { Announcement } from '../models/Announcement';
 import { Comment } from '../models/Comment';
+import { NotificationType } from '../models/Notification';
 import { MessageWithRoom } from '../models/Room';
 import { updateSideActivity } from '../redux/Slices/UserDataSlice';
 import { RootState } from '../redux/store/app.store';
@@ -21,6 +22,7 @@ interface NotificationsContextProps {
 	newMessages: MessageWithRoom[];
 	onlineUsers: string[];
 	staticNotifications: any[];
+	useNotificationsCountBySide: (sideId: string) => { alerts: number; messages: number; notifications: number };
 }
 
 const NotificationsContextInitialState = {
@@ -33,7 +35,8 @@ const NotificationsContextInitialState = {
 	newComments: [],
 	newMessages: [],
 	onlineUsers: [],
-	staticNotifications: []
+	staticNotifications: [],
+	useNotificationsCountBySide: (sideId: string) => ({ alerts: 0, messages: 0, notifications: 0 })
 };
 
 const NotificationsContext = createContext<NotificationsContextProps>(NotificationsContextInitialState);
@@ -67,19 +70,36 @@ const NotificationsProvider = (props: any) => {
 	const getStaticNotifications = useCallback(async () => {
 		try {
 			if (!walletAddress) return;
-			clearNotificationsState(false);
 			const notifications = await notificationService.getNotification(walletAddress);
+			clearNotificationsState(false);
 			setStaticNotifications(notifications);
 		} catch (error) {
 			console.error(error);
+			clearNotificationsState(false);
 		}
 	}, [walletAddress]);
+
+	const useNotificationsCountBySide = useCallback(
+		(sideId: string) => {
+			const alerts = staticNotifications
+				.filter(notification => notification.sideId === sideId)
+				.filter(notification => notification.type === NotificationType.Channel)?.length;
+			const messages = staticNotifications
+				.filter(notification => notification.sideId === sideId)
+				.filter(notification => notification.type === NotificationType.Private)?.length;
+			const notifications = alerts + messages;
+
+			return { alerts, messages, notifications };
+		},
+		[staticNotifications]
+	);
 
 	const handleReceiveAnnouncement = useCallback(
 		({ detail }: { detail: Announcement }) => {
 			if (walletAddress) {
 				setLastAnnouncement(detail);
 				setNewAnnouncements(prevState => [...prevState, detail]);
+				setStaticNotifications(prevState => [...prevState, detail]);
 			}
 		},
 		[walletAddress]
@@ -90,6 +110,7 @@ const NotificationsProvider = (props: any) => {
 			if (walletAddress) {
 				setLastMessage(detail);
 				setNewMessages(prevState => [...prevState, detail]);
+				setStaticNotifications(prevState => [...prevState, detail]);
 			}
 		},
 		[walletAddress]
@@ -100,6 +121,7 @@ const NotificationsProvider = (props: any) => {
 			if (walletAddress) {
 				setLastComment(detail);
 				setNewComments(prevState => [...prevState, detail]);
+				setStaticNotifications(prevState => [...prevState, detail]);
 			}
 		},
 		[walletAddress]
@@ -178,7 +200,8 @@ const NotificationsProvider = (props: any) => {
 		newComments,
 		newMessages,
 		onlineUsers,
-		staticNotifications
+		staticNotifications,
+		useNotificationsCountBySide
 	};
 
 	return <NotificationsContext.Provider {...props} value={value} />;
