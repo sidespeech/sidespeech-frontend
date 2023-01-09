@@ -46,7 +46,6 @@ class WebSocketService {
 			trigger(EventType.NFT_TRANSFERT, data);
 		});
 		this.socket.on('sideStatusUpdated', async data => {
-			console.log('here', data);
 			trigger(EventType.SIDE_STATUS_UPDATED, data);
 		});
 	}
@@ -97,9 +96,10 @@ class WebSocketService {
 			role
 		});
 	}
-	updateSideStatus(updatedSide: Side) {
+	updateSideStatus(side: Side) {
 		this.socket?.emit('updateSideStatus', {
-			updatedSide
+			sideId: side.id,
+			side
 		});
 	}
 

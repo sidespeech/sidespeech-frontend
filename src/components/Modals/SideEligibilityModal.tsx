@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { checkUserEligibility, isColor } from '../../helpers/utilities';
@@ -168,12 +168,23 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 		}
 	};
 
+	const handleSideStatusUpdated = useCallback(({ detail }: { detail: Side }) => {
+		if (detail?.status === SideStatus.active) props.setDisplayEligibility(false);
+	}, []);
+
 	useEffect(() => {
 		subscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
 		return () => {
 			unSubscribeToEvent(EventType.NEW_PROFILE, handleNewProfile);
 		};
 	}, [user]);
+
+	useEffect(() => {
+		subscribeToEvent(EventType.SIDE_STATUS_UPDATED, handleSideStatusUpdated);
+		return () => {
+			unSubscribeToEvent(EventType.SIDE_STATUS_UPDATED, handleSideStatusUpdated);
+		};
+	}, [handleSideStatusUpdated]);
 
 	useEffect(() => {
 		async function updateSide() {

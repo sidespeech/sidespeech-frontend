@@ -140,7 +140,6 @@ const NotificationsProvider = (props: any) => {
 
 	const handleSideStatusUpdated = useCallback(
 		({ detail }: { detail: any }) => {
-			console.log(detail);
 			dispatch(updateSideActivity(detail));
 		},
 		[walletAddress]
