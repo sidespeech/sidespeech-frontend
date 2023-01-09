@@ -9,7 +9,7 @@ import { stat } from 'fs';
 
 export interface AppDatas {
 	currentSide: Side | null;
-	bannedUser: {side: string, profile: string, banned: boolean};
+	bannedUser: {side: string, profile: string, banned: boolean, userId: string};
 	selectedChannel: Channel | null;
 	selectedProfile: Profile | null;
 	settingsOpen: boolean;
@@ -19,7 +19,7 @@ export interface AppDatas {
 
 const initialState: AppDatas = {
 	currentSide: null,
-	bannedUser: { side: '', profile: '', banned: false },
+	bannedUser: { side: '', profile: '', banned: false, userId: '' },
 	selectedChannel: null,
 	selectedProfile: null,
 	settingsOpen: false,
@@ -49,7 +49,7 @@ export const appDatasSlice = createSlice({
 						[index]: { [action.payload.key]: { $set: action.payload.value } }
 					});
 					state.currentSide = update(state.currentSide, { profiles: { $set: profiles } });
-					state.bannedUser = update(state.bannedUser, { side: { $set: state.currentSide.id }, profile: { $set: action.payload.id }, banned: { $set: action.payload.value }});
+					state.bannedUser = update(state.bannedUser, { side: { $set: state.currentSide.id }, profile: { $set: action.payload.id }, banned: { $set: action.payload.value }, userId: { $set: profiles[index].user.accounts}});
 				}
 			}
 		},

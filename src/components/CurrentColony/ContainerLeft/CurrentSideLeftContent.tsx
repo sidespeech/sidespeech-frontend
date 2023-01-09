@@ -23,6 +23,8 @@ import { breakpoints, size } from '../../../helpers/breakpoints';
 import Skeleton from '../../ui-components/Skeleton';
 import { useNotificationsContext } from '../../../providers/NotificationsProvider';
 import useWalletAddress from '../../../hooks/useWalletAddress';
+import userService from '../../../services/api-services/user.service';
+import { updateUser } from '../../../redux/Slices/UserDataSlice';
 import { subscribeToEvent, unSubscribeToEvent } from '../../../helpers/CustomEvent';
 import { EventType } from '../../../constants/EventType';
 
@@ -177,9 +179,14 @@ export default function CurrentSideLeftContent() {
 		}
 	}
 
-	const handleBanUser = (data: any) => {
+	const handleBanUser = async(data: any) => {
 		dispatch(updateProfileInSide({ key: 'isBlacklisted', value: true, id: data.detail }));
 	};
+
+	async function updateSides(bannedUserId: string) {
+		const refreshedUser = await userService.getUserByAddress(bannedUserId);
+		dispatch(updateUser(refreshedUser));
+	}
 
 	// LISTENING WS =====================================================================
 
@@ -198,9 +205,8 @@ export default function CurrentSideLeftContent() {
 
 	useEffect(() => {
 		subscribeToEvent(EventType.BAN_USER, handleBanUser);
-		console.log('the current side: ', currentSide);
-		console.log('is the user banned: ', bannedUser);
-		if(bannedUser.banned && bannedUser.side === currentSide?.id) {
+		if(bannedUser.banned && currentProfile?.id == bannedUser.profile && bannedUser.side === currentSide?.id) {
+			updateSides(bannedUser.userId);
 			toast.error('You have been banned from this side', { toastId: 115 });
 			navigate('/');
 		}

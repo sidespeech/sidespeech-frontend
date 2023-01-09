@@ -45,7 +45,6 @@ class WebSocketService {
 			trigger(EventType.NFT_TRANSFERT, data);
 		});
 		this.socket.on('banUser', async data => {
-			console.log('banUser this.socket.on event web.socket.service.ts FRONTEND.');
 			trigger(EventType.BAN_USER, data);
 		});
 	}
