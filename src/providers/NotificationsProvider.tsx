@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { EventType } from '../constants/EventType';
 import { subscribeToEvent, unSubscribeToEvent } from '../helpers/CustomEvent';
 import useWalletAddress from '../hooks/useWalletAddress';
@@ -7,6 +7,7 @@ import { Announcement } from '../models/Announcement';
 import { Comment } from '../models/Comment';
 import { NotificationType } from '../models/Notification';
 import { MessageWithRoom } from '../models/Room';
+import { updateSideActivity } from '../redux/Slices/UserDataSlice';
 import { RootState } from '../redux/store/app.store';
 import notificationService from '../services/api-services/notification.service';
 
@@ -41,6 +42,8 @@ const NotificationsContextInitialState = {
 const NotificationsContext = createContext<NotificationsContextProps>(NotificationsContextInitialState);
 
 const NotificationsProvider = (props: any) => {
+	const dispatch = useDispatch();
+
 	const [lastAnnouncement, setLastAnnouncement] = useState<Announcement | null>(null);
 	const [lastComment, setLastComment] = useState<Comment | null>(null);
 	const [lastMessage, setLastMessage] = useState<MessageWithRoom | null>(null);
@@ -135,6 +138,13 @@ const NotificationsProvider = (props: any) => {
 		[walletAddress]
 	);
 
+	const handleSideStatusUpdated = useCallback(
+		({ detail }: { detail: any }) => {
+			dispatch(updateSideActivity(detail));
+		},
+		[walletAddress]
+	);
+
 	useEffect(() => {
 		if (walletAddress) getStaticNotifications();
 	}, [currentSide, walletAddress]);
@@ -170,6 +180,14 @@ const NotificationsProvider = (props: any) => {
 			clearNotificationsState();
 		};
 	}, [clearNotificationsState, handleUsersStatus]);
+
+	useEffect(() => {
+		subscribeToEvent(EventType.SIDE_STATUS_UPDATED, handleSideStatusUpdated);
+		return () => {
+			unSubscribeToEvent(EventType.SIDE_STATUS_UPDATED, handleSideStatusUpdated);
+			clearNotificationsState();
+		};
+	}, [clearNotificationsState, handleSideStatusUpdated]);
 
 	const value = {
 		clearNotificationsState,

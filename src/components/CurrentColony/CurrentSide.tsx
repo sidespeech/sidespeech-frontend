@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import MiddleContainerHeader from '../ui-components/MiddleContainerHeader';
@@ -14,12 +14,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Poll } from '../../models/Poll';
 
 import { Outlet, useOutletContext } from 'react-router-dom';
-import { SideStatus } from '../../models/Side';
+import { Side, SideStatus } from '../../models/Side';
 import { toast } from 'react-toastify';
 import { breakpoints, size } from '../../helpers/breakpoints';
 import sideService from '../../services/api-services/side.service';
 import Skeleton from '../ui-components/Skeleton';
 import { setSelectedRoom } from '../../redux/Slices/ChatSlice';
+import { subscribeToEvent, unSubscribeToEvent } from '../../helpers/CustomEvent';
+import { EventType } from '../../constants/EventType';
 
 const CurrentSideStyled = styled.div`
 	width: 100vw;
@@ -166,16 +168,16 @@ export default function CurrentSide() {
 		};
 	}, []);
 
-	useEffect(() => {
-		async function getSide() {
+	const getSide = useCallback(
+		async (sideSlug: string) => {
 			try {
 				dispatch(setCurrentSide(null));
 				dispatch(setCurrentProfile(null));
 				dispatch(setSelectedChannel(null));
 				dispatch(setSelectedRoom(null));
-				if (id && user) {
+				if (sideSlug && user) {
 					// Get Side data
-					const res = await sideService.getSideBySlug(id);
+					const res = await sideService.getSideBySlug(sideSlug);
 
 					const isInTheSide = user['profiles'].find(item => item['side']['id'] === res['id']);
 
@@ -206,17 +208,35 @@ export default function CurrentSide() {
 			} catch (error) {
 				console.error(error);
 			}
-		}
+		},
+		[user]
+	);
+
+	useEffect(() => {
 		const isConnectedLocalStorage = localStorage.getItem('userAccount');
 		// If user not connected
 		if (!isConnectedLocalStorage) navigate('/');
 		else if (currentSide?.id === id) return;
-		else getSide();
-	}, [id, user]);
+		else if (id) getSide(id);
+	}, [getSide, id, user]);
 
 	const handleExtendComments = (id: string) => {
 		setExtend(id === extend ? '' : id);
 	};
+
+	const handleSideStatusUpdated = useCallback(
+		({ detail }: { detail: Side }) => {
+			if (detail?.status === SideStatus.active) getSide(detail?.slug);
+		},
+		[getSide]
+	);
+
+	useEffect(() => {
+		subscribeToEvent(EventType.SIDE_STATUS_UPDATED, handleSideStatusUpdated);
+		return () => {
+			unSubscribeToEvent(EventType.SIDE_STATUS_UPDATED, handleSideStatusUpdated);
+		};
+	}, [handleSideStatusUpdated]);
 
 	return (
 		<CurrentSideStyled>

@@ -3,6 +3,7 @@ import { WEBSOCKET_URL } from '../../constants/constants';
 import { io, Socket } from 'socket.io-client';
 import { EventType } from '../../constants/EventType';
 import { Announcement } from '../../models/Announcement';
+import { Side } from '../../models/Side';
 
 let instance: WebSocketService;
 class WebSocketService {
@@ -43,6 +44,9 @@ class WebSocketService {
 		});
 		this.socket.on('nft-transfert', async data => {
 			trigger(EventType.NFT_TRANSFERT, data);
+		});
+		this.socket.on('sideStatusUpdated', async data => {
+			trigger(EventType.SIDE_STATUS_UPDATED, data);
 		});
 	}
 
@@ -90,6 +94,12 @@ class WebSocketService {
 			userId,
 			sideId,
 			role
+		});
+	}
+	updateSideStatus(side: Side) {
+		this.socket?.emit('updateSideStatus', {
+			sideId: side.id,
+			side
 		});
 	}
 
