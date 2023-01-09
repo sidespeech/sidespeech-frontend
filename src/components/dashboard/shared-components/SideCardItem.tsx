@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FALLBACK_BG_IMG } from '../../../constants/constants';
+import { isColor } from '../../../helpers/utilities';
 import useWalletAddress from '../../../hooks/useWalletAddress';
 import { OpenSeaRequestStatus } from '../../../models/interfaces/collection';
 import { Profile, Role } from '../../../models/Profile';
@@ -70,11 +71,16 @@ const SideCardItemStyled = styled.main<SideCardItemStyledProps>`
 		.title-wrapper {
 			gap: 1rem;
 			& .avatar {
+				display: grid;
+				place-items: center;
 				width: 50px;
 				height: 50px;
 				border-radius: 100px;
 				overflow: hidden;
 				flex-shrink: 0;
+				font-size: 27px;
+				font-weight: 700;
+				text-transform: uppercase;
 				& > img {
 					width: 100%;
 					object-fit: cover;
@@ -203,8 +209,12 @@ const SideCardItem = ({ alerts, messages, onJoin, side, userProfiles, userSides 
 			)}
 			<div className={`cover-image ${side.joined ? 'pointer' : ''}`} onClick={handleNavigate}>
 				<div className="flex align-center title-wrapper">
-					<div className="avatar">
-						<img src={side.firstCollection?.imageUrl || FALLBACK_BG_IMG} alt={`${side?.name} avatar`} />
+					<div className="avatar" style={{ backgroundColor: isColor(side.sideImage) ? side.sideImage : '' }}>
+						{!isColor(side.sideImage) ? (
+							<img src={side.sideImage || FALLBACK_BG_IMG} alt={`${side?.name} avatar`} />
+						) : (
+							<div>{side.name[0]}</div>
+						)}
 					</div>
 					<div className="f-column w-100">
 						<h3 className="title">{side?.name || '{No Name}'}</h3>
