@@ -7,6 +7,7 @@ import { Side } from '../../models/Side';
 import { User } from '../../models/User';
 import { RootState } from '../../redux/store/app.store';
 import userService from '../../services/api-services/user.service';
+import websocketService from '../../services/websocket-services/websocket.service';
 import Button from './Button';
 import InputText from './InputText';
 
@@ -87,7 +88,8 @@ const LeavSideAsAdmin = ({ className, id, style, handleLeaveSide, side }: LeaveS
 	const leaveSide = async () => {
 		if (side) {
 			try {
-				await userService.updateSubAdmin(newSubAdmin, side.id);
+				const response = await userService.updateSubAdmin(newSubAdmin, side.id);
+				if (!response?.error) websocketService.updateSideStatus(side);
 			} catch (error) {
 				console.error('Sub admin could not be updated: ', error);
 			}

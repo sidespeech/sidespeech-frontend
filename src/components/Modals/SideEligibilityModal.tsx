@@ -179,6 +179,7 @@ export default function SideEligibilityModal(props: ISideEligibilityModalProps) 
 		async function updateSide() {
 			try {
 				const side = await sideService.updateSideStatus(SideStatus.active, props.selectedSide.id);
+				websocketService.updateSideStatus(side);
 				dispatch(updateCurrentSideStatue(SideStatus.active));
 				props.setDisplayEligibility(false);
 				navigate('side/' + side.name.replace(/\s/g, '-').toLowerCase());
