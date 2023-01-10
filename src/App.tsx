@@ -113,11 +113,17 @@ function App() {
 		async function getUser(account: string) {
 			try {
 				setFetchingUser(true);
-				const user = await userService.getUserByAddress(account);
+				let user = await userService.getUserByAddress(account);
 				console.log('user STARTING :', user);
 				let sides = await sideService.getSideByUserAddress(user['accounts']);
 				console.log('sides STARTING :', sides);
 				// TODO : Add get user side to get all the side
+
+				user['profiles'] = user['profiles'].reduce((prev:Profile[], item : Profile) => {
+					const associated_side = sides.find((s:Side) => s['profiles'][0]['id'] === item['id'])
+					if (associated_side) prev.push(associated_side['profiles'][0])
+					return prev
+				}, [])
 
 				dispatch(connect({ account: account, user: user, sides : sides }));
 				dispatch(fetchUserDatas(account));

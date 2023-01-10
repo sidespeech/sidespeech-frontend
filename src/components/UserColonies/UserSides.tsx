@@ -13,6 +13,7 @@ import { useNotificationsContext } from '../../providers/NotificationsProvider';
 import useWalletAddress from '../../hooks/useWalletAddress';
 import { setEligibilityOpen, setSelectedChannel } from '../../redux/Slices/AppDatasSlice';
 import notificationService from '../../services/api-services/notification.service';
+import React from 'react';
 
 const UserSidesStyled = styled.div`
 	max-height: calc(100vh - 4rem - 48px);
@@ -163,7 +164,7 @@ export default function UserSides() {
 					?.filter(s => !s.profiles[0].isBlacklisted)
 					.map((c, i) => {
 						return (
-							<>
+							<React.Fragment key={i}>
 								<div
 									data-tip
 									data-for={c.id}
@@ -184,10 +185,10 @@ export default function UserSides() {
 								<ReactTooltip key={c.id + i} backgroundColor="var(--panels)" id={c.id} effect="solid">
 									{c.name}
 								</ReactTooltip>
-							</>
+							</React.Fragment>
 						);
 					})}
-				{/* <Link to={"/new-side"}>
+				{/* <Link to={"/new-side"}> ReactTooltip key={c.id + i}
           <i
             className="fa-solid fa-plus mt-3 size-24 pointer text-secondary-dark"
             // onClick={() => changeStateModal(true)}

@@ -146,7 +146,7 @@ export default function CurrentSide() {
 	const { announcementId, id } = useParams();
 	const { currentSide, selectedChannel, settingsOpen } = useSelector((state: RootState) => state.appDatas);
 	const { selectedRoom } = useSelector((state: RootState) => state.chatDatas);
-	const { user } = useSelector((state: RootState) => state.user);
+	const { user, sides } = useSelector((state: RootState) => state.user);
 	const [createPollModal, setCreatePollModal] = useState<boolean>(false);
 
 	const navigate = useNavigate();

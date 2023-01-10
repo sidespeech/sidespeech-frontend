@@ -167,7 +167,13 @@ export const userDataSlice = createSlice({
 			// 	  })
 			// 	: [];
 
-			state.sides = action.payload.sides;
+			// state.sides = action.payload.sides.reduce((prev:Side[], side:Side) => {
+			// 	if (action.payload.user.profiles.length){
+			// 		action.payload.user.profiles.find((p:Profile) => )
+			// 	}
+
+			// }, []);
+			state.sides = action.payload.sides
 
 			console.log('state.sides Slice :', state.sides)
 
