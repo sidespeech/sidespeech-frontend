@@ -76,14 +76,32 @@ interface IChipProps {
 	fontWeight: number;
 	padding: string;
 	height: number;
+	color?: string;
 }
 export const Chip = styled.span<IChipProps>`
 	width: fit-content;
 	border-radius: ${props => props.borderRadius};
 	background-color: ${props => props.backgroundColor};
-	padding: 1px 8px;
+	color: ${props => props.color};
+	padding: ${props => props.padding};
 	font-size: ${props => props.fontSize};
 	font-weight: ${props => props.fontWeight};
 	padding: ${props => props.padding};
 	height: ${props => props.height}px;
+`;
+
+interface INftImageProps {
+	url: string;
+	width: string;
+	height: string;
+	bgSize: string;
+}
+export const NftImage = styled.div<INftImageProps>`
+	height: ${props => props.height};
+	min-height: ${props => props.height};
+	width:${props => props.width};
+	min-width:${props => props.width};
+	border-radius: 7px;
+	background: no-repeat center url(${props => props.url}) var(--white-transparency-10);
+	background-size: ${props => props.bgSize};
 `;

@@ -23,9 +23,10 @@ export function setupWeb3Modal() {
 	return web3Modal;
 }
 
-export async function verifyNetwork(provider: ethers.providers.Web3Provider) {
+export async function verifyNetwork(provider: ethers.providers.Web3Provider): Promise<boolean> {
 	const network = await provider.getNetwork();
-	if (network.chainId !== 1) {
+	let isOnEthereum = network.chainId === 1;
+	if (!isOnEthereum) {
 		window.ethereum.request({
 			method: 'wallet_switchEthereumChain',
 			params: [
@@ -34,6 +35,9 @@ export async function verifyNetwork(provider: ethers.providers.Web3Provider) {
 				}
 			]
 		});
+		return false;
+	} else {
+		return true;
 	}
 }
 

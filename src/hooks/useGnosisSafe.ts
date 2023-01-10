@@ -103,6 +103,8 @@ export function useGnosisSafe() {
 		let safeSdk: Safe | null = null;
 		if (signer) {
 			try {
+				// FIXME this only ask to the user to change network but the error still occurs.
+				// we need to handle the network change in case of wrong network and connect to the safe after the change.
 				await verifyNetwork(provider);
 				safeSdk = await safeService.connectToExistingSafe(signer, safeAddress);
 			} catch (error) {

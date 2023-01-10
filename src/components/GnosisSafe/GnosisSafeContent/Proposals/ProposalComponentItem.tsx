@@ -114,15 +114,6 @@ export default function ProposalComponentItem({ proposal }: IProposalComponentIt
 		}
 	};
 
-	const getTitle = () => {
-		const details = proposal.details;
-		return details.nft
-			? `- ${details.nft.name} #${details.nft.token_id}`
-			: details.answers
-			? ` - ${details.answers.length} choices`
-			: `${details.title || ''}`;
-	};
-
 	const renderIcon = () => {
 		switch (proposal.status) {
 			case Status.Open:
@@ -170,8 +161,7 @@ export default function ProposalComponentItem({ proposal }: IProposalComponentIt
 							</ChipContent>
 						</Chip>
 						<span className="fw-700 text-light">
-							{proposal.category?.name}
-							{getTitle()}
+							{proposal.getTitle()}
 						</span>
 					</div>
 

@@ -1,27 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { RootState } from '../../redux/store/app.store';
-
-import Safe, { SafeFactory, SafeAccountConfig, ContractNetworksConfig } from '@safe-global/safe-core-sdk';
-import { ethers } from 'ethers';
-import EthersAdapter from '@safe-global/safe-ethers-lib';
-import Web3Modal from 'web3modal';
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import safeService from '../../services/api-services/safe.service';
-import profileService from '../../services/api-services/profile.service';
-import { safeRole } from '../../models/Profile';
-import categoryProposalService from '../../services/api-services/category-proposal.service';
-import proposalService from '../../services/api-services/proposal.service';
-import { Proposal, Status } from '../../models/Proposal';
-
-import moment from 'moment';
-import { proposalStatus } from '../../helpers/utilities';
-import Button from '../ui-components/Button';
 import styled from 'styled-components';
-import { breakpoints, size } from '../../helpers/breakpoints';
-import transactionService from '../../services/api-services/transaction.service';
 import { useGnosisSafe } from '../../hooks/useGnosisSafe';
 import { appDataState } from '../../redux/Slices/InterfaceSelectors';
 import { setSelectedDao } from '../../redux/Slices/AppDatasSlice';

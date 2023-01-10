@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from './Button';
+import { NftImage } from './styled-components/shared-styled-components';
 
 const VotesStyled = styled.form`
 	display: flex;
@@ -135,6 +136,7 @@ interface Option {
 	optionId: number;
 	text: string;
 	votes: number;
+	nft: string;
 }
 
 interface VotesProps {
@@ -170,43 +172,46 @@ const Votes = ({ onVote, options, pollId, showUserVotedOption, userVoteOptionId 
 
 	return (
 		<VotesStyled onSubmit={handleSubmit}>
-			{options.map(option => {
+			{options.map((option, index) => {
 				const optionChecked = selectedOptionId === option.optionId;
 				const votedByUser = userVoteOptionId?.toString() === option.optionId.toString();
 				const percentage = calculatePercentage(totalVotes, option.votes);
-
+				const isLast = index === options.length - 1;
 				return (
-					<label
-						key={option.optionId}
-						className={`option-wrapper ${optionChecked ? 'checked' : ''} ${
-							votedByUser && showUserVotedOption ? 'user-option' : ''
-						} ${!userVoteOptionId ? 'enabled' : 'show-results'}`}
-						htmlFor={option.optionId.toString()}
-					>
-						<div className="name-input-wrapper">
-							<div className="option-input">
-								<input
-									checked={optionChecked}
-									id={option.optionId.toString()}
-									name={pollId}
-									onChange={ev => setSelectedOptionId(option.optionId)}
-									type="radio"
-									value={option.optionId}
-								/>
-								<span />
-							</div>
-							<span className="option-label">{option.text}</span>
-
-							<div className="percentage">{percentage}%</div>
-						</div>
-
-						<PercentageBar
-							className={`${!!userVoteOptionId ? 'show' : ''} ${animate ? 'animate' : ''} ${
+					<div className="flex gap-10">
+						<NftImage bgSize={isLast ? '40px' : 'cover'} height="61px" width="61px" url={option.nft} />
+						<label
+							key={option.optionId}
+							className={`option-wrapper ${optionChecked ? 'checked' : ''} ${
 								votedByUser && showUserVotedOption ? 'user-option' : ''
-							}`}
-							percentage={percentage}
-						/>
-					</label>
+							} ${!userVoteOptionId ? 'enabled' : 'show-results'}`}
+							htmlFor={option.optionId.toString()}
+						>
+							<div className="name-input-wrapper">
+								<div className="option-input">
+									<input
+										checked={optionChecked}
+										id={option.optionId.toString()}
+										name={pollId}
+										onChange={ev => setSelectedOptionId(option.optionId)}
+										type="radio"
+										value={option.optionId}
+									/>
+									<span />
+								</div>
+								<span className="option-label">{option.text}</span>
+
+								<div className="percentage">{percentage}%</div>
+							</div>
+
+							<PercentageBar
+								className={`${!!userVoteOptionId ? 'show' : ''} ${animate ? 'animate' : ''} ${
+									votedByUser && showUserVotedOption ? 'user-option' : ''
+								}`}
+								percentage={percentage}
+							/>
+						</label>
+					</div>
 				);
 			})}
 			{!userVoteOptionId && (

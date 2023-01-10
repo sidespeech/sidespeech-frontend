@@ -7,12 +7,16 @@ import ProposalComponentList from './Proposals/ProposalComponentList';
 import empty from '../../../assets/dao-details-empty-screen.svg';
 import { useSelector } from 'react-redux';
 import { daoState } from '../../../redux/Slices/InterfaceSelectors';
+import ProposalDetails from './Proposals/ProposalDetails';
 
 const proposals: Proposal[] = [
 	new Proposal({
 		id: '1',
 		status: Status.Open,
-		details: { endDate: '2023-01-01', nft: { name: 'Bored Ape Yacht Club', token_id: '1234' } },
+		endDate: '2023-01-01',
+		creationDate: '2022-01-01',
+		details: { nft: { name: 'Bored Ape Yacht Club', token_id: '1234' }, descripiton: 'Seeling NFT BAYC #1234' },
+		creatorAddress: '0x4802757eE8E8085D1E6507f983C5d3EBc270f5c7',
 		category: new CategoryProposal({ id: '12', type: Type.onChain, name: 'Sell NFT' }),
 		profileIds: [
 			'03640593-6e4f-4cf9-a1d8-675c9cee4eab',
@@ -25,10 +29,41 @@ const proposals: Proposal[] = [
 	new Proposal({
 		id: '12',
 		status: Status.Pending,
+		endDate: '2023-01-25',
+		creationDate: '2022-01-01',
 		details: {
-			answers: ['Bored Ape Yacht Club #1347', 'Bored Ape Yacht Club #3685', 'Bored Ape Yacht Club #1284'],
-			endDate: '2023-01-25'
+			answers: [
+				{
+					id: '1',
+					optionId: '1',
+					text: 'Bored Ape Yacht Club #1347',
+					votes: 1,
+					nft: 'https://api.phantom.app/image-proxy/?image=https%3A%2F%2Farweave.net%2FMRosxcfIWBX5EI088UMXvaQw7OhOYqZULHAWIpvYVdE%2F3326.png'
+				},
+				{
+					id: '2',
+					optionId: '2',
+					text: 'Bored Ape Yacht Club #3685',
+					votes: 2,
+					nft: 'https://api.phantom.app/image-proxy/?image=https%3A%2F%2Farweave.net%2FMRosxcfIWBX5EI088UMXvaQw7OhOYqZULHAWIpvYVdE%2F3326.png'
+				},
+				{
+					id: '3',
+					optionId: '3',
+					text: 'Bored Ape Yacht Club #1284',
+					votes: 7,
+					nft: 'https://api.phantom.app/image-proxy/?image=https%3A%2F%2Farweave.net%2FMRosxcfIWBX5EI088UMXvaQw7OhOYqZULHAWIpvYVdE%2F3326.png'
+				},
+				{
+					id: '4',
+					optionId: '5',
+					text: 'No thanks,',
+					votes: 3,
+					nft: '/forbidden-sign.svg'
+				}
+			],
 		},
+		creatorAddress: '0x4802757eE8E8085D1E6507f983C5d3EBc270f5c7',
 		category: new CategoryProposal({ id: '13', type: Type.onChain, name: 'NFT Acquisition' }),
 		profileIds: [
 			'03640593-6e4f-4cf9-a1d8-675c9cee4eab',
@@ -39,14 +74,20 @@ const proposals: Proposal[] = [
 	new Proposal({
 		id: '13',
 		status: Status.Failed,
-		details: { endDate: '2023-01-01' },
+		endDate: '2023-01-01',
+		creationDate: '2022-01-01',
+		details: { description: 'New funding round to buy an NFT and to add cash the the pool.' },
+		creatorAddress: '0x4802757eE8E8085D1E6507f983C5d3EBc270f5c7',
 		category: new CategoryProposal({ id: '14', type: Type.onChain, name: 'Founding Round' }),
 		profileIds: ['03640593-6e4f-4cf9-a1d8-675c9cee4eab']
 	}),
 	new Proposal({
 		id: '14',
 		status: Status.NoFund,
-		details: { endDate: '2023-01-25', nft: { name: 'Bored Ape Yacht Club', token_id: '1234' } },
+		endDate: '2023-01-25',
+		creationDate: '2022-01-01',
+		details: { nft: { name: 'Bored Ape Yacht Club', token_id: '1234' }, descripiton: 'Seeling NFT BAYC #1234' },
+		creatorAddress: '0x4802757eE8E8085D1E6507f983C5d3EBc270f5c7',
 		category: new CategoryProposal({ id: '15', type: Type.onChain, name: 'Sell NFT' }),
 		profileIds: [
 			'03640593-6e4f-4cf9-a1d8-675c9cee4eab',
@@ -57,21 +98,30 @@ const proposals: Proposal[] = [
 	new Proposal({
 		id: '15',
 		status: Status.Closed,
-		details: { endDate: '2023-01-25' },
+		creationDate: '2022-01-01',
+		endDate: '2023-01-25',
+		details: { nft: { name: 'Bored Ape Yacht Club', token_id: '1234' }, descripiton: 'Seeling NFT BAYC #1234' },
+		creatorAddress: '0x4802757eE8E8085D1E6507f983C5d3EBc270f5c7',
 		category: new CategoryProposal({ id: '16', type: Type.onChain, name: 'Sell NFT' }),
 		profileIds: ['03640593-6e4f-4cf9-a1d8-675c9cee4eab', '03640593-6e4f-4cf9-a1d8-675c9cee4eab']
 	}),
 	new Proposal({
 		id: '16',
 		status: Status.Queue,
-		details: { endDate: '2023-01-25' },
+		creationDate: '2022-01-01',
+		endDate: '2023-01-25',
+		details: {},
+		creatorAddress: '0x4802757eE8E8085D1E6507f983C5d3EBc270f5c7',
 		category: new CategoryProposal({ id: '17', type: Type.offChain, name: 'Paris Blochain Event' }),
 		profileIds: ['03640593-6e4f-4cf9-a1d8-675c9cee4eab', '03640593-6e4f-4cf9-a1d8-675c9cee4eab']
 	}),
 	new Proposal({
 		id: '17',
 		status: Status.Successful,
-		details: { endDate: '2023-01-25' },
+		creationDate: '2022-01-01',
+		details: {},
+		endDate: '2023-01-25',
+		creatorAddress: '0x4802757eE8E8085D1E6507f983C5d3EBc270f5c7',
 		category: new CategoryProposal({ id: '18', type: Type.offChain, name: 'Brussels NFT week' }),
 		profileIds: [
 			'03640593-6e4f-4cf9-a1d8-675c9cee4eab',
@@ -109,8 +159,8 @@ export default function ProposalComponent(props: any) {
 
 	return (
 		<>
-			<div className="f-column gap-20 flex-1">
-				<div className="flex justify-between align-center">
+			<div className="f-column gap-20 flex-1 text-light">
+				<div className="flex justify-between align-center pr-3">
 					<div className="fw-700 size-22 flex justify-between">Proposals </div>
 					<Button
 						onClick={handleProposalCreation}
@@ -136,7 +186,7 @@ export default function ProposalComponent(props: any) {
 			{/** TODO manage details in a new component ProposalDetail */}
 			<div className="flex-1 f-column">
 				{selectedProposal ? (
-					<div></div>
+					<ProposalDetails selectedProposal={selectedProposal} />
 				) : (
 					<div className={'mx-auto my-auto text-inactive text-center'} style={{ maxWidth: 148 }}>
 						<img width={148} src={empty} />

@@ -20,6 +20,9 @@ export class Proposal {
 	public category?: CategoryProposal;
 	public safe?: GnosisSafe;
 	public details: any;
+	creationDate: string;
+	endDate: string;
+	creatorAddress: string;
 	index?: number;
 	profileIds?: string[];
 
@@ -32,10 +35,24 @@ export class Proposal {
 		this.safe = _data.safe;
 		this.details = _data.details;
 		this.profileIds = _data.profileIds ? _data.profileIds : [];
+		this.creatorAddress = _data.creatorAddress;
+		this.creationDate = _data.creationDate;
+		this.endDate = _data.endDate;
 	}
 
 	isActive() {
 		return this.status === Status.Pending || this.status === Status.Open || this.status === Status.Queue;
+	}
+
+	getTitle() {
+		const categoryName = this.category?.name || '';
+		const details = this.details;
+		const detailsInfo = details.nft
+			? ` - ${details.nft.name} #${details.nft.token_id}`
+			: details.answers
+			? ` - ${details.answers.length} choices`
+			: `${details.title || ''}`;
+		return categoryName + detailsInfo;
 	}
 }
 

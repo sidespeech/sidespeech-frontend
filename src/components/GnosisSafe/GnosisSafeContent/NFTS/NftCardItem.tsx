@@ -2,6 +2,7 @@ import { Collection } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import check from '../../../../assets/green-verified.svg';
+import { NftImage } from '../../../ui-components/styled-components/shared-styled-components';
 
 interface INftCardItemProps {
 	url: string;
@@ -19,14 +20,6 @@ const ItemContainer = styled.div<any>`
 	display: flex;
 	gap: 10px;
 	align-items: center;
-	& .nft-img {
-		height: 72px;
-		width: 73px;
-		border-radius: 7px;
-		background-color: black;
-		background: no-repeat center url(${props => props.url});
-		background-size: cover;
-	}
 
 	& .details {
 	}
@@ -34,8 +27,8 @@ const ItemContainer = styled.div<any>`
 
 export default function NftCardItem(props: INftCardItemProps) {
 	return (
-		<ItemContainer url={props.url}>
-			<div className="nft-img"></div>
+		<ItemContainer >
+			<NftImage bgSize="cover" height="72px" width="73px" url={props.url}></NftImage>
 			<div className="details f-column">
 				<div className="fw-700 size-12 flex align-center">
 					<span>{props.collectionName}</span>
